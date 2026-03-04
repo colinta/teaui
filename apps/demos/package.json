@@ -5,7 +5,7 @@
   "scripts": {
     "build": "pnpm tsc",
     "checksum": "pnpm check . 'pnpm build'",
-    "demo": "pnpm checksum && cd .dist && node --enable-source-maps --",
+    "demo": "node run.mjs",
     "clean": "rm -rf .dist/"
   },
   "private": true,
