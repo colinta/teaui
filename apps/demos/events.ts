@@ -8,7 +8,7 @@ import {
   interceptConsoleLog,
 } from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 interceptConsoleLog()
 

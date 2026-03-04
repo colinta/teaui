@@ -1,6 +1,6 @@
-import type {MouseButton} from '../sys'
-import {View} from '../View'
-import {Point, Rect} from '../geometry'
+export type MouseButton = 'left' | 'middle' | 'right' | 'wheel' | 'unknown'
+import {View} from '../View.js'
+import {Point, Rect} from '../geometry.js'
 
 export type MouseMove =
   | 'enter' // mouse move enters area

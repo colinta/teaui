@@ -4,18 +4,18 @@ import {
   LogLine,
   addListener as addLogListener,
   removeListener as removeLogListener,
-} from '../log'
-import {centerPad} from '../util'
-import {styled} from '../ansi'
-import {Viewport} from '../Viewport'
-import {View, type Props as ViewProps} from '../View'
-import {Screen} from '../Screen'
+} from '../log.js'
+import {centerPad} from '../util.js'
+import {styled} from '../ansi.js'
+import {Viewport} from '../Viewport.js'
+import {View, type Props as ViewProps} from '../View.js'
+import {Screen} from '../Screen.js'
 
-import {Container} from '../Container'
-import {Text} from './Text'
-import {ScrollableList} from './ScrollableList'
-import {Collapsible} from './Collapsible'
-import {Stack} from './Stack'
+import {Container} from '../Container.js'
+import {Text} from './Text.js'
+import {ScrollableList} from './ScrollableList.js'
+import {Collapsible} from './Collapsible.js'
+import {Stack} from './Stack.js'
 
 export class Log extends Container {
   #logs: LogLine[] = []

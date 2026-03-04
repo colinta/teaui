@@ -1,12 +1,14 @@
-import type {BlessedProgram} from './sys'
-import type {Style} from './Style'
+import type {Style} from './Style.js'
 
 export interface Terminal {
   writeChar(char: string, x: number, y: number, style: Style): void
   writeMeta(str: string): void
 }
 
-export type SGRTerminal = Pick<
-  BlessedProgram,
-  'cols' | 'rows' | 'move' | 'write' | 'on' | 'once' | 'flush'
->
+export interface SGRTerminal {
+  cols: number
+  rows: number
+  move(x: number, y: number): void
+  write(str: string): void
+  flush(): void
+}

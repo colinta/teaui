@@ -1,8 +1,8 @@
-import type {Viewport} from '../Viewport'
-import type {Props as ViewProps} from '../View'
-import {View} from '../View'
-import {Point, Size} from '../geometry'
-import {type Orientation} from './types'
+import type {Viewport} from '../Viewport.js'
+import type {Props as ViewProps} from '../View.js'
+import {View} from '../View.js'
+import {Point, Size} from '../geometry.js'
+import {type Orientation} from './types.js'
 
 type Border =
   | 'single'

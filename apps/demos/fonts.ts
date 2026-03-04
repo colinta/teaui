@@ -8,7 +8,7 @@ import {
   Button,
 } from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 const choices: [string, FontFamily][] = FontFamilies.map(f => [f, f])
 

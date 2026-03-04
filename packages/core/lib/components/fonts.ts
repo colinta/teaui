@@ -1,4 +1,4 @@
-import type {Font, FontFamily} from './types'
+import type {Font, FontFamily} from './types.js'
 
 function createFont(
   capitals: string[],

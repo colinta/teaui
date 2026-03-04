@@ -1,4 +1,4 @@
-import {program, colors} from './sys'
+import {colors} from '@teaui/term'
 
 export type Color =
   // 'default' background will fallback to either the pen color, or if the

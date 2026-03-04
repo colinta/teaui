@@ -1,10 +1,10 @@
-import {unicode} from './sys'
+import * as unicode from '@teaui/term'
 
-import type {Terminal, SGRTerminal} from './terminal'
-import type {Color} from './Color'
-import {BG_DRAW} from './ansi'
-import {Style} from './Style'
-import {Size} from './geometry'
+import type {Terminal, SGRTerminal} from './terminal.js'
+import type {Color} from './Color.js'
+import {BG_DRAW} from './ansi.js'
+import {Style} from './Style.js'
+import {Size} from './geometry.js'
 
 type Char = {char: string; width: 1 | 2; style: Style; hiding?: Char}
 

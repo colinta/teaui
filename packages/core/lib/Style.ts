@@ -1,8 +1,8 @@
-import {program} from './sys'
+import {parseStyleDescriptor} from '@teaui/term'
 
-import type {Color} from './Color'
-import {colorToSGR} from './Color'
-import {define} from './util'
+import type {Color} from './Color.js'
+import {colorToSGR} from './Color.js'
+import {define} from './util.js'
 
 type Nullable<T> = {[K in keyof T]?: null | undefined | T[K]}
 
@@ -369,11 +369,6 @@ export class Style {
    * `prevStyle` will be restored.
    */
   toSGR(prevStyle: Style, text?: string): string {
-    const {global: globalProgram} = program
-    if (!globalProgram) {
-      return ''
-    }
-
     const parts: string[] = []
     const undo: string[] = []
     if (this.underline && !prevStyle.underline) {
@@ -445,11 +440,11 @@ export class Style {
     undo.sort()
 
     if (text !== undefined) {
-      return globalProgram.style(parts) + text + globalProgram.style(undo)
+      return parseStyleDescriptor(parts) + text + parseStyleDescriptor(undo)
     }
 
     if (parts.length) {
-      return globalProgram.style(parts)
+      return parseStyleDescriptor(parts)
     } else {
       return ''
     }

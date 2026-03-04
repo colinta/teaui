@@ -1,4 +1,4 @@
-import {Theme} from './Theme'
+import {Theme} from './Theme.js'
 
 export function childTheme(theme: Theme, isPressed = false, isHover = false) {
   return new Theme({

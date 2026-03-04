@@ -1,9 +1,9 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {Viewport} from '../Viewport'
-import {type Props as ViewProps, View} from '../View'
-import {Container} from '../Container'
-import {Point, Size, Rect} from '../geometry'
+import type {Viewport} from '../Viewport.js'
+import {type Props as ViewProps, View} from '../View.js'
+import {Container} from '../Container.js'
+import {Point, Size, Rect} from '../geometry.js'
 import {
   type BorderChars as BoxBorderChars,
   Box,
@@ -13,9 +13,9 @@ import {
   ScrollableList,
   Separator,
   Text,
-} from '../components'
-import {type MouseEvent, isMouseClicked} from '../events'
-import {System} from '../System'
+} from '../components/index.js'
+import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {System} from '../System.js'
 
 interface BorderChars {
   control: BoxBorderChars

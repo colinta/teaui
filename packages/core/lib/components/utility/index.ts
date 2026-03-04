@@ -1,1 +1,1 @@
-export {TrackMouse} from './TrackMouse'
+export {TrackMouse} from './TrackMouse.js'

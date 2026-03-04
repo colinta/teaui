@@ -1,9 +1,9 @@
-import type {Viewport} from '../Viewport'
-import {type Props as ContainerProps, Container} from '../Container'
-import {Point, Rect, Size, interpolate} from '../geometry'
-import {isMouseWheel, type MouseEvent} from '../events'
-import {Style} from '../Style'
-import {type Orientation} from './types'
+import type {Viewport} from '../Viewport.js'
+import {type Props as ContainerProps, Container} from '../Container.js'
+import {Point, Rect, Size, interpolate} from '../geometry.js'
+import {isMouseWheel, type MouseEvent} from '../events/index.js'
+import {Style} from '../Style.js'
+import {type Orientation} from './types.js'
 
 interface Props extends ContainerProps {
   /**

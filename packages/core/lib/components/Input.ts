@@ -1,15 +1,15 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {KeyEvent, MouseEvent} from '../events'
-import {isKeyPrintable} from '../events'
-import type {Viewport} from '../Viewport'
-import type {Props as ViewProps} from '../View'
-import {View} from '../View'
-import {Style} from '../Style'
-import {Point, Size} from '../geometry'
-import {System} from '../System'
-import type {FontFamily} from './types'
-import {FONTS} from './fonts'
+import type {KeyEvent, MouseEvent} from '../events/index.js'
+import {isKeyPrintable} from '../events/index.js'
+import type {Viewport} from '../Viewport.js'
+import type {Props as ViewProps} from '../View.js'
+import {View} from '../View.js'
+import {Style} from '../Style.js'
+import {Point, Size} from '../geometry.js'
+import {System} from '../System.js'
+import type {FontFamily} from './types.js'
+import {FONTS} from './fonts.js'
 
 interface TextProps {
   placeholder?: string

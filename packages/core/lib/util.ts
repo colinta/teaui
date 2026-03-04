@@ -1,4 +1,4 @@
-import {unicode} from './sys'
+import * as unicode from '@teaui/term'
 
 let _debug = false
 /**

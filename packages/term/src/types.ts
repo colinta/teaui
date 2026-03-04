@@ -105,6 +105,8 @@ export type MouseAction =
   | 'move'
   | 'scrollUp'
   | 'scrollDown'
+  | 'scrollLeft'
+  | 'scrollRight'
 
 export interface MouseEvent {
   type: 'mouse'

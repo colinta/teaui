@@ -1,8 +1,5 @@
-import test from 'ava'
-import {words} from '../lib/sys/unicode'
-
-// desc, input, expected
-const specs = [] as [string, string, any][]
+import {describe, test, expect} from 'vitest'
+import {words} from '@teaui/term'
 
 function simpleWords(input: string) {
   return input.split(' ').reduce(
@@ -19,17 +16,22 @@ function simpleWords(input: string) {
   )[0]
 }
 
-specs.push(['one word', 'word', simpleWords('word')])
-specs.push(['two words', 'hello dolly', simpleWords('hello dolly')])
-specs.push([
-  'ansi+word',
-  '\x1b[0mhello',
-  [[['\x1b[0m', 'h', 'e', 'l', 'l', 'o'], 0]],
-])
+// desc, input, expected
+const specs: [string, string, any][] = [
+  ['one word', 'word', simpleWords('word')],
+  ['two words', 'hello dolly', simpleWords('hello dolly')],
+  [
+    'ansi+word',
+    '\x1b[0mhello',
+    [[['\x1b[0m', 'h', 'e', 'l', 'l', 'o'], 0]],
+  ],
+]
 
-for (const [desc, input, expected] of specs) {
-  test(`${desc}`, t => {
-    const splitWords = words(input)
-    t.deepEqual(splitWords, expected)
-  })
-}
+describe('words', () => {
+  for (const [desc, input, expected] of specs) {
+    test(desc, () => {
+      const splitWords = words(input)
+      expect(splitWords).toEqual(expected)
+    })
+  }
+})

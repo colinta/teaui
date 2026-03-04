@@ -1,8 +1,8 @@
-import {Size} from './geometry'
-import type {Viewport} from './Viewport'
-import {type Props as ViewProps, View} from './View'
-import {Screen} from './Screen'
-import {define} from './util'
+import {Size} from './geometry.js'
+import type {Viewport} from './Viewport.js'
+import {type Props as ViewProps, View} from './View.js'
+import {Screen} from './Screen.js'
+import {define} from './util.js'
 
 export interface Props extends ViewProps {
   child?: View

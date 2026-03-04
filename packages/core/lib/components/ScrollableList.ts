@@ -1,9 +1,9 @@
-import type {Viewport} from '../Viewport'
-import {type Props as ViewProps, View} from '../View'
-import {Container} from '../Container'
-import {Style} from '../Style'
-import {Rect, Point, Size, interpolate} from '../geometry'
-import {type MouseEvent, isMouseDragging} from '../events'
+import type {Viewport} from '../Viewport.js'
+import {type Props as ViewProps, View} from '../View.js'
+import {Container} from '../Container.js'
+import {Style} from '../Style.js'
+import {Rect, Point, Size, interpolate} from '../geometry.js'
+import {type MouseEvent, isMouseDragging} from '../events/index.js'
 
 interface Props<T> extends ViewProps {
   items: T[]

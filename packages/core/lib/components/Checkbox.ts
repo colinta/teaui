@@ -1,18 +1,18 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {Viewport} from '../Viewport'
-import {type View} from '../View'
-import {type Props as ContainerProps, Container} from '../Container'
-import {Text} from './Text'
-import {Rect, Point, Size} from '../geometry'
+import type {Viewport} from '../Viewport.js'
+import {type View} from '../View.js'
+import {type Props as ContainerProps, Container} from '../Container.js'
+import {Text} from './Text.js'
+import {Rect, Point, Size} from '../geometry.js'
 import {
   type HotKey,
   type MouseEvent,
   isMouseClicked,
   styleTextForHotKey,
-} from '../events'
-import {childTheme} from '../UI'
-import {System} from '../System'
+} from '../events/index.js'
+import {childTheme} from '../UI.js'
+import {System} from '../System.js'
 
 interface StyleProps {
   title?: string

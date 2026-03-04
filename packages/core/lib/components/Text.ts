@@ -1,13 +1,13 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {Viewport} from '../Viewport'
-import type {Props as ViewProps} from '../View'
-import {View} from '../View'
-import {Style} from '../Style'
-import {Point, Size} from '../geometry'
-import {Alignment, FontFamily} from './types'
-import {FONTS} from './fonts'
-import {define, wrap} from '../util'
+import type {Viewport} from '../Viewport.js'
+import type {Props as ViewProps} from '../View.js'
+import {View} from '../View.js'
+import {Style} from '../Style.js'
+import {Point, Size} from '../geometry.js'
+import {Alignment, FontFamily} from './types.js'
+import {FONTS} from './fonts.js'
+import {define, wrap} from '../util.js'
 
 interface TextProps {
   text?: string

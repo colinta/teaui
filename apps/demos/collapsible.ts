@@ -1,6 +1,6 @@
 import {inspect, Collapsible, Text} from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 const OBJ = {
   word: 'something',

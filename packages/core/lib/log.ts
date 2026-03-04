@@ -1,5 +1,5 @@
-import {ConsoleLog} from './components/Log'
-import {inspect} from './inspect'
+import {ConsoleLog} from './components/Log.js'
+import {inspect} from './inspect.js'
 
 const levels = ['debug', 'error', 'info', 'log', 'warn'] as const
 export type Level = (typeof levels)[number]

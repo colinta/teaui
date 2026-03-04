@@ -1,9 +1,9 @@
-import type {View} from '../View'
-import {Container} from '../Container'
-import type {Viewport} from '../Viewport'
-import type {Screen} from '../Screen'
-import type {Rect} from '../geometry'
-import {type MouseEvent, isMouseClicked} from '../events'
+import type {View} from '../View.js'
+import {Container} from '../Container.js'
+import type {Viewport} from '../Viewport.js'
+import type {Screen} from '../Screen.js'
+import type {Rect} from '../geometry.js'
+import {type MouseEvent, isMouseClicked} from '../events/index.js'
 
 export class ModalManager {
   #modalView = new Modal()

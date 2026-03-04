@@ -1,11 +1,11 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {Viewport} from '../Viewport'
-import {View, type Props as ViewProps} from '../View'
-import {Style} from '../Style'
-import {Point, Size} from '../geometry'
-import {type MouseEvent, isMouseClicked} from '../events'
-import {System} from '../System'
+import type {Viewport} from '../Viewport.js'
+import {View, type Props as ViewProps} from '../View.js'
+import {Style} from '../Style.js'
+import {Point, Size} from '../geometry.js'
+import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {System} from '../System.js'
 
 interface Props extends ViewProps {
   text: string

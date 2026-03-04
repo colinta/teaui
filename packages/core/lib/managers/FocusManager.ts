@@ -1,5 +1,5 @@
-import {View} from '../View'
-import {match, type HotKeyDef, type KeyEvent} from '../events'
+import {View} from '../View.js'
+import {match, type HotKeyDef, type KeyEvent} from '../events/index.js'
 
 const UNFOCUS = Symbol('UNFOCUS')
 

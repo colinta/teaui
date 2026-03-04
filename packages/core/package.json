@@ -8,6 +8,7 @@
   ],
   "version": "1.3.8",
   "license": "MIT",
+  "type": "module",
   "preferGlobal": false,
   "repository": {
     "type": "git",
@@ -27,10 +28,9 @@
     "postpublish": "pnpm run gittag",
     "gittag": "git tag $(node -e 'process.stdout.write(require(\"./package\").version)')",
     "clean": "rm -rf .dist/",
-    "cp-usr": "mkdir -p .dist/sys/usr/ && cp lib/sys/usr/* .dist/sys/usr/",
-    "build": "pnpm clean && pnpm tsc && pnpm cp-usr",
-    "test": "ava",
-    "test:watch": "ava --watch --clear-screen"
+    "build": "pnpm clean && pnpm tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "curses",
@@ -47,32 +47,10 @@
   "engines": {
     "node": ">= 18.12.0"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@teaui/shared": "workspace:*",
-    "ava": "^6.2.0",
-    "tsimp": "^2.0.12"
+  "dependencies": {
+    "@teaui/term": "workspace:*"
   },
-  "ava": {
-    "clearScreen": true,
-    "extensions": {
-      "ts": "module"
-    },
-    "require": [
-      "tests/setup.ts"
-    ],
-    "files": [
-      "tests/**/*.test.ts",
-      "tests/**/*.test.tsx",
-      "lib/**/*.test.ts",
-      "lib/**/*.test.tsx"
-    ],
-    "concurrency": 5,
-    "failFast": true,
-    "failWithoutAssertions": false,
-    "verbose": true,
-    "nodeArguments": [
-      "--import=tsimp"
-    ]
+  "devDependencies": {
+    "@teaui/shared": "workspace:*"
   }
 }

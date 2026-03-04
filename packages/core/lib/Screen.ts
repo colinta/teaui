@@ -1,30 +1,166 @@
-import type {BlessedProgram} from './sys'
-import {program as blessedProgram} from './sys'
+import {
+  Terminal as TermTerminal,
+  cursorTo,
+  isKeyEvent,
+  isMouseEvent,
+  isFocusEvent,
+  type InputEvent as TermInputEvent,
+} from '@teaui/term'
 
-import type {SGRTerminal} from './terminal'
-import type {Rect, Point} from './geometry'
-import {Size} from './geometry'
-import {View} from './View'
-import {Viewport} from './Viewport'
-import {flushLogs} from './log'
-import {Buffer} from './Buffer'
+import type {SGRTerminal} from './terminal.js'
+import type {Rect, Point} from './geometry.js'
+import {Size} from './geometry.js'
+import {View} from './View.js'
+import {Viewport} from './Viewport.js'
+import {flushLogs} from './log.js'
+import {Buffer} from './Buffer.js'
 import type {
   HotKeyDef,
   KeyEvent,
   MouseEventListenerName,
   SystemEvent,
   SystemMouseEvent,
-  SystemMouseEventName,
-} from './events'
-import {FocusManager} from './managers/FocusManager'
-import {ModalManager} from './managers/ModalManager'
-import {MouseManager} from './managers/MouseManager'
-import {TickManager} from './managers/TickManager'
-import {Window} from './components/Window'
-import {System, UnboundSystem} from './System'
+} from './events/index.js'
+import {
+  translateTermKeyEvent,
+  translateTermMouseEvent,
+} from './events/translate.js'
+import {FocusManager} from './managers/FocusManager.js'
+import {ModalManager} from './managers/ModalManager.js'
+import {MouseManager} from './managers/MouseManager.js'
+import {TickManager} from './managers/TickManager.js'
+import {Window} from './components/Window.js'
+import {System, UnboundSystem} from './System.js'
+
+// --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
+
+type KeyListener = (char: string, key: KeyEvent) => void
+
+/**
+ * Wraps @teaui/term's Terminal for use by Screen and the public API.
+ * Provides a blessed-compatible `.key()` helper and implements SGRTerminal.
+ */
+export class TerminalProgram implements SGRTerminal {
+  #terminal: TermTerminal
+  #keyListeners: {pattern: string; fn: KeyListener}[] = []
+  #cleanupInput?: () => void
+
+  constructor() {
+    this.#terminal = new TermTerminal()
+    this.#terminal.enableWriteBuffer()
+  }
+
+  get terminal(): TermTerminal {
+    return this.#terminal
+  }
+
+  // --- SGRTerminal interface ---
+
+  get cols(): number {
+    return this.#terminal.cols
+  }
+
+  get rows(): number {
+    return this.#terminal.rows
+  }
+
+  move(x: number, y: number): void {
+    this.#terminal.write(cursorTo(x, y))
+  }
+
+  write(str: string): void {
+    this.#terminal.write(str)
+  }
+
+  flush(): void {
+    this.#terminal.flushWrites()
+  }
+
+  // --- Lifecycle ---
+
+  enterFullscreen(): void {
+    this.#terminal.enterFullscreen({
+      mouse: true,
+      hideCursor: true,
+      focusEvents: true,
+    })
+  }
+
+  exitFullscreen(): void {
+    this.#terminal.exitFullscreen()
+  }
+
+  clear(): void {
+    this.#terminal.clear()
+  }
+
+  // --- Input ---
+
+  startInput(screen: Screen): void {
+    this.#cleanupInput = this.#terminal.onInput((event: TermInputEvent) => {
+      if (isFocusEvent(event)) {
+        screen.trigger({type: event.focused ? 'focus' : 'blur'})
+        return
+      }
+
+      if (isKeyEvent(event)) {
+        const keyEvent = translateTermKeyEvent(event)
+
+        // Check .key() listeners
+        for (const {pattern, fn} of this.#keyListeners) {
+          if (matchKeyPattern(pattern, keyEvent)) {
+            fn(keyEvent.char, keyEvent)
+          }
+        }
+
+        screen.trigger(keyEvent)
+        return
+      }
+
+      if (isMouseEvent(event)) {
+        const mouseEvent = translateTermMouseEvent(event)
+        if (mouseEvent) {
+          screen.trigger(mouseEvent)
+        }
+        return
+      }
+    })
+
+    this.#terminal.onResize(() => {
+      screen.trigger({type: 'resize'})
+    })
+  }
+
+  stopInput(): void {
+    this.#cleanupInput?.()
+    this.#cleanupInput = undefined
+  }
+
+  /**
+   * Register a key binding (blessed-compatible).
+   * Pattern: 'escape', 'C-c', 'C-q', 'return', etc.
+   */
+  key(pattern: string | string[], fn: KeyListener): void {
+    const patterns = Array.isArray(pattern) ? pattern : [pattern]
+    for (const p of patterns) {
+      this.#keyListeners.push({pattern: p, fn})
+    }
+  }
+
+  /**
+   * Provide raw data listener (for iTerm2 etc.)
+   */
+  once(event: string, fn: (...args: any[]) => void): void {
+    if (event === 'data') {
+      this.#terminal.onceRawData(fn)
+    }
+  }
+}
+
+// --- ViewConstructor type ---
 
 type ViewConstructor<T extends View> = (
-  program: BlessedProgram,
+  program: TerminalProgram,
 ) => T | Promise<T>
 
 export interface ScreenOptions {
@@ -32,7 +168,7 @@ export interface ScreenOptions {
 }
 
 export class Screen {
-  #program: SGRTerminal
+  #program: TerminalProgram
   #onExit?: () => void
 
   rootView: View
@@ -49,60 +185,43 @@ export class Screen {
    * again.
    */
   static reset() {
-    const program = blessedProgram({
-      useBuffer: true,
-      tput: true,
-    })
-
+    const program = new TerminalProgram()
     program.clear()
-    program.showCursor()
-    program.normalBuffer()
+    program.terminal.showCursor()
+    program.exitFullscreen()
     setTimeout(() => {
       process.exit(0)
     }, 0)
   }
 
-  static async start(): Promise<[Screen, BlessedProgram, Window]>
+  static async start(): Promise<[Screen, TerminalProgram, Window]>
 
   static async start<T extends View>(
     viewConstructor: T | ViewConstructor<T>,
     opts?: Partial<ScreenOptions>,
-  ): Promise<[Screen, BlessedProgram, T]>
+  ): Promise<[Screen, TerminalProgram, T]>
 
   /**
    * Start the TeaUI application. Expects a root node (I recommend Window, it
    * consumes all the available screen space) *or* an async function that creates the
    * root node, and accepts a small amount of options.
    *
-   * @return the Screen, the Program that controls the terminal, and the root node
+   * @return the Screen, the TerminalProgram that controls the terminal, and the root node
    * instance.
    */
   static async start<T extends View = Window>(
     viewConstructor: T | ViewConstructor<T> = new Window() as unknown as T,
     opts?: Partial<ScreenOptions>,
-  ): Promise<[Screen, BlessedProgram, T]> {
+  ): Promise<[Screen, TerminalProgram, T]> {
     opts ??= {}
     opts = {
       quitChar: 'c',
       ...opts,
     }
 
-    const program = blessedProgram({
-      useBuffer: true,
-      tput: true,
-    })
-
-    program.alternateBuffer()
-    program.enableMouse()
-    program.hideCursor()
+    const program = new TerminalProgram()
+    program.enterFullscreen()
     program.clear()
-    program.setMouse({sendFocus: true}, true)
-
-    // weird quirk of blessed - bind anything to 'keypress' before
-    // attaching the screen or else I-don't-remember-what will happen.
-    const fn = function () {}
-    program.on('keypress', fn)
-    program.off('keypress', fn)
 
     const rootView =
       viewConstructor instanceof View
@@ -112,21 +231,7 @@ export class Screen {
     const screen = new Screen(program, rootView)
     screen.onExit(() => {
       program.clear()
-      program.disableMouse()
-      program.showCursor()
-      program.normalBuffer()
-    })
-
-    program.on('focus', function () {
-      screen.trigger({type: 'focus'})
-    })
-
-    program.on('blur', function () {
-      screen.trigger({type: 'blur'})
-    })
-
-    program.on('resize', function () {
-      screen.trigger({type: 'resize'})
+      program.exitFullscreen()
     })
 
     if (opts.quitChar) {
@@ -135,32 +240,13 @@ export class Screen {
       })
     }
 
-    program.on('keypress', (char, key) => {
-      screen.trigger({type: 'key', ...key})
-    })
-
-    program.on('mouse', function (data) {
-      let action = data.action
-      if (action === 'focus' || action === 'blur') {
-        return
-      }
-      if (data.button === 'unknown') {
-        return
-      }
-
-      screen.trigger({
-        ...data,
-        name: translateMouseAction(action),
-        type: 'mouse',
-      })
-    })
-
+    program.startInput(screen)
     screen.start()
 
     return [screen, program, rootView]
   }
 
-  constructor(program: SGRTerminal, rootView: View) {
+  constructor(program: TerminalProgram, rootView: View) {
     this.#program = program
     this.#buffer = new Buffer()
     this.rootView = rootView
@@ -184,7 +270,7 @@ export class Screen {
 
   /**
    * Called from Screen.start(). Don't call this yourself unless you wanted
-   * to construct your own 'program' (using blessed). I recommend starting with a
+   * to construct your own 'program'. I recommend starting with a
    * copy of the implementation of Screen.start.
    */
   start() {
@@ -198,7 +284,7 @@ export class Screen {
   stop() {
     this.#tickManager.stop()
     this.rootView.moveToScreen(undefined)
-
+    this.#program.stopInput()
     this.#onExit?.()
   }
 
@@ -341,32 +427,8 @@ export class Screen {
   }
 }
 
-function translateMouseAction(
-  action:
-    | 'mousemove'
-    | 'mousedown'
-    | 'mouseup'
-    | 'wheeldown'
-    | 'wheelup'
-    | 'wheelleft'
-    | 'wheelright',
-): SystemMouseEventName {
-  switch (action) {
-    case 'mousemove':
-      return 'mouse.move.in'
-    case 'mousedown':
-      return `mouse.button.down`
-    case 'mouseup':
-      return `mouse.button.up`
-    case 'wheeldown':
-      return 'mouse.wheel.down'
-    case 'wheelup':
-      return 'mouse.wheel.up'
-    case 'wheelleft':
-      return 'mouse.wheel.left'
-    case 'wheelright':
-      return 'mouse.wheel.right'
-  }
+function matchKeyPattern(pattern: string, event: KeyEvent): boolean {
+  return event.full === pattern
 }
 
 /**

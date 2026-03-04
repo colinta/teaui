@@ -1,6 +1,6 @@
 import {Scrollable, Stack, Text} from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 demo(
   new Scrollable({

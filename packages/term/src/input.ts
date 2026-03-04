@@ -88,8 +88,8 @@ function parseSGRMouse(params: string, final: string): MouseEvent {
   let btn: MouseButton
 
   if (button & 64) {
-    // scroll wheel
-    action = baseButton === 0 ? 'scrollUp' : 'scrollDown'
+    // scroll wheel: 0=up, 1=down, 2=left, 3=right
+    action = (['scrollUp', 'scrollDown', 'scrollLeft', 'scrollRight'] as const)[baseButton]
     btn = 'none'
   } else if (motion) {
     // Motion events: baseButton encodes which button is held during motion.

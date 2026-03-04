@@ -1,6 +1,6 @@
 import {Button, Stack, Separator, Space} from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 demo(
   Stack.down([

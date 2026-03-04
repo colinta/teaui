@@ -7,7 +7,7 @@ import {
   Space,
 } from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 const choices: [string, number][] = [
   ['One\n1', 1],

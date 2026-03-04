@@ -1,5 +1,5 @@
-import {type Props as ContainerProps, Container} from '../Container'
-import {Size} from '../geometry'
+import {type Props as ContainerProps, Container} from '../Container.js'
+import {Size} from '../geometry.js'
 
 export class Window extends Container {
   constructor({children, ...viewProps}: ContainerProps = {}) {

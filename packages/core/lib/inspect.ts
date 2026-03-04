@@ -1,4 +1,4 @@
-import {bold, cyan, gray, green, red, yellow} from './ansi'
+import {bold, cyan, gray, green, red, yellow} from './ansi.js'
 
 let _debug = false
 export function isDebugging(enabled?: boolean) {

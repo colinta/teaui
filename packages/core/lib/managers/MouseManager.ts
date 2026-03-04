@@ -1,6 +1,6 @@
-import {View} from '../View'
-import {Point} from '../geometry'
-import {System, UnboundSystem} from '../System'
+import {View} from '../View.js'
+import {Point} from '../geometry.js'
+import {System, UnboundSystem} from '../System.js'
 import type {
   MouseDownEvent,
   MouseEventListener,
@@ -8,8 +8,8 @@ import type {
   MouseEventName,
   MouseEventTarget,
   SystemMouseEvent,
-} from '../events'
-import {isMouseButton, isMouseWheel} from '../events'
+} from '../events/index.js'
+import {isMouseButton, isMouseWheel} from '../events/index.js'
 
 function mouseKey(x: number, y: number) {
   return `${~~x},${~~y}`
@@ -179,6 +179,7 @@ export class MouseManager {
   trigger(systemEvent: SystemMouseEvent, system: UnboundSystem): void {
     if (
       systemEvent.name === 'mouse.button.down' &&
+      !this.#mouseDownEvent &&
       !this.hasMouseDownListener(systemEvent.x, systemEvent.y, systemEvent)
     ) {
       system.focusManager.unfocus()

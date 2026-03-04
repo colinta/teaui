@@ -9,7 +9,7 @@ import {
   type Color,
 } from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 function pad(num: number) {
   if (num < 10) {

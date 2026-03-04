@@ -1,5 +1,5 @@
-import type {Color} from './Color'
-import {Style} from './Style'
+import type {Color} from './Color.js'
+import {Style} from './Style.js'
 
 export type Purpose =
   | 'primary' // aka blue

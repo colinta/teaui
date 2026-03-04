@@ -1,10 +1,10 @@
-import type {Mutable} from './geometry'
-import type {Viewport} from './Viewport'
-import type {Screen} from './Screen'
-import type {Purpose} from './Theme'
-import {Theme} from './Theme'
-import {Container} from './Container'
-import {System} from './System'
+import type {Mutable} from './geometry.js'
+import type {Viewport} from './Viewport.js'
+import type {Screen} from './Screen.js'
+import type {Purpose} from './Theme.js'
+import {Theme} from './Theme.js'
+import {Container} from './Container.js'
+import {System} from './System.js'
 import {
   isMouseEnter,
   isMouseExit,
@@ -12,8 +12,8 @@ import {
   isMousePressExit,
   type KeyEvent,
   type MouseEvent,
-} from './events'
-import {Point, Size, Rect} from './geometry'
+} from './events/index.js'
+import {Point, Size, Rect} from './geometry.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number

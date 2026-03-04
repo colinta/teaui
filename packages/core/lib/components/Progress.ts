@@ -1,8 +1,8 @@
-import {Viewport} from '../Viewport'
-import {type Props as ViewProps, View} from '../View'
-import {Point, Size, interpolate} from '../geometry'
-import {Style} from '../Style'
-import {type Orientation} from './types'
+import {Viewport} from '../Viewport.js'
+import {type Props as ViewProps, View} from '../View.js'
+import {Point, Size, interpolate} from '../geometry.js'
+import {Style} from '../Style.js'
+import {type Orientation} from './types.js'
 
 interface Props extends ViewProps {
   direction?: Orientation

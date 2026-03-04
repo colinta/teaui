@@ -80,8 +80,8 @@ export function indexToRGB(index: number): [number, number, number] {
   return indexToRGB_table[~~index % 255]
 }
 
-export function indexToHex(index: number): string {
-  return indexToHex_table[~~index % 255]
+export function indexToHex(index: number): `#${string}` {
+  return indexToHex_table[~~index % 255] as `#${string}`
 }
 
 // --- Color matching ---

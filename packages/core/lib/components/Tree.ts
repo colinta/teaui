@@ -1,12 +1,12 @@
-import type {Viewport} from '../Viewport'
+import type {Viewport} from '../Viewport.js'
 
-import {type Props as ViewProps, View} from '../View'
-import {Stack} from './Stack'
-import {Container} from '../Container'
-import {Rect, Point, Size} from '../geometry'
-import {type MouseEvent, isMouseClicked} from '../events'
-import {Style} from '../Style'
-import {System} from '../System'
+import {type Props as ViewProps, View} from '../View.js'
+import {Stack} from './Stack.js'
+import {Container} from '../Container.js'
+import {Rect, Point, Size} from '../geometry.js'
+import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {Style} from '../Style.js'
+import {System} from '../System.js'
 
 type RenderFn<T> = (datum: T, path: string) => View
 type GetChildrenFn<T> = (datum: T, path: string) => T[] | undefined

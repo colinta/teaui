@@ -1,7 +1,23 @@
-import {underline} from '../ansi'
-import type {KeyEvent as TUIKeyEvent} from '../sys'
+import {underline} from '../ansi.js'
 
-export type KeyEvent = TUIKeyEvent & {type: 'key'}
+export interface KeyEvent {
+  type: 'key'
+  /**
+   * "Probably" the letter (a-z, etc) that was pressed. Blank (or nonsensical) for meta characters (escape, arrow keys, etc)
+   */
+  char: string
+  /**
+   * Named key, like "enter", "a", "escape", etc, or the printable character
+   */
+  name: string
+  ctrl: boolean
+  meta: boolean
+  shift: boolean
+  /**
+   * The letter that was pressed, *plus* the modifiers (C-M-S- for control- meta- shift, always in that order)
+   */
+  full: string
+}
 export type HotKeyDef = {
   char: string
   ctrl?: boolean

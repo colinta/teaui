@@ -1,6 +1,6 @@
 import {Box, Button, Drawer, Stack, Input, Space, Text} from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 const firstInput = new Input({
   value: "family: 👨‍👩‍👧‍👦 smiley: 😀 some other text that isn't very interesting.",

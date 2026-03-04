@@ -1,12 +1,12 @@
-import {Container, type Props as ContainerProps} from '../Container'
-import {Point, Rect, Size} from '../geometry'
-import {Style} from '../Style'
-import {Text} from './Text'
-import {View} from '../View'
-import {Viewport} from '../Viewport'
-import {System} from '../System'
-import {isMouseClicked, type MouseEvent} from '../events'
-import {define} from '../util'
+import {Container, type Props as ContainerProps} from '../Container.js'
+import {Point, Rect, Size} from '../geometry.js'
+import {Style} from '../Style.js'
+import {Text} from './Text.js'
+import {View} from '../View.js'
+import {Viewport} from '../Viewport.js'
+import {System} from '../System.js'
+import {isMouseClicked, type MouseEvent} from '../events/index.js'
+import {define} from '../util.js'
 
 interface Props extends ContainerProps {
   /**

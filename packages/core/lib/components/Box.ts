@@ -1,10 +1,10 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {Viewport} from '../Viewport'
-import {type Props as ContainerProps, Container} from '../Container'
-import {Rect, Point, Size} from '../geometry'
-import {Style} from '../Style'
-import {define} from '../util'
+import type {Viewport} from '../Viewport.js'
+import {type Props as ContainerProps, Container} from '../Container.js'
+import {Rect, Point, Size} from '../geometry.js'
+import {Style} from '../Style.js'
+import {define} from '../util.js'
 
 export type Border =
   | 'none'

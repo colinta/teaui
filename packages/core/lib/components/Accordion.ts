@@ -1,12 +1,12 @@
-import {Container, type Props as ContainerProps} from '../Container'
-import {interpolate, Point, Rect, Size} from '../geometry'
-import {View} from '../View'
-import {Text} from './Text'
-import {Viewport} from '../Viewport'
-import {System} from '../System'
-import {type MouseEvent, isMouseClicked} from '../events'
-import {Style} from '../Style'
-import {define} from '../util'
+import {Container, type Props as ContainerProps} from '../Container.js'
+import {interpolate, Point, Rect, Size} from '../geometry.js'
+import {View} from '../View.js'
+import {Text} from './Text.js'
+import {Viewport} from '../Viewport.js'
+import {System} from '../System.js'
+import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {Style} from '../Style.js'
+import {define} from '../util.js'
 
 interface Props extends ContainerProps {
   multiple?: boolean

@@ -1,6 +1,6 @@
-import {Viewport} from '../Viewport'
-import {type Props as ViewProps, View} from '../View'
-import {Point, Rect, Size, interpolate} from '../geometry'
+import {Viewport} from '../Viewport.js'
+import {type Props as ViewProps, View} from '../View.js'
+import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {
   type MouseEvent,
   isMouseDragging,
@@ -9,9 +9,9 @@ import {
   isMousePressStart,
   isMousePressExit,
   isMousePressEnd,
-} from '../events'
-import type {Style} from '../Style'
-import {type Orientation} from './types'
+} from '../events/index.js'
+import type {Style} from '../Style.js'
+import {type Orientation} from './types.js'
 
 const MIN = 5
 

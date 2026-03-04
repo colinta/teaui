@@ -1,9 +1,9 @@
-import {Style} from '../../Style'
-import {Viewport} from '../../Viewport'
-import {type Props as ViewProps, View} from '../../View'
-import {Container} from '../../Container'
-import {Point, Size, Rect} from '../../geometry'
-import type {MouseEvent} from '../../events'
+import {Style} from '../../Style.js'
+import {Viewport} from '../../Viewport.js'
+import {type Props as ViewProps, View} from '../../View.js'
+import {Container} from '../../Container.js'
+import {Point, Size, Rect} from '../../geometry.js'
+import type {MouseEvent} from '../../events/index.js'
 
 interface Props extends ViewProps {
   content: View

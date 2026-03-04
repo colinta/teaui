@@ -1,7 +1,7 @@
-import type {Viewport} from '../Viewport'
-import {View} from '../View'
-import {Container, Props as ContainerProps} from '../Container'
-import {Rect, Point, Size, type Edge} from '../geometry'
+import type {Viewport} from '../Viewport.js'
+import {View} from '../View.js'
+import {Container, Props as ContainerProps} from '../Container.js'
+import {Rect, Point, Size, type Edge} from '../geometry.js'
 import {
   type MouseEvent,
   isMouseClicked,
@@ -9,11 +9,11 @@ import {
   isMousePressExit,
   isMouseEnter,
   isMouseExit,
-} from '../events'
-import type {Style} from '../Style'
-import {Theme} from '../Theme'
-import {define} from '../util'
-import {System} from '../System'
+} from '../events/index.js'
+import type {Style} from '../Style.js'
+import {Theme} from '../Theme.js'
+import {define} from '../util.js'
+import {System} from '../System.js'
 
 interface Props extends ContainerProps {
   location?: Edge

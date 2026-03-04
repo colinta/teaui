@@ -1,18 +1,18 @@
-import {unicode} from '../sys'
-import type {Viewport} from '../Viewport'
+import * as unicode from '@teaui/term'
+import type {Viewport} from '../Viewport.js'
 
-import {type Props as ViewProps, View} from '../View'
-import {Container} from '../Container'
-import {Rect, Point, Size} from '../geometry'
+import {type Props as ViewProps, View} from '../View.js'
+import {Container} from '../Container.js'
+import {Rect, Point, Size} from '../geometry.js'
 import {
   type MouseEvent,
   isMouseClicked,
   isMouseEnter,
   isMouseExit,
   isMouseMove,
-} from '../events'
-import {System} from '../System'
-import {type Orientation} from './types'
+} from '../events/index.js'
+import {System} from '../System.js'
+import {type Orientation} from './types.js'
 
 interface Props extends ViewProps {
   multiple?: boolean

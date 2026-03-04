@@ -36,7 +36,7 @@ import {
   strikeout,
 } from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 interceptConsoleLog()
 

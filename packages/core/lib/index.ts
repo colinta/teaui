@@ -1,19 +1,29 @@
-export type {Viewport} from './Viewport'
-export type * from './terminal'
-export * from './Color'
-export * from './components'
-export * from './geometry'
-export * from './log'
-export * from './Screen'
-export * from './Style'
-export * from './Theme'
-export * from './inspect'
-export {View, Props as ViewProps} from './View'
-export {Container, Props as ContainerProps} from './Container'
-export * from './ansi'
-export * from './events/mouse'
-export * from './events/key'
-export * from './iTerm2'
-export {colors} from './sys'
-export * from './sys/unicode'
-export * from './util'
+export type {Viewport} from './Viewport.js'
+export type * from './terminal.js'
+export * from './Color.js'
+export * from './components/index.js'
+export * from './geometry.js'
+export * from './log.js'
+export * from './Screen.js'
+export * from './Style.js'
+export * from './Theme.js'
+export * from './inspect.js'
+export {View, Props as ViewProps} from './View.js'
+export {Container, Props as ContainerProps} from './Container.js'
+export * from './ansi.js'
+export * from './events/mouse.js'
+export * from './events/key.js'
+export * from './iTerm2.js'
+export {colors} from '@teaui/term'
+export {
+  charWidth,
+  lineWidth,
+  stringSize,
+  printableChars,
+  words,
+  ansiLocations,
+  removeAnsi,
+  getLocale,
+  setLocale,
+} from '@teaui/term'
+export * from './util.js'

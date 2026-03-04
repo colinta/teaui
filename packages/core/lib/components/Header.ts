@@ -1,10 +1,10 @@
-import {Container} from '../Container'
-import {Point, Size} from '../geometry'
-import {Style} from '../Style'
-import {Viewport} from '../Viewport'
-import {Text} from './Text'
-import {type FontFamily} from './types'
-import {type Props as ViewProps} from '../View'
+import {Container} from '../Container.js'
+import {Point, Size} from '../geometry.js'
+import {Style} from '../Style.js'
+import {Viewport} from '../Viewport.js'
+import {Text} from './Text.js'
+import {type FontFamily} from './types.js'
+import {type Props as ViewProps} from '../View.js'
 
 interface Props extends ViewProps {
   text: string

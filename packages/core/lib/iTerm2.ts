@@ -1,8 +1,12 @@
-import type {BlessedProgram} from './sys'
 import {StringDecoder} from 'string_decoder'
 
-import type {Color} from './Color'
-import {colorToHex} from './Color'
+import type {Color} from './Color.js'
+import {colorToHex} from './Color.js'
+
+interface WritableProgram {
+  write(str: string): void
+  once(event: string, fn: (...args: any[]) => void): void
+}
 
 /**
  * Sets iTerm2 proprietary ANSI codes
@@ -20,7 +24,7 @@ export class iTerm2 {
    *   return new Box({ … })
    * })
    */
-  static setBackground(program: BlessedProgram, bg: Color): Promise<void> {
+  static setBackground(program: WritableProgram, bg: Color): Promise<void> {
     process.on('exit', () => {
       iTerm2.restoreBg(program)
     })
@@ -43,7 +47,7 @@ export class iTerm2 {
     })
   }
 
-  static restoreBg(program: BlessedProgram) {
+  static restoreBg(program: WritableProgram) {
     if (iTerm2._restoreBg) {
       program.write(setBackgroundCommand(iTerm2._restoreBg))
     }

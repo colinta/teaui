@@ -1,4 +1,4 @@
-import {program} from './sys'
+import {parseStyleDescriptor, BG_DRAW as _BG_DRAW} from '@teaui/term'
 
 export const RESET = '\x1b[0m'
 
@@ -7,17 +7,19 @@ export const RESET = '\x1b[0m'
 // put foreground/background colors into a region – subsequent draws that do
 // _not_ specify foreground/background (value: undefined) will "inherit" this
 // "paint" color.
-export const BG_DRAW = '\x14'
+export const BG_DRAW = _BG_DRAW
 
 export function styled(input: string, attr: string): string {
-  return program.global?.text(input, attr) ?? input
+  const open = parseStyleDescriptor(attr)
+  const close = parseStyleDescriptor('!' + attr)
+  return open + input + close
 }
 
 export function style(attr: string): string {
   if (attr.startsWith('\x1b[')) {
     return attr
   }
-  return program.global?.style(attr) ?? ''
+  return parseStyleDescriptor(attr)
 }
 
 export function ansi(code: number, input: string): string {

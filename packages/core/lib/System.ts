@@ -1,5 +1,5 @@
-import {View} from './View'
-import {FocusManager} from './managers/FocusManager'
+import {View} from './View.js'
+import {FocusManager} from './managers/FocusManager.js'
 
 export class System {
   constructor(

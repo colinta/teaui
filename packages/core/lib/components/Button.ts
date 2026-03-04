@@ -1,9 +1,9 @@
-import {unicode} from '../sys'
+import * as unicode from '@teaui/term'
 
-import type {Viewport} from '../Viewport'
-import {type Props as ContainerProps, Container} from '../Container'
-import {Text} from './Text'
-import {Rect, Point, Size} from '../geometry'
+import type {Viewport} from '../Viewport.js'
+import {type Props as ContainerProps, Container} from '../Container.js'
+import {Text} from './Text.js'
+import {Rect, Point, Size} from '../geometry.js'
 import {
   type MouseEvent,
   isMouseClicked,
@@ -11,11 +11,11 @@ import {
   KeyEvent,
   styleTextForHotKey,
   toHotKeyDef,
-} from '../events'
-import {childTheme} from '../UI'
-import type {View} from '../View'
-import {Alignment} from './types'
-import {System} from '../System'
+} from '../events/index.js'
+import {childTheme} from '../UI.js'
+import type {View} from '../View.js'
+import {Alignment} from './types.js'
+import {System} from '../System.js'
 
 type Border = 'default' | 'arrows' | 'none'
 type BorderChars = [string, string]

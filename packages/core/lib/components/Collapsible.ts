@@ -1,11 +1,11 @@
-import type {Viewport} from '../Viewport'
+import type {Viewport} from '../Viewport.js'
 
-import {View} from '../View'
-import {type Props as ContainerProps, Container} from '../Container'
-import {Text} from './Text'
-import {Rect, Point, Size} from '../geometry'
-import {type MouseEvent, isMouseClicked} from '../events'
-import {System} from '../System'
+import {View} from '../View.js'
+import {type Props as ContainerProps, Container} from '../Container.js'
+import {Text} from './Text.js'
+import {Rect, Point, Size} from '../geometry.js'
+import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {System} from '../System.js'
 
 interface StyleProps {
   /**

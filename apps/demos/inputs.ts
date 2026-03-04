@@ -1,6 +1,6 @@
 import {Box, Stack, Input, Space, interceptConsoleLog} from '@teaui/core'
 
-import {demo} from './demo'
+import {demo} from './demo.js'
 
 interceptConsoleLog()
 

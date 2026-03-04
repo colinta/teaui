@@ -1,13 +1,13 @@
-import {unicode} from './sys'
+import * as unicode from '@teaui/term'
 
-import type {Terminal} from './terminal'
-import {RESET, BG_DRAW} from './ansi'
-import {Style} from './Style'
-import {Rect, Point, Size} from './geometry'
-import {Screen} from './Screen'
-import {View} from './View'
-import type {HotKeyDef, MouseEventListenerName} from './events'
-import {define} from './util'
+import type {Terminal} from './terminal.js'
+import {RESET, BG_DRAW} from './ansi.js'
+import {Style} from './Style.js'
+import {Rect, Point, Size} from './geometry.js'
+import {Screen} from './Screen.js'
+import {View} from './View.js'
+import type {HotKeyDef, MouseEventListenerName} from './events/index.js'
+import {define} from './util.js'
 
 /**
  * Defines a region (contentSize) in which to draw, and a subset (visibleRect) that

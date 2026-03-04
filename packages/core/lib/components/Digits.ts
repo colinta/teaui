@@ -1,9 +1,9 @@
-import type {Viewport} from '../Viewport'
-import type {Props as ViewProps} from '../View'
-import {View} from '../View'
-import {Style} from '../Style'
-import {Point, Size} from '../geometry'
-import {define} from '../util'
+import type {Viewport} from '../Viewport.js'
+import type {Props as ViewProps} from '../View.js'
+import {View} from '../View.js'
+import {Style} from '../Style.js'
+import {Point, Size} from '../geometry.js'
+import {define} from '../util.js'
 
 interface Props extends ViewProps {
   text: string | number
