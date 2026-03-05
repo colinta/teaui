@@ -33,6 +33,21 @@ describe('parseInput', () => {
       const events = parseInput(Buffer.from(' '))
       expect(events).toEqual([key('space')])
     })
+
+    it('parses emoji as single key event', () => {
+      const events = parseInput(Buffer.from('🙂'))
+      expect(events).toEqual([key('🙂')])
+    })
+
+    it('parses emoji mixed with ASCII', () => {
+      const events = parseInput(Buffer.from('a🙂b'))
+      expect(events).toEqual([key('a'), key('🙂'), key('b')])
+    })
+
+    it('parses multi-codepoint emoji', () => {
+      const events = parseInput(Buffer.from('👍'))
+      expect(events).toEqual([key('👍')])
+    })
   })
 
   describe('control characters', () => {
@@ -59,6 +74,11 @@ describe('parseInput', () => {
     it('parses tab', () => {
       const events = parseInput(Buffer.from([0x09]))
       expect(events).toEqual([key('tab')])
+    })
+
+    it('parses shift+tab (backtab CSI Z)', () => {
+      const events = parseInput(Buffer.from('\x1b[Z'))
+      expect(events).toEqual([key('tab', { shift: true })])
     })
 
     it('parses backspace', () => {
@@ -200,6 +220,38 @@ describe('parseInput', () => {
     it('parses F12', () => {
       const events = parseInput(Buffer.from('\x1b[24~'))
       expect(events).toEqual([key('f12')])
+    })
+  })
+
+  describe('modifier keys on special keys', () => {
+    it('parses shift+delete (CSI 3;2~)', () => {
+      const events = parseInput(Buffer.from('\x1b[3;2~'))
+      expect(events).toEqual([key('delete', { shift: true })])
+    })
+
+    it('parses ctrl+pageUp (CSI 5;5~)', () => {
+      const events = parseInput(Buffer.from('\x1b[5;5~'))
+      expect(events).toEqual([key('pageUp', { ctrl: true })])
+    })
+
+    it('parses ctrl+shift+end (CSI 1;6F)', () => {
+      const events = parseInput(Buffer.from('\x1b[1;6F'))
+      expect(events).toEqual([key('end', { ctrl: true, shift: true })])
+    })
+
+    it('parses shift+F1 (CSI 1;2P)', () => {
+      const events = parseInput(Buffer.from('\x1b[1;2P'))
+      expect(events).toEqual([key('f1', { shift: true })])
+    })
+
+    it('parses ctrl+F3 (CSI 1;5R)', () => {
+      const events = parseInput(Buffer.from('\x1b[1;5R'))
+      expect(events).toEqual([key('f3', { ctrl: true })])
+    })
+
+    it('parses alt+shift+F5 (CSI 15;4~)', () => {
+      const events = parseInput(Buffer.from('\x1b[15;4~'))
+      expect(events).toEqual([key('f5', { alt: true, shift: true })])
     })
   })
 

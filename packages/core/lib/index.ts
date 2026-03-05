@@ -1,5 +1,7 @@
 export type {Viewport} from './Viewport.js'
 export type * from './terminal.js'
+export {StringTerminal} from './StringTerminal.js'
+export {renderToAnsi} from './renderToAnsi.js'
 export * from './Color.js'
 export * from './components/index.js'
 export * from './geometry.js'

@@ -15,7 +15,13 @@ export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
   const ctrl = event.ctrl
   const meta = event.alt || event.meta
   const shift = event.shift
-  const char = event.key.length === 1 ? event.key : ''
+  // Named keys (return, backspace, escape, etc.) have length > 1 and are all ASCII.
+  // Single characters may have length > 1 due to surrogate pairs (emoji) or
+  // combining marks — detect them by checking if it's a single code point.
+  const isSingleCodePoint =
+    event.key.length > 0 &&
+    String.fromCodePoint(event.key.codePointAt(0)!).length === event.key.length
+  const char = event.key === 'space' ? ' ' : isSingleCodePoint ? event.key : ''
 
   // Build "full" string like blessed: "C-M-S-x"
   let full = ''

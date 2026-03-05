@@ -179,14 +179,32 @@ export function parseInput(data: Buffer): InputEvent[] {
             continue
           }
 
-          // Tilde sequences: number ~
+          // Tilde sequences: number ~ or number;modifier ~
           if (final === '~') {
-            const num = parseInt(params, 10)
+            const tildeParts = params.split(';')
+            const num = parseInt(tildeParts[0], 10)
             const name = tildeKeyMap[num]
             if (name) {
-              events.push(keyEvent(name))
+              const mods = tildeParts.length > 1
+                ? decodeMods(parseInt(tildeParts[1], 10))
+                : {}
+              events.push(keyEvent(name, mods))
               continue
             }
+          }
+
+          // Backtab (shift+tab): CSI Z
+          if (final === 'Z' && params === '') {
+            events.push(keyEvent('tab', { shift: true }))
+            continue
+          }
+
+          // Modified function keys: CSI 1;mod P/Q/R/S (Shift/Ctrl/Alt + F1-F4)
+          if (ssFunctionKeys[final] && params && params.includes(';')) {
+            const modParts = params.split(';')
+            const mod = parseInt(modParts[1], 10)
+            events.push(keyEvent(ssFunctionKeys[final], decodeMods(mod)))
+            continue
           }
 
           // Letter key (arrow, home, end) possibly with modifier
@@ -217,8 +235,10 @@ export function parseInput(data: Buffer): InputEvent[] {
 
       // Alt + char (ESC followed by printable)
       if (i + 1 < str.length && str.charCodeAt(i + 1) >= 0x20) {
-        events.push(keyEvent(str[i + 1], { alt: true }))
-        i += 2
+        const altCodePoint = str.codePointAt(i + 1)!
+        const altChar = String.fromCodePoint(altCodePoint)
+        events.push(keyEvent(altChar, { alt: true }))
+        i += 1 + altChar.length
         continue
       }
 
@@ -261,9 +281,11 @@ export function parseInput(data: Buffer): InputEvent[] {
       continue
     }
 
-    // Regular printable character
-    events.push(keyEvent(str[i]))
-    i++
+    // Regular printable character (may be multi-code-unit, e.g. emoji)
+    const codePoint = str.codePointAt(i)!
+    const char = String.fromCodePoint(codePoint)
+    events.push(keyEvent(char))
+    i += char.length
   }
 
   return events
