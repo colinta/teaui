@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@teaui/preact",
   "description": "Preact renderer for TeaUI",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
@@ -25,7 +26,7 @@
     "build": "pnpm clean && pnpm tsc"
   },
   "keywords": [
-    "react",
+    "preact",
     "curses",
     "tui",
     "terminal",
@@ -33,7 +34,7 @@
     "terminal-ui"
   ],
   "tags": [
-    "react",
+    "preact",
     "curses",
     "tui",
     "terminal"

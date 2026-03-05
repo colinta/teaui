@@ -1,2 +1,2 @@
-export * from './reconciler'
-export * from './components'
+export * from './reconciler.js'
+export * from './components.js'

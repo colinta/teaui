@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@teaui/cli",
   "description": "CLI for @teaui packages",
   "author": "Colin T.A. Gray <colinta@colinta.com>",

@@ -1,5 +1,5 @@
-import React from 'react'
-import {h, Fragment, render} from 'preact'
+import {h, render as preactRender, options} from 'preact'
+import type {ComponentChildren} from 'preact'
 import {
   Accordion as WrAccordion,
   Box as WrBox,
@@ -36,7 +36,7 @@ import {
   TextLiteral,
   TextProvider,
   TextStyle,
-} from './components/TextReact'
+} from './components/TextReact.js'
 import type {
   CheckboxProps,
   CollapsibleTextProps,
@@ -60,10 +60,10 @@ import type {
   DrawerProps,
   TabsProps,
   TabsSectionProps,
-} from './components'
+} from './components.js'
 
-declare module 'react' {
-  namespace preact.JSX {
+declare module 'preact' {
+  namespace JSX {
     interface IntrinsicElements {
       // views
       'tui-br': {}
@@ -107,127 +107,136 @@ declare module 'react' {
 }
 
 function createView(type: string, props: Props): any {
+  // Strip children/child from props before passing to constructors
+  const {children, child, ...viewProps} = props as any
+
   switch (type) {
     case 'text':
-      return new TextLiteral(String(props.text) ?? '')
+      return new TextLiteral(String(viewProps.text) ?? '')
     case 'br':
     case 'tui-br':
       return new TextLiteral('\n')
     case 'checkbox':
     case 'tui-checkbox':
-      return new WrCheckbox(props as any)
+      return new WrCheckbox(viewProps as any)
     case 'collapsible-text':
     case 'tui-collapsible-text':
-      return new WrCollapsibleText(props as any)
+      return new WrCollapsibleText(viewProps as any)
     case 'console':
     case 'tui-console':
-      return new WrConsoleLog(props as any)
+      return new WrConsoleLog(viewProps as any)
     case 'digits':
     case 'tui-digits':
-      return new WrDigits(props as any)
+      return new WrDigits(viewProps as any)
     case 'h1':
     case 'tui-h1':
-      return H1(((props as any).text as string) ?? '')
+      return H1(((viewProps as any).text as string) ?? '')
     case 'h2':
     case 'tui-h2':
-      return H2(((props as any).text as string) ?? '')
+      return H2(((viewProps as any).text as string) ?? '')
     case 'h3':
     case 'tui-h3':
-      return H3(((props as any).text as string) ?? '')
+      return H3(((viewProps as any).text as string) ?? '')
     case 'h4':
     case 'tui-h4':
-      return H4(((props as any).text as string) ?? '')
+      return H4(((viewProps as any).text as string) ?? '')
     case 'h5':
     case 'tui-h5':
-      return H5(((props as any).text as string) ?? '')
+      return H5(((viewProps as any).text as string) ?? '')
     case 'h6':
     case 'tui-h6':
-      return H6(((props as any).text as string) ?? '')
+      return H6(((viewProps as any).text as string) ?? '')
     case 'toggle-group':
     case 'tui-toggle-group':
-      return new WrToggleGroup(props as any)
+      return new WrToggleGroup(viewProps as any)
     case 'input':
     case 'tui-input':
-      return new WrInput(props as any)
+      return new WrInput(viewProps as any)
     case 'literal':
     case 'tui-literal':
-      return new TextLiteral(props.text ?? '')
+      return new TextLiteral(viewProps.text ?? '')
     case 'separator':
     case 'tui-separator':
-      return new WrSeparator(props as any)
+      return new WrSeparator(viewProps as any)
     case 'slider':
     case 'tui-slider':
-      return new WrSlider(props as any)
+      return new WrSlider(viewProps as any)
     case 'space':
     case 'tui-space':
-      return new WrSpace(props as any)
+      return new WrSpace(viewProps as any)
     // case 'Tree':
     //   return
     case 'box':
     case 'tui-box':
-      return new WrBox(props as any)
+      return new WrBox(viewProps as any)
     case 'button':
     case 'tui-button':
-      return new WrButton(props as any)
+      return new WrButton(viewProps as any)
     case 'collapsible':
     case 'tui-collapsible':
-      return new WrCollapsible(props as any)
+      return new WrCollapsible(viewProps as any)
     case 'scrollable':
     case 'tui-scrollable':
-      return new WrScrollable(props as any)
+      return new WrScrollable(viewProps as any)
     case 'stack':
     case 'tui-stack':
-      return new WrStack(props as any)
+      return new WrStack(viewProps as any)
     case 'style':
     case 'tui-style':
-      return new TextStyle(props as any)
+      return new TextStyle(viewProps as any)
     case 'tui-text':
-      return new TextProvider(props as any)
+      return new TextProvider(viewProps as any)
     case 'accordion':
     case 'tui-accordion':
-      return new WrAccordion(props as any)
+      return new WrAccordion(viewProps as any)
     case 'accordion-section':
     case 'tui-accordion-section':
-      return new WrAccordion.Section(props as any)
+      return new WrAccordion.Section(viewProps as any)
     case 'drawer':
     case 'tui-drawer':
-      return new WrDrawer(props as any)
+      return new WrDrawer(viewProps as any)
     case 'tabs':
     case 'tui-tabs':
-      return new WrTabs(props as any)
+      return new WrTabs(viewProps as any)
     case 'tabs-section':
     case 'tui-tabs-section':
-      return new WrTabs.Section(props as any)
-    case 'window':
+      return new WrTabs.Section(viewProps as any)
     case 'tui-window':
-      return new WrWindow(props)
+      return new WrWindow()
     default:
-      throw Error(`Unknown type ${type}`)
+      throw new Error(`Unknown type: ${type}`)
   }
 }
 
 type Props = Record<string, any>
+const defer: (fn: () => void) => void =
+  typeof Promise == 'function'
+    ? (fn: () => void) => Promise.resolve().then(fn)
+    : setTimeout
 
-interface Renderer<Node> {
-  create(type: string, props: Props): Node
-  insert(parent: Node, node: Node, before?: Node): void
-  update(node: Node, props: Props): void
-  remove(parent: Node, node: Node): void
+interface Renderer<T> {
+  create(type: string, props: Props): T
+  insert(parent: T, node: T, before?: T): void
+  remove(parent: T, node: T): void
+  update(node: T, props: Props): void
 }
 
-const defer = Promise.prototype.then.bind(Promise.resolve())
-
 function removeFromTextContainer(container: Container, child: View) {
-  // find TextContainer with child in it, and remove
-  for (const node of container.children) {
-    if (node instanceof TextContainer && node.children.includes(child)) {
-      node.removeChild(child)
-      if (node.children.length === 0) {
-        container.removeChild(node)
+  for (const viewChild of container.children) {
+    if (viewChild === child) {
+      container.removeChild(viewChild)
+      return true
+    } else if (viewChild instanceof TextContainer) {
+      const textChild = viewChild.children.find(
+        textChild => textChild === child,
+      )
+      if (textChild) {
+        viewChild.removeChild(textChild)
+        return true
       }
-      return
     }
   }
+  return false
 }
 
 function removeChild(container: Container, child: View) {
@@ -285,21 +294,21 @@ class RendererElement<T> {
   props: Props = {}
   prevProps?: Props
   node?: any
-  nodeType = ''
+  nodeType: number
 
   constructor(
     private renderer: Renderer<T>,
     public localName: string,
+    nodeType: number = 1,
   ) {
+    this.nodeType = nodeType
     this._commit = this._commit.bind(this)
   }
   set data(text: any) {
     this.setAttribute('text', String(text))
   }
-  addEventListener(event: any, func: any) {
-    this.setAttribute(`on${event}`, (...args: any[]) =>
-      (this as any).l[event + false](...args),
-    )
+  addEventListener(event: string, func: Function) {
+    this.setAttribute(`on${event}`, func)
   }
   setAttribute(name: string, value: any) {
     if (this.node && !this.prevProps) {
@@ -309,6 +318,10 @@ class RendererElement<T> {
     this.props[name] = value
   }
   removeAttribute(name: string) {
+    if (this.node && !this.prevProps) {
+      this.prevProps = Object.assign({}, this.props)
+      defer(this._commit)
+    }
     delete this.props[name]
   }
   _attach() {
@@ -366,15 +379,15 @@ class RendererElement<T> {
 
 function createRendererDom<T>(renderer: Renderer<T>) {
   function createElement(type: string) {
-    return new RendererElement(renderer, type)
+    return new RendererElement(renderer, type, 1)
   }
 
   function createElementNS(_: unknown, type: string) {
-    return new RendererElement(renderer, type)
+    return new RendererElement(renderer, type, 1)
   }
 
   function createTextNode(text: any) {
-    const node = createElement('text')
+    const node = new RendererElement(renderer, 'text', 3)
     node.props.text = String(text)
     return node
   }
@@ -384,6 +397,15 @@ function createRendererDom<T>(renderer: Renderer<T>) {
   }
 
   return {createElement, createElementNS, createTextNode, createRoot}
+}
+
+let _rerender: (() => void) | undefined
+
+// Hook into Preact's diffed option to trigger screen re-renders after commits
+const prevDiffed = options.diffed
+options.diffed = (vnode) => {
+  prevDiffed?.(vnode)
+  _rerender?.()
 }
 
 const dom = createRendererDom<View>({
@@ -403,26 +425,59 @@ const dom = createRendererDom<View>({
     removeChild(parent, node)
   },
   update(node, props) {
+    const {children, child, ...updateProps} = props as any
     if (node instanceof TextLiteral) {
-      node.update(props)
-      node.text = props.text ?? ''
+      node.text = updateProps.text ?? ''
     } else {
-      node.update(props)
+      node.update(updateProps)
     }
   },
 })
 
-Object.assign(global, {document: {}})
-Object.assign(document, dom)
+// Preact accesses `document` directly (not ownerDocument), so we must
+// provide a global document shim with our custom DOM factory methods.
+const fakeDocument = Object.create(null)
+Object.assign(fakeDocument, dom)
+;(globalThis as any).document = fakeDocument
+
+export function render(
+  screen: Screen,
+  window: WrWindow,
+  component: ComponentChildren,
+) {
+  _rerender = () => {
+    screen.render()
+  }
+
+  const root = dom.createRoot()
+  // Assign the fake document so Preact can use it as a DOM context
+  ;(root as any).ownerDocument = fakeDocument
+
+  preactRender(component, root as any)
+
+  // Reparent created views into the actual window
+  if (root.node instanceof WrWindow) {
+    for (const child of [...root.node.children]) {
+      root.node.removeChild(child)
+      window.add(child)
+    }
+  }
+
+  return function unmount() {
+    preactRender(null, root as any)
+    _rerender = undefined
+  }
+}
 
 export async function run(
-  component: React.ReactNode,
+  component: ComponentChildren,
   options?: Partial<ScreenOptions>,
-): Promise<[Screen, Window, React.ReactNode]> {
-  const root = dom.createRoot()
-
-  render(component, root as any)
-  const window = root.node
+): Promise<[Screen, WrWindow, ComponentChildren, () => void]> {
+  // Start the screen first, then render (matching React package behavior)
+  const window = new WrWindow()
   const [screen, _] = await Screen.start(window, options)
-  return [screen, window, component]
+
+  const unmount = render(screen, window, component)
+
+  return [screen, window, component, unmount]
 }

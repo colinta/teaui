@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm --filter @teaui/term --filter @teaui/core build && pnpm tsc",
-    "checksum": "pnpm check --needs=../../packages/core/.dist --needs=../../packages/term/dist . ../../packages/core/lib ../../packages/term/src 'pnpm build'",
+    "checksum": "pnpm check --needs=../../packages/core/.dist --needs=../../packages/term/.dist . ../../packages/core/lib ../../packages/term/src 'pnpm build'",
     "demo": "node run.mjs",
     "clean": "rm -rf .dist/"
   },

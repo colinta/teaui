@@ -138,6 +138,9 @@ importers:
 
   packages/term:
     devDependencies:
+      '@teaui/shared':
+        specifier: workspace:*
+        version: link:../../shared
       '@types/node':
         specifier: ^20.3.2
         version: 20.17.6

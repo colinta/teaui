@@ -1,2 +1,2 @@
-export * from './preact'
-export * from './components'
+export * from './preact.js'
+export * from './components.js'

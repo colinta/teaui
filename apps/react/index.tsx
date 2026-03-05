@@ -127,7 +127,7 @@ function Demo() {
                   ]}
                   selected={selected}
                   multiple
-                  onChange={(_, selected) => setSelected(selected)}
+                  onChange={(_: any, selected: any) => setSelected(selected)}
                 />
               </Stack.right>
             </Stack.down>

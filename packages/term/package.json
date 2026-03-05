@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "description": "Zero-dependency TypeScript terminal library for modern terminals",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./.dist/index.js",
+  "types": "./.dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./.dist/index.d.ts",
+      "import": "./.dist/index.js"
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf .dist && tsc",
+    "clean": "rm -rf .dist/",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
@@ -23,11 +24,12 @@
     "example:mouse": "npx tsx examples/mouse.ts"
   },
   "devDependencies": {
+    "@teaui/shared": "workspace:*",
     "@types/node": "^20.3.2",
     "tsx": "^4.21.0"
   },
   "files": [
-    "dist"
+    ".dist"
   ],
   "license": "MIT"
 }

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@teaui/react",
   "description": "React Reconciler and renderer for TeaUI",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
@@ -22,7 +23,9 @@
   "scripts": {
     "prepublishOnly": "pnpm clean && pnpm tsc",
     "clean": "rm -rf .dist/",
-    "build": "pnpm clean && pnpm tsc"
+    "build": "pnpm clean && pnpm tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "react",
@@ -49,8 +52,8 @@
     "@teaui/core": "workspace:*"
   },
   "devDependencies": {
+    "@teaui/shared": "workspace:*",
     "@types/react": "^18.2.39",
-    "@types/react-reconciler": "^0.28.8",
-    "@teaui/shared": "workspace:*"
+    "@types/react-reconciler": "^0.28.8"
   }
 }

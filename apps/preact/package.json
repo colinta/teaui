@@ -1,10 +1,11 @@
 {
   "name": "demos",
+  "type": "module",
   "main": ".dist/index.js",
   "license": "MIT",
   "scripts": {
     "build": "pnpm tsc",
-    "checksum": "pnpm check . 'pnpm build'",
+    "checksum": "pnpm check --needs=.dist --needs=../../packages/core/.dist --needs=../../packages/preact/.dist . ../../packages/core/lib ../../packages/preact/lib 'pnpm build'",
     "demo": "pnpm checksum && cd .dist && node --enable-source-maps --",
     "clean": "rm -rf .dist/"
   },

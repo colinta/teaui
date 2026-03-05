@@ -1,4 +1,5 @@
-import React from 'react'
+import {h} from 'preact'
+import type * as preact from 'preact'
 import {useMemo} from 'preact/hooks'
 import type {
   Accordion as WrAccordion,
@@ -25,7 +26,7 @@ import type {
   ToggleGroup as WrToggleGroup,
   ViewProps,
 } from '@teaui/core'
-import {TextProvider, TextStyle} from './components/TextReact'
+import {TextProvider, TextStyle} from './components/TextReact.js'
 
 type Children = 'children' | 'child'
 type TUIView<
@@ -38,7 +39,7 @@ type TUIContainer<
   ChildrenProps extends keyof NonNullable<
     ConstructorParameters<T>[0]
   > = Children,
-> = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: React.ReactNode}
+> = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: preact.ComponentChildren}
 
 export type CheckboxProps = TUIView<typeof WrCheckbox>
 export type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
@@ -73,7 +74,7 @@ export type DrawerProps = TUIContainer<
 export type TabsProps = TUIContainer<typeof WrTabs>
 export type TabsSectionProps = TUIContainer<typeof WrTabs.Section>
 
-declare module 'react' {
+declare module 'preact' {
   namespace JSX {
     interface IntrinsicElements {
       // views
@@ -211,9 +212,9 @@ export function ToggleGroup(reactProps: ToggleGroupProps): preact.JSX.Element {
 
 interface TreeProps<T> extends ViewProps {
   data: T[]
-  render: (datum: T) => React.ReactNode
+  render: (datum: T) => preact.ComponentChildren
   getChildren?: (datum: T) => T[] | undefined
-  title: React.ReactNode | string
+  title: preact.ComponentChildren | string
 }
 export function Tree<T>(reactProps: TreeProps<T>): preact.JSX.Element {
   const {title, ...props} = reactProps
@@ -374,18 +375,24 @@ Drawer.right = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
     </tui-drawer>
   )
 }
-Drawer.bottom = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, ...props} = reactProps
+Drawer.bottom = function DrawerBottom(
+  reactProps: Omit<DrawerProps, 'location'>,
+) {
+  const {children, content, drawer, ...props} = reactProps
   return (
     <tui-drawer location="bottom" {...props}>
+      {content}
+      {drawer}
       {children}
     </tui-drawer>
   )
 }
 Drawer.left = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, ...props} = reactProps
+  const {children, content, drawer, ...props} = reactProps
   return (
     <tui-drawer location="left" {...props}>
+      {content}
+      {drawer}
       {children}
     </tui-drawer>
   )

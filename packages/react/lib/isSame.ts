@@ -67,9 +67,9 @@ export function isSame(lhs: any, rhs: any, depth = 0): boolean {
 
   // ok, better be an object
   // and if it's a FiberNode, skip the _owner, it's too huge
-  if ('$$typeof' in lhs || '$$typeof in rhs') {
-    const {_owner: _lhsOwner, lhsTrim} = lhs
-    const {_owner: _rhsOwner, rhsTrim} = rhs
+  if ('$$typeof' in lhs || '$$typeof' in rhs) {
+    const {_owner: _lhsOwner, ...lhsTrim} = lhs
+    const {_owner: _rhsOwner, ...rhsTrim} = rhs
     return isSame(lhsTrim, rhsTrim, depth + 1)
   }
 
@@ -93,8 +93,6 @@ export function isSame(lhs: any, rhs: any, depth = 0): boolean {
     if (!Object.hasOwn(lhs, prop)) {
       return false
     }
-
-    return false
   }
 
   return true

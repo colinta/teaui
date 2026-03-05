@@ -1,6 +1,7 @@
 import React from 'react'
 import type {ReactNode} from 'react'
 import ReactReconciler from 'react-reconciler'
+import {DefaultEventPriority} from 'react-reconciler/constants.js'
 import {
   Accordion,
   Box,
@@ -36,9 +37,9 @@ import {
   TextLiteral,
   TextProvider,
   TextStyle,
-} from './components/TextReact'
+} from './components/TextReact.js'
 
-import {isSame} from './isSame'
+import {isSame} from './isSame.js'
 
 type Props = {}
 interface HostContext {
@@ -207,10 +208,8 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
   }
 
   const reconciler = ReactReconciler({
-    supportsMutation: true,
     supportsPersistence: false,
     supportsHydration: false,
-    noTimeout: undefined,
     isPrimaryRenderer: true,
 
     getRootHostContext(rootWindow: Window): HostContext {
@@ -362,23 +361,16 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       node.update(updates)
     },
 
-    getPublicInstance(_instance: unknown) {
-      throw new Error('Function not implemented.')
+    supportsMutation: true,
+    getPublicInstance(instance: View) {
+      return instance
     },
-    preparePortalMount(_containerInfo: unknown) {
-      throw new Error('Function not implemented.')
-    },
-    scheduleTimeout(
-      _fn: (...args: unknown[]) => unknown,
-      _delay?: number | undefined,
-    ) {
-      throw new Error('Function not implemented.')
-    },
-    cancelTimeout(_id: unknown) {
-      throw new Error('Function not implemented.')
-    },
-    getCurrentEventPriority(): number {
-      throw new Error('Function not implemented.')
+    preparePortalMount() {},
+    scheduleTimeout: setTimeout,
+    cancelTimeout: clearTimeout,
+    noTimeout: -1,
+    getCurrentEventPriority() {
+      return DefaultEventPriority
     },
     getInstanceFromNode(): ReactReconciler.Fiber | null | undefined {
       throw new Error('Function not implemented.')
@@ -414,16 +406,20 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     null /* parentComponent */,
     null /* callback */,
   )
+
+  return function unmount() {
+    reconciler.updateContainer(null, fiber, null, null)
+  }
 }
 
 export async function run(
   component: ReactNode,
   options?: Partial<ScreenOptions>,
-): Promise<[Screen, Window, React.ReactNode]> {
+): Promise<[Screen, Window, React.ReactNode, () => void]> {
   const window = new Window()
   const [screen, _] = await Screen.start(window, options)
 
-  render(screen, window, component)
+  const unmount = render(screen, window, component)
 
-  return [screen, window, component]
+  return [screen, window, component, unmount]
 }

@@ -24,7 +24,7 @@ import type {
   ToggleGroup as WrToggleGroup,
   ViewProps,
 } from '@teaui/core'
-import {TextProvider, TextStyle} from './components/TextReact'
+import {TextProvider, TextStyle} from './components/TextReact.js'
 
 type Children = 'children' | 'child'
 type TUIView<
@@ -369,18 +369,22 @@ Drawer.right = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
     </tui-drawer>
   )
 }
-Drawer.bottom = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, ...props} = reactProps
+Drawer.bottom = function DrawerBottom(reactProps: Omit<DrawerProps, 'location'>) {
+  const {children, content, drawer, ...props} = reactProps
   return (
     <tui-drawer location="bottom" {...props}>
+      {content}
+      {drawer}
       {children}
     </tui-drawer>
   )
 }
 Drawer.left = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, ...props} = reactProps
+  const {children, content, drawer, ...props} = reactProps
   return (
     <tui-drawer location="left" {...props}>
+      {content}
+      {drawer}
       {children}
     </tui-drawer>
   )
