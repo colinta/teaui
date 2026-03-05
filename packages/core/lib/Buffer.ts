@@ -27,6 +27,14 @@ export class Buffer implements Terminal {
   }
 
   /**
+   * Invalidates the diff cache so the next flush writes all cells.
+   * Used by test harnesses that reset the terminal between renders.
+   */
+  invalidate() {
+    this.#prev = new Map()
+  }
+
+  /**
    * Writes the string at the cursor from left to write. Exits on newline (no default
    * wrapping behavior).
    */
