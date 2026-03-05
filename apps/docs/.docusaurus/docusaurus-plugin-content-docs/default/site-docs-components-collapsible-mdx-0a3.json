@@ -1,0 +1,28 @@
+{
+  "id": "components/collapsible",
+  "title": "Collapsible",
+  "description": "Toggleable container that shows either a collapsed or expanded view. When showCollapsed is true, both views are shown when expanded.",
+  "source": "@site/docs/components/collapsible.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/collapsible",
+  "permalink": "/teaui/docs/components/collapsible",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/collapsible.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "Collapsible"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Accordion",
+    "permalink": "/teaui/docs/components/accordion"
+  },
+  "next": {
+    "title": "CollapsibleText",
+    "permalink": "/teaui/docs/components/collapsible-text"
+  }
+}

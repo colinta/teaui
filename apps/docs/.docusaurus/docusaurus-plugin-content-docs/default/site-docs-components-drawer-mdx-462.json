@@ -1,0 +1,28 @@
+{
+  "id": "components/drawer",
+  "title": "Drawer",
+  "description": "A slide-out panel from any edge (left, right, top, bottom). Contains a drawer view and a content view.",
+  "source": "@site/docs/components/drawer.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/drawer",
+  "permalink": "/teaui/docs/components/drawer",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/drawer.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Drawer"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "CollapsibleText",
+    "permalink": "/teaui/docs/components/collapsible-text"
+  },
+  "next": {
+    "title": "Tabs",
+    "permalink": "/teaui/docs/components/tabs"
+  }
+}

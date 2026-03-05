@@ -1,0 +1,28 @@
+{
+  "id": "components/box",
+  "title": "Box",
+  "description": "A styled container with optional border, padding, and background color. The fundamental layout building block.",
+  "source": "@site/docs/components/box.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/box",
+  "permalink": "/teaui/docs/components/box",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/box.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Box"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Getting Started",
+    "permalink": "/teaui/docs/getting-started"
+  },
+  "next": {
+    "title": "Stack",
+    "permalink": "/teaui/docs/components/stack"
+  }
+}

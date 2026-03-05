@@ -1,0 +1,110 @@
+---
+sidebar_position: 2
+title: Getting Started
+---
+
+# Getting Started
+
+Build fullscreen terminal applications with React JSX.
+
+## Installation
+
+```bash
+pnpm install @teaui/core @teaui/react react @types/react
+```
+
+Or with npm / yarn:
+
+```bash
+npm install @teaui/core @teaui/react react @types/react
+# yarn add @teaui/core @teaui/react react @types/react
+```
+
+## TypeScript Configuration
+
+Create a `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": ".dist"
+  },
+  "include": ["./"],
+  "exclude": [".dist/"]
+}
+```
+
+## Hello World
+
+Create `index.tsx`:
+
+```tsx
+import React from 'react'
+import {interceptConsoleLog} from '@teaui/core'
+import {Box, Button, Stack, Text, run} from '@teaui/react'
+
+// Redirect console.log away from the TUI — logs flush on exit
+interceptConsoleLog()
+
+function App() {
+  return (
+    <Box border="single">
+      <Stack.down>
+        <Text>Hello, TeaUI!</Text>
+        <Button>[ OK ]</Button>
+      </Stack.down>
+    </Box>
+  )
+}
+
+run(<App />)
+```
+
+Run it:
+
+```bash
+npx tsx index.tsx
+```
+
+Press **Ctrl-C** to exit.
+
+## How it Works
+
+TeaUI renders your component tree into a fullscreen terminal buffer. The `run()` function:
+
+1. Initializes the terminal in raw mode (full-screen, mouse events, etc.)
+2. Creates a React reconciler that maps JSX elements to TeaUI `View` objects
+3. Renders the view tree into a `Buffer`, which is flushed to the terminal
+4. Handles keyboard, mouse, and resize events
+5. On Ctrl-C, restores the terminal and flushes any captured `console.log` output
+
+## Key Concepts
+
+### Layout
+
+Components receive a size constraint from their parent and report their **natural size**. Layout flows top-down: `Stack` arranges children vertically or horizontally, `Box` adds padding and borders, `Space` fills available space.
+
+### Focus & Input
+
+Interactive components (`Button`, `Input`, `Checkbox`, etc.) participate in focus management. Press **Tab** to cycle focus. The focused component receives keyboard events.
+
+### Styling
+
+Colors, borders, and text styles are configured via props. See the [Themes](/docs/themes) page for the full style system.
+
+## Other APIs
+
+TeaUI supports three rendering APIs:
+
+- **React** (recommended) — JSX components via `@teaui/react`
+- **Preact** — lighter alternative via `@teaui/preact` — see [Preact](/docs/preact)
+- **Core OOP** — direct `View` instantiation via `@teaui/core` — see [Core API](/docs/core-api)

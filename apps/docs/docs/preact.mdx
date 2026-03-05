@@ -1,0 +1,46 @@
+---
+sidebar_position: 11
+title: Preact
+---
+
+# Preact Adapter
+
+TeaUI includes a Preact adapter as an alternative to React. Same component API, smaller runtime.
+
+## Installation
+
+```bash
+pnpm install @teaui/core @teaui/preact preact
+```
+
+## Usage
+
+```tsx
+import {h} from 'preact'
+import {useState} from 'preact/hooks'
+import {Box, Button, Stack, Text, run} from '@teaui/preact'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <Box border="single">
+      <Stack.down>
+        <Text>Count: {count}</Text>
+        <Button onClick={() => setCount(c => c + 1)}>Increment</Button>
+      </Stack.down>
+    </Box>
+  )
+}
+
+run(<App />)
+```
+
+## Differences from React
+
+- Import from `@teaui/preact` instead of `@teaui/react`
+- Uses Preact's hooks (`preact/hooks`) instead of React hooks
+- Smaller bundle size
+- Same component props and behavior
+
+All component documentation in this site applies equally to the Preact adapter — just swap the import.

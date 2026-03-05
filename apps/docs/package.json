@@ -1,0 +1,30 @@
+{
+  "name": "@teaui/docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "screenshots": "tsx scripts/build-screenshots.ts",
+    "prebuild": "pnpm screenshots",
+    "build": "docusaurus build",
+    "start": "pnpm screenshots && docusaurus start",
+    "serve": "docusaurus serve",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "swizzle": "docusaurus swizzle"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.7.0",
+    "@docusaurus/preset-classic": "^3.7.0",
+    "@teaui/core": "workspace:*",
+    "ansi-to-html": "^0.7.2",
+    "clsx": "^2.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.7.0",
+    "@docusaurus/types": "^3.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.3"
+  }
+}

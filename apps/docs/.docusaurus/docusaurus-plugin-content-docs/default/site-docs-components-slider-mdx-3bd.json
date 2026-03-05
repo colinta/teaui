@@ -1,0 +1,28 @@
+{
+  "id": "components/slider",
+  "title": "Slider",
+  "description": "A draggable range slider. Supports horizontal and vertical orientation with configurable min/max/step.",
+  "source": "@site/docs/components/slider.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/slider",
+  "permalink": "/teaui/docs/components/slider",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/slider.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Slider"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Input",
+    "permalink": "/teaui/docs/components/input"
+  },
+  "next": {
+    "title": "Dropdown",
+    "permalink": "/teaui/docs/components/dropdown"
+  }
+}

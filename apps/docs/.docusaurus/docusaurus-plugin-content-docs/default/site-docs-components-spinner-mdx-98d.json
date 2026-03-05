@@ -1,0 +1,28 @@
+{
+  "id": "components/spinner",
+  "title": "Spinner",
+  "description": "An animated loading spinner. Animates when isAnimating is true.",
+  "source": "@site/docs/components/spinner.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/spinner",
+  "permalink": "/teaui/docs/components/spinner",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/spinner.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "title": "Spinner"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Progress",
+    "permalink": "/teaui/docs/components/progress"
+  },
+  "next": {
+    "title": "Log",
+    "permalink": "/teaui/docs/components/log"
+  }
+}

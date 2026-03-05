@@ -1,0 +1,99 @@
+---
+sidebar_position: 12
+title: Themes
+---
+
+# Themes & Styling
+
+TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout.
+
+## Style Object
+
+```ts
+import {Style} from '@teaui/core'
+
+new Style({
+  foreground: 'cyan',
+  background: 'black',
+  bold: true,
+  underline: true,
+})
+```
+
+### Style Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `foreground` | `Color` | Text color |
+| `background` | `Color` | Background color |
+| `bold` | `boolean` | Bold text |
+| `dim` | `boolean` | Dimmed text (mutually exclusive with bold) |
+| `italic` | `boolean` | Italic text |
+| `underline` | `boolean` | Underlined text |
+| `inverse` | `boolean` | Swap foreground/background |
+| `strikeout` | `boolean` | Strikethrough text |
+
+## Colors
+
+TeaUI supports multiple color formats:
+
+### Named Colors (16)
+
+`'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'white'`, `'gray'`, `'grey'`
+
+Bright variants: `'brightRed'`, `'brightGreen'`, `'brightYellow'`, `'brightBlue'`, `'brightMagenta'`, `'brightCyan'`, `'brightWhite'`
+
+### 256-Color Palette
+
+Use a number `0–255` for the extended terminal color palette:
+
+```ts
+new Style({foreground: 196})  // bright red
+new Style({background: 236})  // dark gray
+```
+
+### RGB Colors
+
+Use an `[r, g, b]` tuple for 24-bit true color:
+
+```ts
+new Style({foreground: [255, 128, 0]})  // orange
+new Style({background: [30, 30, 30]})   // dark background
+```
+
+## Borders
+
+Box-drawing border styles:
+
+| Style | Characters |
+|-------|-----------|
+| `'single'` | ┌─┐│└─┘ |
+| `'bold'` | ┏━┓┃┗━┛ |
+| `'double'` | ╔═╗║╚═╝ |
+| `'rounded'` | ╭─╮│╰─╯ |
+| `'dotted'` | ┌┈┐┊└┈┘ |
+| `'popout'` | ▛▀▜▌▙▄▟ |
+
+Custom borders via `BorderChars` tuple:
+
+```ts
+<Box border={['─', '│', '┌', '┐', '└', '┘']} />
+```
+
+## Using Styles in React
+
+Apply styles via the `style` prop on `Text`:
+
+```tsx
+import React from 'react'
+import {Style} from '@teaui/core'
+import {Text, run} from '@teaui/react'
+
+const highlight = new Style({foreground: 'yellow', bold: true})
+
+function App() {
+  return <Text style={highlight}>Important!</Text>
+}
+
+run(<App />)
+```

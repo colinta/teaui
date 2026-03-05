@@ -1,0 +1,45 @@
+---
+sidebar_position: 5
+title: Spinner
+---
+
+# Spinner
+
+An animated loading spinner. Animates when `isAnimating` is true.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Stack, Spinner, Text, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Stack.right gap={1}>
+      <Spinner isAnimating />
+      <Text>Loading...</Text>
+    </Stack.right>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `isAnimating` | `boolean` | `false` | Start/stop animation |
+
+The spinner is 1×1 cell and cycles through braille animation frames.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Spinner} from '@teaui/core'
+
+new Spinner({isAnimating: true})
+```
+
+</details>

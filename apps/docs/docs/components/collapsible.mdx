@@ -1,0 +1,58 @@
+---
+sidebar_position: 2
+title: Collapsible
+---
+
+# Collapsible
+
+Toggleable container that shows either a collapsed or expanded view. When `showCollapsed` is true, both views are shown when expanded.
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {Collapsible, Text, Button, run} from '@teaui/react'
+
+function App() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Collapsible
+      isCollapsed={!open}
+      collapsed={<Button onClick={() => setOpen(true)}>Show more</Button>}
+      expanded={
+        <>
+          <Text>Full content here...</Text>
+          <Button onClick={() => setOpen(false)}>Show less</Button>
+        </>
+      }
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `isCollapsed` | `boolean` | `true` | Collapsed state |
+| `showCollapsed` | `boolean` | `false` | Show collapsed view even when expanded |
+| `collapsed` | `ReactNode` | — | View when collapsed |
+| `expanded` | `ReactNode` | — | View when expanded |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Collapsible, Text, Button} from '@teaui/core'
+
+new Collapsible({
+  isCollapsed: true,
+  collapsed: new Button({title: 'Show more'}),
+  expanded: new Text({text: 'Full content'}),
+})
+```
+
+</details>

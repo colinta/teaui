@@ -1,0 +1,28 @@
+{
+  "id": "components/progress",
+  "title": "Progress",
+  "description": "A progress bar. Horizontal or vertical, with optional percentage display.",
+  "source": "@site/docs/components/progress.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/progress",
+  "permalink": "/teaui/docs/components/progress",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/progress.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Progress"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Digits",
+    "permalink": "/teaui/docs/components/digits"
+  },
+  "next": {
+    "title": "Spinner",
+    "permalink": "/teaui/docs/components/spinner"
+  }
+}

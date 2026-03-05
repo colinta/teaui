@@ -1,0 +1,56 @@
+---
+sidebar_position: 6
+title: ScrollableList
+---
+
+# ScrollableList
+
+Virtualized scrollable list. Only renders visible rows, making it efficient for large datasets.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {ScrollableList, Text, run} from '@teaui/react'
+
+const items = Array.from({length: 1000}, (_, i) => `Item ${i + 1}`)
+
+function App() {
+  return (
+    <ScrollableList
+      height={15}
+      items={items}
+      cellForItem={(item) => new Text({text: item})}
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `T[]` | — | Data array |
+| `cellForItem` | `(item: T, row: number) => View` | — | View factory for each item |
+| `showScrollbars` | `boolean` | `true` | Show/hide scrollbars |
+| `scrollHeight` | `number` | `1` | Rows per mouse wheel tick |
+| `keepAtBottom` | `boolean` | `false` | Auto-scroll to bottom (useful for logs) |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {ScrollableList, Text} from '@teaui/core'
+
+const items = Array.from({length: 1000}, (_, i) => `Item ${i + 1}`)
+
+new ScrollableList({
+  height: 15,
+  items,
+  cellForItem: (item) => new Text({text: item}),
+})
+```
+
+</details>

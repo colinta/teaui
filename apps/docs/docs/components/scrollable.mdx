@@ -1,0 +1,56 @@
+---
+sidebar_position: 5
+title: Scrollable
+---
+
+# Scrollable
+
+Wraps a single child view in a scrollable container with optional scrollbars. Supports mouse wheel and keyboard scrolling.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Scrollable, Stack, Text, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Scrollable height={10}>
+      <Stack.down>
+        {Array.from({length: 50}, (_, i) => (
+          <Text key={i}>Line {i + 1}</Text>
+        ))}
+      </Stack.down>
+    </Scrollable>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `showScrollbars` | `boolean` | `true` | Show/hide scrollbars |
+| `scrollHeight` | `number` | `1` | Rows to scroll per mouse wheel tick |
+| `scrollWidth` | `number` | `2` | Columns to scroll per mouse wheel tick |
+| `children` | `ReactNode` | — | Single child to scroll |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Scrollable, Stack, Text} from '@teaui/core'
+
+const content = Stack.down(
+  Array.from({length: 50}, (_, i) => new Text({text: `Line ${i + 1}`}))
+)
+
+new Scrollable({
+  height: 10,
+  children: [content],
+})
+```
+
+</details>

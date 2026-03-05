@@ -1,0 +1,7 @@
+{
+  "extends": "@docusaurus/module-type-aliases",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-jsx"
+  }
+}

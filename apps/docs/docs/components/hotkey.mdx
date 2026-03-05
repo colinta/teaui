@@ -1,0 +1,59 @@
+---
+sidebar_position: 7
+title: HotKey
+---
+
+# HotKey
+
+Registers a global keyboard shortcut. Wraps child content and triggers when the hot key is pressed.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {HotKey, Text, Stack, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Stack.down>
+      <HotKey hotKey={{char: 'q', ctrl: true}}>
+        <Text>Press Ctrl+Q to activate</Text>
+      </HotKey>
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `hotKey` | `HotKey` | — | Key combination to listen for |
+| `children` | `ReactNode` | — | Content (receives focus when triggered) |
+
+### HotKey type
+
+```ts
+type HotKey = {
+  char: string    // The key character
+  ctrl?: boolean  // Require Ctrl modifier
+  meta?: boolean  // Require Meta/Alt modifier
+  shift?: boolean // Require Shift modifier
+}
+```
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {HotKey, Text} from '@teaui/core'
+
+new HotKey({
+  hotKey: {char: 'q', ctrl: true},
+  children: [new Text({text: 'Ctrl+Q'})],
+})
+```
+
+</details>

@@ -1,0 +1,54 @@
+---
+sidebar_position: 2
+title: Header
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Header
+
+Large text header with border decoration. Available as `H1` through `H6` in React.
+
+<TerminalScreenshot name="header" title="Header" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Stack, H1, H2, Text, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Stack.down>
+      <H1>Main Title</H1>
+      <H2>Subtitle</H2>
+      <Text>Body text goes here.</Text>
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `text` | `string` | — | Header text |
+| `border` | `'single' \| 'bold' \| 'double'` | `'single'` | Border style |
+| `font` | `FontFamily` | — | Text font |
+| `bold` | `boolean` | — | Bold text |
+| `dim` | `boolean` | — | Dimmed text |
+
+React shorthand: `<H1>` = `border="double"`, `<H2>` = `border="bold"`, `<H3>`–`<H6>` = `border="single"` with decreasing prominence.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Header} from '@teaui/core'
+
+new Header({text: 'Main Title', border: 'double'})
+```
+
+</details>

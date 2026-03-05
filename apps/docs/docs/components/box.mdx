@@ -1,0 +1,53 @@
+---
+sidebar_position: 1
+title: Box
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Box
+
+A styled container with optional border, padding, and background color. The fundamental layout building block.
+
+<TerminalScreenshot name="box" title="Box" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Box, Text, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Box border="single">
+      <Text>Hello from a box!</Text>
+    </Box>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `border` | `'none' \| 'single' \| 'bold' \| 'double' \| 'rounded' \| 'dotted' \| 'popout' \| BorderChars` | `'none'` | Border style |
+| `highlight` | `boolean` | `false` | Highlighted border appearance |
+| `children` | `ReactNode` | — | Child content |
+
+Inherits all View props (`width`, `height`, `flex`, etc.)
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Box, Text} from '@teaui/core'
+
+const box = new Box({
+  border: 'single',
+  children: [new Text({text: 'Hello from a box!'})],
+})
+```
+
+</details>

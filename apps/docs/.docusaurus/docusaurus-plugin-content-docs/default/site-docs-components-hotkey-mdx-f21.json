@@ -1,0 +1,28 @@
+{
+  "id": "components/hotkey",
+  "title": "HotKey",
+  "description": "Registers a global keyboard shortcut. Wraps child content and triggers when the hot key is pressed.",
+  "source": "@site/docs/components/hotkey.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/hotkey",
+  "permalink": "/teaui/docs/components/hotkey",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/hotkey.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "sidebar_position": 7,
+    "title": "HotKey"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Tree",
+    "permalink": "/teaui/docs/components/tree"
+  },
+  "next": {
+    "title": "Core API",
+    "permalink": "/teaui/docs/core-api"
+  }
+}

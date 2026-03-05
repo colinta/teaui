@@ -1,0 +1,59 @@
+---
+sidebar_position: 6
+title: ToggleGroup
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# ToggleGroup
+
+A group of toggle buttons. Supports single or multiple selection, horizontal or vertical layout.
+
+<TerminalScreenshot name="toggle-group" title="ToggleGroup" />
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {ToggleGroup, run} from '@teaui/react'
+
+function App() {
+  const [selected, setSelected] = useState([0])
+
+  return (
+    <ToggleGroup
+      titles={['Small', 'Medium', 'Large']}
+      selected={selected}
+      onChange={(idx, sel) => setSelected(sel)}
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `titles` | `string[]` | — | Button labels |
+| `selected` | `number[]` | — | Selected indices |
+| `onChange` | `(changed: number, selected: number[]) => void` | — | Selection change callback |
+| `multiple` | `boolean` | `false` | Allow multiple selection |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `padding` | `number` | `1` | Padding between buttons |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {ToggleGroup} from '@teaui/core'
+
+new ToggleGroup({
+  titles: ['Small', 'Medium', 'Large'],
+  selected: [0],
+  onChange: (idx, sel) => console.log(sel),
+})
+```
+
+</details>

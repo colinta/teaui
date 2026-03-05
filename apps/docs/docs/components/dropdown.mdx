@@ -1,0 +1,60 @@
+---
+sidebar_position: 5
+title: Dropdown
+---
+
+# Dropdown
+
+A dropdown selector that opens a modal picker. Supports single and multiple selection.
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {Dropdown, run} from '@teaui/react'
+
+function App() {
+  const [color, setColor] = useState('red')
+
+  return (
+    <Dropdown
+      title="Color"
+      choices={[
+        ['Red', 'red'],
+        ['Green', 'green'],
+        ['Blue', 'blue'],
+      ]}
+      selected={color}
+      onSelect={setColor}
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | — | Dropdown label |
+| `choices` | `[string, T][]` | — | Array of [label, value] pairs |
+| `selected` | `T \| T[]` | — | Currently selected value(s) |
+| `onSelect` | `(value: T) => void` | — | Selection callback |
+| `multiple` | `boolean` | `false` | Allow multiple selection |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Dropdown} from '@teaui/core'
+
+new Dropdown({
+  title: 'Color',
+  choices: [['Red', 'red'], ['Green', 'green'], ['Blue', 'blue']],
+  selected: 'red',
+  onSelect: (val) => console.log(val),
+})
+```
+
+</details>

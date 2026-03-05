@@ -1,0 +1,28 @@
+{
+  "id": "components/scrollable-list",
+  "title": "ScrollableList",
+  "description": "Virtualized scrollable list. Only renders visible rows, making it efficient for large datasets.",
+  "source": "@site/docs/components/scrollable-list.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/scrollable-list",
+  "permalink": "/teaui/docs/components/scrollable-list",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/scrollable-list.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6,
+    "title": "ScrollableList"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Scrollable",
+    "permalink": "/teaui/docs/components/scrollable"
+  },
+  "next": {
+    "title": "Window",
+    "permalink": "/teaui/docs/components/window"
+  }
+}

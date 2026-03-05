@@ -1,0 +1,166 @@
+.landing {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Hero */
+.hero-section {
+  text-align: center;
+  padding: 2rem 0 3rem;
+}
+
+.hero-ascii {
+  color: #f0dfaf;
+  font-size: 11px;
+  line-height: 1.2;
+  margin: 0 auto 1.5rem;
+  display: inline-block;
+  text-align: left;
+  background: none !important;
+  border: none !important;
+}
+
+.hero-tagline {
+  color: #8cd0d3;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  color: #f0dfaf !important;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #808080;
+  background: #303030;
+  text-decoration: none !important;
+  transition: all 0.1s;
+}
+
+.hero-btn:hover {
+  color: #303030 !important;
+  background: #f0dfaf !important;
+}
+
+.hero-btn--secondary {
+  color: #dedede !important;
+}
+
+.hero-btn--secondary:hover {
+  color: #303030 !important;
+  background: #dedede !important;
+}
+
+/* Demo: code + screenshot */
+.demo-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .demo-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.demo-code,
+.demo-preview {
+  min-width: 0;
+}
+
+.demo-label {
+  color: #9f9f9f;
+  font-size: 13px;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.demo-code pre {
+  font-size: 12.5px !important;
+  line-height: 1.35 !important;
+  padding: 0.75rem !important;
+}
+
+/* Install */
+.install-section {
+  margin: 3rem 0;
+  text-align: center;
+}
+
+.install-box {
+  display: inline-block;
+  text-align: left;
+}
+
+.install-label {
+  color: #9f9f9f;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.install-box pre {
+  padding: 0.75rem 1.5rem !important;
+  font-size: 14px;
+}
+
+/* Features */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 2rem 0 3rem;
+}
+
+@media (max-width: 600px) {
+  .features-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+}
+
+.feature-border-top,
+.feature-border-bot {
+  color: #808080;
+  white-space: pre;
+  line-height: 1.2;
+}
+
+.feature-content {
+  padding: 0.5rem 0.75rem;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #808080;
+}
+
+.feature-icon {
+  color: #f0dfaf;
+  margin-right: 0.5rem;
+}
+
+.feature-title {
+  color: #f0dfaf;
+  font-weight: 700;
+  display: inline;
+}
+
+.feature-desc {
+  color: #808080;
+  margin-top: 0.25rem;
+  font-size: 12px;
+}

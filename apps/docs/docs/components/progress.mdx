@@ -1,0 +1,53 @@
+---
+sidebar_position: 4
+title: Progress
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Progress
+
+A progress bar. Horizontal or vertical, with optional percentage display.
+
+<TerminalScreenshot name="progress" title="Progress" />
+
+## React Example
+
+```tsx
+import React, {useState, useEffect} from 'react'
+import {Progress, run} from '@teaui/react'
+
+function App() {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    const id = setInterval(() => setValue(v => Math.min(v + 5, 100)), 200)
+    return () => clearInterval(id)
+  }, [])
+
+  return <Progress value={value} max={100} showPercent />
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Bar direction |
+| `min` | `number` | `0` | Minimum value |
+| `max` | `number` | `100` | Maximum value |
+| `value` | `number` | `0` | Current value |
+| `showPercent` | `boolean` | `false` | Show percentage text |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Progress} from '@teaui/core'
+
+new Progress({value: 65, max: 100, showPercent: true})
+```
+
+</details>

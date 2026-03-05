@@ -1,0 +1,66 @@
+---
+sidebar_position: 4
+title: Slider
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Slider
+
+A draggable range slider. Supports horizontal and vertical orientation with configurable min/max/step.
+
+<TerminalScreenshot name="slider" title="Slider" />
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {Stack, Slider, Text, run} from '@teaui/react'
+
+function App() {
+  const [volume, setVolume] = useState(50)
+
+  return (
+    <Stack.down>
+      <Text>Volume: {volume}%</Text>
+      <Slider
+        direction="horizontal"
+        min={0}
+        max={100}
+        value={volume}
+        onChange={setVolume}
+      />
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slider direction |
+| `min` | `number` | `0` | Minimum value |
+| `max` | `number` | `100` | Maximum value |
+| `value` | `number` | `0` | Current value |
+| `step` | `number` | `1` | Step increment |
+| `onChange` | `(value: number) => void` | — | Value change callback |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Slider} from '@teaui/core'
+
+new Slider({
+  direction: 'horizontal',
+  min: 0,
+  max: 100,
+  value: 50,
+  onChange: (val) => console.log('volume:', val),
+})
+```
+
+</details>

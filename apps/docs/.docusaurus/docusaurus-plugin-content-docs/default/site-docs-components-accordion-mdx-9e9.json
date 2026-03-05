@@ -1,0 +1,28 @@
+{
+  "id": "components/accordion",
+  "title": "Accordion",
+  "description": "Expandable/collapsible sections. Click or press Enter to toggle. Supports single or multiple open sections.",
+  "source": "@site/docs/components/accordion.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/accordion",
+  "permalink": "/teaui/docs/components/accordion",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/accordion.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Accordion"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Log",
+    "permalink": "/teaui/docs/components/log"
+  },
+  "next": {
+    "title": "Collapsible",
+    "permalink": "/teaui/docs/components/collapsible"
+  }
+}

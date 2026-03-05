@@ -1,0 +1,47 @@
+---
+sidebar_position: 3
+title: Digits
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Digits
+
+Large block-character digits and letters. Renders text in a big figlet-style font using Unicode block characters.
+
+<TerminalScreenshot name="digits" title="Digits" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Digits, run} from '@teaui/react'
+
+function App() {
+  return <Digits text="42" />
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `text` | `string \| number` | — | Text to render in big digits |
+| `style` | `Style` | — | Text style |
+| `bold` | `boolean` | — | Bold rendering |
+
+Supports: A–Z, 0–9, and various punctuation.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Digits} from '@teaui/core'
+
+new Digits({text: '42'})
+new Digits({text: 'HELLO', bold: true})
+```
+
+</details>

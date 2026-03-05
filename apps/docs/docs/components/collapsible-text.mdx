@@ -1,0 +1,45 @@
+---
+sidebar_position: 3
+title: CollapsibleText
+---
+
+# CollapsibleText
+
+A text block that truncates to a single line when collapsed. Click to expand and show the full text.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {CollapsibleText, run} from '@teaui/react'
+
+function App() {
+  return (
+    <CollapsibleText
+      text="This is a very long piece of text that would normally take up multiple lines, but when collapsed it shows just one line with a truncation indicator."
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `text` | `string` | — | Text content |
+| `style` | `Style` | — | Text style |
+
+Click to toggle between collapsed (1 line) and expanded (full text).
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {CollapsibleText} from '@teaui/core'
+
+new CollapsibleText({text: 'Long text content...'})
+```
+
+</details>

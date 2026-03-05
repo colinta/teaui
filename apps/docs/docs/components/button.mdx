@@ -1,0 +1,54 @@
+---
+sidebar_position: 1
+title: Button
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Button
+
+A clickable button with keyboard and mouse support. Responds to Enter when focused, or a configured hot key.
+
+<TerminalScreenshot name="button" title="Button" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Button, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Button onClick={() => console.log('clicked!')}>
+      Click Me
+    </Button>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | — | Button label (alt: use children) |
+| `onClick` | `() => void` | — | Click handler |
+| `align` | `'left' \| 'center' \| 'right'` | `'center'` | Text alignment |
+| `border` | `'default' \| 'none'` | `'default'` | Border style (brackets) |
+| `hotKey` | `HotKey` | — | Keyboard shortcut |
+| `children` | `ReactNode` | — | Child content |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Button} from '@teaui/core'
+
+new Button({
+  title: 'Click Me',
+  onClick: () => console.log('clicked!'),
+})
+```
+
+</details>

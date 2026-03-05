@@ -1,0 +1,28 @@
+{
+  "id": "components/button",
+  "title": "Button",
+  "description": "A clickable button with keyboard and mouse support. Responds to Enter when focused, or a configured hot key.",
+  "source": "@site/docs/components/button.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/button",
+  "permalink": "/teaui/docs/components/button",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/button.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Button"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Window",
+    "permalink": "/teaui/docs/components/window"
+  },
+  "next": {
+    "title": "Checkbox",
+    "permalink": "/teaui/docs/components/checkbox"
+  }
+}

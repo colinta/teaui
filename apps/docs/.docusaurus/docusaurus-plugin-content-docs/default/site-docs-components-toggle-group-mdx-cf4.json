@@ -1,0 +1,28 @@
+{
+  "id": "components/toggle-group",
+  "title": "ToggleGroup",
+  "description": "A group of toggle buttons. Supports single or multiple selection, horizontal or vertical layout.",
+  "source": "@site/docs/components/toggle-group.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/toggle-group",
+  "permalink": "/teaui/docs/components/toggle-group",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/toggle-group.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6,
+    "title": "ToggleGroup"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Dropdown",
+    "permalink": "/teaui/docs/components/dropdown"
+  },
+  "next": {
+    "title": "Text",
+    "permalink": "/teaui/docs/components/text"
+  }
+}

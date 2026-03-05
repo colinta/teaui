@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+
+:root,
+[data-theme='dark'] {
+  /* Zenburn palette (from colinta/zenburn) */
+  --ifm-background-color: #393939;
+  --ifm-background-surface-color: #393939;
+  --ifm-font-color-base: #dedede;
+  --ifm-font-color-secondary: #808080;
+
+  --ifm-color-primary: #f0dfaf;
+  --ifm-color-primary-dark: #e8d290;
+  --ifm-color-primary-darker: #e4cc80;
+  --ifm-color-primary-darkest: #d8ba53;
+  --ifm-color-primary-light: #f8ecce;
+  --ifm-color-primary-lighter: #fcf2de;
+  --ifm-color-primary-lightest: #fffcf3;
+
+  --ifm-link-color: #8cd0d3;
+  --ifm-link-hover-color: #93e0e3;
+
+  --ifm-navbar-background-color: #393939;
+  --ifm-footer-background-color: #303030;
+
+  --ifm-code-background: #3d3535;
+  --ifm-code-font-size: 90%;
+
+  --ifm-heading-color: #f0dfaf;
+
+  /* Fira Code everywhere */
+  --ifm-font-family-base: 'Fira Code', monospace;
+  --ifm-font-family-monospace: 'Fira Code', monospace;
+  --ifm-font-size-base: 15px;
+}
+
+/* Force monospace on all elements */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+a,
+span,
+div {
+  font-family: 'Fira Code', monospace !important;
+}
+
+/* Navbar - DOS menu bar feel */
+.navbar {
+  border-bottom: 1px solid #808080;
+  box-shadow: none;
+}
+
+.navbar__title {
+  color: #f0dfaf !important;
+  font-weight: 700;
+}
+
+/* Navbar items — unified padding and hover */
+.navbar__brand,
+.navbar__link {
+  padding: 0.25rem 0.75rem;
+  color: #dedede !important;
+}
+
+.navbar__brand:hover,
+.navbar__link:hover {
+  color: #393939 !important;
+  background-color: #dedede !important;
+}
+
+.navbar__brand:hover .navbar__title {
+  color: #393939 !important;
+}
+
+/* Sidebar - DOS file manager panel */
+.theme-doc-sidebar-container {
+  border-right: 1px solid #808080 !important;
+}
+
+.menu__link {
+  color: #dedede;
+  border-radius: 0;
+}
+
+.menu__link:hover {
+  color: #393939;
+  background-color: #dedede;
+}
+
+.menu__link--active {
+  color: #f0dfaf !important;
+  background-color: #393939;
+  font-weight: 700;
+}
+
+/* Category labels with box-drawing chars */
+.menu__list-item-collapsible .menu__link {
+  color: #7f9f7f;
+}
+
+/* Code blocks — slightly darker than page bg for contrast */
+pre {
+  background-color: #303030 !important;
+  border: 1px solid #808080;
+}
+
+code {
+  background-color: #303030;
+  color: #93e0e3;
+  border: none;
+}
+
+/* Horizontal rules as box-drawing */
+hr {
+  border: none;
+  border-top: 1px solid #808080;
+}
+
+/* Links */
+a {
+  color: #8cd0d3;
+}
+
+a:hover {
+  color: #393939;
+  background-color: #dedede;
+  text-decoration: none;
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid #808080;
+}
+
+/* Table styling */
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #393939;
+  color: #f0dfaf;
+  border: 1px solid #808080;
+}
+
+td {
+  border: 1px solid #808080;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #393939;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #808080;
+}
+
+/* Heading anchor links */
+.hash-link {
+  color: #808080 !important;
+  padding: 0.15rem 0.3rem !important;
+  margin-left: 0.3rem;
+}
+
+.hash-link:hover {
+  color: #393939 !important;
+  background-color: #dedede !important;
+}
+
+/* Details/summary (for collapsed OOP examples) */
+details {
+  border: 1px solid #808080;
+  background-color: #303030;
+  padding: 0.5rem;
+  margin: 1rem 0;
+}
+
+summary {
+  color: #7f9f7f;
+  cursor: pointer;
+}
+
+summary:hover {
+  color: #393939;
+  background-color: #7f9f7f;
+}

@@ -1,0 +1,54 @@
+---
+sidebar_position: 7
+title: Window
+---
+
+# Window
+
+The root container. Fills the entire terminal. Typically the outermost element of your app, wrapped by `run()` or `Screen.start()`.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Box, Text, run} from '@teaui/react'
+
+// run() automatically wraps your component in a Window
+function App() {
+  return (
+    <Box border="single">
+      <Text>Full screen app</Text>
+    </Box>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `children` | `ReactNode` | Child content |
+
+Window always fills available space. It inherits from Container.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Screen, Window, Box, Text} from '@teaui/core'
+
+Screen.start(
+  new Window({
+    children: [
+      new Box({
+        border: 'single',
+        children: [new Text({text: 'Full screen app'})],
+      }),
+    ],
+  })
+)
+```
+
+</details>

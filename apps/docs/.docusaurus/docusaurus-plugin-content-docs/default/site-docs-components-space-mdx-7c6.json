@@ -1,0 +1,28 @@
+{
+  "id": "components/space",
+  "title": "Space",
+  "description": "Empty space filler. Use to add gaps or push content apart in a Stack.",
+  "source": "@site/docs/components/space.mdx",
+  "sourceDirName": "components",
+  "slug": "/components/space",
+  "permalink": "/teaui/docs/components/space",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/colinta/teaui/tree/main/apps/docs/docs/components/space.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Space"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Stack",
+    "permalink": "/teaui/docs/components/stack"
+  },
+  "next": {
+    "title": "Separator",
+    "permalink": "/teaui/docs/components/separator"
+  }
+}

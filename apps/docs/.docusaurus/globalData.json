@@ -1,0 +1,183 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/teaui/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/teaui/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "components/accordion",
+              "path": "/teaui/docs/components/accordion",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/box",
+              "path": "/teaui/docs/components/box",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/button",
+              "path": "/teaui/docs/components/button",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/checkbox",
+              "path": "/teaui/docs/components/checkbox",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/collapsible",
+              "path": "/teaui/docs/components/collapsible",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/collapsible-text",
+              "path": "/teaui/docs/components/collapsible-text",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/digits",
+              "path": "/teaui/docs/components/digits",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/drawer",
+              "path": "/teaui/docs/components/drawer",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/dropdown",
+              "path": "/teaui/docs/components/dropdown",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/header",
+              "path": "/teaui/docs/components/header",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/hotkey",
+              "path": "/teaui/docs/components/hotkey",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/input",
+              "path": "/teaui/docs/components/input",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/log",
+              "path": "/teaui/docs/components/log",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/progress",
+              "path": "/teaui/docs/components/progress",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/scrollable",
+              "path": "/teaui/docs/components/scrollable",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/scrollable-list",
+              "path": "/teaui/docs/components/scrollable-list",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/separator",
+              "path": "/teaui/docs/components/separator",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/slider",
+              "path": "/teaui/docs/components/slider",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/space",
+              "path": "/teaui/docs/components/space",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/spinner",
+              "path": "/teaui/docs/components/spinner",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/stack",
+              "path": "/teaui/docs/components/stack",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/tabs",
+              "path": "/teaui/docs/components/tabs",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/text",
+              "path": "/teaui/docs/components/text",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/toggle-group",
+              "path": "/teaui/docs/components/toggle-group",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/tree",
+              "path": "/teaui/docs/components/tree",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "components/window",
+              "path": "/teaui/docs/components/window",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "core-api",
+              "path": "/teaui/docs/core-api",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "getting-started",
+              "path": "/teaui/docs/getting-started",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/teaui/docs/",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "preact",
+              "path": "/teaui/docs/preact",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "themes",
+              "path": "/teaui/docs/themes",
+              "sidebar": "docsSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "docsSidebar": {
+              "link": {
+                "path": "/teaui/docs/",
+                "label": "intro"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

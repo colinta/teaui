@@ -1,0 +1,66 @@
+---
+sidebar_position: 4
+title: Drawer
+---
+
+# Drawer
+
+A slide-out panel from any edge (left, right, top, bottom). Contains a drawer view and a content view.
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {Drawer, Text, Button, Stack, run} from '@teaui/react'
+
+function App() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Drawer
+      location="left"
+      isOpen={open}
+      onToggle={setOpen}
+      drawer={
+        <Stack.down>
+          <Text>Sidebar Menu</Text>
+          <Button onClick={() => setOpen(false)}>Close</Button>
+        </Stack.down>
+      }
+      content={
+        <Stack.down>
+          <Text>Main Content</Text>
+          <Button onClick={() => setOpen(true)}>Open Menu</Button>
+        </Stack.down>
+      }
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `location` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'left'` | Edge to slide from |
+| `isOpen` | `boolean` | `false` | Open/closed state |
+| `onToggle` | `(isOpen: boolean) => void` | — | Toggle callback |
+| `drawer` | `ReactNode` | — | Drawer content |
+| `content` | `ReactNode` | — | Main content |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Drawer, Text} from '@teaui/core'
+
+new Drawer({
+  location: 'left',
+  drawer: new Text({text: 'Sidebar'}),
+  content: new Text({text: 'Main'}),
+})
+```
+
+</details>

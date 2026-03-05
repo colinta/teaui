@@ -1,0 +1,50 @@
+---
+sidebar_position: 6
+title: Log
+---
+
+# Log
+
+Captures `console.log` / `console.error` / `console.warn` output and displays it in a scrollable view. Use with `interceptConsoleLog()`.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {interceptConsoleLog} from '@teaui/core'
+import {Stack, ConsoleLog, Button, run} from '@teaui/react'
+
+interceptConsoleLog()
+
+function App() {
+  return (
+    <Stack.down>
+      <Button onClick={() => console.log('Hello!')}>Log Message</Button>
+      <ConsoleLog height={10} />
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+The `ConsoleLog` component displays intercepted console output in a scrollable list with colored log levels: red for errors, yellow for warnings, white for info.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Screen, Stack, ConsoleLog, Button, interceptConsoleLog} from '@teaui/core'
+
+interceptConsoleLog()
+
+const log = new ConsoleLog()
+Screen.start(Stack.down([
+  new Button({title: 'Log', onClick: () => console.log('Hello!')}),
+  log,
+]))
+```
+
+</details>

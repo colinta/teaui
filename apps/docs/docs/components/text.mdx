@@ -1,0 +1,56 @@
+---
+sidebar_position: 1
+title: Text
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Text
+
+Renders styled text. Supports alignment, wrapping, and custom fonts.
+
+<TerminalScreenshot name="text" title="Text" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Stack, Text, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Stack.down>
+      <Text>Default text</Text>
+      <Text alignment="center">Centered text</Text>
+      <Text alignment="right">Right aligned</Text>
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+In React, you can also use plain strings as children of `Stack` and `Box` — they're automatically wrapped in `Text`.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `text` | `string` | — | Text content |
+| `lines` | `string[]` | — | Pre-split lines (alt to `text`) |
+| `alignment` | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment |
+| `wrap` | `boolean` | `false` | Wrap long lines |
+| `font` | `FontFamily` | `'default'` | Text font |
+| `style` | `Style` | — | Text style (color, bold, etc.) |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Text} from '@teaui/core'
+
+new Text({text: 'Hello, world!'})
+new Text({text: 'Centered', alignment: 'center'})
+```
+
+</details>

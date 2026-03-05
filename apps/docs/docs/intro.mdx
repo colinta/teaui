@@ -1,0 +1,55 @@
+---
+sidebar_position: 1
+title: Welcome
+slug: /
+---
+
+# ═══ TeaUI ═══
+
+A React-powered terminal UI framework for building beautiful fullscreen TUI applications.
+
+```
+┌──────────────────────────────────────┐
+│  26 Components  │  React & Preact    │
+│  OOP Core API   │  Full Theming      │
+└──────────────────────────────────────┘
+```
+
+## What is TeaUI?
+
+TeaUI lets you build fullscreen terminal applications using **React JSX**, a **Preact adapter**, or a direct **OOP core API**. It handles rendering, input, mouse events, focus management, and layout — so you can focus on your application logic.
+
+## Quick Start
+
+```bash
+pnpm install @teaui/core @teaui/react react @types/react
+```
+
+```tsx
+import React from 'react'
+import {Box, Button, Stack, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Box border="single">
+      <Stack.down>
+        Hello, TeaUI!
+        <Button>[ OK ]</Button>
+      </Stack.down>
+    </Box>
+  )
+}
+
+run(<App />)
+```
+
+```bash
+npx tsx index.tsx
+```
+
+## Next Steps
+
+- **[Getting Started](/docs/getting-started)** — Installation, TypeScript config, and your first app
+- **[Components](/docs/components/button)** — Browse all 26 components
+- **[Core API](/docs/core-api)** — OOP API overview
+- **[Themes](/docs/themes)** — Styling and theming

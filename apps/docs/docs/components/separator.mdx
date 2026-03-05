@@ -1,0 +1,56 @@
+---
+sidebar_position: 4
+title: Separator
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Separator
+
+A horizontal or vertical divider line.
+
+<TerminalScreenshot name="separator" title="Separator" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Stack, Text, Separator, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Stack.down>
+      <Text>Above</Text>
+      <Separator direction="horizontal" />
+      <Text>Below</Text>
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `direction` | `'horizontal' \| 'vertical'` | — | Orientation (required) |
+| `padding` | `number` | `0` | Padding on each side |
+| `border` | `'single' \| 'leading' \| 'trailing' \| 'bold' \| 'dash' \| 'dash2' \| 'dash3' \| 'dash4' \| 'double'` | `'single'` | Line style |
+
+Static constructors: `Separator.horizontal()`, `Separator.vertical()`
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Stack, Text, Separator} from '@teaui/core'
+
+Stack.down([
+  new Text({text: 'Above'}),
+  Separator.horizontal(),
+  new Text({text: 'Below'}),
+])
+```
+
+</details>

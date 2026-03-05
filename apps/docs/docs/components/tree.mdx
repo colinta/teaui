@@ -1,0 +1,73 @@
+---
+sidebar_position: 6
+title: Tree
+---
+
+import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+
+# Tree
+
+Expandable tree view. Renders hierarchical data with expand/collapse toggles and tree-line decorations.
+
+<TerminalScreenshot name="tree" title="Tree" />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Tree, Text, run} from '@teaui/react'
+
+interface Item {
+  name: string
+  children?: Item[]
+}
+
+const data: Item[] = [
+  {name: 'src', children: [
+    {name: 'components', children: [
+      {name: 'App.tsx'},
+      {name: 'Button.tsx'},
+    ]},
+    {name: 'index.ts'},
+  ]},
+  {name: 'package.json'},
+]
+
+function App() {
+  return (
+    <Tree
+      data={data}
+      titleView={new Text({text: 'Project'})}
+      render={(item) => new Text({text: item.name})}
+      getChildren={(item) => item.children}
+    />
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `data` | `T[]` | — | Root data items |
+| `render` | `(item: T, path: string) => View` | — | View factory for each node |
+| `getChildren` | `(item: T, path: string) => T[] \| undefined` | — | Child accessor |
+| `titleView` | `View` | — | Root title view |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Tree, Text} from '@teaui/core'
+
+new Tree({
+  data: [{name: 'src'}, {name: 'package.json'}],
+  titleView: new Text({text: 'Project'}),
+  render: (item) => new Text({text: item.name}),
+  getChildren: (item) => item.children,
+})
+```
+
+</details>
