@@ -15,7 +15,6 @@ interface Props extends ContainerProps {
 interface SectionProps extends ContainerProps {
   title?: string
   isOpen?: boolean
-  onClick?: (section: Section, isOpen: boolean) => void
 }
 
 // accordion = new Accordion()
@@ -169,8 +168,6 @@ class Section extends Container {
       style: this.titleStyle,
     })
 
-    this.#update({isOpen})
-
     this.add(this.#titleView)
 
     define(this, 'title', {enumerable: true})
@@ -209,14 +206,11 @@ class Section extends Container {
     this.isOpen = false
   }
 
-  update(props: Omit<SectionProps, 'view'>) {
-    this.#update(props)
+  update({title, ...props}: Omit<SectionProps, 'view'>) {
+    if (title !== undefined) {
+      this.title = title
+    }
     super.update(props)
-  }
-
-  #update({isOpen, onClick}: Omit<SectionProps, 'view'>) {
-    this.#isOpen = isOpen ?? false
-    this.onClick = onClick
   }
 
   naturalSize(available: Size) {
@@ -260,8 +254,7 @@ class Section extends Container {
     super.receiveMouse(event, system)
 
     if (isMouseClicked(event)) {
-      this.#isOpen = !this.#isOpen
-      this.onClick?.(this, this.#isOpen)
+      this.isOpen = !this.#isOpen
     }
 
     this.#titleView.style = this.titleStyle
