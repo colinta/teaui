@@ -210,7 +210,7 @@ async function main() {
   mkdirSync(OUTPUT_DIR, {recursive: true})
 
   const files = readdirSync(SCREENSHOTS_DIR).filter(f =>
-    f.endsWith('.screenshot.ts'),
+    /\.screenshot\.tsx?$/.test(f),
   )
 
   if (files.length === 0) {
@@ -221,7 +221,7 @@ async function main() {
   console.log(`Building ${files.length} screenshot(s)...`)
 
   for (const file of files) {
-    const name = basename(file, '.screenshot.ts')
+    const name = file.replace(/\.screenshot\.tsx?$/, '')
     const specPath = join(SCREENSHOTS_DIR, file)
 
     try {

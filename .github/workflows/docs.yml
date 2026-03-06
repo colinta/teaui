@@ -37,6 +37,9 @@ jobs:
       - name: Build core package
         run: pnpm -C packages/core build
 
+      - name: Build react package
+        run: pnpm -C packages/react build
+
       - name: Build docs (screenshots + docusaurus)
         run: pnpm -C apps/docs build
 

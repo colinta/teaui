@@ -16,6 +16,7 @@
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.7.0",
     "@teaui/core": "workspace:*",
+    "@teaui/react": "workspace:*",
     "ansi-to-html": "^0.7.2",
     "clsx": "^2.1.1",
     "react": "^18.3.1",
