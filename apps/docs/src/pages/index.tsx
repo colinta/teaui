@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Layout from '@theme/Layout'
 import CodeBlock from '@theme/CodeBlock'
 import Link from '@docusaurus/Link'
+import useBaseUrl from '@docusaurus/useBaseUrl'
 import TerminalScreenshot from '../components/TerminalScreenshot'
 import '../css/index.css'
 
@@ -17,64 +18,87 @@ const HERO_ASCII = `
 ║                                          ║
 ╚══════════════════════════════════════════╝`.trim()
 
-const REACT_EXAMPLE = `import React, {useReducer} from 'react'
-import {interceptConsoleLog} from '@teaui/core'
-import {Box, Button, Stack, run} from '@teaui/react'
-
-interceptConsoleLog()
-
-function App() {
-  const [bang, goto10] = useReducer(s => s + '!', '')
-  return (
-    <Box border="single">
-      <Stack.down>
-        First there was Ncurses{bang}
-        <Button onClick={goto10}>Tell me more!</Button>
-      </Stack.down>
-    </Box>
-  )
-}
-
-run(<App />)`
-
 const FEATURES = [
-  {icon: '█', title: '26 Components', desc: 'Buttons, inputs, accordions, tabs, trees, and more'},
-  {icon: '◆', title: 'React & Preact', desc: 'Use JSX or the OOP core API — your choice'},
-  {icon: '▓', title: 'Full Theming', desc: 'Style system with colors, borders, and text styles'},
-  {icon: '░', title: 'Zero Deps*', desc: 'Minimal footprint, terminal-native rendering'},
+  {
+    icon: '█',
+    title: 'Beautiful Components',
+    desc: 'Buttons, inputs, accordions, tabs, trees, and more',
+  },
+  {
+    icon: '◆',
+    title: 'React & Preact',
+    desc: 'Use JSX or the OOP core API — your choice',
+  },
+  {
+    icon: '▓',
+    title: 'Full Theming',
+    desc: 'Style system with colors, borders, and text styles',
+  },
+  {
+    icon: '░',
+    title: 'Zero Deps*',
+    desc: 'Minimal footprint, terminal-native rendering',
+  },
 ]
 
 export default function Home() {
+  const codeUrl = useBaseUrl('/examples/hero.tsx')
+  const [code, setCode] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch(codeUrl)
+      .then(r => r.text())
+      .then(setCode)
+      .catch(() => setCode('// Source not found'))
+  }, [codeUrl])
+
   return (
-    <Layout title="TeaUI — Terminal UI Framework" description="React-compatible terminal UI framework for building beautiful fullscreen TUI applications">
+    <Layout
+      title="TeaUI — Terminal UI Framework"
+      description="React-compatible terminal UI framework for building beautiful fullscreen TUI applications"
+    >
       <main className="landing">
         {/* Hero */}
         <section className="hero-section">
           <pre className="hero-ascii">{HERO_ASCII}</pre>
           <p className="hero-tagline">React-compatible terminal UI framework</p>
           <div className="hero-actions">
-            <Link className="hero-btn" to="/docs">[ Getting Started ]</Link>
-            <Link className="hero-btn hero-btn--secondary" to="/docs/components/button">[ Components ]</Link>
-            <a className="hero-btn hero-btn--secondary" href="https://github.com/colinta/teaui">[ GitHub ]</a>
+            <Link className="hero-btn" to="/docs">
+              [ Getting Started ]
+            </Link>
+            <Link
+              className="hero-btn hero-btn--secondary"
+              to="/docs/components/button"
+            >
+              [ Components ]
+            </Link>
+            <a
+              className="hero-btn hero-btn--secondary"
+              href="https://github.com/colinta/teaui"
+            >
+              [ GitHub ]
+            </a>
           </div>
         </section>
 
         {/* Code + Screenshot side by side */}
         <section className="demo-section">
           <div className="demo-code">
-            <div className="demo-label">┤ index.tsx ├</div>
-            <CodeBlock language="tsx">{REACT_EXAMPLE}</CodeBlock>
+            <div className="demo-label">│ index.tsx │</div>
+            <CodeBlock language="tsx">{code ?? '// Loading...'}</CodeBlock>
           </div>
           <div className="demo-preview">
-            <TerminalScreenshot name="stack" title="Output" dir="examples" />
+            <TerminalScreenshot name="hero" title="Output" dir="examples" />
           </div>
         </section>
 
         {/* Install */}
         <section className="install-section">
           <div className="install-box">
-            <div className="install-label">┤ Installation ├</div>
-            <pre><code>pnpm install @teaui/core @teaui/react react @types/react</code></pre>
+            <div className="install-label">│ Installation │</div>
+            <pre>
+              <code>npx @teaui/cli create 'app-name' -f react</code>
+            </pre>
           </div>
         </section>
 

@@ -10,42 +10,13 @@ Build fullscreen terminal applications with React JSX.
 ## Installation
 
 ```bash
-pnpm install @teaui/core @teaui/react react @types/react
-```
-
-Or with npm / yarn:
-
-```bash
-npm install @teaui/core @teaui/react react @types/react
-# yarn add @teaui/core @teaui/react react @types/react
-```
-
-## TypeScript Configuration
-
-Create a `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "jsx": "react",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": ".dist"
-  },
-  "include": ["./"],
-  "exclude": [".dist/"]
-}
+pnpm install @teaui/cli
+teaui create my-app --framework react
 ```
 
 ## Hello World
 
-Create `index.tsx`:
+Edit `index.tsx`:
 
 ```tsx
 import React from 'react'
@@ -79,23 +50,23 @@ Press **Ctrl-C** to exit.
 
 ## How it Works
 
-TeaUI renders your component tree into a fullscreen terminal buffer. The `run()` function:
+TeaUI renders your component tree into a fullscreen terminal buffer using ["raw mode"](https://www.gnu.org/software/mit-scheme/documentation/stable/mit-scheme-ref/Terminal-Mode.html). The `run()` function:
 
 1. Initializes the terminal in raw mode (full-screen, mouse events, etc.)
 2. Creates a React reconciler that maps JSX elements to TeaUI `View` objects
 3. Renders the view tree into a `Buffer`, which is flushed to the terminal
-4. Handles keyboard, mouse, and resize events
-5. On Ctrl-C, restores the terminal and flushes any captured `console.log` output
+4. Handles keyboard, mouse, and window resize & focus events
+5. On Ctrl-C (keybinding is configurable), restores the terminal and flushes any captured `console.log` output (`interceptConsoleLog`)
 
 ## Key Concepts
 
 ### Layout
 
-Components receive a size constraint from their parent and report their **natural size**. Layout flows top-down: `Stack` arranges children vertically or horizontally, `Box` adds padding and borders, `Space` fills available space.
+Components receive a size constraint from their parent and report their **natural size**. `Stack` arranges children vertically or horizontally, `Box` adds padding and borders, `Space` fills available space.
 
 ### Focus & Input
 
-Interactive components (`Button`, `Input`, `Checkbox`, etc.) participate in focus management. Press **Tab** to cycle focus. The focused component receives keyboard events.
+Interactive components (`Button`, `Input`, `Checkbox`, etc.) can participate in focus management. Press **Tab** to cycle focus. The focused component receives keyboard events.
 
 ### Styling
 

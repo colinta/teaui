@@ -1,5 +1,6 @@
 /** Render size configuration for each example */
 export const exampleSpecs: Record<string, {width: number; height: number; title?: string}> = {
+  hero: {width: 40, height: 5, title: 'Output'},
   accordion: {width: 30, height: 6, title: 'Accordion'},
   box: {width: 30, height: 5, title: 'Box'},
   button: {width: 30, height: 3, title: 'Button'},

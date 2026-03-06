@@ -156,7 +156,7 @@ The site uses a **Zenburn** color palette, forced dark mode only, with
 - Dark mode only (`disableSwitch: true`) — it's a terminal UI framework
 - All text is monospace (Fira Code) for a terminal aesthetic
 - Navbar and sidebar styled to evoke a DOS-era file manager
-- Box-drawing characters used in sidebar labels (`┤ Components ├`)
+- Box-drawing characters used in sidebar labels (`│ Components │`)
 - Terminal screenshots use Zenburn's 16-color palette for ANSI rendering
 - Prism theme: `vsDark` for code blocks
 

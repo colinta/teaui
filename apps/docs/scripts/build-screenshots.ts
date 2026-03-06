@@ -300,11 +300,13 @@ async function buildExamples() {
       const htmlPath = join(EXAMPLES_OUTPUT_DIR, `${name}.html`)
       writeFileSync(htmlPath, fragment, 'utf-8')
 
-      // Copy the source code (the raw .tsx file)
+      // Write the display source code: strip 'export default' and append run(<App />)
       const sourcePath = join(EXAMPLES_DIR, file)
       const source = readFileSync(sourcePath, 'utf-8')
+        .replace(/^export default /m, '')
+      const displaySource = source.trimEnd() + '\n\nrun(<App />)\n'
       const codePath = join(EXAMPLES_OUTPUT_DIR, `${name}.tsx`)
-      writeFileSync(codePath, source, 'utf-8')
+      writeFileSync(codePath, displaySource, 'utf-8')
 
       console.log(`  ✓ ${name} (${spec.width}×${spec.height})`)
     } catch (err) {

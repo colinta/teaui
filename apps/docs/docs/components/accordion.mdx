@@ -7,7 +7,9 @@ import Example from '@site/src/components/Example'
 
 # Accordion
 
-Expandable/collapsible sections. Click or press Enter to toggle. Supports single or multiple open sections.
+Expandable/collapsible sections. Click to toggle. Child sections must be `<Accordion.Section>` components.
+
+If `multiple` is `true`, multiple sections can be open at once. Otherwise, opening one section will close other open section.
 
 <Example name="accordion" title="Accordion" />
 
@@ -15,15 +17,15 @@ Expandable/collapsible sections. Click or press Enter to toggle. Supports single
 
 ### Accordion
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `multiple` | `boolean` | `false` | Allow multiple open sections |
-| `children` | `Accordion.Section[]` | — | Section children |
+| Prop       | Type                  | Default | Description                  |
+| ---------- | --------------------- | ------- | ---------------------------- |
+| `multiple` | `boolean`             | `false` | Allow multiple open sections |
+| `children` | `Accordion.Section[]` | —       | Section children             |
 
 ### Accordion.Section
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | `string` | — | Section header text |
-| `isOpen` | `boolean` | `false` | Initially open |
-| `children` | `ReactNode` | — | Section content |
+| Prop       | Type        | Default | Description         |
+| ---------- | ----------- | ------- | ------------------- |
+| `title`    | `string`    | —       | Section header text |
+| `isOpen`   | `boolean`   | `false` | Initially open      |
+| `children` | `ReactNode` | —       | Section content     |

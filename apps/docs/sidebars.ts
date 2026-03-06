@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
     'getting-started',
     {
       type: 'category',
-      label: '┤ Components ├',
+      label: '│ Components │',
       collapsed: false,
       items: [
         {

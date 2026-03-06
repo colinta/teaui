@@ -5,7 +5,14 @@ title: Themes
 
 # Themes & Styling
 
-TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout.
+TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout. All views also accept a 'theme' which has settings like textColor, brightTextColor, backgroundColor. If `theme` isn't defined, it will be inherited from the parent. There are predefined themes:
+
+- `Theme.plain` — default, muted colors
+- `Theme.primary` aka `Theme.blue` e.g. '#0032FA'
+- `Theme.secondary` aka `Theme.orange` e.g. '#D0851C'
+- `Theme.proceed` aka `Theme.green` e.g. '#108040'
+- `Theme.cancel` aka `Theme.red` e.g. '#981618'
+- `Theme.selected` optional text styling
 
 ## Style Object
 
@@ -22,16 +29,16 @@ new Style({
 
 ### Style Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `foreground` | `Color` | Text color |
-| `background` | `Color` | Background color |
-| `bold` | `boolean` | Bold text |
-| `dim` | `boolean` | Dimmed text (mutually exclusive with bold) |
-| `italic` | `boolean` | Italic text |
-| `underline` | `boolean` | Underlined text |
-| `inverse` | `boolean` | Swap foreground/background |
-| `strikeout` | `boolean` | Strikethrough text |
+| Property     | Type      | Description                                |
+| ------------ | --------- | ------------------------------------------ |
+| `foreground` | `Color`   | Text color                                 |
+| `background` | `Color`   | Background color                           |
+| `bold`       | `boolean` | Bold text                                  |
+| `dim`        | `boolean` | Dimmed text (mutually exclusive with bold) |
+| `italic`     | `boolean` | Italic text                                |
+| `underline`  | `boolean` | Underlined text                            |
+| `inverse`    | `boolean` | Swap foreground/background                 |
+| `strikeout`  | `boolean` | Strikethrough text                         |
 
 ## Colors
 
@@ -48,31 +55,31 @@ Bright variants: `'brightRed'`, `'brightGreen'`, `'brightYellow'`, `'brightBlue'
 Use a number `0–255` for the extended terminal color palette:
 
 ```ts
-new Style({foreground: 196})  // bright red
-new Style({background: 236})  // dark gray
+new Style({foreground: 196}) // bright red
+new Style({background: 236}) // dark gray
 ```
 
 ### RGB Colors
 
-Use an `[r, g, b]` tuple for 24-bit true color:
+Use an `[r, g, b]` tuple or `#rrggbb` hex code for 24-bit true color:
 
 ```ts
-new Style({foreground: [255, 128, 0]})  // orange
-new Style({background: [30, 30, 30]})   // dark background
+new Style({foreground: [255, 128, 0]}) // orange
+new Style({background: '#303030'}) // dark background
 ```
 
 ## Borders
 
 Box-drawing border styles:
 
-| Style | Characters |
-|-------|-----------|
-| `'single'` | ┌─┐│└─┘ |
-| `'bold'` | ┏━┓┃┗━┛ |
-| `'double'` | ╔═╗║╚═╝ |
-| `'rounded'` | ╭─╮│╰─╯ |
-| `'dotted'` | ┌┈┐┊└┈┘ |
-| `'popout'` | ▛▀▜▌▙▄▟ |
+| Style       | Characters  |
+| ----------- | ----------- |
+| `'single'`  | ┌─┐│└─┘     |
+| `'bold'`    | ┏━┓┃┗━┛     |
+| `'double'`  | ╔═╗║╚═╝     |
+| `'rounded'` | ╭─╮│╰─╯     |
+| `'dotted'`  | ┌┈┐┊└┈┘     |
+| `'popout'`  | "points" up |
 
 Custom borders via `BorderChars` tuple:
 
@@ -82,7 +89,7 @@ Custom borders via `BorderChars` tuple:
 
 ## Using Styles in React
 
-Apply styles via the `style` prop on `Text`:
+Apply styles/theme via the `style/theme` prop on `Text`:
 
 ```tsx
 import React from 'react'
@@ -90,9 +97,14 @@ import {Style} from '@teaui/core'
 import {Text, run} from '@teaui/react'
 
 const highlight = new Style({foreground: 'yellow', bold: true})
+const theme = Theme.primary
 
 function App() {
-  return <Text style={highlight}>Important!</Text>
+  return (
+    <Text style={highlight} theme={theme}>
+      Important!
+    </Text>
+  )
 }
 
 run(<App />)

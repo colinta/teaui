@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
 import {Command} from 'commander'
-import {mkdir, readFile, writeFile, readdir} from 'fs/promises'
-import {join, dirname} from 'path'
-import {fileURLToPath} from 'url'
 import {create} from './index.js'
 
 const program = new Command()

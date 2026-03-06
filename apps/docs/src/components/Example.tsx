@@ -24,7 +24,11 @@ export default function Example({name, title}: Props) {
     fetch(htmlUrl)
       .then(r => r.text())
       .then(setHtml)
-      .catch(() => setHtml('<pre style="color:#CC9393;padding:8px">Screenshot not found</pre>'))
+      .catch(() =>
+        setHtml(
+          '<pre style="color:#CC9393;padding:8px">Screenshot not found</pre>',
+        ),
+      )
   }, [htmlUrl])
 
   useEffect(() => {
@@ -34,7 +38,7 @@ export default function Example({name, title}: Props) {
       .catch(() => setCode('// Source not found'))
   }, [codeUrl])
 
-  const titleBar = title ? `┤ ${title} ├` : null
+  const titleBar = title ? `│ ${title} │` : null
 
   return (
     <div className="example-container">
@@ -49,7 +53,9 @@ export default function Example({name, title}: Props) {
           <div
             className="terminal-body"
             dangerouslySetInnerHTML={{
-              __html: html ?? '<pre style="padding:8px;color:#808080">Loading...</pre>',
+              __html:
+                html ??
+                '<pre style="padding:8px;color:#808080">Loading...</pre>',
             }}
           />
         </div>
