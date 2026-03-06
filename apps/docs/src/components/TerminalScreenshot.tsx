@@ -7,14 +7,16 @@ interface Props {
   name: string
   /** Optional title shown in the terminal title bar */
   title?: string
+  /** Directory to read from (default: 'screenshots') */
+  dir?: 'screenshots' | 'examples'
 }
 
 /**
  * Renders a pre-built screenshot HTML fragment in a styled terminal window frame.
- * Screenshots are generated at build time and stored in static/screenshots/.
+ * Screenshots are generated at build time and stored in static/screenshots/ or static/examples/.
  */
-export default function TerminalScreenshot({name, title}: Props) {
-  const url = useBaseUrl(`/screenshots/${name}.html`)
+export default function TerminalScreenshot({name, title, dir = 'screenshots'}: Props) {
+  const url = useBaseUrl(`/${dir}/${name}.html`)
   const [html, setHtml] = useState<string | null>(null)
 
   useEffect(() => {

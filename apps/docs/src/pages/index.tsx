@@ -66,7 +66,7 @@ export default function Home() {
             <CodeBlock language="tsx">{REACT_EXAMPLE}</CodeBlock>
           </div>
           <div className="demo-preview">
-            <TerminalScreenshot name="stack" title="Output" />
+            <TerminalScreenshot name="stack" title="Output" dir="examples" />
           </div>
         </section>
 
