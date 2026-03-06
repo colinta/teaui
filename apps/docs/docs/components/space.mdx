@@ -3,32 +3,13 @@ sidebar_position: 3
 title: Space
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Space
 
 Empty space filler. Use to add gaps or push content apart in a Stack.
 
-<TerminalScreenshot name="space" title="Space" />
-
-## React Example
-
-```tsx
-import React from 'react'
-import {Stack, Text, Space, run} from '@teaui/react'
-
-function App() {
-  return (
-    <Stack.right>
-      <Text>Left</Text>
-      <Space />
-      <Text>Right</Text>
-    </Stack.right>
-  )
-}
-
-run(<App />)
-```
+<Example name="space" title="Space" />
 
 ## Props
 
@@ -39,18 +20,3 @@ run(<App />)
 | `height` | `Dimension` | — | Fixed or flex height |
 
 Static constructors: `Space.horizontal(size)`, `Space.vertical(size)`
-
-<details>
-<summary>Core API</summary>
-
-```js
-import {Stack, Text, Space} from '@teaui/core'
-
-const layout = Stack.right([
-  new Text({text: 'Left'}),
-  new Space(),
-  new Text({text: 'Right'}),
-])
-```
-
-</details>

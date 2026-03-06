@@ -3,38 +3,13 @@ sidebar_position: 1
 title: Accordion
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Accordion
 
 Expandable/collapsible sections. Click or press Enter to toggle. Supports single or multiple open sections.
 
-<TerminalScreenshot name="accordion" title="Accordion" />
-
-## React Example
-
-```tsx
-import React from 'react'
-import {Accordion, Text, run} from '@teaui/react'
-
-function App() {
-  return (
-    <Accordion>
-      <Accordion.Section title="Section 1" isOpen>
-        <Text>Content for section 1</Text>
-      </Accordion.Section>
-      <Accordion.Section title="Section 2">
-        <Text>Content for section 2</Text>
-      </Accordion.Section>
-      <Accordion.Section title="Section 3">
-        <Text>Content for section 3</Text>
-      </Accordion.Section>
-    </Accordion>
-  )
-}
-
-run(<App />)
-```
+<Example name="accordion" title="Accordion" />
 
 ## Props
 
@@ -52,17 +27,3 @@ run(<App />)
 | `title` | `string` | — | Section header text |
 | `isOpen` | `boolean` | `false` | Initially open |
 | `children` | `ReactNode` | — | Section content |
-
-<details>
-<summary>Core API</summary>
-
-```js
-import {Accordion, Text} from '@teaui/core'
-
-Accordion.create([
-  ['Section 1', new Text({text: 'Content 1'})],
-  ['Section 2', new Text({text: 'Content 2'})],
-])
-```
-
-</details>

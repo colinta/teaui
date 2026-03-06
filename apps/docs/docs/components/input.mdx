@@ -3,38 +3,13 @@ sidebar_position: 3
 title: Input
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Input
 
 Text input field with cursor, selection, word movement (Alt+←→), clipboard support, and optional multiline/wrapping.
 
-<TerminalScreenshot name="input" title="Input" />
-
-## React Example
-
-```tsx
-import React, {useState} from 'react'
-import {Stack, Input, Text, run} from '@teaui/react'
-
-function App() {
-  const [name, setName] = useState('')
-
-  return (
-    <Stack.down>
-      <Text>Enter your name:</Text>
-      <Input
-        value={name}
-        placeholder="Type here..."
-        onChange={setName}
-        onSubmit={(val) => console.log('submitted:', val)}
-      />
-    </Stack.down>
-  )
-}
-
-run(<App />)
-```
+<Example name="input" title="Input" />
 
 ## Props
 
@@ -47,18 +22,3 @@ run(<App />)
 | `wrap` | `boolean` | `false` | Wrap long lines |
 | `multiline` | `boolean` | `false` | Allow multiple lines |
 | `font` | `FontFamily` | `'default'` | Text font |
-
-<details>
-<summary>Core API</summary>
-
-```js
-import {Input} from '@teaui/core'
-
-new Input({
-  placeholder: 'Type here...',
-  onChange: (text) => console.log(text),
-  onSubmit: (text) => console.log('submitted:', text),
-})
-```
-
-</details>

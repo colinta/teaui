@@ -3,38 +3,13 @@ sidebar_position: 5
 title: Tabs
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Tabs
 
 Tabbed container with clickable tab headers. Switch between views.
 
-<TerminalScreenshot name="tabs" title="Tabs" />
-
-## React Example
-
-```tsx
-import React from 'react'
-import {Tabs, Text, run} from '@teaui/react'
-
-function App() {
-  return (
-    <Tabs border>
-      <Tabs.Section title="Info">
-        <Text>Information panel content</Text>
-      </Tabs.Section>
-      <Tabs.Section title="Settings">
-        <Text>Settings panel content</Text>
-      </Tabs.Section>
-      <Tabs.Section title="Help">
-        <Text>Help panel content</Text>
-      </Tabs.Section>
-    </Tabs>
-  )
-}
-
-run(<App />)
-```
+<Example name="tabs" title="Tabs" />
 
 ## Props
 
@@ -51,18 +26,3 @@ run(<App />)
 |------|------|---------|-------------|
 | `title` | `string` | — | Tab header text |
 | `children` | `ReactNode` | — | Tab content |
-
-<details>
-<summary>Core API</summary>
-
-```js
-import {Tabs, Text} from '@teaui/core'
-
-Tabs.create([
-  ['Info', new Text({text: 'Information'})],
-  ['Settings', new Text({text: 'Settings'})],
-  ['Help', new Text({text: 'Help'})],
-], {border: true})
-```
-
-</details>

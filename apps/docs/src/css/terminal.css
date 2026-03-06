@@ -32,3 +32,16 @@
   font-size: 14px;
   line-height: 1.4;
 }
+
+/* Example component: code + output side by side */
+.example-container {
+  margin: 1.5rem 0;
+}
+
+.example-output {
+  margin-top: 0.5rem;
+}
+
+.example-output .terminal-frame {
+  margin: 0;
+}

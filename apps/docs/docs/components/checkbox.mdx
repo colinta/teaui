@@ -1,57 +1,20 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 title: Checkbox
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Checkbox
 
-A toggle checkbox with label. Toggles on click or Enter key.
+A togglable checkbox with label text.
 
-<TerminalScreenshot name="checkbox" title="Checkbox" />
-
-## React Example
-
-```tsx
-import React, {useState} from 'react'
-import {Stack, Checkbox, run} from '@teaui/react'
-
-function App() {
-  const [dark, setDark] = useState(false)
-  const [auto, setAuto] = useState(true)
-
-  return (
-    <Stack.down>
-      <Checkbox title="Dark mode" value={dark} onChange={setDark} />
-      <Checkbox title="Auto-save" value={auto} onChange={setAuto} />
-    </Stack.down>
-  )
-}
-
-run(<App />)
-```
+<Example name="checkbox" title="Checkbox" />
 
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `title` | `string` | — | Label text |
-| `value` | `boolean` | `false` | Checked state |
-| `onChange` | `(value: boolean) => void` | — | Toggle callback |
-| `hotKey` | `HotKey` | — | Keyboard shortcut |
-
-<details>
-<summary>Core API</summary>
-
-```js
-import {Checkbox} from '@teaui/core'
-
-new Checkbox({
-  title: 'Dark mode',
-  value: false,
-  onChange: (val) => console.log('checked:', val),
-})
-```
-
-</details>
+| `isChecked` | `boolean` | `false` | Checked state |
+| `onChange` | `(checked: boolean) => void` | — | Change handler |

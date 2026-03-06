@@ -1,0 +1,12 @@
+import React from 'react'
+import {Stack, Checkbox} from '@teaui/react'
+
+export default function App() {
+  return (
+    <Stack.down>
+      <Checkbox title="Enable notifications" isChecked />
+      <Checkbox title="Dark mode" />
+      <Checkbox title="Auto-save" isChecked />
+    </Stack.down>
+  )
+}

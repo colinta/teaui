@@ -4,3 +4,7 @@ node_modules/
 /lib/test.ts
 /demos/node_modules/
 .sum
+apps/docs/.docusaurus/
+apps/docs/build/
+apps/docs/static/screenshots/
+apps/docs/static/examples/

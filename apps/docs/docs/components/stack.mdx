@@ -3,32 +3,13 @@ sidebar_position: 2
 title: Stack
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Stack
 
 Arranges children vertically or horizontally. The primary layout component.
 
-<TerminalScreenshot name="stack" title="Stack" />
-
-## React Example
-
-```tsx
-import React from 'react'
-import {Stack, Text, Button, run} from '@teaui/react'
-
-function App() {
-  return (
-    <Stack.down>
-      <Text>Welcome to TeaUI</Text>
-      <Button>[ OK ]</Button>
-      <Button>[ Cancel ]</Button>
-    </Stack.down>
-  )
-}
-
-run(<App />)
-```
+<Example name="stack" title="Stack" />
 
 ## Direction Shortcuts
 
@@ -45,18 +26,3 @@ run(<App />)
 | `gap` | `number` | `0` | Spacing between children |
 | `fill` | `boolean` | `true` | Fill available space |
 | `children` | `ReactNode` | — | Child views |
-
-<details>
-<summary>Core API</summary>
-
-```js
-import {Stack, Text, Button} from '@teaui/core'
-
-const stack = Stack.down([
-  new Text({text: 'Welcome to TeaUI'}),
-  new Button({title: 'OK'}),
-  new Button({title: 'Cancel'}),
-])
-```
-
-</details>

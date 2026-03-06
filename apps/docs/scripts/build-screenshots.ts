@@ -1,12 +1,14 @@
-import {readdirSync, writeFileSync, mkdirSync} from 'node:fs'
-import {join, basename, dirname} from 'node:path'
+import {readdirSync, readFileSync, writeFileSync, mkdirSync} from 'node:fs'
+import {join, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {renderToAnsi} from '@teaui/core'
 import type {ScreenshotSpec} from '../screenshots/types.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SCREENSHOTS_DIR = join(__dirname, '..', 'screenshots')
+const EXAMPLES_DIR = join(__dirname, '..', 'examples')
 const OUTPUT_DIR = join(__dirname, '..', 'static', 'screenshots')
+const EXAMPLES_OUTPUT_DIR = join(__dirname, '..', 'static', 'examples')
 
 // Zenburn 16-color palette
 const COLORS_16: Record<number, string> = {
@@ -206,7 +208,17 @@ function hex(n: number): string {
   return Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0')
 }
 
-async function main() {
+function renderAnsiToHtmlFragment(ansi: string): string {
+  const html = ansiToHtml(ansi)
+    .split('\n')
+    .map(line => line.replace(/\s+$/, ''))
+    .join('\n')
+    .replace(/\n+$/, '')
+
+  return `<pre style="background:${DEFAULT_BG};color:${DEFAULT_FG};font-family:'Fira Code',monospace;padding:8px;margin:0;line-height:1.4;overflow-x:auto;">${html}</pre>`
+}
+
+async function buildScreenshots() {
   mkdirSync(OUTPUT_DIR, {recursive: true})
 
   const files = readdirSync(SCREENSHOTS_DIR).filter(f =>
@@ -214,7 +226,6 @@ async function main() {
   )
 
   if (files.length === 0) {
-    console.log('No screenshot specs found.')
     return
   }
 
@@ -230,13 +241,7 @@ async function main() {
 
       const view = spec.component()
       const ansi = renderToAnsi(view, spec.size)
-      const html = ansiToHtml(ansi)
-        .split('\n')
-        .map(line => line.replace(/\s+$/, ''))
-        .join('\n')
-        .replace(/\n+$/, '')
-
-      const fragment = `<pre style="background:${DEFAULT_BG};color:${DEFAULT_FG};font-family:'Fira Code',monospace;padding:8px;margin:0;line-height:1.4;overflow-x:auto;">${html}</pre>`
+      const fragment = renderAnsiToHtmlFragment(ansi)
 
       const outputPath = join(OUTPUT_DIR, `${name}.html`)
       writeFileSync(outputPath, fragment, 'utf-8')
@@ -245,7 +250,72 @@ async function main() {
       console.error(`  ✗ ${name}: ${err}`)
     }
   }
+}
 
+async function buildExamples() {
+  mkdirSync(EXAMPLES_OUTPUT_DIR, {recursive: true})
+
+  const files = readdirSync(EXAMPLES_DIR).filter(f =>
+    /\.example\.tsx$/.test(f),
+  )
+
+  if (files.length === 0) {
+    return
+  }
+
+  // Lazy-import renderReact only when we have examples
+  const {renderReact} = await import('../screenshots/renderReact.js')
+  const {exampleSpecs} = await import('../examples/specs.js')
+
+  console.log(`Building ${files.length} example(s)...`)
+
+  for (const file of files) {
+    const name = file.replace(/\.example\.tsx$/, '')
+    const spec = exampleSpecs[name]
+
+    if (!spec) {
+      console.error(`  ✗ ${name}: no spec found in examples/specs.ts`)
+      continue
+    }
+
+    try {
+      // Import the example module to get the React element
+      const examplePath = join(EXAMPLES_DIR, file)
+      const mod = await import(examplePath)
+
+      // The example's default export is the App component
+      const App = mod.default ?? mod.App
+      if (!App) {
+        console.error(`  ✗ ${name}: no default/App export found`)
+        continue
+      }
+
+      // Render the React component
+      const {createElement} = await import('react')
+      const view = renderReact(createElement(App))
+      const ansi = renderToAnsi(view, spec)
+      const fragment = renderAnsiToHtmlFragment(ansi)
+
+      // Write the rendered HTML
+      const htmlPath = join(EXAMPLES_OUTPUT_DIR, `${name}.html`)
+      writeFileSync(htmlPath, fragment, 'utf-8')
+
+      // Copy the source code (the raw .tsx file)
+      const sourcePath = join(EXAMPLES_DIR, file)
+      const source = readFileSync(sourcePath, 'utf-8')
+      const codePath = join(EXAMPLES_OUTPUT_DIR, `${name}.tsx`)
+      writeFileSync(codePath, source, 'utf-8')
+
+      console.log(`  ✓ ${name} (${spec.width}×${spec.height})`)
+    } catch (err) {
+      console.error(`  ✗ ${name}: ${err}`)
+    }
+  }
+}
+
+async function main() {
+  await buildScreenshots()
+  await buildExamples()
   console.log('Done.')
 }
 
