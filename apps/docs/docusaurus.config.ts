@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic'
 
 const config: Config = {
   title: 'TeaUI',
-  tagline: 'React-powered terminal UI framework',
+  tagline: 'React-compatible terminal UI framework',
   favicon: 'img/favicon.ico',
 
   url: 'https://colinta.github.io',

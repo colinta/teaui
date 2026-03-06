@@ -1,5 +1,6 @@
 import React from 'react'
 import Layout from '@theme/Layout'
+import CodeBlock from '@theme/CodeBlock'
 import Link from '@docusaurus/Link'
 import TerminalScreenshot from '../components/TerminalScreenshot'
 import '../css/index.css'
@@ -45,12 +46,12 @@ const FEATURES = [
 
 export default function Home() {
   return (
-    <Layout title="TeaUI — Terminal UI Framework" description="React-powered terminal UI framework for building beautiful fullscreen TUI applications">
+    <Layout title="TeaUI — Terminal UI Framework" description="React-compatible terminal UI framework for building beautiful fullscreen TUI applications">
       <main className="landing">
         {/* Hero */}
         <section className="hero-section">
           <pre className="hero-ascii">{HERO_ASCII}</pre>
-          <p className="hero-tagline">React-powered terminal UI framework</p>
+          <p className="hero-tagline">React-compatible terminal UI framework</p>
           <div className="hero-actions">
             <Link className="hero-btn" to="/docs">[ Getting Started ]</Link>
             <Link className="hero-btn hero-btn--secondary" to="/docs/components/button">[ Components ]</Link>
@@ -62,7 +63,7 @@ export default function Home() {
         <section className="demo-section">
           <div className="demo-code">
             <div className="demo-label">┤ index.tsx ├</div>
-            <pre><code>{REACT_EXAMPLE}</code></pre>
+            <CodeBlock language="tsx">{REACT_EXAMPLE}</CodeBlock>
           </div>
           <div className="demo-preview">
             <TerminalScreenshot name="stack" title="Output" />
