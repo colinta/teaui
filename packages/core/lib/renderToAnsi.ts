@@ -11,8 +11,10 @@ import type {HotKeyDef, MouseEventListenerName} from './events/index.js'
  * Viewport calls various registration methods on Screen during render —
  * these are all no-ops for screenshot/offscreen purposes.
  */
-function createHeadlessScreen(): Screen {
+export function createHeadlessScreen(): Screen {
   return {
+    render() {},
+    needsRender() {},
     requestModal() {
       return false
     },
