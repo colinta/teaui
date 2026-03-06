@@ -346,7 +346,16 @@ export function lineWidth(str: string | string[]): number {
 
 // --- Locale / Segmenters ---
 
-let locale = process.env.LANG?.split('.')[0]?.slice(0, 2) ?? 'en'
+let locale = (() => {
+  const lang = process.env.LANG?.split('.')[0]?.slice(0, 2)
+  if (!lang || lang.length < 2) return 'en'
+  try {
+    Intl.getCanonicalLocales(lang)
+    return lang
+  } catch {
+    return 'en'
+  }
+})()
 let graphemesSegmenter = new Intl.Segmenter(locale)
 let wordsSegmenter = new Intl.Segmenter(locale, { granularity: 'word' })
 
