@@ -46,7 +46,7 @@ export function inspect(
   }
 
   if (value instanceof Map) {
-    return `new Map(${inspect(value.entries(), wrap, recursionDepth, visited)})`
+    return `new Map(${inspect(Array.from(value.entries()), wrap, recursionDepth, visited)})`
   }
 
   const tab = '  '.repeat(recursionDepth)
