@@ -6,7 +6,7 @@
     "Shawn Chen <meishangchen@gmail.com>",
     "npmjs.com/blessed"
   ],
-  "version": "1.3.8",
+  "version": "1.4.8",
   "license": "MIT",
   "type": "module",
   "preferGlobal": false,

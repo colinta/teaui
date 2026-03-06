@@ -6,6 +6,7 @@ const MAIN_PACKAGE = 'packages/core/package.json'
 const DEPENDENT_PACKAGES = [
   'shared/package.json',
   'packages/core/package.json',
+  'packages/term/package.json',
   'packages/react/package.json',
   'packages/preact/package.json',
   'packages/cli/package.json',

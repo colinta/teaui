@@ -146,7 +146,6 @@ really need is _goto XY, writeChar, flush_ along with the code that sets up
 raw-mode, mouse-events, resize events, etc.
 [termbox2](https://github.com/RauliL/termbox2-node) maybe?
 
-- https://github.com/chjj/blessed
 - https://github.com/vangie/east-asian-width
 - https://github.com/komagata/eastasianwidth
 - https://github.com/chalk/ansi-regex
