@@ -1,16 +1,20 @@
-import {Stack, Text, Button} from '@teaui/core'
+import {Box, Stack, Text, Button} from '@teaui/core'
 import type {ScreenshotSpec} from './types.js'
 
 export default {
-  size: {width: 40, height: 8},
+  size: {width: 40, height: 5},
   title: 'Stack',
   component: () =>
-    new Stack({
-      direction: 'down',
+    new Box({
+      border: 'single',
       children: [
-        new Text({text: 'Welcome to TeaUI'}),
-        new Button({title: 'OK'}),
-        new Button({title: 'Cancel'}),
+        new Stack({
+          direction: 'down',
+          children: [
+            new Text({text: 'First there was Ncurses'}),
+            new Button({title: 'Tell me more!'}),
+          ],
+        }),
       ],
     }),
 } satisfies ScreenshotSpec

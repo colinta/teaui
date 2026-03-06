@@ -5,7 +5,7 @@
  */
 export default {
   "title": "TeaUI",
-  "tagline": "React-powered terminal UI framework",
+  "tagline": "React-compatible terminal UI framework",
   "favicon": "img/favicon.ico",
   "url": "https://colinta.github.io",
   "baseUrl": "/teaui/",

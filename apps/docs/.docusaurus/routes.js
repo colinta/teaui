@@ -3,6 +3,41 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 
 export default [
   {
+    path: '/teaui/__docusaurus/debug',
+    component: ComponentCreator('/teaui/__docusaurus/debug', '788'),
+    exact: true
+  },
+  {
+    path: '/teaui/__docusaurus/debug/config',
+    component: ComponentCreator('/teaui/__docusaurus/debug/config', '27d'),
+    exact: true
+  },
+  {
+    path: '/teaui/__docusaurus/debug/content',
+    component: ComponentCreator('/teaui/__docusaurus/debug/content', '0b3'),
+    exact: true
+  },
+  {
+    path: '/teaui/__docusaurus/debug/globalData',
+    component: ComponentCreator('/teaui/__docusaurus/debug/globalData', '9ee'),
+    exact: true
+  },
+  {
+    path: '/teaui/__docusaurus/debug/metadata',
+    component: ComponentCreator('/teaui/__docusaurus/debug/metadata', '946'),
+    exact: true
+  },
+  {
+    path: '/teaui/__docusaurus/debug/registry',
+    component: ComponentCreator('/teaui/__docusaurus/debug/registry', '233'),
+    exact: true
+  },
+  {
+    path: '/teaui/__docusaurus/debug/routes',
+    component: ComponentCreator('/teaui/__docusaurus/debug/routes', 'c30'),
+    exact: true
+  },
+  {
     path: '/teaui/docs',
     component: ComponentCreator('/teaui/docs', '411'),
     routes: [
