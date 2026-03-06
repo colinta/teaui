@@ -3,8 +3,7 @@
   "description": "A high-level terminal UI library for Node",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
   "contributors": [
-    "Shawn Chen <meishangchen@gmail.com>",
-    "npmjs.com/blessed"
+    "Shawn Chen <meishangchen@gmail.com>"
   ],
   "version": "1.4.8",
   "license": "MIT",
