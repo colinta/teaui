@@ -7,6 +7,7 @@ export class FocusManager {
   #didCommit = false
   #currentFocus: View | undefined | typeof UNFOCUS
   #prevFocus: View | undefined | typeof UNFOCUS
+  #lastCommittedFocus: View | undefined | typeof UNFOCUS
   #focusRing: View[] = []
   #hotKeys: [View, HotKeyDef][] = []
 
@@ -89,17 +90,30 @@ export class FocusManager {
 
     if (this.#prevFocus === UNFOCUS && !this.#currentFocus) {
       this.#currentFocus = UNFOCUS
-      return false
     } else if (
       this.#focusRing.length > 0 &&
       this.#prevFocus &&
       !this.#currentFocus
     ) {
       this.#currentFocus = this.#focusRing[0]
-      return true
-    } else {
-      return false
     }
+
+    // Detect focus changes and fire lifecycle events
+    const prev = this.#lastCommittedFocus
+    const current = this.#currentFocus
+
+    if (prev !== current) {
+      if (prev && prev !== UNFOCUS) {
+        prev.didBlur()
+      }
+      if (current && current !== UNFOCUS) {
+        current.didFocus()
+      }
+      this.#lastCommittedFocus = current
+      return true
+    }
+
+    return false
   }
 
   #reorderRing() {

@@ -81,6 +81,7 @@ export abstract class View {
   // mouse handling helpers
   #isHover = false
   #isPressed = false
+  #hasFocus = false
 
   constructor(props: Props = {}) {
     this.#update(props)
@@ -192,6 +193,10 @@ export abstract class View {
 
   get isPressed() {
     return this.#isPressed
+  }
+
+  get hasFocus() {
+    return this.#hasFocus
   }
 
   get width() {
@@ -443,6 +448,20 @@ export abstract class View {
    * screen).
    */
   didUnmount(screen: Screen) {}
+  /**
+   * Called when this view gains keyboard focus. Only called on views that call
+   * `viewport.registerFocus()` in their render method.
+   */
+  didFocus() {
+    this.#hasFocus = true
+  }
+  /**
+   * Called when this view loses keyboard focus. Only called on views that previously
+   * had focus (i.e. `didFocus()` was called).
+   */
+  didBlur() {
+    this.#hasFocus = false
+  }
 
   removeFromParent() {
     if (!this.parent) {

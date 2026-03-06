@@ -11,7 +11,8 @@
   },
   "private": true,
   "dependencies": {
-    "@teaui/core": "workspace:*"
+    "@teaui/core": "workspace:*",
+    "@teaui/subprocess": "workspace:*"
   },
   "devDependencies": {
     "@teaui/shared": "workspace:*"

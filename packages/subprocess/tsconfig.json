@@ -1,0 +1,14 @@
+{
+  "extends": "@teaui/shared/tsconfig.json",
+  "include": ["lib"],
+  "exclude": [
+    "node_modules",
+    ".dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "tests"
+  ],
+  "compilerOptions": {
+    "outDir": ".dist"
+  }
+}
