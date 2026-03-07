@@ -4,7 +4,7 @@
   "main": ".dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "pnpm tsc",
+    "build": "pnpm --filter @teaui/term --filter @teaui/core --filter @teaui/react build && pnpm tsc",
     "checksum": "pnpm check --needs=.dist --needs=../../packages/core/.dist --needs=../../packages/react/.dist . ../../packages/core/lib ../../packages/react/lib 'pnpm build'",
     "demo": "pnpm checksum && cd .dist && node --enable-source-maps --",
     "clean": "rm -rf .dist/"
