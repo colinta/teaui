@@ -36,6 +36,7 @@ export class ToggleGroup extends Container {
   #sizeCache: Size = Size.zero
   #selected: Set<number> = new Set()
   #hover?: number
+  #onChange?: (changed: number, selected: number[]) => void
 
   constructor(props: Props) {
     super(props)
@@ -57,12 +58,13 @@ export class ToggleGroup extends Container {
     this.invalidateSize()
   }
 
-  #update({multiple, padding, direction, titles, selected}: Props) {
+  #update({multiple, padding, direction, titles, selected, onChange}: Props) {
     this.#multiple = multiple ?? false
     this.#padding = Math.max(0, padding ?? 1)
     this.#offAxisPadding = Math.max(0, this.#padding - 1)
     this.#direction = direction ?? 'horizontal'
     this.#selected = new Set(selected)
+    this.#onChange = onChange
     this.#updateTitles(titles)
   }
 
@@ -135,6 +137,7 @@ export class ToggleGroup extends Container {
         } else {
           this.#selected = new Set([hoverIndex])
         }
+        this.#onChange?.(hoverIndex, [...this.#selected])
       }
     }
   }

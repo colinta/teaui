@@ -16,17 +16,21 @@ import type {
   Stack as WrStack,
   Input as WrInput,
   // Log,
+  Progress as WrProgress,
   // ScrollableList,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
   Slider as WrSlider,
   Space as WrSpace,
+  Spinner as WrSpinner,
   Tree as WrTree,
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
+export {FontStyle} from './components/FontStyle.js'
+export type {FontStyleValue} from './components/FontStyle.js'
 
 type Children = 'children' | 'child'
 type TUIView<
@@ -47,9 +51,11 @@ export type ConsoleProps = TUIView<typeof WrConsoleLog>
 export type DigitsProps = TUIView<typeof WrDigits>
 export type HeaderProps = {text?: string}
 export type InputProps = TUIView<typeof WrInput>
+export type ProgressProps = TUIView<typeof WrProgress>
 export type SeparatorProps = TUIView<typeof WrSeparator>
 export type SliderProps = TUIView<typeof WrSlider>
 export type SpaceProps = TUIView<typeof WrSpace>
+export type SpinnerProps = TUIView<typeof WrSpinner>
 export type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 // "simple" containers
@@ -90,9 +96,11 @@ declare module 'preact' {
       'tui-h5': HeaderProps
       'tui-h6': HeaderProps
       'tui-input': InputProps
+      'tui-progress': ProgressProps
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
+      'tui-spinner': SpinnerProps
       'tui-toggle-group': ToggleGroupProps
 
       'tui-tree': ViewProps
@@ -160,6 +168,9 @@ export function H6(reactProps: HeaderProps): preact.JSX.Element {
 export function Input(reactProps: InputProps): preact.JSX.Element {
   return <tui-input {...reactProps} />
 }
+export function Progress(reactProps: ProgressProps): preact.JSX.Element {
+  return <tui-progress {...reactProps} />
+}
 
 interface Separator {
   (reactProps: SeparatorProps): preact.JSX.Element
@@ -205,6 +216,9 @@ Slider.vertical = function SliderHorizontal(
 
 export function Space(reactProps: SpaceProps): preact.JSX.Element {
   return <tui-space {...reactProps} />
+}
+export function Spinner(reactProps: SpinnerProps): preact.JSX.Element {
+  return <tui-spinner {...reactProps} />
 }
 export function ToggleGroup(reactProps: ToggleGroupProps): preact.JSX.Element {
   return <tui-toggle-group {...reactProps} />

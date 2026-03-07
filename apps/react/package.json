@@ -11,12 +11,13 @@
   },
   "private": true,
   "dependencies": {
-    "@teaui/react": "workspace:*",
     "@teaui/core": "workspace:*",
-    "react": "^18.3.1"
+    "@teaui/react": "workspace:*",
+    "react": "^18.3.1",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
-    "@types/react": "^18.3.1",
-    "@teaui/shared": "workspace:*"
+    "@teaui/shared": "workspace:*",
+    "@types/react": "^18.3.1"
   }
 }
