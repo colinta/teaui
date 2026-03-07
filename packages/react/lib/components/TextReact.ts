@@ -441,4 +441,22 @@ export class TextStyle extends TextProvider {
   constructor(props: StyledTextProps) {
     super(props)
   }
+
+  update(props: StyledTextProps) {
+    super.update(props)
+    this.#invalidateTextContainer()
+  }
+
+  #invalidateTextContainer() {
+    for (
+      let ancestorView: Container | undefined = this.parent;
+      Boolean(ancestorView);
+      ancestorView = ancestorView && ancestorView.parent
+    ) {
+      if (ancestorView instanceof TextContainer) {
+        ancestorView.invalidateText()
+        return
+      }
+    }
+  }
 }
