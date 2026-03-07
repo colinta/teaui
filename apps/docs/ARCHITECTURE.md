@@ -71,8 +71,12 @@ export default function App() {
 }
 ```
 
-Each example exports a default `App` component. The file contains no build
-metadata — render sizes are configured separately in `examples/specs.ts`:
+Each example exports a default `App` component. **Example files must not have
+side effects** — no `run()` or `interceptConsoleLog()` calls at the top level,
+since the build script imports the file to get the component. The `run()` import
+and call are added automatically for display (see below).
+
+Render sizes are configured separately in `examples/specs.ts`:
 
 ```ts
 export const exampleSpecs = {
@@ -92,7 +96,13 @@ and `start`:
 4. **Convert** ANSI escape codes to styled HTML (supports 16/256/24-bit color,
    bold, italic, underline, dim, inverse)
 5. **Write** `static/examples/{name}.html` (the rendered screenshot)
-6. **Copy** the raw `.tsx` source to `static/examples/{name}.tsx` (the code)
+6. **Transform** the source for display and write to `static/examples/{name}.tsx`:
+   - Strip `export default` from the component declaration
+   - Add `run` to the `@teaui/react` import if not already present
+   - Append `run(<App />)` at the end
+
+This way the displayed code looks like a complete runnable example, while the
+actual file is a safe-to-import module with no side effects.
 
 ### Headless React rendering
 

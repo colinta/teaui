@@ -302,9 +302,19 @@ async function buildExamples() {
 
       // Write the display source code: strip 'export default' and append run(<App />)
       const sourcePath = join(EXAMPLES_DIR, file)
-      const source = readFileSync(sourcePath, 'utf-8')
+      let source = readFileSync(sourcePath, 'utf-8')
         .replace(/^export default /m, '')
+
+      // Add 'run' to the @teaui/react import and append run(<App />) call
+      source = source.replace(
+        /^(import \{)(.*?)(\} from '@teaui\/react')$/m,
+        (match, pre, imports, post) => {
+          if (imports.includes('run')) return match
+          return `${pre}${imports.trimEnd()}, run${post}`
+        },
+      )
       const displaySource = source.trimEnd() + '\n\nrun(<App />)\n'
+
       const codePath = join(EXAMPLES_OUTPUT_DIR, `${name}.tsx`)
       writeFileSync(codePath, displaySource, 'utf-8')
 
