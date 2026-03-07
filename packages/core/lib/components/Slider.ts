@@ -269,11 +269,9 @@ export class Slider extends View {
       this.#value = interpolate(pos, [minSlider, maxSlider], this.#range, true)
       shouldUpdate = true
 
-      // if step is an even number, value should be an even number
-      // this should be a _setting_ not automatic like this
       if (~~this.#step === this.#step) {
         this.#value =
-          Math.round((this.#value - this.#range[0]) / this.#step) * this.#step
+          this.#range[0] + Math.round((this.#value - this.#range[0]) / this.#step) * this.#step
       }
     }
 

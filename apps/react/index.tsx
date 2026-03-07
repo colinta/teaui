@@ -40,66 +40,79 @@ import YAML from 'yaml'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function syntaxHighlightJSON(json: string): React.ReactNode {
-  // Split JSON into tokens and colorize them
-  const parts: React.ReactNode[] = []
-  const regex =
-    /("(?:\\.|[^"\\])*")\s*:|("(?:\\.|[^"\\])*")|(true|false|null)|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|([{}\[\]:,])/g
-  let lastIndex = 0
-  let match: RegExpExecArray | null
+let _key = 0
 
-  while ((match = regex.exec(json)) !== null) {
-    // whitespace before the match
-    if (match.index > lastIndex) {
-      parts.push(json.slice(lastIndex, match.index))
-    }
+function indent(depth: number): string {
+  return '  '.repeat(depth)
+}
 
-    if (match[1] !== undefined) {
-      // key
-      parts.push(
-        <Style key={match.index} foreground="cyan">
-          {match[1]}
-        </Style>,
-      )
-      parts.push(':')
-    } else if (match[2] !== undefined) {
-      // string value
-      parts.push(
-        <Style key={match.index} foreground="green">
-          {match[2]}
-        </Style>,
-      )
-    } else if (match[3] !== undefined) {
-      // boolean/null
-      parts.push(
-        <Style key={match.index} foreground="yellow">
-          {match[3]}
-        </Style>,
-      )
-    } else if (match[4] !== undefined) {
-      // number
-      parts.push(
-        <Style key={match.index} foreground="magenta">
-          {match[4]}
-        </Style>,
-      )
-    } else if (match[5] !== undefined) {
-      // punctuation
-      parts.push(
-        <Style key={match.index} foreground="white">
-          {match[5]}
-        </Style>,
-      )
-    }
+function renderValue(value: unknown, depth: number): React.ReactNode {
+  if (value === null) {
+    return <Style key={_key++} foreground="yellow">null</Style>
+  }
+  if (typeof value === 'boolean') {
+    return <Style key={_key++} foreground="yellow">{String(value)}</Style>
+  }
+  if (typeof value === 'number') {
+    return <Style key={_key++} foreground="magenta">{String(value)}</Style>
+  }
+  if (typeof value === 'string') {
+    return <Style key={_key++} foreground="green">{JSON.stringify(value)}</Style>
+  }
+  if (Array.isArray(value)) {
+    return renderArray(value, depth)
+  }
+  if (typeof value === 'object') {
+    return renderObject(value as Record<string, unknown>, depth)
+  }
+  return String(value)
+}
 
-    lastIndex = match.index + match[0].length
+function renderArray(arr: unknown[], depth: number): React.ReactNode {
+  if (arr.length === 0) {
+    return '[]'
   }
 
-  if (lastIndex < json.length) {
-    parts.push(json.slice(lastIndex))
+  const parts: React.ReactNode[] = ['[\n']
+  for (let i = 0; i < arr.length; i++) {
+    parts.push(indent(depth + 1))
+    parts.push(renderValue(arr[i], depth + 1))
+    if (i < arr.length - 1) {
+      parts.push(',')
+    }
+    parts.push('\n')
+  }
+  parts.push(indent(depth))
+  parts.push(']')
+  return <React.Fragment key={_key++}>{parts}</React.Fragment>
+}
+
+function renderObject(obj: Record<string, unknown>, depth: number): React.ReactNode {
+  const keys = Object.keys(obj)
+  if (keys.length === 0) {
+    return '{}'
   }
 
-  return <>{parts}</>
+  const parts: React.ReactNode[] = ['{\n']
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i]
+    parts.push(indent(depth + 1))
+    parts.push(<Style key={_key++} foreground="blue">{JSON.stringify(key)}</Style>)
+    parts.push(': ')
+    parts.push(renderValue(obj[key], depth + 1))
+    if (i < keys.length - 1) {
+      parts.push(',')
+    }
+    parts.push('\n')
+  }
+  parts.push(indent(depth))
+  parts.push('}')
+  return <React.Fragment key={_key++}>{parts}</React.Fragment>
+}
+
+function syntaxHighlightJSON(value: unknown): React.ReactNode {
+  _key = 0
+  return renderValue(value, 0)
 }
 
 // ── Tab: YAML → JSON ────────────────────────────────────────────────────────
@@ -121,12 +134,12 @@ tags: [tui, terminal, ui]
 function YamlTab() {
   const [yamlText, setYamlText] = useState(DEFAULT_YAML)
 
-  const {json, error} = useMemo(() => {
+  const {parsed, error} = useMemo(() => {
     try {
       const parsed = YAML.parse(yamlText)
-      return {json: JSON.stringify(parsed, null, 2), error: null}
+      return {parsed, error: null}
     } catch (e: any) {
-      return {json: null, error: e.message ?? String(e)}
+      return {parsed: null, error: e.message ?? String(e)}
     }
   }, [yamlText])
 
@@ -167,7 +180,7 @@ function YamlTab() {
               </Text>
             ) : (
               <Scrollable flex={1}>
-                <Text>{json ? syntaxHighlightJSON(json) : ''}</Text>
+                <Text>{parsed !== null ? syntaxHighlightJSON(parsed) : ''}</Text>
               </Scrollable>
             )}
           </Stack.down>

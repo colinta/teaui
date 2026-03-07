@@ -166,9 +166,12 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
   }
 
   function removeFromTextContainer(container: Container, child: View) {
-    // find TextContainer with child in it, and remove
+    // find TextContainer with child in it, and remove.
+    // TextContainer.add() puts TextLiterals/TextStyles into #nodes (accessed
+    // via .nodes), NOT into .children (which holds generated Text views).
+    // So we check child.parent === node rather than node.children.includes(child).
     for (const node of container.children) {
-      if (node instanceof TextContainer && node.children.includes(child)) {
+      if (node instanceof TextContainer && child.parent === node) {
         node.removeChild(child)
         if (node.children.length === 0) {
           container.removeChild(node)
