@@ -4,6 +4,41 @@ I wanted a curses-style fullscreen application framework that could be powered b
 
 This repo is organized as a pnpm workspace. The main library is in `packages/core`, and the demo code is in `apps/demo`. There are also React and Preact renderers.
 
+### React Demo
+
+<!-- TODO: Replace with asciinema player embed once recorded -->
+<!-- <a href="https://asciinema.org/a/RECORDING_ID"><img src="https://asciinema.org/a/RECORDING_ID.svg" width="600" /></a> -->
+
+###### [apps/react/index.tsx](https://github.com/colinta/teaui/blob/master/apps/react/index.tsx)
+
+```
+pnpm --filter apps/react demo index.js
+```
+
+<details>
+<summary>View source code</summary>
+
+```tsx
+import React, {useState, useMemo} from 'react'
+import {interceptConsoleLog, type Border} from '@teaui/core'
+import {
+  Accordion, Box, Button, Checkbox, CollapsibleText, ConsoleLog,
+  Digits, Drawer, FontStyle, type FontStyleValue,
+  H1, H2, H3, H4, H5, H6, Input, Progress,
+  Scrollable, Separator, Slider, Space, Spinner,
+  Stack, Style, Tabs, Text, run,
+} from '@teaui/react'
+import YAML from 'yaml'
+
+// Tabs: YAML→JSON, Digits (w×h=area), Text Styles (FontStyle toggle),
+//       Widgets showcase, Drawer demo, Borders/Buttons/Colors
+// See full source: apps/react/index.tsx
+```
+
+</details>
+
+---
+
 ### Demo: components
 
 ###### [apps/demo/components.ts](https://github.com/colinta/teaui/blob/master/apps/demos/components.ts)

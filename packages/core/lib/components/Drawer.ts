@@ -4,11 +4,14 @@ import {Container, Props as ContainerProps} from '../Container.js'
 import {Rect, Point, Size, type Edge} from '../geometry.js'
 import {
   type MouseEvent,
+  type KeyEvent,
+  type HotKey,
   isMouseClicked,
   isMousePressStart,
   isMousePressExit,
   isMouseEnter,
   isMouseExit,
+  toHotKeyDef,
 } from '../events/index.js'
 import type {Style} from '../Style.js'
 import {Theme} from '../Theme.js'
@@ -19,6 +22,7 @@ interface Props extends ContainerProps {
   location?: Edge
   isOpen?: boolean
   onToggle?: (isOpen: boolean) => void
+  hotKey?: HotKey
 }
 
 interface ConstructorProps extends Props {
@@ -41,6 +45,7 @@ export class Drawer extends Container {
   #currentDx = 0
   #location: Edge = 'left'
   #onToggle: Props['onToggle']
+  #hotKey?: HotKey
 
   constructor({content, drawer, ...props}: ConstructorProps) {
     super(props)
@@ -71,12 +76,13 @@ export class Drawer extends Container {
     super.update(props)
   }
 
-  #update({isOpen, location, onToggle}: Props) {
+  #update({isOpen, location, onToggle, hotKey}: Props) {
     if (isOpen !== undefined) {
       this.#setIsOpen(isOpen, false)
     }
 
     this.#onToggle = onToggle
+    this.#hotKey = hotKey
     this.#location = location ?? 'left'
   }
 
@@ -183,6 +189,10 @@ export class Drawer extends Container {
     return false
   }
 
+  receiveKey(_: KeyEvent) {
+    this.#setIsOpen(!this.#isOpen, true)
+  }
+
   receiveMouse(event: MouseEvent, system: System) {
     super.receiveMouse(event, system)
 
@@ -222,6 +232,10 @@ export class Drawer extends Container {
   render(viewport: Viewport) {
     if (viewport.isEmpty) {
       return super.render(viewport)
+    }
+
+    if (this.#hotKey) {
+      viewport.registerHotKey(toHotKeyDef(this.#hotKey))
     }
 
     if (this.#currentDx !== this.#targetDx()) {

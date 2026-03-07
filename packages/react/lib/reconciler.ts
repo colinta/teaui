@@ -13,6 +13,7 @@ import {
   Container,
   Digits,
   Drawer,
+  Dropdown,
   H1,
   H2,
   H3,
@@ -20,6 +21,7 @@ import {
   H5,
   H6,
   Input,
+  Progress,
   Screen,
   type ScreenOptions,
   Scrollable,
@@ -30,6 +32,7 @@ import {
   Stack,
   Tabs,
   ToggleGroup,
+  Tree,
   View,
   Window,
 } from '@teaui/core'
@@ -66,6 +69,9 @@ function createInstance(type: string, props: Props): any {
     case 'digits':
     case 'tui-digits':
       return new Digits(props as any)
+    case 'dropdown':
+    case 'tui-dropdown':
+      return new Dropdown(props as any)
     case 'h1':
     case 'tui-h1':
       return H1(((props as any).text as string) ?? '')
@@ -96,12 +102,19 @@ function createInstance(type: string, props: Props): any {
     case 'space':
     case 'tui-space':
       return new Space(props as any)
+    case 'progress':
+    case 'tui-progress':
+      return new Progress(props as any)
     case 'spinner':
     case 'tui-spinner':
       return new Spinner(props as any)
     case 'toggle-group':
     case 'tui-toggle-group':
       return new ToggleGroup(props as any)
+
+    case 'tree':
+    case 'tui-tree':
+      return new Tree(props as any)
 
     // "simple" containers
     case 'box':

@@ -16,6 +16,7 @@ import type {
   Stack as WrStack,
   Input as WrInput,
   // Log,
+  Progress as WrProgress,
   // ScrollableList,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
@@ -28,6 +29,8 @@ import type {
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
+export {FontStyle} from './components/FontStyle.js'
+export type {FontStyleValue} from './components/FontStyle.js'
 
 type Children = 'children' | 'child'
 type TUIView<
@@ -48,6 +51,7 @@ export type ConsoleProps = TUIView<typeof WrConsoleLog>
 export type DigitsProps = TUIView<typeof WrDigits>
 export type HeaderProps = {text?: string}
 export type InputProps = TUIView<typeof WrInput>
+export type ProgressProps = TUIView<typeof WrProgress>
 export type SeparatorProps = TUIView<typeof WrSeparator>
 export type SliderProps = TUIView<typeof WrSlider>
 export type SpaceProps = TUIView<typeof WrSpace>
@@ -92,6 +96,7 @@ declare module 'preact' {
       'tui-h5': HeaderProps
       'tui-h6': HeaderProps
       'tui-input': InputProps
+      'tui-progress': ProgressProps
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
@@ -162,6 +167,9 @@ export function H6(reactProps: HeaderProps): preact.JSX.Element {
 }
 export function Input(reactProps: InputProps): preact.JSX.Element {
   return <tui-input {...reactProps} />
+}
+export function Progress(reactProps: ProgressProps): preact.JSX.Element {
+  return <tui-progress {...reactProps} />
 }
 
 interface Separator {

@@ -9,11 +9,12 @@ import type {
   ConsoleLog as WrConsoleLog,
   Digits as WrDigits,
   Drawer as WrDrawer,
-  // Dropdown,
+  Dropdown as WrDropdown,
   Header as WrHeader,
   Stack as WrStack,
   Input as WrInput,
   // Log,
+  Progress as WrProgress,
   // ScrollableList,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
@@ -26,6 +27,8 @@ import type {
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
+export {FontStyle} from './components/FontStyle.js'
+export type {FontStyleValue} from './components/FontStyle.js'
 
 type Children = 'children' | 'child'
 type TUIView<
@@ -44,8 +47,20 @@ type CheckboxProps = TUIView<typeof WrCheckbox>
 type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
 type ConsoleProps = TUIView<typeof WrConsoleLog>
 type DigitsProps = TUIView<typeof WrDigits>
+type DropdownProps = {
+  choices: [string, any][]
+  selected?: any
+  onSelect?: (value: any) => void
+  multiple?: boolean
+  title?: string
+  theme?: string
+  height?: number | 'shrink'
+  width?: number | 'shrink'
+  flex?: number
+}
 type HeaderProps = {text?: string}
 type InputProps = TUIView<typeof WrInput>
+type ProgressProps = TUIView<typeof WrProgress>
 type SeparatorProps = TUIView<typeof WrSeparator>
 type SliderProps = TUIView<typeof WrSlider>
 type SpaceProps = TUIView<typeof WrSpace>
@@ -83,6 +98,7 @@ declare module 'react' {
       'tui-collapsible-text': CollapsibleTextProps
       'tui-console': ConsoleProps
       'tui-digits': DigitsProps
+      'tui-dropdown': DropdownProps
       'tui-h1': HeaderProps
       'tui-h2': HeaderProps
       'tui-h3': HeaderProps
@@ -90,6 +106,7 @@ declare module 'react' {
       'tui-h5': HeaderProps
       'tui-h6': HeaderProps
       'tui-input': InputProps
+      'tui-progress': ProgressProps
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
@@ -138,6 +155,9 @@ export function ConsoleLog(reactProps: ConsoleProps): JSX.Element {
 export function Digits(reactProps: DigitsProps): JSX.Element {
   return <tui-digits {...reactProps} />
 }
+export function Dropdown(reactProps: DropdownProps): JSX.Element {
+  return <tui-dropdown {...reactProps} />
+}
 export function H1(reactProps: HeaderProps): JSX.Element {
   return <tui-h1 {...reactProps} />
 }
@@ -158,6 +178,9 @@ export function H6(reactProps: HeaderProps): JSX.Element {
 }
 export function Input(reactProps: InputProps): JSX.Element {
   return <tui-input {...reactProps} />
+}
+export function Progress(reactProps: ProgressProps): JSX.Element {
+  return <tui-progress {...reactProps} />
 }
 
 interface Separator {

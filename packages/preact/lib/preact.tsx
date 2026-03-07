@@ -17,6 +17,8 @@ import {
   H5,
   H6,
   Drawer as WrDrawer,
+  Progress as WrProgress,
+  Spinner as WrSpinner,
   ToggleGroup as WrToggleGroup,
   Input as WrInput,
   Screen,
@@ -45,6 +47,7 @@ import type {
   DigitsProps,
   HeaderProps,
   InputProps,
+  ProgressProps,
   SeparatorProps,
   SliderProps,
   SpaceProps,
@@ -80,6 +83,7 @@ declare module 'preact' {
       'tui-h5': HeaderProps
       'tui-h6': HeaderProps
       'tui-input': InputProps
+      'tui-progress': ProgressProps
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
@@ -149,6 +153,12 @@ function createView(type: string, props: Props): any {
     case 'h6':
     case 'tui-h6':
       return H6(((viewProps as any).text as string) ?? '')
+    case 'progress':
+    case 'tui-progress':
+      return new WrProgress(viewProps as any)
+    case 'spinner':
+    case 'tui-spinner':
+      return new WrSpinner(viewProps as any)
     case 'toggle-group':
     case 'tui-toggle-group':
       return new WrToggleGroup(viewProps as any)
