@@ -173,7 +173,7 @@ export class TextContainer extends Container {
   }
 
   removeChild(child: View) {
-    if (child instanceof TextLiteral) {
+    if (child instanceof TextLiteral || child instanceof TextStyle) {
       child.parent = undefined
     }
 
@@ -206,6 +206,7 @@ export class TextContainer extends Container {
         }
 
         childView.text = nextChild
+        childIndex += 1
       }
     }
   }
