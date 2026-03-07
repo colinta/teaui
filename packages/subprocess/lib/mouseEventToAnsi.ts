@@ -23,6 +23,7 @@ export function mouseEventToAnsi(event: MouseEvent): string {
   let final = 'M' // press/motion
 
   // Determine button base value
+  // In SGR encoding: 0=left, 1=middle, 2=right, 3=no button (release/move)
   switch (event.button) {
     case 'left':
       button = 0
@@ -34,7 +35,7 @@ export function mouseEventToAnsi(event: MouseEvent): string {
       button = 2
       break
     default:
-      button = 0
+      button = 3
       break
   }
 
@@ -55,14 +56,20 @@ export function mouseEventToAnsi(event: MouseEvent): string {
     final = 'm'
   } else if (
     name === 'mouse.button.dragInside' ||
-    name === 'mouse.button.dragOutside' ||
+    name === 'mouse.button.dragOutside'
+  ) {
+    // Drag events — button is held, use the actual button value
+    button += 32
+    final = 'M'
+  } else if (
     name === 'mouse.move.in' ||
     name === 'mouse.move.enter' ||
     name === 'mouse.move.exit' ||
     name === 'mouse.move.below'
   ) {
-    // Motion events
-    button += 32
+    // Pure hover/move events — no button held
+    // Base button 3 = no button in SGR encoding
+    button = 3 + 32
     final = 'M'
   } else {
     // Press (down, enter while dragging)

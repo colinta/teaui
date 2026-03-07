@@ -91,11 +91,34 @@ describe('mouseEventToAnsi', () => {
       expect(result).toBe('\x1b[<32;6;6M')
     })
 
-    it('move inside adds motion bit', () => {
+    it('move events always use no-button encoding', () => {
+      // mouse.move.* events are pure hover — no button held
+      // base button 3 + motion bit 32 = 35
       const result = mouseEventToAnsi(
         mouseEvent('mouse.move.in', 5, 5, {button: 'left'}),
       )
-      expect(result).toBe('\x1b[<32;6;6M')
+      expect(result).toBe('\x1b[<35;6;6M')
+    })
+
+    it('move with unknown button also uses no-button encoding', () => {
+      const result = mouseEventToAnsi(
+        mouseEvent('mouse.move.in', 5, 5, {button: 'unknown'}),
+      )
+      expect(result).toBe('\x1b[<35;6;6M')
+    })
+
+    it('move.enter uses no-button encoding', () => {
+      const result = mouseEventToAnsi(
+        mouseEvent('mouse.move.enter', 3, 4, {button: 'left'}),
+      )
+      expect(result).toBe('\x1b[<35;4;5M')
+    })
+
+    it('move.exit uses no-button encoding', () => {
+      const result = mouseEventToAnsi(
+        mouseEvent('mouse.move.exit', 3, 4, {button: 'left'}),
+      )
+      expect(result).toBe('\x1b[<35;4;5M')
     })
   })
 
