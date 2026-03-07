@@ -1,0 +1,200 @@
+# React Reconciler & Text System
+
+TeaUI provides React and Preact renderers that bridge the virtual DOM to TeaUI's
+core view tree. This document explains the reconciler architecture and the text
+system in detail.
+
+## Reconciler Overview
+
+The reconciler (`packages/react/lib/reconciler.ts`) uses `react-reconciler` in
+**LegacyRoot mode** (synchronous updates). The Preact renderer
+(`packages/preact/lib/preact.tsx`) achieves the same result using Preact's
+built-in VDOM diffing with a fake DOM layer that maps to TeaUI views.
+
+### Lifecycle
+
+1. **`createInstance(type, props)`** — Maps JSX element names to core view
+   constructors. For example, `tui-stack` → `new Stack(props)`, `tui-style` →
+   `new TextStyle(props)`. String children become `TextLiteral` instances via
+   `createTextInstance`.
+
+2. **`appendChild(parent, child)`** — Adds child views to parents. Text nodes
+   (`TextLiteral`, `TextStyle`) get special handling — see [Text System](#text-system)
+   below.
+
+3. **`prepareUpdate` / `commitUpdate`** — `prepareUpdate` deep-compares old and
+   new props using `isSame()`. If any prop changed, it returns a non-null value
+   to signal an update is needed. `commitUpdate` then calls `node.update(newProps)`
+   on the core view, which updates internal state and triggers
+   `invalidateSize()` → `screen.needsRender()`.
+
+   > **Design note:** `prepareUpdate` returns an empty `[]` payload — it doesn't
+   > compute a minimal diff. `commitUpdate` ignores the payload and passes all
+   > `newProps` to `node.update()`. This is intentional: core views always
+   > re-process all their props in `update()`, so computing a property-level diff
+   > would be wasted work.
+
+4. **`resetAfterCommit`** — Calls `screen.render()` to flush all changes to the
+   terminal.
+
+### Prop Comparison (`isSame`)
+
+The `isSame` function (`packages/react/lib/isSame.ts`) performs deep structural
+equality with special handling for:
+
+- **Primitives & functions**: strict `===` equality. This means un-memoized
+  callbacks trigger updates — use `useCallback` for stable references.
+- **Arrays**: element-wise recursive comparison.
+- **Sets/Maps/Dates**: structural comparison.
+- **React elements** (`$$typeof`): compared with `_owner` stripped to avoid
+  traversing the huge fiber tree.
+- **Objects**: own-property recursive comparison.
+- **Depth limit**: returns `false` (not equal) at depth ≥ 100 as a safety valve.
+
+## Text System
+
+Text rendering requires special handling because React's model — inline text
+with nested styles — doesn't map directly to TeaUI's view tree, where each view
+occupies a rectangular region. Four classes collaborate to bridge this gap.
+
+### Classes
+
+#### `TextLiteral`
+
+Created for each JSX string child (e.g. `{"hello"}` or bare text). Has no
+visual size or rendering of its own — it's a data node.
+
+Its key method is `styledText()`, which walks up the parent chain to find the
+nearest `TextStyle` ancestor and wraps the text in ANSI SGR codes from that
+style. If no `TextStyle` is found before reaching a `TextContainer`, it returns
+the plain text.
+
+When its `text` property is set (e.g. by `commitTextUpdate`), it walks up to
+the ancestor `TextContainer` and calls `invalidateText()`.
+
+#### `TextContainer`
+
+The layout engine for text. Created automatically by the reconciler to group
+adjacent text nodes. It is **not** a JSX element — users never create it
+directly.
+
+It maintains two separate child collections:
+
+- **`#nodes`** — The reconciler-managed list of `TextLiteral` and `TextStyle`
+  nodes (the React tree structure).
+- **`children`** (inherited from `Container`) — Generated core `Text` views
+  used for actual layout and rendering.
+
+The conversion from `#nodes` to `children` happens via:
+
+1. **`#flatten(nodes)`** — Recursively unwraps `TextStyle` and nested
+   `TextContainer` nodes, yielding a flat list of `TextLiteral` and embedded
+   `View` nodes.
+
+2. **`#nodesToChildren()`** — Iterates the flattened list. Adjacent
+   `TextLiteral` nodes are concatenated (via `styledText()`) into a single
+   string. Embedded `View` nodes break the sequence, flushing the text buffer.
+   Returns `(string | View)[]`.
+
+3. **`#invalidateNodes()`** — Full rebuild: removes all generated `children`,
+   then iterates `#nodesToChildren()` creating core `Text` views (via
+   `#createTextNode`) for strings and re-adding embedded Views.
+
+4. **`invalidateText()`** — Fast-path update: re-runs `#nodesToChildren()` and
+   updates existing `Text` views' text in place. Falls back to
+   `#invalidateNodes()` if the structure has changed (e.g. a View appeared where
+   a Text was expected).
+
+#### `TextProvider` (`<Text>`)
+
+A Container that stores text layout configuration: `style`, `alignment`, `wrap`,
+`font`. Does not render text itself — `TextContainer` reads these properties
+(via `textProps`) when creating core `Text` views.
+
+Styles inherit from ancestor `TextProvider` nodes via the `parentStyle` getter,
+which walks up the view tree.
+
+#### `TextStyle` (`<Style>`)
+
+Extends `TextProvider` for inline styling only (no `wrap`, `alignment`, `font`).
+When its props change, it notifies the ancestor `TextContainer` to regenerate
+styled text via `invalidateText()`.
+
+### How `appendChild` Handles Text
+
+When the reconciler appends a `TextLiteral` or `TextStyle`:
+
+1. **Parent is `TextStyle`** — Child is added directly via `Container.add()`.
+   This preserves the parent chain so `styledText()` can walk up to find the
+   style. The reconciler intentionally skips TextContainer wrapping here.
+
+2. **Parent is any other Container** — The reconciler checks if the parent's
+   last child is a `TextContainer`. If so, adds the text node to it. If not,
+   creates a new `TextContainer`, adds it to the parent, then adds the text
+   node to it.
+
+This means adjacent text nodes share a `TextContainer`, but a non-text view
+(like `<Box>`) between them creates a boundary and a new `TextContainer`.
+
+### Example: `<Text wrap><Style bold>{text}</Style></Text>`
+
+**React tree:**
+
+```
+TextProvider (wrap: true)          ← <Text wrap>
+  └── TextStyle (bold: true)       ← <Style bold>
+        └── TextLiteral("hello")   ← {text}
+```
+
+**After reconciler's appendChild:**
+
+```
+TextProvider (wrap: true)
+  └── TextContainer                ← auto-created by reconciler
+        ├── #nodes: [TextStyle]
+        │     └── children: [TextLiteral("hello")]
+        └── children: [Text("\x1b[1mhello\x1b[22m")]  ← generated
+```
+
+**The generation pipeline:**
+
+1. `#flatten(#nodes)` unwraps the `TextStyle`, yielding `[TextLiteral("hello")]`
+2. `TextLiteral.styledText()` walks up to parent `TextStyle`, gets `bold: true`,
+   returns `"\x1b[1mhello\x1b[22m"` (ANSI bold)
+3. `#createTextNode(styledString)` walks up from `TextContainer` to
+   `TextProvider`, reads `textProps` (`wrap: true`, etc.), creates a core
+   `Text` view with the ANSI-styled string and layout props
+4. The core `Text` view renders via `Viewport.write()`, which parses embedded
+   ANSI sequences to apply bold to the terminal output
+
+### Update Propagation
+
+| Trigger | What happens |
+|---|---|
+| **Text content changes** (`TextLiteral.text` setter) | Walks up to ancestor `TextContainer`, calls `invalidateText()` — re-runs `styledText()` on all nodes and updates `Text` views in place |
+| **Style prop changes** (`TextStyle.update()`) | Updates internal `#style`, then walks up to ancestor `TextContainer` and calls `invalidateText()` |
+| **Layout prop changes** (`TextProvider.update()`) | Updates `#style`, `#alignment`, `#wrap`, `#font`. Calls `invalidateSize()` which triggers a re-render. `TextContainer` re-reads `textProps` during the next `#invalidateNodes()` call |
+
+### Removal
+
+When the reconciler removes a `TextLiteral` or `TextStyle`:
+
+1. The reconciler's `removeChild` checks if the child's parent is the container
+   directly, or if it's inside a `TextContainer`.
+2. If inside a `TextContainer`, it calls `textContainer.removeChild(child)`,
+   which removes the node from `#nodes` and triggers `#invalidateNodes()`.
+3. If the `TextContainer` has no remaining children after removal, it is removed
+   from its parent container to avoid empty wrappers.
+
+## React vs Preact Differences
+
+The two renderers share the same `TextReact.ts` text system (nearly identical
+copies) but differ in how they integrate with the framework:
+
+| | React | Preact |
+|---|---|---|
+| **Reconciler** | `react-reconciler` package with explicit host config | Fake DOM layer (`RendererElement`) that Preact's built-in VDOM diffs against |
+| **Update trigger** | `resetAfterCommit` → `screen.render()` | Preact `options.diffed` hook → `screen.render()` |
+| **Container mode** | `createContainer(window, 0)` — LegacyRoot, synchronous | N/A — Preact is always synchronous |
+| **Text system** | Identical `TextReact.ts` | Identical `TextReact.ts` |
+| **Prop stripping** | `createInstance` strips `children`/`child` from props | `createView` destructures `children`/`child` from props |
