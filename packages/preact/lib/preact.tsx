@@ -235,20 +235,17 @@ interface Renderer<T> {
 
 function removeFromTextContainer(container: Container, child: View) {
   for (const viewChild of container.children) {
-    if (viewChild === child) {
-      container.removeChild(viewChild)
-      return true
-    } else if (viewChild instanceof TextContainer) {
+    if (viewChild instanceof TextContainer && child.parent === viewChild) {
       // TextContainer.add() puts TextLiterals/TextStyles into #nodes,
       // NOT into .children (which holds generated Text views).
       // Check child.parent instead of searching .children.
-      if (child.parent === viewChild) {
-        viewChild.removeChild(child)
-        return true
+      viewChild.removeChild(child)
+      if (viewChild.children.length === 0) {
+        container.removeChild(viewChild)
       }
+      return
     }
   }
-  return false
 }
 
 function removeChild(container: Container, child: View) {
