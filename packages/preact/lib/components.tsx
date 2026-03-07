@@ -21,6 +21,7 @@ import type {
   Separator as WrSeparator,
   Slider as WrSlider,
   Space as WrSpace,
+  Spinner as WrSpinner,
   Tree as WrTree,
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
@@ -50,6 +51,7 @@ export type InputProps = TUIView<typeof WrInput>
 export type SeparatorProps = TUIView<typeof WrSeparator>
 export type SliderProps = TUIView<typeof WrSlider>
 export type SpaceProps = TUIView<typeof WrSpace>
+export type SpinnerProps = TUIView<typeof WrSpinner>
 export type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 // "simple" containers
@@ -93,6 +95,7 @@ declare module 'preact' {
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
+      'tui-spinner': SpinnerProps
       'tui-toggle-group': ToggleGroupProps
 
       'tui-tree': ViewProps
@@ -205,6 +208,9 @@ Slider.vertical = function SliderHorizontal(
 
 export function Space(reactProps: SpaceProps): preact.JSX.Element {
   return <tui-space {...reactProps} />
+}
+export function Spinner(reactProps: SpinnerProps): preact.JSX.Element {
+  return <tui-spinner {...reactProps} />
 }
 export function ToggleGroup(reactProps: ToggleGroupProps): preact.JSX.Element {
   return <tui-toggle-group {...reactProps} />

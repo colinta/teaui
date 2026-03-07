@@ -25,6 +25,7 @@ import {
   Separator as WrSeparator,
   Slider as WrSlider,
   Space as WrSpace,
+  Spinner as WrSpinner,
   Stack as WrStack,
   Tabs as WrTabs,
   View,
@@ -47,6 +48,7 @@ import type {
   SeparatorProps,
   SliderProps,
   SpaceProps,
+  SpinnerProps,
   ToggleGroupProps,
   BoxProps,
   ButtonProps,
@@ -81,6 +83,7 @@ declare module 'preact' {
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
+      'tui-spinner': SpinnerProps
       'tui-toggle-group': ToggleGroupProps
 
       'tui-tree': ViewProps
@@ -164,6 +167,9 @@ function createView(type: string, props: Props): any {
     case 'space':
     case 'tui-space':
       return new WrSpace(viewProps as any)
+    case 'spinner':
+    case 'tui-spinner':
+      return new WrSpinner(viewProps as any)
     // case 'Tree':
     //   return
     case 'box':

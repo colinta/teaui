@@ -26,6 +26,7 @@ import {
   Separator,
   Slider,
   Space,
+  Spinner,
   Stack,
   Tabs,
   ToggleGroup,
@@ -95,6 +96,9 @@ function createInstance(type: string, props: Props): any {
     case 'space':
     case 'tui-space':
       return new Space(props as any)
+    case 'spinner':
+    case 'tui-spinner':
+      return new Spinner(props as any)
     case 'toggle-group':
     case 'tui-toggle-group':
       return new ToggleGroup(props as any)

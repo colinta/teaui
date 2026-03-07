@@ -19,6 +19,7 @@ import type {
   Separator as WrSeparator,
   Slider as WrSlider,
   Space as WrSpace,
+  Spinner as WrSpinner,
   Tree as WrTree,
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
@@ -48,6 +49,7 @@ type InputProps = TUIView<typeof WrInput>
 type SeparatorProps = TUIView<typeof WrSeparator>
 type SliderProps = TUIView<typeof WrSlider>
 type SpaceProps = TUIView<typeof WrSpace>
+type SpinnerProps = TUIView<typeof WrSpinner>
 type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 // "simple" containers
@@ -91,6 +93,7 @@ declare module 'react' {
       'tui-separator': SeparatorProps
       'tui-slider': SliderProps
       'tui-space': SpaceProps
+      'tui-spinner': SpinnerProps
       'tui-toggle-group': ToggleGroupProps
 
       'tui-tree': ViewProps
@@ -201,6 +204,9 @@ Slider.vertical = function SliderHorizontal(
 
 export function Space(reactProps: SpaceProps): JSX.Element {
   return <tui-space {...reactProps} />
+}
+export function Spinner(reactProps: SpinnerProps): JSX.Element {
+  return <tui-spinner {...reactProps} />
 }
 export function ToggleGroup(reactProps: ToggleGroupProps): JSX.Element {
   return <tui-toggle-group {...reactProps} />
