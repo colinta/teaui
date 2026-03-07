@@ -6,17 +6,38 @@ import useBaseUrl from '@docusaurus/useBaseUrl'
 import TerminalScreenshot from '../components/TerminalScreenshot'
 import '../css/index.css'
 
-const HERO_ASCII = `
-╔══════════════════════════════════════════╗
-║                                          ║
-║   ████████╗███████╗ █████╗ ██╗   ██╗██╗  ║
-║   ╚══██╔══╝██╔════╝██╔══██╗██║   ██║██║  ║
-║      ██║   █████╗  ███████║██║   ██║██║  ║
-║      ██║   ██╔══╝  ██╔══██║██║   ██║██║  ║
-║      ██║   ███████╗██║  ██║╚██████╔╝██║  ║
-║      ╚═╝   ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ║
-║                                          ║
-╚══════════════════════════════════════════╝`.trim()
+const WARM = '#f0dfaf' // zenburn yellow
+const CYAN = '#8cd0d3' // zenburn cyan
+const DIM = '#808080' // zenburn gray
+
+type Span = {text: string; color: string}
+// Each line is an array of {text, color} segments
+const HERO_LINES: Span[][] = [
+  [{text: '     ) ) )      ', color: DIM}],
+  [{text: '    ( ( (       ', color: DIM}],
+  [
+    {text: '  ┌────────┐', color: WARM},
+    {text: '──╮', color: DIM},
+  ],
+  [
+    {text: '  │', color: WARM},
+    {text: '╼╼╼╼╼╼╼╼', color: CYAN},
+    {text: '│  │', color: WARM},
+  ],
+  [
+    {text: '  │', color: WARM},
+    {text: ' TeaUI  ', color: CYAN},
+    {text: '│  │', color: WARM},
+  ],
+  [
+    {text: '  │', color: WARM},
+    {text: '╼╼╼╼╼╼╼╼', color: CYAN},
+    {text: '│', color: WARM},
+    {text: '──╯', color: DIM},
+  ],
+  [{text: '  ╰▄▄▄▄▄▄▄▄╯   ', color: WARM}],
+  [{text: '               ', color: DIM}],
+]
 
 const FEATURES = [
   {
@@ -60,7 +81,17 @@ export default function Home() {
       <main className="landing">
         {/* Hero */}
         <section className="hero-section">
-          <pre className="hero-ascii">{HERO_ASCII}</pre>
+          <pre className="hero-ascii">
+            {HERO_LINES.map((line, i) => (
+              <div key={i}>
+                {line.map((seg, j) => (
+                  <span key={j} style={{color: seg.color}}>
+                    {seg.text}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </pre>
           <p className="hero-tagline">React-compatible terminal UI framework</p>
           <div className="hero-actions">
             <Link className="hero-btn" to="/docs">
