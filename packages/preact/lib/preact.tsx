@@ -17,9 +17,11 @@ import {
   H5,
   H6,
   Drawer as WrDrawer,
+  Dropdown as WrDropdown,
   Progress as WrProgress,
   Spinner as WrSpinner,
   ToggleGroup as WrToggleGroup,
+  Tree as WrTree,
   Input as WrInput,
   Screen,
   type ScreenOptions,
@@ -134,6 +136,9 @@ function createView(type: string, props: Props): any {
     case 'digits':
     case 'tui-digits':
       return new WrDigits(viewProps as any)
+    case 'dropdown':
+    case 'tui-dropdown':
+      return new WrDropdown(viewProps as any)
     case 'h1':
     case 'tui-h1':
       return H1(((viewProps as any).text as string) ?? '')
@@ -176,8 +181,9 @@ function createView(type: string, props: Props): any {
     case 'space':
     case 'tui-space':
       return new WrSpace(viewProps as any)
-    // case 'Tree':
-    //   return
+    case 'tree':
+    case 'tui-tree':
+      return new WrTree(viewProps as any)
     case 'box':
     case 'tui-box':
       return new WrBox(viewProps as any)

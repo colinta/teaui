@@ -11,7 +11,7 @@ import type {
   ConsoleLog as WrConsoleLog,
   Digits as WrDigits,
   Drawer as WrDrawer,
-  // Dropdown,
+  Dropdown as WrDropdown,
   Header as WrHeader,
   Stack as WrStack,
   Input as WrInput,
@@ -49,6 +49,17 @@ export type CheckboxProps = TUIView<typeof WrCheckbox>
 export type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
 export type ConsoleProps = TUIView<typeof WrConsoleLog>
 export type DigitsProps = TUIView<typeof WrDigits>
+export type DropdownProps = {
+  choices: [string, any][]
+  selected?: any
+  onSelect?: (value: any) => void
+  multiple?: boolean
+  title?: string
+  theme?: string
+  height?: number | 'shrink'
+  width?: number | 'shrink'
+  flex?: number
+}
 export type HeaderProps = {text?: string}
 export type InputProps = TUIView<typeof WrInput>
 export type ProgressProps = TUIView<typeof WrProgress>
@@ -89,6 +100,7 @@ declare module 'preact' {
       'tui-collapsible-text': CollapsibleTextProps
       'tui-console': ConsoleProps
       'tui-digits': DigitsProps
+      'tui-dropdown': DropdownProps
       'tui-h1': HeaderProps
       'tui-h2': HeaderProps
       'tui-h3': HeaderProps
@@ -146,6 +158,9 @@ export function ConsoleLog(reactProps: ConsoleProps): preact.JSX.Element {
 }
 export function Digits(reactProps: DigitsProps): preact.JSX.Element {
   return <tui-digits {...reactProps} />
+}
+export function Dropdown(reactProps: DropdownProps): preact.JSX.Element {
+  return <tui-dropdown {...reactProps} />
 }
 export function H1(reactProps: HeaderProps): preact.JSX.Element {
   return <tui-h1 {...reactProps} />
