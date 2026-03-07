@@ -189,6 +189,8 @@ export class ToggleGroup extends Container {
     const maxIndex = this.#titlesCache.length - 1
     const isFirst = index === 0
     const isLast = index === maxIndex
+    const isSelected = this.#selected.has(index)
+    const isHovered = this.#hover === index
 
     const textWidth = size.width + 2 * this.#padding
     const bottomPoint = Point.zero.offset(0, this.#sizeCache.height - 1)
@@ -204,7 +206,7 @@ export class ToggleGroup extends Container {
       border = BORDER
     }
 
-    if (this.#hover === index && this.#selected.has(index)) {
+    if (isHovered && isSelected) {
       border = {
         ...border,
         top: '━',
@@ -214,7 +216,7 @@ export class ToggleGroup extends Container {
         joinerHorizTop: '┏',
         joinerHorizBottom: '┗',
       }
-    } else if (this.#hover === index) {
+    } else if (isHovered) {
       border = {
         ...border,
         top: '─',

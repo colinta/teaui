@@ -4,7 +4,8 @@
     "demo": "pnpm -C apps/demos demo",
     "react": "pnpm -C apps/react demo index",
     "publish": "pnpm -r publish --access public",
-    "bump": "node shared/bump.js"
+    "bump": "node shared/bump.js",
+    "clean": "rm -rf packages/*/.dist apps/*/.dist"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
