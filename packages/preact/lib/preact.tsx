@@ -239,11 +239,11 @@ function removeFromTextContainer(container: Container, child: View) {
       container.removeChild(viewChild)
       return true
     } else if (viewChild instanceof TextContainer) {
-      const textChild = viewChild.children.find(
-        textChild => textChild === child,
-      )
-      if (textChild) {
-        viewChild.removeChild(textChild)
+      // TextContainer.add() puts TextLiterals/TextStyles into #nodes,
+      // NOT into .children (which holds generated Text views).
+      // Check child.parent instead of searching .children.
+      if (child.parent === viewChild) {
+        viewChild.removeChild(child)
         return true
       }
     }
