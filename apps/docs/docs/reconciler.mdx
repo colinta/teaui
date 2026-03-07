@@ -188,8 +188,11 @@ When the reconciler removes a `TextLiteral` or `TextStyle`:
 
 ## React vs Preact Differences
 
-The two renderers share the same `TextReact.ts` text system (nearly identical
-copies) but differ in how they integrate with the framework:
+The two renderers share the same core logic — `appendChild`, `removeChild`,
+`removeFromTextContainer`, and `TextReact.ts` are functionally identical. They
+differ in how they integrate with their respective frameworks.
+
+### Summary
 
 | | React | Preact |
 |---|---|---|
@@ -198,3 +201,75 @@ copies) but differ in how they integrate with the framework:
 | **Container mode** | `createContainer(window, 0)` — LegacyRoot, synchronous | N/A — Preact is always synchronous |
 | **Text system** | Identical `TextReact.ts` | Identical `TextReact.ts` |
 | **Prop stripping** | `createInstance` strips `children`/`child` from props | `createView` destructures `children`/`child` from props |
+
+### React: Host Config Reconciler
+
+The React renderer (`packages/react/lib/reconciler.ts`) uses the
+`react-reconciler` package, which requires implementing a host config — a set
+of callbacks that React calls during reconciliation:
+
+- **`createInstance`** / **`createTextInstance`** — Called when React creates a
+  new fiber. Maps element types to core view constructors via a `switch` on the
+  type string.
+- **`appendInitialChild`** / **`appendChild`** / **`insertBefore`** — Called to
+  build or mutate the tree. All delegate to the shared `appendChild()` function.
+- **`removeChild`** / **`removeChildFromContainer`** — Delegate to `removeChild()`.
+- **`prepareUpdate`** — Deep-compares old/new props via `isSame()`. Returns
+  non-null if any prop changed.
+- **`commitUpdate`** — Calls `node.update(newProps)` on the core view.
+- **`commitTextUpdate`** — Sets `textInstance.text = newText` on `TextLiteral`.
+- **`resetAfterCommit`** — Calls `screen.render()` to flush to terminal.
+
+The `appendChild`, `removeChild`, and `removeFromTextContainer` functions are
+defined inside the `render()` closure (they capture the `screen` reference).
+
+The container is created with `createContainer(window, 0)` — mode `0` is
+`LegacyRoot`, meaning `setState` calls are synchronous (not batched) when
+called outside React event handlers. This is important because TeaUI's mouse
+and keyboard events originate from the core `Screen`, not from React, so state
+updates during `receiveMouse` / `receiveKey` callbacks are applied immediately.
+
+### Preact: Fake DOM Reconciler
+
+The Preact renderer (`packages/preact/lib/preact.tsx`) takes a different
+approach. Preact's VDOM diffing expects to operate on DOM nodes, so the renderer
+provides a fake DOM layer:
+
+- **`RendererElement`** — A lightweight class that mimics a DOM node with
+  `parentNode`, `firstChild`, `lastChild`, `nextSibling`, `previousSibling`,
+  `insertBefore()`, `appendChild()`, `removeChild()`, `setAttribute()`, and
+  `removeAttribute()`.
+- **`createRendererDom()`** — Factory that produces `createElement`,
+  `createTextNode`, and `createRoot` functions using `RendererElement`.
+- The fake `document` is injected into `globalThis.document` so Preact can use
+  it as a DOM context.
+
+Each `RendererElement` wraps a core `View` (created lazily in `_attach()`).
+When Preact calls DOM methods on the element, they delegate to the shared
+`appendChild()` / `removeChild()` functions.
+
+**Prop updates** are handled differently from React: `setAttribute` and
+`removeAttribute` batch prop changes and defer `_commit()` via microtask
+(`Promise.resolve().then()`). The `_commit()` method calls `renderer.update()`,
+which calls `node.update(props)` on the core view — the same as React's
+`commitUpdate`.
+
+**Re-rendering** is triggered by hooking into Preact's `options.diffed`
+lifecycle, which fires after every commit. The hook calls `screen.render()`.
+
+The `appendChild`, `removeChild`, and `removeFromTextContainer` functions are
+defined at module scope (not inside a closure).
+
+### Keeping Them in Sync
+
+When adding a new component or fixing reconciler behavior, changes must be
+applied to both renderers:
+
+1. **`createInstance` (React) / `createView` (Preact)** — Add the new `case`
+   entries.
+2. **`components.tsx`** — Add the type, JSX intrinsic element declaration, and
+   wrapper function in both packages.
+3. **`TextReact.ts`** — Nearly identical copies in both packages. Changes to
+   one must be mirrored in the other.
+4. **`appendChild` / `removeChild`** — Shared logic that must match. React's
+   are inside the `render()` closure; Preact's are at module scope.
