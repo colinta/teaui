@@ -2,70 +2,88 @@ import {Box, Button, HotKey, Stack, Text} from '@teaui/core'
 
 import {demo} from './demo.js'
 
-// This demo tests that HotKey components work regardless of focus state.
-// There are no focusable inputs here — only HotKey components and display text.
-// Press 1, 2, or 3 to see if the hotkeys fire.
-// Press 'r' to reset the counters.
+// This demo tests that HotKey components work with various modifier combinations.
+// Press the indicated key combinations to increment counters.
+//
+// Note: Shift+letter hotkeys don't work in most terminals because the terminal
+// sends the uppercase letter without a shift flag. Ctrl+Shift combinations
+// have the same limitation. Use Ctrl, Alt/Meta, and Ctrl+Alt combos instead.
 
-let text1 = new Text({text: '[1] pressed: 0'})
-let text2 = new Text({text: '[2] pressed: 0'})
-let text3 = new Text({text: '[3] pressed: 0'})
-let textR = new Text({text: '[r] reset'})
-let textInfo = new Text({
-  text: 'No focusable inputs — HotKeys should still work.\nPress 1, 2, 3 to increment counters. Press r to reset.',
-})
-
-let count1 = 0
-let count2 = 0
-let count3 = 0
-
-function update() {
-  text1.text = `[1] pressed: ${count1}`
-  text2.text = `[2] pressed: ${count2}`
-  text3.text = `[3] pressed: ${count3}`
+interface HotKeyEntry {
+  label: string
+  hotKey: string
 }
 
-demo(
-  Stack.down([
-    new Box({
-      border: 'single',
-      child: textInfo,
+const entries: HotKeyEntry[] = [
+  // Simple keys
+  {label: '1', hotKey: '1'},
+  {label: '2', hotKey: '2'},
+  {label: '3', hotKey: '3'},
+  // Enter variants (Ctrl+Enter and Shift+Enter are indistinguishable from
+  // plain Enter in most terminals — all send 0x0D. Alt+Enter works via ESC prefix.)
+  {label: 'enter', hotKey: 'return'},
+  {label: 'M-enter', hotKey: 'M-return'},
+  // Ctrl
+  {label: 'C-a', hotKey: 'C-a'},
+  {label: 'C-b', hotKey: 'C-b'},
+  {label: 'C-e', hotKey: 'C-e'},
+  // Alt/Meta
+  {label: 'M-x', hotKey: 'M-x'},
+  {label: 'M-z', hotKey: 'M-z'},
+  {label: 'M-j', hotKey: 'M-j'},
+  // Ctrl+Alt
+  {label: 'C-M-d', hotKey: 'C-M-d'},
+  {label: 'C-M-l', hotKey: 'C-M-l'},
+  {label: 'C-M-n', hotKey: 'C-M-n'},
+  // Reset
+  {label: 'r', hotKey: 'r'},
+]
+
+const counts: number[] = entries.map(() => 0)
+const texts: Text[] = entries.map(
+  (e, i) =>
+    new Text({
+      text:
+        e.hotKey === 'r'
+          ? `[${e.label}] reset`
+          : `[${e.label}] pressed: ${counts[i]}`,
     }),
-    text1,
-    new HotKey({
-      hotKey: '1',
-      onPress: () => {
-        count1++
-        update()
-        console.log(`hotkey 1 fired (count: ${count1})`)
-      },
-    }),
-    text2,
-    new HotKey({
-      hotKey: '2',
-      onPress: () => {
-        count2++
-        update()
-        console.log(`hotkey 2 fired (count: ${count2})`)
-      },
-    }),
-    text3,
-    new HotKey({
-      hotKey: '3',
-      onPress: () => {
-        count3++
-        update()
-        console.log(`hotkey 3 fired (count: ${count3})`)
-      },
-    }),
-    textR,
-    new HotKey({
-      hotKey: 'r',
-      onPress: () => {
-        count1 = count2 = count3 = 0
-        update()
-        console.log('reset all counters')
-      },
-    }),
-  ]),
 )
+
+function update() {
+  entries.forEach((e, i) => {
+    if (e.hotKey !== 'r') {
+      texts[i].text = `[${e.label}] pressed: ${counts[i]}`
+    }
+  })
+}
+
+const textInfo = new Text({
+  text: 'No focusable inputs — HotKeys should still work.\nPress the key combinations below to increment counters.\nPress r to reset all.',
+})
+
+const children: (Text | HotKey | Box)[] = [
+  new Box({border: 'single', child: textInfo}),
+]
+
+entries.forEach((e, i) => {
+  children.push(texts[i])
+  children.push(
+    new HotKey({
+      hotKey: e.hotKey,
+      onPress: () => {
+        if (e.hotKey === 'r') {
+          counts.fill(0)
+          update()
+          console.log('reset all counters')
+        } else {
+          counts[i]++
+          update()
+          console.log(`hotkey ${e.label} fired (count: ${counts[i]})`)
+        }
+      },
+    }),
+  )
+})
+
+demo(Stack.down(children))

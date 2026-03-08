@@ -1,8 +1,8 @@
 # TeaUI
 
-I wanted a curses-style fullscreen application framework that could be powered by React.
+I wanted a curses-style fullscreen application framework that could be powered by React. If you want to build a "streaming" TUI app, use Ink (it's good enough for claude!).
 
-This repo is organized as a pnpm workspace. The main library is in `packages/core`, and the demo code is in `apps/demo`. There are also React and Preact renderers.
+The main library is in `packages/core`, powered by `packages/term` (which is available as a standalone **@teaui/term**, if you just want some ANSI features). Lots of demo code in `apps/demos/`, and `apps/react/` is where I experiment these days. I try to maintain the Preact support, too, HMU if anything is missing.
 
 ### React Demo
 
@@ -12,7 +12,7 @@ This repo is organized as a pnpm workspace. The main library is in `packages/cor
 ###### [apps/react/index.tsx](https://github.com/colinta/teaui/blob/master/apps/react/index.tsx)
 
 ```
-pnpm --filter apps/react demo index.js
+pnpm run react
 ```
 
 <details>
@@ -34,7 +34,6 @@ import YAML from 'yaml'
 //       Widgets showcase, Drawer demo, Borders/Buttons/Colors
 // See full source: apps/react/index.tsx
 ```
-
 </details>
 
 ---

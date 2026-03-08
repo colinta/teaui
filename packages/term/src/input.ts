@@ -233,6 +233,24 @@ export function parseInput(data: Buffer): InputEvent[] {
         }
       }
 
+      // Alt + Ctrl+char (ESC followed by control character)
+      if (i + 1 < str.length) {
+        const nextCode = str.charCodeAt(i + 1)
+        if (nextCode < 0x20 && nextCode !== ESC) {
+          // Ctrl+Alt combination: ESC followed by a control character
+          if (nextCode === 0x0d || nextCode === 0x0a) {
+            events.push(keyEvent('return', { alt: true }))
+          } else if (nextCode === 0x09) {
+            events.push(keyEvent('tab', { alt: true }))
+          } else {
+            const letter = String.fromCharCode(nextCode + 0x60)
+            events.push(keyEvent(letter, { ctrl: true, alt: true }))
+          }
+          i += 2
+          continue
+        }
+      }
+
       // Alt + char (ESC followed by printable)
       if (i + 1 < str.length && str.charCodeAt(i + 1) >= 0x20) {
         const altCodePoint = str.codePointAt(i + 1)!

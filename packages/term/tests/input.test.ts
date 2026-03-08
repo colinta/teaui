@@ -267,6 +267,33 @@ describe('parseInput', () => {
     })
   })
 
+  describe('ctrl+alt key combos', () => {
+    it('parses ctrl+alt+a (ESC followed by 0x01)', () => {
+      const events = parseInput(Buffer.from('\x1b\x01'))
+      expect(events).toEqual([key('a', { ctrl: true, alt: true })])
+    })
+
+    it('parses ctrl+alt+d (ESC followed by 0x04)', () => {
+      const events = parseInput(Buffer.from('\x1b\x04'))
+      expect(events).toEqual([key('d', { ctrl: true, alt: true })])
+    })
+
+    it('parses ctrl+alt+z (ESC followed by 0x1a)', () => {
+      const events = parseInput(Buffer.from('\x1b\x1a'))
+      expect(events).toEqual([key('z', { ctrl: true, alt: true })])
+    })
+
+    it('parses alt+return (ESC followed by 0x0d)', () => {
+      const events = parseInput(Buffer.from('\x1b\x0d'))
+      expect(events).toEqual([key('return', { alt: true })])
+    })
+
+    it('parses alt+tab (ESC followed by 0x09)', () => {
+      const events = parseInput(Buffer.from('\x1b\x09'))
+      expect(events).toEqual([key('tab', { alt: true })])
+    })
+  })
+
   describe('SGR mouse events', () => {
     it('parses mouse press (left button at 10,20)', () => {
       // SGR: CSI < button ; x ; y M (press) or m (release)
