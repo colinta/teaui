@@ -21,5 +21,6 @@ export function childTheme(theme: Theme, isPressed = false, isHover = false) {
     text: theme.textColor,
     brightText: theme.brightTextColor,
     dimText: theme.dimTextColor,
+    emoji: theme.emoji,
   })
 }

@@ -16,7 +16,15 @@ export {View, Props as ViewProps} from './View.js'
 export {Container, Props as ContainerProps} from './Container.js'
 export * from './ansi.js'
 export * from './events/mouse.js'
-export * from './events/key.js'
+export {
+  type KeyEvent,
+  type HotKeyDef,
+  type HotKey as HotKeyProp,
+  toHotKeyDef,
+  isKeyPrintable,
+  match as matchHotKey,
+  styleTextForHotKey,
+} from './events/key.js'
 export * from './iTerm2.js'
 export {colors} from '@teaui/term'
 export {

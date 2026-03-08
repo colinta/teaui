@@ -18,6 +18,7 @@ import {
   H6,
   Drawer as WrDrawer,
   Dropdown as WrDropdown,
+  HotKey as WrHotKey,
   Progress as WrProgress,
   Spinner as WrSpinner,
   ToggleGroup as WrToggleGroup,
@@ -65,6 +66,7 @@ import type {
   AccordionProps,
   AccordionSectionProps,
   DrawerProps,
+  HotKeyProps,
   TabsProps,
   TabsSectionProps,
 } from './components.js'
@@ -78,6 +80,7 @@ declare module 'preact' {
       'tui-collapsible-text': CollapsibleTextProps
       'tui-console': ConsoleProps
       'tui-digits': DigitsProps
+      'tui-hotkey': HotKeyProps
       'tui-h1': HeaderProps
       'tui-h2': HeaderProps
       'tui-h3': HeaderProps
@@ -140,6 +143,9 @@ function createView(type: string, props: Props): any {
     case 'dropdown':
     case 'tui-dropdown':
       return new WrDropdown(viewProps as any)
+    case 'hotkey':
+    case 'tui-hotkey':
+      return new WrHotKey(viewProps as any)
     case 'h1':
     case 'tui-h1':
       return H1(((viewProps as any).text as string) ?? '')

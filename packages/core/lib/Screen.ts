@@ -30,6 +30,7 @@ import {ModalManager} from './managers/ModalManager.js'
 import {MouseManager} from './managers/MouseManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {Window} from './components/Window.js'
+import {Theme} from './Theme.js'
 import {System, UnboundSystem} from './System.js'
 
 // --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
@@ -165,6 +166,7 @@ type ViewConstructor<T extends View> = (
 
 export interface ScreenOptions {
   quitChar?: 'c' | 'q' | '' | undefined | false
+  emoji?: boolean
 }
 
 export class Screen {
@@ -227,6 +229,21 @@ export class Screen {
       viewConstructor instanceof View
         ? viewConstructor
         : await viewConstructor(program)
+
+    if (opts.emoji !== undefined) {
+      const currentTheme = rootView.theme
+      rootView.theme = new Theme({
+        text: currentTheme.textColor,
+        brightText: currentTheme.brightTextColor,
+        dimText: currentTheme.dimTextColor,
+        dimBackground: currentTheme.dimBackgroundColor,
+        background: currentTheme.backgroundColor,
+        textBackground: currentTheme.textBackgroundColor,
+        highlight: currentTheme.highlightColor,
+        darken: currentTheme.darkenColor,
+        emoji: opts.emoji,
+      })
+    }
 
     const screen = new Screen(program, rootView)
     screen.onExit(() => {

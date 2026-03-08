@@ -116,10 +116,12 @@ export class Button extends Container {
       isOrnament: true,
     })
 
+    const useEmoji = this.theme.emoji
     viewport.visibleRect.forEachPoint(pt => {
-      if (pt.y === 0 && viewport.contentSize.height > 2) {
+      if (useEmoji && pt.y === 0 && viewport.contentSize.height > 2) {
         viewport.write('▔', pt, topsStyle)
       } else if (
+        useEmoji &&
         pt.y === viewport.contentSize.height - 1 &&
         viewport.contentSize.height > 2
       ) {

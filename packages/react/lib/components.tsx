@@ -11,6 +11,7 @@ import type {
   Drawer as WrDrawer,
   Dropdown as WrDropdown,
   Header as WrHeader,
+  HotKey as WrHotKey,
   Stack as WrStack,
   Input as WrInput,
   // Log,
@@ -59,6 +60,7 @@ type DropdownProps = {
   flex?: number
 }
 type HeaderProps = {text?: string}
+type HotKeyProps = TUIView<typeof WrHotKey>
 type InputProps = TUIView<typeof WrInput>
 type ProgressProps = TUIView<typeof WrProgress>
 type SeparatorProps = TUIView<typeof WrSeparator>
@@ -99,6 +101,7 @@ declare module 'react' {
       'tui-console': ConsoleProps
       'tui-digits': DigitsProps
       'tui-dropdown': DropdownProps
+      'tui-hotkey': HotKeyProps
       'tui-h1': HeaderProps
       'tui-h2': HeaderProps
       'tui-h3': HeaderProps
@@ -157,6 +160,9 @@ export function Digits(reactProps: DigitsProps): JSX.Element {
 }
 export function Dropdown(reactProps: DropdownProps): JSX.Element {
   return <tui-dropdown {...reactProps} />
+}
+export function HotKey(reactProps: HotKeyProps): JSX.Element {
+  return <tui-hotkey {...reactProps} />
 }
 export function H1(reactProps: HeaderProps): JSX.Element {
   return <tui-h1 {...reactProps} />
