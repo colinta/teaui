@@ -52,7 +52,26 @@ interface HostContext {
   window: Window
 }
 
+type ViewFactory = (props: any) => any
+const customElements = new Map<string, ViewFactory>()
+
+/**
+ * Register a custom element type for the React reconciler.
+ * External packages (e.g. @teaui/subprocess) can call this to add new JSX elements.
+ *
+ * @example
+ * registerElement('tui-subprocess', (props) => new SubprocessView(props))
+ */
+export function registerElement(type: string, factory: ViewFactory) {
+  customElements.set(type, factory)
+}
+
 function createInstance(type: string, props: Props): any {
+  const factory = customElements.get(type)
+  if (factory) {
+    return factory(props)
+  }
+
   switch (type) {
     // views
     case 'br':

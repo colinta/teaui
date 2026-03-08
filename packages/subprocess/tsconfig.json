@@ -6,7 +6,9 @@
     ".dist",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "tests"
+    "tests",
+    "lib/react.tsx",
+    "lib/preact.tsx"
   ],
   "compilerOptions": {
     "outDir": ".dist"

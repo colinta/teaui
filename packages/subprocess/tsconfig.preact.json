@@ -1,0 +1,12 @@
+{
+  "extends": "@teaui/shared/tsconfig.json",
+  "include": ["lib/preact.tsx"],
+  "compilerOptions": {
+    "outDir": ".dist",
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "paths": {
+      "react/jsx-runtime": ["./node_modules/preact/jsx-runtime"]
+    }
+  }
+}

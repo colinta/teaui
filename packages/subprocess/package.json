@@ -10,6 +10,23 @@
     "url": "git://github.com/colinta/teaui.git"
   },
   "homepage": "https://github.com/colinta/teaui",
+  "exports": {
+    ".": {
+      "types": "./.dist/index.d.ts",
+      "import": "./.dist/index.js",
+      "default": "./.dist/index.js"
+    },
+    "./react": {
+      "types": "./.dist/react.d.ts",
+      "import": "./.dist/react.js",
+      "default": "./.dist/react.js"
+    },
+    "./preact": {
+      "types": "./.dist/preact.d.ts",
+      "import": "./.dist/preact.js",
+      "default": "./.dist/preact.js"
+    }
+  },
   "main": ".dist/index.js",
   "types": ".dist/index.d.ts",
   "files": [
@@ -18,7 +35,7 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "clean": "rm -rf .dist/",
-    "build": "pnpm clean && pnpm tsc",
+    "build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json && pnpm tsc -p tsconfig.preact.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -30,8 +47,25 @@
     "node-pty": "^1.1.0",
     "@xterm/headless": "^5.5.0"
   },
+  "peerDependencies": {
+    "@teaui/react": "workspace:*",
+    "@teaui/preact": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@teaui/react": {
+      "optional": true
+    },
+    "@teaui/preact": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@teaui/shared": "workspace:*",
+    "@teaui/react": "workspace:*",
+    "@teaui/preact": "workspace:*",
+    "react": "^19.0.0",
+    "@types/react": "^19.0.0",
+    "preact": "^10.0.0",
     "vitest": "^3.0.0"
   }
 }
