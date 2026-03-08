@@ -37,10 +37,8 @@ export class HotKey extends Container {
   }
 
   render(viewport: Viewport) {
-    if (viewport.isEmpty) {
-      return super.render(viewport)
-    }
-
+    // Always register the hotkey — HotKey is non-visual (naturalSize is zero),
+    // so the viewport will always be empty, but we still need to register.
     viewport.registerHotKey(toHotKeyDef(this.#hotKey))
   }
 }
