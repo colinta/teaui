@@ -27,6 +27,7 @@ interface Props {
   textBackground?: Color
   highlight: Color
   darken: Color
+  emoji?: boolean
 }
 
 export class Theme {
@@ -38,6 +39,7 @@ export class Theme {
   textBackgroundColor: Color
   highlightColor: Color
   darkenColor: Color
+  emoji: boolean
 
   static plain = new Theme({
     background: '#4F4F4F(239)',
@@ -102,6 +104,7 @@ export class Theme {
     textBackground,
     highlight,
     darken,
+    emoji,
   }: Props) {
     this.textColor = text ?? defaultText
     this.brightTextColor = brightText ?? defaultBrightText
@@ -111,6 +114,7 @@ export class Theme {
     this.textBackgroundColor = textBackground ?? background
     this.highlightColor = highlight
     this.darkenColor = darken
+    this.emoji = emoji ?? true
   }
 
   /**
