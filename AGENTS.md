@@ -80,8 +80,11 @@ pnpm react                  # Run the React demo app
 
 Build order matters: `term` → `core` → `react`/`preact` → apps.
 
-The 2 test failures in `packages/subprocess/tests/` are a known issue
-(missing `@teaui/core` resolution in that package's test config).
+Many test suites fail because Vite cannot resolve `@teaui/term` through its
+`exports` field at test time. This is a vitest/Vite configuration issue, not
+a code bug — all packages build and run correctly. Fixing the vitest config
+to resolve workspace packages from source (rather than through `exports`) is
+a TODO.
 
 ## Testing
 
@@ -102,6 +105,29 @@ The 2 test failures in `packages/subprocess/tests/` are a known issue
 4. Add JSX type declarations and wrapper component in
    `packages/{react,preact}/lib/components.tsx`
 5. Add tests in `packages/core/tests/components/`
+
+### Extending the reconcilers from external packages
+
+The React and Preact reconcilers expose `registerElement(type, factory)` so
+that external packages can add custom JSX element types without modifying
+the reconciler source.
+
+**Pattern** (used by `@teaui/subprocess`):
+
+1. Create a core `View` subclass in your package (e.g. `SubprocessView`)
+2. Create `lib/react.tsx` and `lib/preact.tsx` that:
+   - Call `registerElement('tui-myview', props => new MyView(props))`
+   - Declare the JSX intrinsic element via `declare module 'react'`
+   - Export a wrapper component: `export function MyView(props) { return <tui-myview {...props} /> }`
+3. Use **subpath exports** in `package.json` (`"./react"`, `"./preact"`)
+4. Declare `@teaui/react` and `@teaui/preact` as **optional peer dependencies**
+5. Use separate `tsconfig.react.json` / `tsconfig.preact.json` for JSX
+   compilation (React uses `"jsx": "react"`, Preact uses
+   `"jsx": "react-jsx"` with `"jsxImportSource": "preact"`)
+
+The registration happens as a side effect of importing the subpath module,
+so `import {Subprocess} from '@teaui/subprocess/react'` is all a consumer
+needs.
 
 ### Debugging rendering
 
