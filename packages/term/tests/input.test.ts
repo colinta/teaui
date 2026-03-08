@@ -524,6 +524,88 @@ describe('parseInput', () => {
     })
   })
 
+  describe('CSI u (keyboard enhancement)', () => {
+    it('parses enter (CSI 13 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[13u'))
+      expect(events).toEqual([key('return')])
+    })
+
+    it('parses shift+enter (CSI 13;2 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[13;2u'))
+      expect(events).toEqual([key('return', { shift: true })])
+    })
+
+    it('parses alt+enter (CSI 13;3 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[13;3u'))
+      expect(events).toEqual([key('return', { alt: true })])
+    })
+
+    it('parses ctrl+shift+enter (CSI 13;6 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[13;6u'))
+      expect(events).toEqual([key('return', { ctrl: true, shift: true })])
+    })
+
+    it('parses escape (CSI 27 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[27u'))
+      expect(events).toEqual([key('escape')])
+    })
+
+    it('parses tab (CSI 9 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[9u'))
+      expect(events).toEqual([key('tab')])
+    })
+
+    it('parses shift+tab (CSI 9;2 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[9;2u'))
+      expect(events).toEqual([key('tab', { shift: true })])
+    })
+
+    it('parses space (CSI 32 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[32u'))
+      expect(events).toEqual([key('space')])
+    })
+
+    it('parses backspace (CSI 127 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[127u'))
+      expect(events).toEqual([key('backspace')])
+    })
+
+    it('parses ctrl+backspace (CSI 127;5 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[127;5u'))
+      expect(events).toEqual([key('backspace', { ctrl: true })])
+    })
+
+    it('parses letter a (CSI 97 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[97u'))
+      expect(events).toEqual([key('a')])
+    })
+
+    it('parses shift+a (CSI 97;2 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[97;2u'))
+      expect(events).toEqual([key('a', { shift: true })])
+    })
+
+    it('parses ctrl+a (CSI 97;5 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[97;5u'))
+      expect(events).toEqual([key('a', { ctrl: true })])
+    })
+
+    it('parses ctrl+alt+a (CSI 97;7 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[97;7u'))
+      expect(events).toEqual([key('a', { ctrl: true, alt: true })])
+    })
+
+    it('parses ctrl+letter via codepoint 1-26 (CSI 1 u = ctrl+a)', () => {
+      const events = parseInput(Buffer.from('\x1b[1u'))
+      expect(events).toEqual([key('a', { ctrl: true })])
+    })
+
+    it('parses meta modifier (CSI 97;9 u)', () => {
+      const events = parseInput(Buffer.from('\x1b[97;9u'))
+      expect(events).toEqual([key('a', { meta: true })])
+    })
+  })
+
   describe('bracketed paste', () => {
     it('parses paste events', () => {
       const events = parseInput(Buffer.from('\x1b[200~hello world\x1b[201~'))

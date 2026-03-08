@@ -14,6 +14,8 @@ import type {
   Dropdown as WrDropdown,
   Header as WrHeader,
   HotKey as WrHotKey,
+  Keyboard as WrKeyboard,
+  Mouse as WrMouse,
   Stack as WrStack,
   Input as WrInput,
   // Log,
@@ -63,6 +65,8 @@ export type DropdownProps = {
 }
 export type HeaderProps = {text?: string}
 export type HotKeyProps = TUIView<typeof WrHotKey>
+export type KeyboardProps = TUIContainer<typeof WrKeyboard>
+export type MouseProps = TUIContainer<typeof WrMouse>
 export type InputProps = TUIView<typeof WrInput>
 export type ProgressProps = TUIView<typeof WrProgress>
 export type SeparatorProps = TUIView<typeof WrSeparator>
@@ -104,6 +108,8 @@ declare module 'preact' {
       'tui-digits': DigitsProps
       'tui-dropdown': DropdownProps
       'tui-hotkey': HotKeyProps
+      'tui-keyboard': KeyboardProps
+      'tui-mouse': MouseProps
       'tui-h1': HeaderProps
       'tui-h2': HeaderProps
       'tui-h3': HeaderProps
@@ -167,6 +173,12 @@ export function Dropdown(reactProps: DropdownProps): preact.JSX.Element {
 }
 export function HotKey(reactProps: HotKeyProps): preact.JSX.Element {
   return <tui-hotkey {...reactProps} />
+}
+export function Keyboard({children, ...props}: KeyboardProps): preact.JSX.Element {
+  return <tui-keyboard {...props}>{children}</tui-keyboard>
+}
+export function Mouse({children, ...props}: MouseProps): preact.JSX.Element {
+  return <tui-mouse {...props}>{children}</tui-mouse>
 }
 export function H1(reactProps: HeaderProps): preact.JSX.Element {
   return <tui-h1 {...reactProps} />

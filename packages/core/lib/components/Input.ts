@@ -319,6 +319,10 @@ export class Input extends View {
   }
 
   render(viewport: Viewport) {
+    // Register focus before the isEmpty check — Input should participate in the
+    // focus ring even when clipped to zero size (e.g. inside a Scrollable that
+    // hasn't scrolled to it). Skipping registration would silently drop it from
+    // the ring, causing focus to jump unexpectedly when the user tabs through.
     const hasFocus = viewport.registerFocus()
     if (viewport.isEmpty) {
       return

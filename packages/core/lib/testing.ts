@@ -76,6 +76,9 @@ class TestScreen {
         registerHotKey: (view: View, key: HotKeyDef) => {
           this.#focusManager.registerHotKey(view, key)
         },
+        registerKeyboard: (view: View) => {
+          this.#focusManager.registerKeyboard(view)
+        },
         registerFocus: (view: View) => {
           return this.#focusManager.registerFocus(view)
         },

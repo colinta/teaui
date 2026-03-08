@@ -10,6 +10,7 @@ export class FocusManager {
   #lastCommittedFocus: View | undefined | typeof UNFOCUS
   #focusRing: View[] = []
   #hotKeys: [View, HotKeyDef][] = []
+  #keyboardListeners: View[] = []
 
   /**
    * If the previous focus-view is not mounted, we can clear out the current
@@ -26,6 +27,7 @@ export class FocusManager {
     this.#currentFocus = undefined
     this.#focusRing = []
     this.#hotKeys = []
+    this.#keyboardListeners = []
     this.#didCommit = false
   }
 
@@ -44,6 +46,11 @@ export class FocusManager {
       }
     } else if (this.#currentFocus && this.#currentFocus !== UNFOCUS) {
       this.#currentFocus.receiveKey(event)
+    } else if (this.#keyboardListeners.length > 0) {
+      // Last registered = innermost view = highest priority
+      this.#keyboardListeners[this.#keyboardListeners.length - 1].receiveKey(
+        event,
+      )
     }
   }
 
@@ -71,6 +78,18 @@ export class FocusManager {
     }
 
     this.#hotKeys.push([view, key])
+  }
+
+  /**
+   * Registers a fallback keyboard listener. When no hotkey matches and no view
+   * has focus, key events are sent to the last (innermost) registered listener.
+   */
+  registerKeyboard(view: View) {
+    if (this.#didCommit) {
+      return
+    }
+
+    this.#keyboardListeners.push(view)
   }
 
   requestFocus(view: View) {

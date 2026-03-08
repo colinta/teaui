@@ -1,5 +1,7 @@
 export {Accordion} from './Accordion.js'
 export {HotKey} from './HotKey.js'
+export {Keyboard} from './Keyboard.js'
+export {Mouse} from './Mouse.js'
 export * from './Box.js'
 export {Button} from './Button.js'
 export * from './Collapsible.js'

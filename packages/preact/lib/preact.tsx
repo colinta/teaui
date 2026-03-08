@@ -19,6 +19,8 @@ import {
   Drawer as WrDrawer,
   Dropdown as WrDropdown,
   HotKey as WrHotKey,
+  Keyboard as WrKeyboard,
+  Mouse as WrMouse,
   Progress as WrProgress,
   Spinner as WrSpinner,
   ToggleGroup as WrToggleGroup,
@@ -66,6 +68,8 @@ import type {
   AccordionSectionProps,
   DrawerProps,
   HotKeyProps,
+  KeyboardProps,
+  MouseProps,
   TabsProps,
   TabsSectionProps,
 } from './components.js'
@@ -80,6 +84,8 @@ declare module 'preact' {
       'tui-console': ConsoleProps
       'tui-digits': DigitsProps
       'tui-hotkey': HotKeyProps
+      'tui-keyboard': KeyboardProps
+      'tui-mouse': MouseProps
       'tui-h1': HeaderProps
       'tui-h2': HeaderProps
       'tui-h3': HeaderProps
@@ -164,6 +170,12 @@ function createView(type: string, props: Props): any {
     case 'hotkey':
     case 'tui-hotkey':
       return new WrHotKey(viewProps as any)
+    case 'keyboard':
+    case 'tui-keyboard':
+      return new WrKeyboard(viewProps as any)
+    case 'mouse':
+    case 'tui-mouse':
+      return new WrMouse(viewProps as any)
     case 'h1':
     case 'tui-h1':
       return H1(((viewProps as any).text as string) ?? '')

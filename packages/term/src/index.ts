@@ -96,6 +96,8 @@ export {
   notification,
   bracketedPasteEnable,
   bracketedPasteDisable,
+  keyboardEnhanceEnable,
+  keyboardEnhanceDisable,
   syncStart,
   syncEnd,
 } from './modern.js'

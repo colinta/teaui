@@ -100,6 +100,16 @@ export function bracketedPasteDisable(): string {
   return `${CSI}?2004l`
 }
 
+// --- Keyboard Enhancement (CSI u / Kitty protocol flag 1) ---
+
+export function keyboardEnhanceEnable(): string {
+  return `${CSI}>1u`
+}
+
+export function keyboardEnhanceDisable(): string {
+  return `${CSI}<u`
+}
+
 // --- Synchronized Output ---
 
 export function syncStart(): string {

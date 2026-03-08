@@ -99,6 +99,19 @@ export class Viewport {
   }
 
   /**
+   * Registers the current view as a fallback keyboard listener. Key events that
+   * aren't consumed by hotkeys or a focused view are sent to the innermost
+   * (last registered) keyboard listener.
+   */
+  registerKeyboard() {
+    if (!this.#currentRender) {
+      return
+    }
+
+    this.#screen.registerKeyboard(this.#currentRender)
+  }
+
+  /**
    * @return boolean Whether the current render target is the focus view
    */
   registerFocus(): boolean {

@@ -1,5 +1,6 @@
-import type { ScreenSize, ColorSupport, FullscreenOptions } from './types.js'
+import type { ColorSupport, FullscreenOptions } from './types.js'
 import * as ansi from './ansi.js'
+import { keyboardEnhanceEnable, keyboardEnhanceDisable } from './modern.js'
 
 export function detectColorSupport(
   env: Record<string, string | undefined> = process.env,
@@ -81,6 +82,7 @@ export class ScreenController {
     if (hideCursor) this.write(ansi.cursorHide())
     if (mouse) this.write(ansi.mouseEnable())
     if (focusEvents) this.write(ansi.focusEventsEnable())
+    this.write(keyboardEnhanceEnable())
     this.write(ansi.eraseScreen() + ansi.cursorTo(0, 0))
 
     return this
@@ -88,7 +90,9 @@ export class ScreenController {
 
   exitFullscreen(): this {
     if (this.fullscreenState) {
-      if (this.fullscreenState.focusEvents) this.write(ansi.focusEventsDisable())
+      this.write(keyboardEnhanceDisable())
+      if (this.fullscreenState.focusEvents)
+        this.write(ansi.focusEventsDisable())
       if (this.fullscreenState.mouse) this.write(ansi.mouseDisable())
       if (this.fullscreenState.hideCursor) this.write(ansi.cursorShow())
       this.write(ansi.alternateBufferExit())

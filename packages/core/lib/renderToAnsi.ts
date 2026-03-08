@@ -19,6 +19,7 @@ export function createHeadlessScreen(): Screen {
       return false
     },
     registerHotKey(_view: View, _key: HotKeyDef) {},
+    registerKeyboard(_view: View) {},
     registerFocus(_view: View) {
       return false
     },

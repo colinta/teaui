@@ -355,6 +355,10 @@ export class Screen {
     return this.#focusManager.registerHotKey(view, key)
   }
 
+  registerKeyboard(view: View) {
+    return this.#focusManager.registerKeyboard(view)
+  }
+
   requestFocus(view: View) {
     return this.#focusManager.requestFocus(view)
   }

@@ -41,6 +41,15 @@ function decodeMods(param: number): {
   }
 }
 
+// CSI u codepoint-to-key-name map for well-known non-printable keys
+const csiUKeyMap: Record<number, string> = {
+  9: 'tab',
+  13: 'return',
+  27: 'escape',
+  32: 'space',
+  127: 'backspace',
+}
+
 const tildeKeyMap: Record<number, string> = {
   2: 'insert',
   3: 'delete',
@@ -216,6 +225,28 @@ export function parseInput(data: Buffer): InputEvent[] {
               events.push(keyEvent(name, decodeMods(mod)))
             } else {
               events.push(keyEvent(name))
+            }
+            continue
+          }
+
+          // CSI u (keyboard enhancement / Kitty protocol)
+          // Format: CSI codepoint u  or  CSI codepoint;modifier u
+          if (final === 'u') {
+            const uParts = params.split(';')
+            const codepoint = parseInt(uParts[0], 10)
+            const mods = uParts.length > 1
+              ? decodeMods(parseInt(uParts[1], 10))
+              : {}
+            const name = csiUKeyMap[codepoint]
+            if (name) {
+              events.push(keyEvent(name, mods))
+            } else if (codepoint >= 1 && codepoint <= 26) {
+              // Ctrl+letter encoded as codepoint 1-26
+              const letter = String.fromCharCode(codepoint + 0x60)
+              events.push(keyEvent(letter, { ...mods, ctrl: true }))
+            } else {
+              const char = String.fromCodePoint(codepoint)
+              events.push(keyEvent(char, mods))
             }
             continue
           }

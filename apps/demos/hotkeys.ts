@@ -1,13 +1,49 @@
-import {Box, Button, HotKey, Stack, Text} from '@teaui/core'
+import {Box, Button, HotKey, Keyboard, Mouse, Stack, Text} from '@teaui/core'
+import type {KeyEvent, MouseEvent} from '@teaui/core'
 
 import {demo} from './demo.js'
 
-// This demo tests that HotKey components work with various modifier combinations.
-// Press the indicated key combinations to increment counters.
+// This demo tests that HotKey components work with various modifier combinations,
+// and shows a live keyboard/mouse event log on the right side.
 //
-// Note: Shift+letter hotkeys don't work in most terminals because the terminal
-// sends the uppercase letter without a shift flag. Ctrl+Shift combinations
-// have the same limitation. Use Ctrl, Alt/Meta, and Ctrl+Alt combos instead.
+// Left panel: HotKey counter demo
+// Right panel: Raw event log (keyboard + mouse location)
+
+// ─── Event Log (right panel) ────────────────────────────────────────────────
+
+const MAX_LOG_LINES = 30
+
+const mouseLocationText = new Text({text: 'Mouse: -'})
+const eventLogText = new Text({text: '(press keys or move mouse)'})
+const logLines: string[] = []
+
+function addLogLine(line: string) {
+  logLines.push(line)
+  if (logLines.length > MAX_LOG_LINES) {
+    logLines.shift()
+  }
+  eventLogText.text = logLines.join('\n')
+}
+
+function formatKeyEvent(event: KeyEvent): string {
+  const mods: string[] = []
+  if (event.ctrl) mods.push('ctrl')
+  if (event.meta) mods.push('meta')
+  if (event.shift) mods.push('shift')
+  const modStr = mods.length ? mods.join('+') + '+' : ''
+  return `KEY ${modStr}${event.name} (char=${JSON.stringify(event.char)}, full=${event.full})`
+}
+
+function formatMouseEvent(event: MouseEvent): string {
+  const mods: string[] = []
+  if (event.ctrl) mods.push('ctrl')
+  if (event.meta) mods.push('meta')
+  if (event.shift) mods.push('shift')
+  const modStr = mods.length ? ' ' + mods.join('+') : ''
+  return `MOUSE ${event.name} btn=${event.button} (${event.position.x},${event.position.y})${modStr}`
+}
+
+// ─── HotKey Counters (left panel) ───────────────────────────────────────────
 
 interface HotKeyEntry {
   label: string
@@ -15,27 +51,21 @@ interface HotKeyEntry {
 }
 
 const entries: HotKeyEntry[] = [
-  // Simple keys
   {label: '1', hotKey: '1'},
   {label: '2', hotKey: '2'},
   {label: '3', hotKey: '3'},
-  // Enter variants (Ctrl+Enter and Shift+Enter are indistinguishable from
-  // plain Enter in most terminals — all send 0x0D. Alt+Enter works via ESC prefix.)
   {label: 'enter', hotKey: 'return'},
   {label: 'M-enter', hotKey: 'M-return'},
-  // Ctrl
+  {label: 'S-enter', hotKey: 'S-return'},
   {label: 'C-a', hotKey: 'C-a'},
   {label: 'C-b', hotKey: 'C-b'},
   {label: 'C-e', hotKey: 'C-e'},
-  // Alt/Meta
   {label: 'M-x', hotKey: 'M-x'},
   {label: 'M-z', hotKey: 'M-z'},
   {label: 'M-j', hotKey: 'M-j'},
-  // Ctrl+Alt
   {label: 'C-M-d', hotKey: 'C-M-d'},
   {label: 'C-M-l', hotKey: 'C-M-l'},
   {label: 'C-M-n', hotKey: 'C-M-n'},
-  // Reset
   {label: 'r', hotKey: 'r'},
 ]
 
@@ -59,31 +89,72 @@ function update() {
 }
 
 const textInfo = new Text({
-  text: 'No focusable inputs — HotKeys should still work.\nPress the key combinations below to increment counters.\nPress r to reset all.',
+  text: 'Press key combos to increment counters.\nPress r to reset. Press q to quit.\n\nWith CSI u, shift+enter and alt+enter\nare now distinguishable!',
 })
 
-const children: (Text | HotKey | Box)[] = [
+const hotKeyChildren: (Text | HotKey | Box)[] = [
   new Box({border: 'single', child: textInfo}),
 ]
 
 entries.forEach((e, i) => {
-  children.push(texts[i])
-  children.push(
+  hotKeyChildren.push(texts[i])
+  hotKeyChildren.push(
     new HotKey({
       hotKey: e.hotKey,
       onPress: () => {
         if (e.hotKey === 'r') {
           counts.fill(0)
           update()
-          console.log('reset all counters')
         } else {
           counts[i]++
           update()
-          console.log(`hotkey ${e.label} fired (count: ${counts[i]})`)
         }
       },
     }),
   )
 })
 
-demo(Stack.down(children))
+const leftPanel = new Box({
+  border: 'single',
+  child: Stack.down(hotKeyChildren),
+})
+
+// ─── Right Panel: Event Log ─────────────────────────────────────────────────
+
+const rightPanel = new Box({
+  border: 'single',
+  child: new Keyboard({
+    onKey: (event: KeyEvent) => {
+      addLogLine(formatKeyEvent(event))
+    },
+    children: [
+      new Mouse({
+        mouse: ['mouse.button.all', 'mouse.wheel', 'mouse.move'],
+        onMouse: (event: MouseEvent) => {
+          mouseLocationText.text = `Mouse: (${event.position.x}, ${event.position.y}) ${event.button} ${event.name}`
+          // Only log clicks and wheel, not every move
+          if (!event.name.startsWith('mouse.move.')) {
+            addLogLine(formatMouseEvent(event))
+          }
+        },
+        children: [
+          Stack.down([
+            mouseLocationText,
+            new Text({text: '─'.repeat(40)}),
+            new Text({text: 'Event Log:'}),
+            eventLogText,
+          ]),
+        ],
+      }),
+    ],
+  }),
+})
+
+// ─── Layout ─────────────────────────────────────────────────────────────────
+
+demo(
+  Stack.right([
+    ['flex1', leftPanel],
+    ['flex1', rightPanel],
+  ]),
+)

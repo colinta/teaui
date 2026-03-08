@@ -16,6 +16,8 @@ import {
   Dropdown,
   H1,
   HotKey,
+  Keyboard,
+  Mouse,
   H2,
   H3,
   H4,
@@ -95,6 +97,12 @@ function createInstance(type: string, props: Props): any {
     case 'hotkey':
     case 'tui-hotkey':
       return new HotKey(props as any)
+    case 'keyboard':
+    case 'tui-keyboard':
+      return new Keyboard(props as any)
+    case 'mouse':
+    case 'tui-mouse':
+      return new Mouse(props as any)
     case 'h1':
     case 'tui-h1':
       return H1(((props as any).text as string) ?? '')

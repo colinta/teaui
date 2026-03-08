@@ -3,9 +3,9 @@
  *
  * Enters fullscreen, enables SGR mouse tracking, and draws a cursor
  * character wherever the mouse moves. All mouse events are logged to
- * mouse-debug.log so you can inspect them in another terminal:
+ * mouse-events.log so you can inspect them in another terminal:
  *
- *   tail -f mouse-debug.log
+ *   tail -f mouse-events.log
  *
  * Press 'q' or ctrl+c to exit.
  */
@@ -24,8 +24,8 @@ import {
 import type { MouseEvent, Color } from '../src/index.js'
 
 // --- Log file (truncated on startup) ---
-fs.writeFileSync('mouse-debug.log', '')
-const logFd = fs.openSync('mouse-debug.log', 'w')
+fs.writeFileSync('mouse-events.log', '')
+const logFd = fs.openSync('mouse-events.log', 'w')
 
 function log(msg: string) {
   fs.writeSync(logFd, msg + '\n')

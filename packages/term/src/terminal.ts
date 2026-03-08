@@ -340,6 +340,18 @@ export class Terminal {
     return this
   }
 
+  /** Enable CSI u keyboard enhancement (disambiguates shift+enter vs alt+enter, etc). */
+  keyboardEnhance(): this {
+    this._write(modern.keyboardEnhanceEnable())
+    return this
+  }
+
+  /** Disable CSI u keyboard enhancement (pops the enhancement off the stack). */
+  keyboardEnhanceDisable(): this {
+    this._write(modern.keyboardEnhanceDisable())
+    return this
+  }
+
   beginSync(): this {
     this._write(modern.syncStart())
     return this
