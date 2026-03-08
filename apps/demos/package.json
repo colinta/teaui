@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "build": "pnpm --filter '@teaui/subprocess...' build && pnpm tsc",
+    "build": "pnpm --filter @teaui/term --filter @teaui/core --filter @teaui/subprocess build && pnpm tsc",
     "checksum": "pnpm check 'pnpm build'",
     "demo": "node run.mjs",
     "clean": "rm -rf .dist/"
