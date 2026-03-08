@@ -8,10 +8,13 @@ on:
 
 permissions:
   contents: write
+  workflows: write
 
 jobs:
   prettier:
     runs-on: ubuntu-latest
+    if: github.actor != 'teaui[bot]'
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +32,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Run Prettier
-        run: pnpm prettier --write .
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pnpm prettier --check .
+          else
+            pnpm prettier --write .
+          fi
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
