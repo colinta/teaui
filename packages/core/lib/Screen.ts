@@ -165,7 +165,7 @@ type ViewConstructor<T extends View> = (
 ) => T | Promise<T>
 
 export interface ScreenOptions {
-  quitChar?: 'c' | 'q' | '' | undefined | false
+  quitChar?: 'C-c' | 'C-q' | '' | undefined | false
   emoji?: boolean
 }
 
@@ -217,7 +217,7 @@ export class Screen {
   ): Promise<[Screen, TerminalProgram, T]> {
     opts ??= {}
     opts = {
-      quitChar: 'c',
+      quitChar: 'C-c',
       ...opts,
     }
 
@@ -252,7 +252,7 @@ export class Screen {
     })
 
     if (opts.quitChar) {
-      program.key(`C-${opts.quitChar}`, () => {
+      program.key(opts.quitChar, () => {
         screen.exit()
       })
     }

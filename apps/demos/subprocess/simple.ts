@@ -32,7 +32,7 @@ async function main() {
         ]),
       }),
     })
-  }, {quitChar: 'q'})
+  }, {quitChar: 'C-q'})
 }
 
 main()

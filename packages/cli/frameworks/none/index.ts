@@ -47,7 +47,7 @@ import {
         ]),
       }),
     }),
-    {quitChar: 'q'},
+    {quitChar: 'C-q'},
   )
 
   program.key('escape', function () {

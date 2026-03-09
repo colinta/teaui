@@ -39,7 +39,7 @@ export async function demo(
         }),
       })
     },
-    {quitChar: 'q'},
+    {quitChar: 'C-q'},
   )
 
   program.key('escape', function () {
