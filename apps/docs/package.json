@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "screenshots": "tsx scripts/build-screenshots.ts",
-    "prebuild": "pnpm screenshots",
+    "prebuild": "pnpm --filter '@teaui/react...' build && pnpm screenshots",
     "build": "docusaurus build",
     "start": "pnpm screenshots && docusaurus start",
     "serve": "docusaurus serve",
