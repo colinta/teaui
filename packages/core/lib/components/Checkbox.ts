@@ -115,7 +115,7 @@ export class Checkbox extends Container {
     )
 
     const box = this.boxChars()[this.#value ? 'checked' : 'unchecked']
-    viewport.write(box, Point.zero, uiStyle)
+    viewport.write(box, new Point(0, offset.y), uiStyle)
     viewport.clipped(new Rect(offset, naturalSize), uiStyle, inside => {
       super.render(inside)
     })
