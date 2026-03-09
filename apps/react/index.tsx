@@ -1,8 +1,5 @@
 import React, {useState, useMemo, useEffect, useRef} from 'react'
-import {
-  interceptConsoleLog,
-  type Border,
-} from '@teaui/core'
+import {interceptConsoleLog, type Border} from '@teaui/core'
 import {
   Accordion,
   Box,
@@ -46,29 +43,57 @@ function indent(depth: number): string {
   return '  '.repeat(depth)
 }
 
-function renderValue(value: unknown, depth: number): React.ReactNode {
+type JSONValue = null | boolean | number | string | JSONArray | JSONObject
+interface JSONArray extends Array<JSONValue> {}
+interface JSONObject extends Record<string, JSONValue> {}
+
+function renderValue(
+  value: JSONValue,
+  depth: number,
+  key: string | number,
+): React.ReactNode {
   if (value === null) {
-    return <Style key={_key++} foreground="yellow">null</Style>
+    return (
+      <Style key={key} foreground="yellow">
+        null
+      </Style>
+    )
   }
   if (typeof value === 'boolean') {
-    return <Style key={_key++} foreground="yellow">{String(value)}</Style>
+    return (
+      <Style key={key} foreground="yellow">
+        {String(value)}
+      </Style>
+    )
   }
   if (typeof value === 'number') {
-    return <Style key={_key++} foreground="magenta">{String(value)}</Style>
+    return (
+      <Style key={key} foreground="magenta">
+        {String(value)}
+      </Style>
+    )
   }
   if (typeof value === 'string') {
-    return <Style key={_key++} foreground="green">{JSON.stringify(value)}</Style>
+    return (
+      <Style key={key} foreground="green">
+        {JSON.stringify(value)}
+      </Style>
+    )
   }
   if (Array.isArray(value)) {
-    return renderArray(value, depth)
+    return renderArray(value, depth, key)
   }
   if (typeof value === 'object') {
-    return renderObject(value as Record<string, unknown>, depth)
+    return renderObject(value, depth, key)
   }
   return String(value)
 }
 
-function renderArray(arr: unknown[], depth: number): React.ReactNode {
+function renderArray(
+  arr: JSONArray,
+  depth: number,
+  key: string | number,
+): React.ReactNode {
   if (arr.length === 0) {
     return '[]'
   }
@@ -76,7 +101,7 @@ function renderArray(arr: unknown[], depth: number): React.ReactNode {
   const parts: React.ReactNode[] = ['[\n']
   for (let i = 0; i < arr.length; i++) {
     parts.push(indent(depth + 1))
-    parts.push(renderValue(arr[i], depth + 1))
+    parts.push(renderValue(arr[i], depth + 1, i))
     if (i < arr.length - 1) {
       parts.push(',')
     }
@@ -84,10 +109,14 @@ function renderArray(arr: unknown[], depth: number): React.ReactNode {
   }
   parts.push(indent(depth))
   parts.push(']')
-  return <React.Fragment key={_key++}>{parts}</React.Fragment>
+  return <React.Fragment key={key}>{parts}</React.Fragment>
 }
 
-function renderObject(obj: Record<string, unknown>, depth: number): React.ReactNode {
+function renderObject(
+  obj: JSONObject,
+  depth: number,
+  key: string | number,
+): React.ReactNode {
   const keys = Object.keys(obj)
   if (keys.length === 0) {
     return '{}'
@@ -97,9 +126,13 @@ function renderObject(obj: Record<string, unknown>, depth: number): React.ReactN
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i]
     parts.push(indent(depth + 1))
-    parts.push(<Style key={_key++} foreground="blue">{JSON.stringify(key)}</Style>)
+    parts.push(
+      <Style key={key} foreground="blue">
+        {JSON.stringify(key)}
+      </Style>,
+    )
     parts.push(': ')
-    parts.push(renderValue(obj[key], depth + 1))
+    parts.push(renderValue(obj[key], depth + 1, i))
     if (i < keys.length - 1) {
       parts.push(',')
     }
@@ -107,12 +140,11 @@ function renderObject(obj: Record<string, unknown>, depth: number): React.ReactN
   }
   parts.push(indent(depth))
   parts.push('}')
-  return <React.Fragment key={_key++}>{parts}</React.Fragment>
+  return <React.Fragment key={key}>{parts}</React.Fragment>
 }
 
-function syntaxHighlightJSON(value: unknown): React.ReactNode {
-  _key = 0
-  return renderValue(value, 0)
+function syntaxHighlightJSON(value: JSONValue): React.ReactNode {
+  return renderValue(value, 0, 0)
 }
 
 // ── Tab: YAML → JSON ────────────────────────────────────────────────────────
@@ -180,7 +212,9 @@ function YamlTab() {
               </Text>
             ) : (
               <Scrollable flex={1}>
-                <Text>{parsed !== null ? syntaxHighlightJSON(parsed) : ''}</Text>
+                <Text>
+                  {parsed !== null ? syntaxHighlightJSON(parsed) : ''}
+                </Text>
               </Scrollable>
             )}
           </Stack.down>
