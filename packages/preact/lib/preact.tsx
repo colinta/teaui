@@ -30,7 +30,6 @@ import {
   Separator as WrSeparator,
   Slider as WrSlider,
   Space as WrSpace,
-  Spinner as WrSpinner,
   Stack as WrStack,
   Tabs as WrTabs,
   View,
