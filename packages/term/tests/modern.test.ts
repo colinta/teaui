@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import {describe, it, expect} from 'vitest'
 import {
   hyperlink,
   styledUnderline,
@@ -10,7 +10,7 @@ import {
   syncStart,
   syncEnd,
 } from '../src/modern.js'
-import { OSC, CSI, ST } from '../src/ansi.js'
+import {OSC, CSI, ST} from '../src/ansi.js'
 
 describe('modern terminal features', () => {
   describe('hyperlinks (OSC 8)', () => {
@@ -22,7 +22,7 @@ describe('modern terminal features', () => {
     })
 
     it('supports id parameter', () => {
-      const result = hyperlink('https://example.com', 'link', { id: 'link1' })
+      const result = hyperlink('https://example.com', 'link', {id: 'link1'})
       expect(result).toBe(
         `${OSC}8;id=link1;https://example.com${ST}link${OSC}8;;${ST}`,
       )
@@ -58,13 +58,13 @@ describe('modern terminal features', () => {
     })
 
     it('sets underline color with RGB', () => {
-      expect(underlineColor({ r: 255, g: 128, b: 0 })).toBe(
+      expect(underlineColor({r: 255, g: 128, b: 0})).toBe(
         `${CSI}58:2::255:128:0m`,
       )
     })
 
     it('sets underline color with 256 palette', () => {
-      expect(underlineColor({ index: 196 })).toBe(`${CSI}58:5:196m`)
+      expect(underlineColor({index: 196})).toBe(`${CSI}58:5:196m`)
     })
   })
 

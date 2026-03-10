@@ -25,7 +25,13 @@ function termKey(
 function termMouse(
   action: TermMouseEvent['action'],
   button: TermMouseEvent['button'] = 'none',
-  opts: {x?: number; y?: number; ctrl?: boolean; alt?: boolean; shift?: boolean} = {},
+  opts: {
+    x?: number
+    y?: number
+    ctrl?: boolean
+    alt?: boolean
+    shift?: boolean
+  } = {},
 ): TermMouseEvent {
   return {
     type: 'mouse',

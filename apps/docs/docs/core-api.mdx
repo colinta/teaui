@@ -10,7 +10,14 @@ The core API lets you build UIs by directly instantiating `View` objects. This i
 ## Hello World
 
 ```js
-import {Screen, Box, Stack, Text, Button, interceptConsoleLog} from '@teaui/core'
+import {
+  Screen,
+  Box,
+  Stack,
+  Text,
+  Button,
+  interceptConsoleLog,
+} from '@teaui/core'
 
 interceptConsoleLog()
 
@@ -23,7 +30,7 @@ Screen.start(
         new Button({title: 'Tell me!'}),
       ]),
     ],
-  })
+  }),
 )
 ```
 

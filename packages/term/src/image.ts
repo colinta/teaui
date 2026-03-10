@@ -1,5 +1,5 @@
-import type { ImageOptions, ImageProtocol } from './types.js'
-import { OSC, ST, ESC } from './ansi.js'
+import type {ImageOptions, ImageProtocol} from './types.js'
+import {OSC, ST, ESC} from './ansi.js'
 
 const KITTY_CHUNK_SIZE = 4096
 

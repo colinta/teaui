@@ -11,9 +11,7 @@ describe('Box', () => {
         {width: 5, height: 3},
       )
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '┌───┐\n' +
-        '│   │\n' +
-        '└───┘',
+        '┌───┐\n' + '│   │\n' + '└───┘',
       )
     })
 
@@ -23,9 +21,7 @@ describe('Box', () => {
         {width: 5, height: 3},
       )
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '┏━━━┓\n' +
-        '┃   ┃\n' +
-        '┗━━━┛',
+        '┏━━━┓\n' + '┃   ┃\n' + '┗━━━┛',
       )
     })
 
@@ -35,9 +31,7 @@ describe('Box', () => {
         {width: 5, height: 3},
       )
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '╔═══╗\n' +
-        '║   ║\n' +
-        '╚═══╝',
+        '╔═══╗\n' + '║   ║\n' + '╚═══╝',
       )
     })
 
@@ -47,9 +41,7 @@ describe('Box', () => {
         {width: 5, height: 3},
       )
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '╭───╮\n' +
-        '│   │\n' +
-        '╰───╯',
+        '╭───╮\n' + '│   │\n' + '╰───╯',
       )
     })
 
@@ -59,9 +51,7 @@ describe('Box', () => {
         {width: 5, height: 3},
       )
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '⡖⠒⠒⠒⢲\n' +
-        '⡇   ⢸\n' +
-        '⠧⠤⠤⠤⠼',
+        '⡖⠒⠒⠒⢲\n' + '⡇   ⢸\n' + '⠧⠤⠤⠤⠼',
       )
     })
   })
@@ -73,9 +63,7 @@ describe('Box', () => {
         {width: 6, height: 3},
       )
       expect(t.terminal.textRect(0, 0, 6, 3)).toBe(
-        '┌────┐\n' +
-        '│Hi  │\n' +
-        '└────┘',
+        '┌────┐\n' + '│Hi  │\n' + '└────┘',
       )
     })
 
@@ -95,10 +83,10 @@ describe('Box', () => {
       )
       expect(t.terminal.textRect(0, 0, 9, 5)).toBe(
         '┌───────┐\n' +
-        '│       │\n' +
-        '│       │\n' +
-        '│       │\n' +
-        '└───────┘',
+          '│       │\n' +
+          '│       │\n' +
+          '│       │\n' +
+          '└───────┘',
       )
     })
   })

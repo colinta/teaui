@@ -297,7 +297,10 @@ export function charWidth(str: string): 0 | 1 | 2 {
  * Return the cell width and height of the entire string. Width is the maximum
  * length of all the lines, and height is the number of lines.
  */
-export function stringSize(text: string | string[]): { width: number; height: number }
+export function stringSize(text: string | string[]): {
+  width: number
+  height: number
+}
 /**
  * Return the cell width and height of the entire string, wrapping lines to fit
  * within maxWidth.
@@ -305,11 +308,11 @@ export function stringSize(text: string | string[]): { width: number; height: nu
 export function stringSize(
   text: string | string[],
   maxWidth: number,
-): { width: number; height: number }
+): {width: number; height: number}
 export function stringSize(
   str: string | string[],
   maxWidth?: number,
-): { width: number; height: number } {
+): {width: number; height: number} {
   if (Array.isArray(str)) {
     if (maxWidth != null) {
       return str.reduce(
@@ -320,11 +323,11 @@ export function stringSize(
           size.height += height
           return size
         },
-        { width: 0, height: 0 },
+        {width: 0, height: 0},
       )
     }
 
-    return { width: Math.max(...str.map(lineWidth)), height: str.length }
+    return {width: Math.max(...str.map(lineWidth)), height: str.length}
   } else {
     return stringSize(str.split('\n'), maxWidth as number)
   }
@@ -357,7 +360,7 @@ let locale = (() => {
   }
 })()
 let graphemesSegmenter = new Intl.Segmenter(locale)
-let wordsSegmenter = new Intl.Segmenter(locale, { granularity: 'word' })
+let wordsSegmenter = new Intl.Segmenter(locale, {granularity: 'word'})
 
 export function getLocale(): string {
   return locale
@@ -366,7 +369,7 @@ export function getLocale(): string {
 export function setLocale(value: string): void {
   locale = value
   graphemesSegmenter = new Intl.Segmenter(locale)
-  wordsSegmenter = new Intl.Segmenter(locale, { granularity: 'word' })
+  wordsSegmenter = new Intl.Segmenter(locale, {granularity: 'word'})
 }
 
 // --- Word segmentation ---
@@ -386,15 +389,12 @@ export function words(input: string | string[]): [string[], number][] {
 
   let strIndex = 0
   const segments = Array.from(wordsSegmenter.segment(input)).map(
-    ({ segment }) => segment,
+    ({segment}) => segment,
   )
   const parts = segments.map(segment => {
     let offset = segment.length
-    while (
-      ansiData.length &&
-      strIndex + segment.length >= ansiData[0].start
-    ) {
-      const { start, ansi } = ansiData.shift()!
+    while (ansiData.length && strIndex + segment.length >= ansiData[0].start) {
+      const {start, ansi} = ansiData.shift()!
       const lhs = segment.slice(0, start - strIndex)
       const rhs = segment.slice(start - strIndex)
       segment = lhs + ansi + rhs
@@ -434,10 +434,10 @@ export function printableChars(str: string): string[] {
   const chars: string[] = []
   const locations = ansiLocations(str, true)
   let prevIndex = 0
-  for (const { start, stop, ansi } of locations) {
+  for (const {start, stop, ansi} of locations) {
     if (prevIndex < start) {
       const input = str.slice(prevIndex, start)
-      for (const { segment: char } of graphemesSegmenter.segment(input)) {
+      for (const {segment: char} of graphemesSegmenter.segment(input)) {
         chars.push(char)
       }
     }
@@ -473,9 +473,12 @@ function ansiRegex(): RegExp {
  * @param includeLast If true, there will always be a range at the end of the
  * string, to make looping over the ranges easier.
  */
-export function ansiLocations(input: string, includeLast?: boolean): AnsiLocation[] {
+export function ansiLocations(
+  input: string,
+  includeLast?: boolean,
+): AnsiLocation[] {
   const locations: AnsiLocation[] = [...input.matchAll(ansiRegex())].map(
-    ({ 0: match, index }) => ({
+    ({0: match, index}) => ({
       start: index!,
       stop: index! + match.length,
       ansi: match,

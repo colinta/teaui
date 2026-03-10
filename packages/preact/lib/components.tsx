@@ -43,10 +43,11 @@ type TUIView<
 
 type TUIContainer<
   T extends abstract new (arg: any, ...args: any) => any,
-  ChildrenProps extends keyof NonNullable<
-    ConstructorParameters<T>[0]
-  > = Children,
-> = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: preact.ComponentChildren}
+  ChildrenProps extends keyof NonNullable<ConstructorParameters<T>[0]> =
+    Children,
+> = TUIView<T, ChildrenProps> & {
+  [Key in ChildrenProps]?: preact.ComponentChildren
+}
 
 export type CheckboxProps = TUIView<typeof WrCheckbox>
 export type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
@@ -174,7 +175,10 @@ export function Dropdown(reactProps: DropdownProps): preact.JSX.Element {
 export function HotKey(reactProps: HotKeyProps): preact.JSX.Element {
   return <tui-hotkey {...reactProps} />
 }
-export function Keyboard({children, ...props}: KeyboardProps): preact.JSX.Element {
+export function Keyboard({
+  children,
+  ...props
+}: KeyboardProps): preact.JSX.Element {
   return <tui-keyboard {...props}>{children}</tui-keyboard>
 }
 export function Mouse({children, ...props}: MouseProps): preact.JSX.Element {

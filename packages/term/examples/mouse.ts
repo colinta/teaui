@@ -21,7 +21,7 @@ import {
   resetAll,
 } from '../src/index.js'
 
-import type { MouseEvent, Color } from '../src/index.js'
+import type {MouseEvent, Color} from '../src/index.js'
 
 // --- Log file (truncated on startup) ---
 fs.writeFileSync('mouse-events.log', '')
@@ -33,18 +33,18 @@ function log(msg: string) {
 
 // --- Terminal ---
 const term = new Terminal()
-const { columns: cols, rows } = term.size
+const {columns: cols, rows} = term.size
 
 // --- State ---
 let prevX = -1
 let prevY = -1
 
 // Trail: store recent positions for a fading trail effect
-const trail: Array<{ x: number; y: number; age: number }> = []
+const trail: Array<{x: number; y: number; age: number}> = []
 const MAX_TRAIL = 30
 
 // --- Enter fullscreen with mouse ---
-term.enterFullscreen({ mouse: true, hideCursor: true })
+term.enterFullscreen({mouse: true, hideCursor: true})
 
 log(`Terminal size: ${cols}x${rows}`)
 log(`Mouse tracking enabled (SGR mode)`)
@@ -52,7 +52,8 @@ log(`---`)
 
 // Draw initial help text
 function drawHelp() {
-  const help = 'Move mouse around · Click to stamp · Drag to paint · Press q to quit'
+  const help =
+    'Move mouse around · Click to stamp · Drag to paint · Press q to quit'
   const hx = Math.max(0, Math.floor((cols - help.length) / 2))
   term.moveTo(hx, 0).fg('brightBlack').write(help)
 }
@@ -65,10 +66,10 @@ function drawCursor(x: number, y: number, action: MouseEvent['action']) {
 
   if (action === 'press' || action === 'drag') {
     // Bright stamp when clicking or dragging
-    term.moveTo(x, y).bg({ r: 255, g: 100, b: 50 }).fg('brightWhite').write('█')
+    term.moveTo(x, y).bg({r: 255, g: 100, b: 50}).fg('brightWhite').write('█')
   } else {
     // Crosshair-style cursor
-    term.moveTo(x, y).fg({ r: 0, g: 255, b: 180 }).write('╋')
+    term.moveTo(x, y).fg({r: 0, g: 255, b: 180}).write('╋')
   }
 }
 
@@ -93,7 +94,7 @@ function drawTrail() {
     const g = Math.round(fade * 180)
     const b = Math.round(fade * 120)
     if (t.y > 0) {
-      term.moveTo(t.x, t.y).fg({ r: 0, g, b }).write('·')
+      term.moveTo(t.x, t.y).fg({r: 0, g, b}).write('·')
     }
   }
 }
@@ -101,12 +102,14 @@ function drawTrail() {
 // --- Input handling ---
 term.onInput(event => {
   if (isMouseEvent(event)) {
-    log(`mouse: action=${event.action} button=${event.button} pos=(${event.x},${event.y}) shift=${event.shift} alt=${event.alt} ctrl=${event.ctrl}`)
+    log(
+      `mouse: action=${event.action} button=${event.button} pos=(${event.x},${event.y}) shift=${event.shift} alt=${event.alt} ctrl=${event.ctrl}`,
+    )
 
     // Erase old cursor position
     if (prevX >= 0 && prevY >= 0 && (prevX !== event.x || prevY !== event.y)) {
       // Add to trail if moved
-      trail.push({ x: prevX, y: prevY, age: 0 })
+      trail.push({x: prevX, y: prevY, age: 0})
     }
 
     // Draw trail
@@ -117,7 +120,10 @@ term.onInput(event => {
 
     // Show coordinates in bottom-left
     const status = `pos: (${event.x}, ${event.y})  action: ${event.action.padEnd(7)}  button: ${event.button.padEnd(6)}  `
-    term.moveTo(0, rows - 1).fg('brightBlack').write(status)
+    term
+      .moveTo(0, rows - 1)
+      .fg('brightBlack')
+      .write(status)
 
     prevX = event.x
     prevY = event.y

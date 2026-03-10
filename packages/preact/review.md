@@ -25,6 +25,7 @@ This **overwrites the global `document` object** with the custom renderer DOM. T
 **Recommendation:** Use Preact's `options` hooks instead of faking a DOM. Preact's `options.__b` (before diff), `options.__c` (commit), `options.diffed`, `options.__r` (render), and `options.unmount` hooks allow intercepting the rendering pipeline without global mutations. Alternatively, use `preact-render-to-string`'s approach of a contained virtual DOM.
 
 If keeping the fake-DOM approach, at minimum:
+
 - Scope it to a module-local variable, not `global.document`
 - Use `preact/compat`'s `render(vnode, container)` where `container` is your fake root element
 
@@ -47,9 +48,9 @@ The Preact package has **no equivalent**. After Preact commits changes to the vi
 import {options} from 'preact'
 
 const prevDiffed = options.diffed
-options.diffed = (vnode) => {
+options.diffed = vnode => {
   prevDiffed?.(vnode)
-  screen.render()  // trigger terminal re-render
+  screen.render() // trigger terminal re-render
 }
 ```
 
@@ -143,6 +144,7 @@ removeAttribute(name: string) {
 Unlike `setAttribute`, this doesn't schedule a `_commit`. Removing a prop (e.g., removing an event handler) will not propagate to the underlying TeaUI view until the next `setAttribute` call happens to trigger a commit.
 
 **Fix:**
+
 ```ts
 removeAttribute(name: string) {
   if (this.node && !this.prevProps) {
@@ -167,19 +169,19 @@ Preact checks `nodeType` to determine if something is an element (`nodeType === 
 
 ### 3.1 The React package has features the Preact package lacks
 
-| Feature | React Package | Preact Package |
-|---------|--------------|----------------|
-| Screen re-render after commit | ✅ `resetAfterCommit` | ❌ Missing |
-| Prop diffing before update | ✅ `prepareUpdate` + `isSame` | ❌ Always full update |
-| `children`/`child` prop filtering | ✅ Strips in `createInstance` | ❌ Passes through |
-| Explicit reconciler API | ✅ `react-reconciler` | ❌ Fake DOM hack |
+| Feature                           | React Package                 | Preact Package        |
+| --------------------------------- | ----------------------------- | --------------------- |
+| Screen re-render after commit     | ✅ `resetAfterCommit`         | ❌ Missing            |
+| Prop diffing before update        | ✅ `prepareUpdate` + `isSame` | ❌ Always full update |
+| `children`/`child` prop filtering | ✅ Strips in `createInstance` | ❌ Passes through     |
+| Explicit reconciler API           | ✅ `react-reconciler`         | ❌ Fake DOM hack      |
 
 ### 3.2 The Preact package has features the React package lacks
 
-| Feature | React Package | Preact Package |
-|---------|--------------|----------------|
-| `TextLiteral` direct creation via type `'text'` | ❌ | ✅ `case 'text':` |
-| `TextLiteral` via type `'literal'` | ❌ | ✅ `case 'literal':` |
+| Feature                                         | React Package | Preact Package       |
+| ----------------------------------------------- | ------------- | -------------------- |
+| `TextLiteral` direct creation via type `'text'` | ❌            | ✅ `case 'text':`    |
+| `TextLiteral` via type `'literal'`              | ❌            | ✅ `case 'literal':` |
 
 ### 3.3 Shared `TextReact.ts` is duplicated
 
@@ -226,14 +228,14 @@ This augments **React's** JSX namespace, not Preact's. Preact uses `preact.JSX`.
 
 ## 5. Missing Preact Features
 
-| Feature | Status | Priority |
-|---------|--------|----------|
-| Screen re-render | **Missing** | 🔴 Critical |
-| Signals (`@preact/signals`) | Not integrated | 🟡 Medium |
-| Error Boundaries | Not tested | 🟡 Medium |
-| `options` hooks integration | Not used | 🟡 Medium |
-| Hydration | Not supported | 🟢 Low |
-| Refs | Likely broken (no `getPublicInstance` equivalent) | 🟡 Medium |
+| Feature                     | Status                                            | Priority    |
+| --------------------------- | ------------------------------------------------- | ----------- |
+| Screen re-render            | **Missing**                                       | 🔴 Critical |
+| Signals (`@preact/signals`) | Not integrated                                    | 🟡 Medium   |
+| Error Boundaries            | Not tested                                        | 🟡 Medium   |
+| `options` hooks integration | Not used                                          | 🟡 Medium   |
+| Hydration                   | Not supported                                     | 🟢 Low      |
+| Refs                        | Likely broken (no `getPublicInstance` equivalent) | 🟡 Medium   |
 
 ---
 
@@ -244,9 +246,9 @@ This augments **React's** JSX namespace, not Preact's. Preact uses `preact.JSX`.
 ```ts
 export async function run(component, options) {
   const root = dom.createRoot()
-  render(component, root as any)           // render first
+  render(component, root as any) // render first
   const window = root.node
-  const [screen, _] = await Screen.start(window, options)  // then start screen
+  const [screen, _] = await Screen.start(window, options) // then start screen
   return [screen, window, component]
 }
 ```

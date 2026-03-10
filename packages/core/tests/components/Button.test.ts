@@ -23,7 +23,9 @@ describe('Button', () => {
       let clicked = false
       const btn = new Button({
         text: 'Click Me',
-        onClick() { clicked = true },
+        onClick() {
+          clicked = true
+        },
       })
       const t = testRender(btn, {width: 14, height: 3})
       t.sendMouse('mouse.button.down', {x: 5, y: 1})
@@ -35,7 +37,9 @@ describe('Button', () => {
       let clicked = false
       const btn = new Button({
         text: 'Click Me',
-        onClick() { clicked = true },
+        onClick() {
+          clicked = true
+        },
       })
       const t = testRender(btn, {width: 14, height: 3})
       t.sendMouse('mouse.button.down', {x: 5, y: 1})

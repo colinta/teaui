@@ -21,7 +21,11 @@ function createMockScreen() {
   } as any
 }
 
-function renderToWindow(element: React.ReactNode): {window: Window; screen: ReturnType<typeof createMockScreen>; unmount: () => void} {
+function renderToWindow(element: React.ReactNode): {
+  window: Window
+  screen: ReturnType<typeof createMockScreen>
+  unmount: () => void
+} {
   const window = new Window()
   const screen = createMockScreen()
   const unmount = render(screen, window, element)
@@ -47,7 +51,7 @@ describe('reconciler', () => {
         <tui-stack direction="down">
           <tui-box width={10} height={5} />
           <tui-box width={20} height={10} />
-        </tui-stack>
+        </tui-stack>,
       )
       await flush()
       expect(window.children.length).toBe(1)
@@ -60,9 +64,7 @@ describe('reconciler', () => {
 
     it('renders text literals into TextContainers', async () => {
       const {window} = renderToWindow(
-        <tui-stack direction="down">
-          hello world
-        </tui-stack>
+        <tui-stack direction="down">hello world</tui-stack>,
       )
       await flush()
       const stack = window.children[0] as Container
@@ -78,11 +80,7 @@ describe('reconciler', () => {
 
     it('groups adjacent text literals into the same TextContainer', async () => {
       const {window} = renderToWindow(
-        <tui-stack direction="down">
-          hello
-          {' '}
-          world
-        </tui-stack>
+        <tui-stack direction="down">hello world</tui-stack>,
       )
       await flush()
       const stack = window.children[0] as Container
@@ -99,7 +97,7 @@ describe('reconciler', () => {
           hello
           <tui-box width={5} height={5} />
           world
-        </tui-stack>
+        </tui-stack>,
       )
       await flush()
       const stack = window.children[0] as Container
@@ -136,7 +134,9 @@ describe('reconciler', () => {
     })
 
     it('removes children when unmount is called', async () => {
-      const {window, unmount} = renderToWindow(<tui-box width={10} height={5} />)
+      const {window, unmount} = renderToWindow(
+        <tui-box width={10} height={5} />,
+      )
       await flush()
       expect(window.children.length).toBe(1)
       unmount()
@@ -235,7 +235,15 @@ describe('reconciler', () => {
       function TestComp() {
         const ref = useRef<any>(null)
         // Use callback ref to capture the instance
-        return <tui-box ref={(instance: any) => { capturedRef = instance }} width={10} height={5} />
+        return (
+          <tui-box
+            ref={(instance: any) => {
+              capturedRef = instance
+            }}
+            width={10}
+            height={5}
+          />
+        )
       }
 
       renderToWindow(<TestComp />)
@@ -251,11 +259,7 @@ describe('reconciler', () => {
       function TestComp() {
         const [text, _setText] = useState('hello')
         setText = _setText
-        return (
-          <tui-stack direction="down">
-            {text}
-          </tui-stack>
-        )
+        return <tui-stack direction="down">{text}</tui-stack>
       }
 
       const {window} = renderToWindow(<TestComp />)
@@ -278,7 +282,7 @@ describe('reconciler', () => {
       const {window} = renderToWindow(
         <tui-stack direction="down">
           <tui-box width={10} height={5} />
-        </tui-stack>
+        </tui-stack>,
       )
       await flush()
       expect(window.children.length).toBe(1)

@@ -4,18 +4,18 @@ import {Header} from '../../lib/components/Header.js'
 
 describe('Header', () => {
   it('renders header text with single border', () => {
-    const t = testRender(
-      new Header({text: 'Title', border: 'single'}),
-      {width: 20, height: 2},
-    )
+    const t = testRender(new Header({text: 'Title', border: 'single'}), {
+      width: 20,
+      height: 2,
+    })
     expect(t.terminal.textContent()).toContain('Title')
   })
 
   it('renders underline border', () => {
-    const t = testRender(
-      new Header({text: 'Title', border: 'single'}),
-      {width: 20, height: 2},
-    )
+    const t = testRender(new Header({text: 'Title', border: 'single'}), {
+      width: 20,
+      height: 2,
+    })
     // Second row should contain separator chars
     const borderRow = t.terminal.getRow(1)
     expect(borderRow).toMatch(/─/)
@@ -32,10 +32,10 @@ describe('Header', () => {
   })
 
   it('renders double border', () => {
-    const t = testRender(
-      new Header({text: 'Title', border: 'double'}),
-      {width: 20, height: 2},
-    )
+    const t = testRender(new Header({text: 'Title', border: 'double'}), {
+      width: 20,
+      height: 2,
+    })
     const borderRow = t.terminal.getRow(1)
     expect(borderRow).toMatch(/═/)
   })

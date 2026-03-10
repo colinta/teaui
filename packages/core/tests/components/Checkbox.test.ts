@@ -5,27 +5,24 @@ import {Checkbox} from '../../lib/components/Checkbox.js'
 describe('Checkbox', () => {
   describe('rendering', () => {
     it('renders unchecked box', () => {
-      const t = testRender(
-        new Checkbox({text: 'Option', value: false}),
-        {width: 20, height: 1},
-      )
+      const t = testRender(new Checkbox({text: 'Option', value: false}), {
+        width: 20,
+        height: 1,
+      })
       expect(t.terminal.textContent()).toContain('☐')
     })
 
     it('renders checked box', () => {
-      const t = testRender(
-        new Checkbox({text: 'Option', value: true}),
-        {width: 20, height: 1},
-      )
+      const t = testRender(new Checkbox({text: 'Option', value: true}), {
+        width: 20,
+        height: 1,
+      })
       const content = t.terminal.textContent()
       expect(content).toMatch(/[☑◼]/)
     })
 
     it('renders without text', () => {
-      const t = testRender(
-        new Checkbox({value: false}),
-        {width: 5, height: 1},
-      )
+      const t = testRender(new Checkbox({value: false}), {width: 5, height: 1})
       expect(t.terminal.textContent()).toContain('☐')
     })
   })
@@ -36,7 +33,9 @@ describe('Checkbox', () => {
       const cb = new Checkbox({
         text: 'Option',
         value: false,
-        onChange(value) { checked = value },
+        onChange(value) {
+          checked = value
+        },
       })
       const t = testRender(cb, {width: 20, height: 1})
       t.sendMouse('mouse.button.down', {x: 0, y: 0})
@@ -49,7 +48,9 @@ describe('Checkbox', () => {
       const cb = new Checkbox({
         text: 'Option',
         value: true,
-        onChange(value) { checked = value },
+        onChange(value) {
+          checked = value
+        },
       })
       const t = testRender(cb, {width: 20, height: 1})
       t.sendMouse('mouse.button.down', {x: 0, y: 0})

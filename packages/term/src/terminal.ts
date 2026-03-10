@@ -10,16 +10,16 @@ import type {
   TextAttribute,
 } from './types.js'
 import * as ansi from './ansi.js'
-import { CursorController } from './cursor.js'
-import { ScreenController, detectColorSupport } from './screen.js'
-import { InputReader } from './input.js'
-import { StyleBuilder } from './style.js'
-import { ScreenBuffer } from './buffer.js'
-import { itermImage, kittyImage, detectImageProtocol } from './image.js'
+import {CursorController} from './cursor.js'
+import {ScreenController, detectColorSupport} from './screen.js'
+import {InputReader} from './input.js'
+import {StyleBuilder} from './style.js'
+import {ScreenBuffer} from './buffer.js'
+import {itermImage, kittyImage, detectImageProtocol} from './image.js'
 import * as modern from './modern.js'
 
 export class Terminal {
-  private output: { write(s: string): boolean; columns?: number; rows?: number }
+  private output: {write(s: string): boolean; columns?: number; rows?: number}
   private input: NodeJS.ReadableStream | undefined
   private cursorCtrl: CursorController
   private screenCtrl: ScreenController
@@ -47,7 +47,7 @@ export class Terminal {
     this.inputReader = new InputReader()
 
     if (this.useBuffer) {
-      const { columns, rows } = this.size
+      const {columns, rows} = this.size
       this.screenBuffer = new ScreenBuffer(columns, rows)
     }
   }
@@ -174,7 +174,6 @@ export class Terminal {
     return this
   }
 
-
   moveBy(dx: number, dy: number): this {
     this.cursorCtrl.moveBy(dx, dy)
     return this
@@ -270,9 +269,9 @@ export class Terminal {
     }
     // Resize buffer to match screen and track future resizes
     if (this.screenBuffer) {
-      const { columns, rows } = this.size
+      const {columns, rows} = this.size
       this.screenBuffer.resize(columns, rows)
-      this.resizeCleanup = this.onResize(({ columns, rows }) => {
+      this.resizeCleanup = this.onResize(({columns, rows}) => {
         this.screenBuffer?.resize(columns, rows)
       })
     }

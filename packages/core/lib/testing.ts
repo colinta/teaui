@@ -70,7 +70,12 @@ class TestScreen {
     // Cache the screen proxy so moveToScreen identity checks work
     if (!this.#screenProxy) {
       this.#screenProxy = {
-        requestModal: (parent: View, modal: View, onClose: () => void, rect: Rect) => {
+        requestModal: (
+          parent: View,
+          modal: View,
+          onClose: () => void,
+          rect: Rect,
+        ) => {
           return this.#modalManager.requestModal(parent, modal, onClose, rect)
         },
         registerHotKey: (view: View, key: HotKeyDef) => {
@@ -166,10 +171,10 @@ class TestScreen {
     mods: {ctrl?: boolean; meta?: boolean; shift?: boolean} = {},
   ) {
     const button = name.startsWith('mouse.wheel')
-      ? 'wheel' as const
+      ? ('wheel' as const)
       : name === 'mouse.move.in'
-        ? 'unknown' as const
-        : 'left' as const
+        ? ('unknown' as const)
+        : ('left' as const)
 
     const event: SystemMouseEvent = {
       type: 'mouse',

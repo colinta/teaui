@@ -63,7 +63,12 @@ describe('isSame', () => {
     })
 
     it('returns false for different function references', () => {
-      expect(isSame(() => {}, () => {})).toBe(false)
+      expect(
+        isSame(
+          () => {},
+          () => {},
+        ),
+      ).toBe(false)
     })
   })
 
@@ -110,14 +115,23 @@ describe('isSame', () => {
 
   describe('Maps', () => {
     it('returns true for identical Maps', () => {
-      const a = new Map([['a', 1], ['b', 2]])
-      const b = new Map([['a', 1], ['b', 2]])
+      const a = new Map([
+        ['a', 1],
+        ['b', 2],
+      ])
+      const b = new Map([
+        ['a', 1],
+        ['b', 2],
+      ])
       expect(isSame(a, b)).toBe(true)
     })
 
     it('returns false for Maps of different size', () => {
       const a = new Map([['a', 1]])
-      const b = new Map([['a', 1], ['b', 2]])
+      const b = new Map([
+        ['a', 1],
+        ['b', 2],
+      ])
       expect(isSame(a, b)).toBe(false)
     })
 
@@ -180,8 +194,18 @@ describe('isSame', () => {
 
   describe('FiberNode-like objects ($$typeof)', () => {
     it('strips _owner and compares remaining props', () => {
-      const lhs = {$$typeof: Symbol('react.element'), type: 'div', key: null, _owner: {huge: 'object'}}
-      const rhs = {$$typeof: Symbol('react.element'), type: 'div', key: null, _owner: {different: 'owner'}}
+      const lhs = {
+        $$typeof: Symbol('react.element'),
+        type: 'div',
+        key: null,
+        _owner: {huge: 'object'},
+      }
+      const rhs = {
+        $$typeof: Symbol('react.element'),
+        type: 'div',
+        key: null,
+        _owner: {different: 'owner'},
+      }
       // $$typeof are different symbols, so this should be false
       expect(isSame(lhs, rhs)).toBe(false)
     })
@@ -194,8 +218,18 @@ describe('isSame', () => {
       // limitation. In practice, prepareUpdate compares individual prop values,
       // not entire FiberNode trees, so this rarely triggers.
       const sym = Symbol('react.element')
-      const lhs = {$$typeof: sym, type: 'div', key: null, _owner: {huge: 'object'}}
-      const rhs = {$$typeof: sym, type: 'div', key: null, _owner: {different: 'owner'}}
+      const lhs = {
+        $$typeof: sym,
+        type: 'div',
+        key: null,
+        _owner: {huge: 'object'},
+      }
+      const rhs = {
+        $$typeof: sym,
+        type: 'div',
+        key: null,
+        _owner: {different: 'owner'},
+      }
       // Returns false because recursive $$typeof re-entry hits depth limit
       expect(isSame(lhs, rhs)).toBe(false)
     })
@@ -225,8 +259,16 @@ describe('isSame', () => {
 
   describe('mixed nested structures', () => {
     it('compares objects containing arrays and other types', () => {
-      const a = {list: [1, 2], map: new Map([['k', 'v']]), date: new Date('2024-01-01')}
-      const b = {list: [1, 2], map: new Map([['k', 'v']]), date: new Date('2024-01-01')}
+      const a = {
+        list: [1, 2],
+        map: new Map([['k', 'v']]),
+        date: new Date('2024-01-01'),
+      }
+      const b = {
+        list: [1, 2],
+        map: new Map([['k', 'v']]),
+        date: new Date('2024-01-01'),
+      }
       expect(isSame(a, b)).toBe(true)
     })
 

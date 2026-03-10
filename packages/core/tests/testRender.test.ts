@@ -17,7 +17,12 @@ describe('testRender harness', () => {
 
   it('delivers keyboard events and re-renders', () => {
     let value = ''
-    const input = new Input({value: '', onChange(v) { value = v }})
+    const input = new Input({
+      value: '',
+      onChange(v) {
+        value = v
+      },
+    })
     const t = testRender(input, {width: 20, height: 1})
     t.sendKey('x')
     expect(value).toBe('x')

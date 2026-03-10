@@ -47,16 +47,18 @@ The current event system has no concept of an event being "consumed" — `receiv
 ## Usage
 
 ### Core
+
 ```ts
 new Keyboard({
-  onKey: (event) => { console.log(event.name) },
+  onKey: event => {
+    console.log(event.name)
+  },
   children: [child1, child2],
 })
 ```
 
 ### React/Preact
+
 ```tsx
-<Keyboard onKey={(event) => console.log(event.name)}>
-  {children}
-</Keyboard>
+<Keyboard onKey={event => console.log(event.name)}>{children}</Keyboard>
 ```

@@ -24,12 +24,12 @@ const FRAMES = 500
 
 // Colors for the blocks (cycling palette)
 const palette = [
-  { r: 220, g: 50, b: 50 },
-  { r: 50, g: 180, b: 50 },
-  { r: 50, g: 100, b: 220 },
-  { r: 220, g: 180, b: 30 },
-  { r: 180, g: 50, b: 200 },
-  { r: 50, g: 200, b: 200 },
+  {r: 220, g: 50, b: 50},
+  {r: 50, g: 180, b: 50},
+  {r: 50, g: 100, b: 220},
+  {r: 220, g: 180, b: 30},
+  {r: 180, g: 50, b: 200},
+  {r: 50, g: 200, b: 200},
 ]
 
 function runDirect(cols: number, rows: number): number {
@@ -63,7 +63,7 @@ function runDirect(cols: number, rows: number): number {
 }
 
 function runBuffered(cols: number, rows: number): number {
-  const term = new Terminal({ buffer: true })
+  const term = new Terminal({buffer: true})
   const blocksX = Math.floor(cols / BLOCK_SIZE)
   const blocksY = Math.floor(rows / BLOCK_SIZE)
 
@@ -94,9 +94,9 @@ function runBuffered(cols: number, rows: number): number {
 // --- Main ---
 
 const directTerm = new Terminal()
-directTerm.enterFullscreen({ hideCursor: true })
+directTerm.enterFullscreen({hideCursor: true})
 
-const { columns: cols, rows } = directTerm.size
+const {columns: cols, rows} = directTerm.size
 
 // Warm up
 stdout.write(syncStart() + syncEnd())
@@ -125,7 +125,9 @@ setTimeout(() => {
   console.log(`\nBuffer Benchmark — ${FRAMES} frames, ${cols}×${rows} terminal`)
   console.log(`${'─'.repeat(50)}`)
   console.log(`  Block size:  ${BLOCK_SIZE}×${BLOCK_SIZE}`)
-  console.log(`  Grid:        ${Math.floor(cols / BLOCK_SIZE)}×${Math.floor(rows / BLOCK_SIZE)} blocks`)
+  console.log(
+    `  Grid:        ${Math.floor(cols / BLOCK_SIZE)}×${Math.floor(rows / BLOCK_SIZE)} blocks`,
+  )
   console.log(`  Cells/frame: ${cols * rows}`)
   console.log()
   console.log(`  Direct:      ${directMs.toFixed(1)}ms  (${directFps} fps)`)

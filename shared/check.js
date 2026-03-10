@@ -88,7 +88,9 @@ async function resolveWorkspaceDeps() {
 
     let pkg
     try {
-      pkg = JSON.parse(await readFile(path.join(realDir, 'package.json'), 'utf8'))
+      pkg = JSON.parse(
+        await readFile(path.join(realDir, 'package.json'), 'utf8'),
+      )
     } catch {
       return
     }
@@ -213,7 +215,9 @@ export function main(...args) {
     }
 
     if (directories.length === 0) {
-      console.error('Error: no source directories found. Provide dirs or add workspace:* deps.')
+      console.error(
+        'Error: no source directories found. Provide dirs or add workspace:* deps.',
+      )
       process.exit(1)
     }
 

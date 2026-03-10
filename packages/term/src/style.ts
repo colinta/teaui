@@ -1,5 +1,12 @@
-import type { Color, TextAttribute } from './types.js'
-import { fgColor, fgReset, bgColor, bgReset, textAttr, textAttrOff } from './ansi.js'
+import type {Color, TextAttribute} from './types.js'
+import {
+  fgColor,
+  fgReset,
+  bgColor,
+  bgReset,
+  textAttr,
+  textAttrOff,
+} from './ansi.js'
 
 interface StyleEntry {
   open: string
@@ -14,7 +21,7 @@ export class StyleBuilder {
   }
 
   private add(open: string, close: string): StyleBuilder {
-    return new StyleBuilder([...this.entries, { open, close }])
+    return new StyleBuilder([...this.entries, {open, close}])
   }
 
   bold(): StyleBuilder {
@@ -58,13 +65,13 @@ export class StyleBuilder {
   }
 
   open(): string {
-    return this.entries.map((e) => e.open).join('')
+    return this.entries.map(e => e.open).join('')
   }
 
   close(): string {
     return [...this.entries]
       .reverse()
-      .map((e) => e.close)
+      .map(e => e.close)
       .join('')
   }
 

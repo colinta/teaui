@@ -29,11 +29,7 @@ describe('Space', () => {
   it('fills remaining space between siblings', () => {
     const t = testRender(
       new Stack({
-        children: [
-          new Text({text: 'A'}),
-          new Space({}),
-          new Text({text: 'B'}),
-        ],
+        children: [new Text({text: 'A'}), new Space({}), new Text({text: 'B'})],
         direction: 'down',
       }),
       {width: 5, height: 3},

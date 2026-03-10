@@ -28,18 +28,18 @@ run(<App />)
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `hotKey` | `HotKey` | — | Key combination to listen for |
-| `children` | `ReactNode` | — | Content (receives focus when triggered) |
+| Prop       | Type        | Default | Description                             |
+| ---------- | ----------- | ------- | --------------------------------------- |
+| `hotKey`   | `HotKey`    | —       | Key combination to listen for           |
+| `children` | `ReactNode` | —       | Content (receives focus when triggered) |
 
 ### HotKey type
 
 ```ts
 type HotKey = {
-  char: string    // The key character
-  ctrl?: boolean  // Require Ctrl modifier
-  meta?: boolean  // Require Meta/Alt modifier
+  char: string // The key character
+  ctrl?: boolean // Require Ctrl modifier
+  meta?: boolean // Require Meta/Alt modifier
   shift?: boolean // Require Shift modifier
 }
 ```

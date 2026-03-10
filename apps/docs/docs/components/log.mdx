@@ -36,15 +36,23 @@ The `ConsoleLog` component displays intercepted console output in a scrollable l
 <summary>Core API</summary>
 
 ```js
-import {Screen, Stack, ConsoleLog, Button, interceptConsoleLog} from '@teaui/core'
+import {
+  Screen,
+  Stack,
+  ConsoleLog,
+  Button,
+  interceptConsoleLog,
+} from '@teaui/core'
 
 interceptConsoleLog()
 
 const log = new ConsoleLog()
-Screen.start(Stack.down([
-  new Button({title: 'Log', onClick: () => console.log('Hello!')}),
-  log,
-]))
+Screen.start(
+  Stack.down([
+    new Button({title: 'Log', onClick: () => console.log('Hello!')}),
+    log,
+  ]),
+)
 ```
 
 </details>

@@ -46,36 +46,33 @@ describe('Text', () => {
   })
 
   it('renders underlined text', () => {
-    const t = testRender(
-      new Text({text: 'Under', style: Style.underlined}),
-      {width: 10, height: 1},
-    )
+    const t = testRender(new Text({text: 'Under', style: Style.underlined}), {
+      width: 10,
+      height: 1,
+    })
     expect(t.terminal.styleOf('Under')!.underline).toBe(true)
   })
 
   it('wraps long text when wrap is enabled', () => {
-    const t = testRender(
-      new Text({text: 'Hello World', wrap: true}),
-      {width: 6, height: 3},
-    )
+    const t = testRender(new Text({text: 'Hello World', wrap: true}), {
+      width: 6,
+      height: 3,
+    })
     expect(t.terminal.textAtRow(0)).toBe('Hello')
     expect(t.terminal.textAtRow(1)).toBe('World')
   })
 
   it('truncates long text when wrap is disabled', () => {
-    const t = testRender(
-      new Text({text: 'Hello World'}),
-      {width: 5, height: 1},
-    )
+    const t = testRender(new Text({text: 'Hello World'}), {width: 5, height: 1})
     // Only first 5 chars visible
     expect(t.terminal.getRow(0, 0, 5)).toBe('Hello')
   })
 
   it('renders multiline text from lines array', () => {
-    const t = testRender(
-      new Text({lines: ['Line 1', 'Line 2', 'Line 3']}),
-      {width: 10, height: 3},
-    )
+    const t = testRender(new Text({lines: ['Line 1', 'Line 2', 'Line 3']}), {
+      width: 10,
+      height: 3,
+    })
     expect(t.terminal.textAtRow(0)).toBe('Line 1')
     expect(t.terminal.textAtRow(1)).toBe('Line 2')
     expect(t.terminal.textAtRow(2)).toBe('Line 3')

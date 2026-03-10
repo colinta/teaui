@@ -179,7 +179,11 @@ function is256(c: Color): c is Color256 {
 }
 
 /** Convert HSL (h: 0–360, s: 0–100, l: 0–100) to RGB (0–255 each). */
-export function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+export function hslToRgb(
+  h: number,
+  s: number,
+  l: number,
+): [number, number, number] {
   s /= 100
   l /= 100
   const k = (n: number) => (n + h / 30) % 12
@@ -193,11 +197,11 @@ export function hslToRgb(h: number, s: number, l: number): [number, number, numb
   ]
 }
 
-function resolveToRgb(color: Color): { r: number; g: number; b: number } | null {
+function resolveToRgb(color: Color): {r: number; g: number; b: number} | null {
   if (isRGB(color)) return color
   if (isHSL(color)) {
     const [r, g, b] = hslToRgb(color.h, color.s, color.l)
-    return { r, g, b }
+    return {r, g, b}
   }
   return null
 }

@@ -17,14 +17,15 @@ if ('$$typeof' in lhs || '$$typeof in rhs') {
 The second condition is a **string literal**, not a property check — `'$$typeof in rhs'` is always truthy. This means **every plain object comparison** takes the FiberNode branch, which then destructures into `lhsTrim` and `rhsTrim` (undefined variables due to wrong destructuring names):
 
 ```ts
-const {_owner: _lhsOwner, lhsTrim} = lhs   // lhsTrim is always undefined
-const {_owner: _rhsOwner, rhsTrim} = rhs    // rhsTrim is always undefined
-return isSame(lhsTrim, rhsTrim, depth + 1)  // isSame(undefined, undefined) → true
+const {_owner: _lhsOwner, lhsTrim} = lhs // lhsTrim is always undefined
+const {_owner: _rhsOwner, rhsTrim} = rhs // rhsTrim is always undefined
+return isSame(lhsTrim, rhsTrim, depth + 1) // isSame(undefined, undefined) → true
 ```
 
 **Impact:** `prepareUpdate` will report no changes for any props that are plain objects, meaning object-valued prop updates are silently dropped. This is a data-loss bug.
 
 **Fix:**
+
 ```ts
 if ('$$typeof' in lhs || '$$typeof' in rhs) {
   const {_owner: _lhsOwner, ...lhsTrim} = lhs
@@ -43,7 +44,7 @@ for (const prop in rhs) {
   if (!Object.hasOwn(lhs, prop)) {
     return false
   }
-  return false  // ← unconditional return on first own-prop!
+  return false // ← unconditional return on first own-prop!
 }
 ```
 
@@ -54,7 +55,7 @@ The final `return false` is not inside the `if` block — it fires on the **firs
 ### 1.3 `isSame.ts` — Functions compared by reference (line 20)
 
 ```ts
-typeof lhs === 'function'  // uses ===
+typeof lhs === 'function' // uses ===
 ```
 
 Inline arrow functions in JSX (`onClick={() => ...}`) create new references every render. Comparing by `===` means `prepareUpdate` will always report a diff when any callback prop is present, triggering `commitUpdate` on every render even when nothing meaningful changed.
@@ -76,6 +77,7 @@ getPublicInstance(_instance: unknown) {
 This is called when a user accesses a ref (`ref={myRef}`). Throwing here means **refs are completely broken**. Every `useRef` / `createRef` attached to a TeaUI element will crash.
 
 **Fix:**
+
 ```ts
 getPublicInstance(instance: View) {
   return instance
@@ -138,7 +140,14 @@ The `prepareUpdate` returns `[]` (empty array) as a "changed" signal, but `commi
 
 ```ts
 const fiber = reconciler.createContainer(
-  window, 0, null, false, null, '', () => {}, null,
+  window,
+  0,
+  null,
+  false,
+  null,
+  '',
+  () => {},
+  null,
 )
 ```
 
@@ -227,15 +236,15 @@ This is O(n × m) where n = children count and m = TextContainer children count.
 
 ## 5. Missing React Features
 
-| Feature | Status | Priority |
-|---------|--------|----------|
-| Refs (`useRef`, `createRef`) | **Broken** (throws) | 🔴 Critical |
-| Error Boundaries | Not supported | 🟡 Medium |
-| Suspense | Crashes (timeout throws) | 🟡 Medium |
-| Portals | Crashes (throws) | 🟢 Low |
-| Concurrent Mode | Not tested | 🟢 Low |
-| Context | Works (React-level, no host config needed) | ✅ |
-| Hooks | Work (React-level) | ✅ |
+| Feature                      | Status                                     | Priority    |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| Refs (`useRef`, `createRef`) | **Broken** (throws)                        | 🔴 Critical |
+| Error Boundaries             | Not supported                              | 🟡 Medium   |
+| Suspense                     | Crashes (timeout throws)                   | 🟡 Medium   |
+| Portals                      | Crashes (throws)                           | 🟢 Low      |
+| Concurrent Mode              | Not tested                                 | 🟢 Low      |
+| Context                      | Works (React-level, no host config needed) | ✅          |
+| Hooks                        | Work (React-level)                         | ✅          |
 
 ---
 

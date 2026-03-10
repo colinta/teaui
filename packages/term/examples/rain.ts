@@ -7,10 +7,21 @@
  * Press 'q' or ctrl+c to exit.
  */
 
-import { Terminal, syncStart, syncEnd, isKeyEvent, cursorTo, fgColor, eraseChars, resetAll, textAttr, setTitle } from '../src/index.js'
+import {
+  Terminal,
+  syncStart,
+  syncEnd,
+  isKeyEvent,
+  cursorTo,
+  fgColor,
+  eraseChars,
+  resetAll,
+  textAttr,
+  setTitle,
+} from '../src/index.js'
 
 const term = new Terminal()
-const { columns: cols, rows } = term.size
+const {columns: cols, rows} = term.size
 const stdout = process.stdout
 
 let running = true
@@ -46,11 +57,11 @@ function newStream(): Stream {
 }
 
 // Pre-build the screen buffer as a 2D grid
-const grid: string[][] = Array.from({ length: rows }, () =>
-  Array.from({ length: cols }, () => ' '),
+const grid: string[][] = Array.from({length: rows}, () =>
+  Array.from({length: cols}, () => ' '),
 )
-const brightness: number[][] = Array.from({ length: rows }, () =>
-  Array.from({ length: cols }, () => 0),
+const brightness: number[][] = Array.from({length: rows}, () =>
+  Array.from({length: cols}, () => 0),
 )
 
 function renderFrame() {
@@ -110,18 +121,27 @@ function renderFrame() {
   }
 
   // FPS
-  buf.push(resetAll() + cursorTo(0, 0) + textAttr('inverse') + ` FPS: ${fps} ` + resetAll())
+  buf.push(
+    resetAll() +
+      cursorTo(0, 0) +
+      textAttr('inverse') +
+      ` FPS: ${fps} ` +
+      resetAll(),
+  )
   buf.push(syncEnd())
 
   stdout.write(buf.join(''))
 }
 
 // Enter fullscreen
-term.enterFullscreen({ hideCursor: true })
+term.enterFullscreen({hideCursor: true})
 stdout.write(setTitle('Matrix Rain'))
 
-term.onInput((event) => {
-  if (isKeyEvent(event) && (event.key === 'q' || (event.key === 'c' && event.ctrl))) {
+term.onInput(event => {
+  if (
+    isKeyEvent(event) &&
+    (event.key === 'q' || (event.key === 'c' && event.ctrl))
+  ) {
     running = false
   }
 })

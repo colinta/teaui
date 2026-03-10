@@ -29,7 +29,12 @@ describe('Input', () => {
   describe('typing', () => {
     it('accepts single character', () => {
       let value = ''
-      const input = new Input({value: '', onChange(v) { value = v }})
+      const input = new Input({
+        value: '',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('a')
       expect(value).toBe('a')
@@ -37,7 +42,12 @@ describe('Input', () => {
 
     it('accepts multiple characters', () => {
       let value = ''
-      const input = new Input({value: '', onChange(v) { value = v }})
+      const input = new Input({
+        value: '',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('a')
       t.sendKey('b')
@@ -48,7 +58,12 @@ describe('Input', () => {
 
     it('appends to existing value', () => {
       let value = 'hi'
-      const input = new Input({value: 'hi', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'hi',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('!')
       expect(value).toBe('hi!')
@@ -56,7 +71,12 @@ describe('Input', () => {
 
     it('handles space key', () => {
       let value = 'a'
-      const input = new Input({value: 'a', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'a',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('space')
       expect(value).toBe('a ')
@@ -66,7 +86,12 @@ describe('Input', () => {
   describe('deletion', () => {
     it('backspace removes last character', () => {
       let value = 'hi'
-      const input = new Input({value: 'hi', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'hi',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('backspace')
       expect(value).toBe('h')
@@ -74,7 +99,12 @@ describe('Input', () => {
 
     it('backspace on empty does nothing', () => {
       let changed = false
-      const input = new Input({value: '', onChange() { changed = true }})
+      const input = new Input({
+        value: '',
+        onChange() {
+          changed = true
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('backspace')
       expect(changed).toBe(false)
@@ -82,7 +112,12 @@ describe('Input', () => {
 
     it('delete removes character at cursor', () => {
       let value = 'abc'
-      const input = new Input({value: 'abc', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'abc',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       // Move cursor to start, then delete
       t.sendKey('left')
@@ -94,7 +129,12 @@ describe('Input', () => {
 
     it('delete word removes previous word', () => {
       let value = 'hello world'
-      const input = new Input({value: 'hello world', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'hello world',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('backspace', {meta: true})
       expect(value).toBe('hello ')
@@ -104,7 +144,12 @@ describe('Input', () => {
   describe('cursor movement', () => {
     it('left arrow moves cursor left', () => {
       let value = ''
-      const input = new Input({value: 'ab', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'ab',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('left')
       t.sendKey('left')
@@ -114,7 +159,12 @@ describe('Input', () => {
 
     it('right arrow moves cursor right', () => {
       let value = ''
-      const input = new Input({value: 'ab', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'ab',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('left')
       t.sendKey('left')
@@ -125,7 +175,12 @@ describe('Input', () => {
 
     it('ctrl+a moves to start', () => {
       let value = ''
-      const input = new Input({value: 'abc', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'abc',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('a', {ctrl: true})
       t.sendKey('x')
@@ -134,7 +189,12 @@ describe('Input', () => {
 
     it('ctrl+e moves to end', () => {
       let value = ''
-      const input = new Input({value: 'abc', onChange(v) { value = v }})
+      const input = new Input({
+        value: 'abc',
+        onChange(v) {
+          value = v
+        },
+      })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('a', {ctrl: true})
       t.sendKey('e', {ctrl: true})
@@ -165,7 +225,9 @@ describe('Input', () => {
       let submitted = ''
       const input = new Input({
         value: 'test',
-        onSubmit(v) { submitted = v },
+        onSubmit(v) {
+          submitted = v
+        },
       })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('return')
@@ -176,7 +238,9 @@ describe('Input', () => {
       let changed = false
       const input = new Input({
         value: 'test',
-        onChange() { changed = true },
+        onChange() {
+          changed = true
+        },
         onSubmit() {},
       })
       const t = testRender(input, {width: 20, height: 1})

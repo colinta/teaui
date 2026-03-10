@@ -121,8 +121,7 @@ export class SubprocessView extends View {
     } catch (err) {
       this.#state = {
         kind: 'error',
-        message:
-          err instanceof Error ? err.message : `Failed to spawn: ${err}`,
+        message: err instanceof Error ? err.message : `Failed to spawn: ${err}`,
       }
       this.screen?.needsRender()
       return

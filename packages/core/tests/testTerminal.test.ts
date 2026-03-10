@@ -31,9 +31,7 @@ describe('TestTerminal query API', () => {
       })
       const t = testRender(box, {width: 6, height: 3})
       expect(t.terminal.textRect(0, 0, 6, 3)).toBe(
-        '┌────┐\n' +
-        '│Hi  │\n' +
-        '└────┘',
+        '┌────┐\n' + '│Hi  │\n' + '└────┘',
       )
     })
 
@@ -56,9 +54,7 @@ describe('TestTerminal query API', () => {
       })
       const t = testRender(box, {width: 5, height: 3})
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '┌───┐\n' +
-        '│   │\n' +
-        '└───┘',
+        '┌───┐\n' + '│   │\n' + '└───┘',
       )
     })
 
@@ -69,9 +65,7 @@ describe('TestTerminal query API', () => {
       })
       const t = testRender(box, {width: 5, height: 3})
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '┏━━━┓\n' +
-        '┃   ┃\n' +
-        '┗━━━┛',
+        '┏━━━┓\n' + '┃   ┃\n' + '┗━━━┛',
       )
     })
 
@@ -82,9 +76,7 @@ describe('TestTerminal query API', () => {
       })
       const t = testRender(box, {width: 5, height: 3})
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '╔═══╗\n' +
-        '║   ║\n' +
-        '╚═══╝',
+        '╔═══╗\n' + '║   ║\n' + '╚═══╝',
       )
     })
 
@@ -95,9 +87,7 @@ describe('TestTerminal query API', () => {
       })
       const t = testRender(box, {width: 5, height: 3})
       expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '╭───╮\n' +
-        '│   │\n' +
-        '╰───╯',
+        '╭───╮\n' + '│   │\n' + '╰───╯',
       )
     })
 
@@ -108,9 +98,7 @@ describe('TestTerminal query API', () => {
       })
       const t = testRender(box, {width: 7, height: 3})
       expect(t.terminal.textRect(0, 0, 7, 3)).toBe(
-        '┌─────┐\n' +
-        '│ABC  │\n' +
-        '└─────┘',
+        '┌─────┐\n' + '│ABC  │\n' + '└─────┘',
       )
     })
   })
@@ -158,13 +146,9 @@ describe('TestTerminal query API', () => {
         children: [new Text({text: ''})],
       })
       const t = testRender(box, {width: 5, height: 3})
-      expect(
-        t.terminal.contentEquals(
-          '┌───┐\n' +
-          '│   │\n' +
-          '└───┘',
-        ),
-      ).toBe(true)
+      expect(t.terminal.contentEquals('┌───┐\n' + '│   │\n' + '└───┘')).toBe(
+        true,
+      )
     })
   })
 

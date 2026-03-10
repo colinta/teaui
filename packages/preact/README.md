@@ -72,46 +72,46 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 
 ### Views (leaf nodes)
 
-| Component | Element | Description |
-|-----------|---------|-------------|
-| `<Br />` | `<tui-br>` | Line break in text |
-| `<Checkbox />` | `<tui-checkbox>` | Toggle checkbox |
-| `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse |
-| `<ConsoleLog />` | `<tui-console>` | Displays intercepted `console.log` output |
-| `<Digits />` | `<tui-digits>` | Large-font digit display |
-| `<H1 />`–`<H6 />` | `<tui-h1>`–`<tui-h6>` | Header text |
-| `<Input />` | `<tui-input>` | Text input field |
-| `<Separator />` | `<tui-separator>` | Horizontal or vertical line |
-| `<Slider />` | `<tui-slider>` | Value slider |
-| `<Space />` | `<tui-space>` | Empty spacer |
-| `<ToggleGroup />` | `<tui-toggle-group>` | Group of toggle options |
+| Component             | Element                  | Description                               |
+| --------------------- | ------------------------ | ----------------------------------------- |
+| `<Br />`              | `<tui-br>`               | Line break in text                        |
+| `<Checkbox />`        | `<tui-checkbox>`         | Toggle checkbox                           |
+| `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse  |
+| `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.log` output |
+| `<Digits />`          | `<tui-digits>`           | Large-font digit display                  |
+| `<H1 />`–`<H6 />`     | `<tui-h1>`–`<tui-h6>`    | Header text                               |
+| `<Input />`           | `<tui-input>`            | Text input field                          |
+| `<Separator />`       | `<tui-separator>`        | Horizontal or vertical line               |
+| `<Slider />`          | `<tui-slider>`           | Value slider                              |
+| `<Space />`           | `<tui-space>`            | Empty spacer                              |
+| `<ToggleGroup />`     | `<tui-toggle-group>`     | Group of toggle options                   |
 
 `Separator` has `.horizontal` and `.vertical` variants. `Slider` has `.horizontal` and `.vertical` variants.
 
 ### Containers
 
-| Component | Element | Description |
-|-----------|---------|-------------|
-| `<Box />` | `<tui-box>` | Box with optional border and padding |
-| `<Button />` | `<tui-button>` | Clickable button |
+| Component         | Element             | Description                                       |
+| ----------------- | ------------------- | ------------------------------------------------- |
+| `<Box />`         | `<tui-box>`         | Box with optional border and padding              |
+| `<Button />`      | `<tui-button>`      | Clickable button                                  |
 | `<Collapsible />` | `<tui-collapsible>` | Toggle between `collapsed` and `expanded` content |
-| `<Scrollable />` | `<tui-scrollable>` | Scrollable content region |
-| `<Stack />` | `<tui-stack>` | Linear layout |
-| `<Text />` | `<tui-text>` | Text container (sets font, alignment, wrap) |
-| `<Style />` | `<tui-style>` | Inline text styles (bold, italic, etc.) |
+| `<Scrollable />`  | `<tui-scrollable>`  | Scrollable content region                         |
+| `<Stack />`       | `<tui-stack>`       | Linear layout                                     |
+| `<Text />`        | `<tui-text>`        | Text container (sets font, alignment, wrap)       |
+| `<Style />`       | `<tui-style>`       | Inline text styles (bold, italic, etc.)           |
 
 `Stack` has `.down`, `.up`, `.left`, and `.right` variants.
 
 ### Complex Containers
 
-| Component | Element | Description |
-|-----------|---------|-------------|
-| `<Accordion />` | `<tui-accordion>` | Expandable section group |
-| `<Accordion.Section />` | `<tui-accordion-section>` | Section within an accordion |
-| `<Drawer />` | `<tui-drawer>` | Panel that slides in from an edge |
-| `<Tabs />` | `<tui-tabs>` | Tabbed container |
-| `<Tabs.Section />` | `<tui-tabs-section>` | Tab within tabs |
-| `<Tree />` | `<tui-tree>` | Tree view with expandable nodes |
+| Component               | Element                   | Description                       |
+| ----------------------- | ------------------------- | --------------------------------- |
+| `<Accordion />`         | `<tui-accordion>`         | Expandable section group          |
+| `<Accordion.Section />` | `<tui-accordion-section>` | Section within an accordion       |
+| `<Drawer />`            | `<tui-drawer>`            | Panel that slides in from an edge |
+| `<Tabs />`              | `<tui-tabs>`              | Tabbed container                  |
+| `<Tabs.Section />`      | `<tui-tabs-section>`      | Tab within tabs                   |
+| `<Tree />`              | `<tui-tree>`              | Tree view with expandable nodes   |
 
 `Drawer` has `.top`, `.right`, `.bottom`, and `.left` variants. Each accepts `content` and `drawer` props for the two panes.
 
@@ -133,10 +133,10 @@ String literals are rendered as `TextLiteral` nodes, which are automatically gro
 
 ```tsx
 <Stack.down>
-  hello            {/* TextLiteral → TextContainer #1 */}
-  <Br />           {/* TextLiteral → TextContainer #1 */}
-  <Box />          {/* Box breaks the text group */}
-  goodbye          {/* TextLiteral → TextContainer #2 */}
+  hello {/* TextLiteral → TextContainer #1 */}
+  <Br /> {/* TextLiteral → TextContainer #1 */}
+  <Box /> {/* Box breaks the text group */}
+  goodbye {/* TextLiteral → TextContainer #2 */}
 </Stack.down>
 ```
 
@@ -150,13 +150,13 @@ Use `<Text>` to control font, alignment, and word wrap. Use `<Style>` for inline
 
 ## Preact Features
 
-| Feature | Status |
-|---------|--------|
-| Hooks (`useState`, `useReducer`, `useEffect`, etc.) | ✅ Works |
-| Context (`useContext`, providers) | ✅ Works |
-| Refs (`useRef`, callback refs) | ✅ Works |
-| Signals (`@preact/signals`) | ✅ Compatible |
-| Error Boundaries | Not yet tested |
+| Feature                                             | Status         |
+| --------------------------------------------------- | -------------- |
+| Hooks (`useState`, `useReducer`, `useEffect`, etc.) | ✅ Works       |
+| Context (`useContext`, providers)                   | ✅ Works       |
+| Refs (`useRef`, callback refs)                      | ✅ Works       |
+| Signals (`@preact/signals`)                         | ✅ Compatible  |
+| Error Boundaries                                    | Not yet tested |
 
 ## TypeScript Configuration
 

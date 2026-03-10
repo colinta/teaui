@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { itermImage, kittyImage, detectImageProtocol } from '../src/image.js'
-import { OSC, ST, ESC } from '../src/ansi.js'
+import {describe, it, expect} from 'vitest'
+import {itermImage, kittyImage, detectImageProtocol} from '../src/image.js'
+import {OSC, ST, ESC} from '../src/ansi.js'
 
 describe('image support', () => {
   const testData = Buffer.from('test image data')
@@ -13,31 +13,31 @@ describe('image support', () => {
     })
 
     it('supports width option', () => {
-      const result = itermImage(testData, { width: 40 })
+      const result = itermImage(testData, {width: 40})
       expect(result).toBe(`${OSC}1337;File=inline=1;width=40:${b64}${ST}`)
     })
 
     it('supports height option', () => {
-      const result = itermImage(testData, { height: 20 })
+      const result = itermImage(testData, {height: 20})
       expect(result).toBe(`${OSC}1337;File=inline=1;height=20:${b64}${ST}`)
     })
 
     it('supports width and height together', () => {
-      const result = itermImage(testData, { width: 40, height: 20 })
+      const result = itermImage(testData, {width: 40, height: 20})
       expect(result).toBe(
         `${OSC}1337;File=inline=1;width=40;height=20:${b64}${ST}`,
       )
     })
 
     it('supports preserveAspectRatio=false', () => {
-      const result = itermImage(testData, { preserveAspectRatio: false })
+      const result = itermImage(testData, {preserveAspectRatio: false})
       expect(result).toBe(
         `${OSC}1337;File=inline=1;preserveAspectRatio=0:${b64}${ST}`,
       )
     })
 
     it('supports string dimensions', () => {
-      const result = itermImage(testData, { width: '50%' })
+      const result = itermImage(testData, {width: '50%'})
       expect(result).toBe(`${OSC}1337;File=inline=1;width=50%:${b64}${ST}`)
     })
   })
@@ -54,7 +54,7 @@ describe('image support', () => {
     it('supports width and height options', () => {
       const smallData = Buffer.from('hi')
       const b64Small = smallData.toString('base64')
-      const result = kittyImage(smallData, { width: 40, height: 20 })
+      const result = kittyImage(smallData, {width: 40, height: 20})
       expect(result).toBe(`${ESC}_Ga=T,f=100,c=40,r=20,m=0;${b64Small}${ST}`)
     })
 
@@ -74,23 +74,23 @@ describe('image support', () => {
 
   describe('detectImageProtocol', () => {
     it('detects iTerm2', () => {
-      expect(detectImageProtocol({ TERM_PROGRAM: 'iTerm.app' })).toBe('iterm')
+      expect(detectImageProtocol({TERM_PROGRAM: 'iTerm.app'})).toBe('iterm')
     })
 
     it('detects WezTerm as iterm compatible', () => {
-      expect(detectImageProtocol({ TERM_PROGRAM: 'WezTerm' })).toBe('iterm')
+      expect(detectImageProtocol({TERM_PROGRAM: 'WezTerm'})).toBe('iterm')
     })
 
     it('detects Kitty', () => {
-      expect(detectImageProtocol({ TERM: 'xterm-kitty' })).toBe('kitty')
+      expect(detectImageProtocol({TERM: 'xterm-kitty'})).toBe('kitty')
     })
 
     it('detects Kitty from TERM_PROGRAM', () => {
-      expect(detectImageProtocol({ TERM_PROGRAM: 'kitty' })).toBe('kitty')
+      expect(detectImageProtocol({TERM_PROGRAM: 'kitty'})).toBe('kitty')
     })
 
     it('returns none for unknown terminal', () => {
-      expect(detectImageProtocol({ TERM: 'xterm' })).toBe('none')
+      expect(detectImageProtocol({TERM: 'xterm'})).toBe('none')
     })
 
     it('returns none for empty env', () => {

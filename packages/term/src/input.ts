@@ -12,7 +12,7 @@ const ESC = 0x1b
 
 function keyEvent(
   key: string,
-  mods: { ctrl?: boolean; alt?: boolean; shift?: boolean; meta?: boolean } = {},
+  mods: {ctrl?: boolean; alt?: boolean; shift?: boolean; meta?: boolean} = {},
 ): KeyEvent {
   return {
     type: 'key',
@@ -98,7 +98,9 @@ function parseSGRMouse(params: string, final: string): MouseEvent {
 
   if (button & 64) {
     // scroll wheel: 0=up, 1=down, 2=left, 3=right
-    action = (['scrollUp', 'scrollDown', 'scrollLeft', 'scrollRight'] as const)[baseButton]
+    action = (['scrollUp', 'scrollDown', 'scrollLeft', 'scrollRight'] as const)[
+      baseButton
+    ]
     btn = 'none'
   } else if (motion) {
     // Motion events: baseButton encodes which button is held during motion.
@@ -158,12 +160,12 @@ export function parseInput(data: Buffer): InputEvent[] {
       // Focus events: ESC [I (focus) / ESC [O (blur)
       if (i + 1 < str.length && str[i + 1] === '[') {
         if (i + 2 < str.length && str[i + 2] === 'I') {
-          events.push({ type: 'focus', focused: true } satisfies FocusEvent)
+          events.push({type: 'focus', focused: true} satisfies FocusEvent)
           i += 3
           continue
         }
         if (i + 2 < str.length && str[i + 2] === 'O') {
-          events.push({ type: 'focus', focused: false } satisfies FocusEvent)
+          events.push({type: 'focus', focused: false} satisfies FocusEvent)
           i += 3
           continue
         }
@@ -194,9 +196,10 @@ export function parseInput(data: Buffer): InputEvent[] {
             const num = parseInt(tildeParts[0], 10)
             const name = tildeKeyMap[num]
             if (name) {
-              const mods = tildeParts.length > 1
-                ? decodeMods(parseInt(tildeParts[1], 10))
-                : {}
+              const mods =
+                tildeParts.length > 1
+                  ? decodeMods(parseInt(tildeParts[1], 10))
+                  : {}
               events.push(keyEvent(name, mods))
               continue
             }
@@ -204,7 +207,7 @@ export function parseInput(data: Buffer): InputEvent[] {
 
           // Backtab (shift+tab): CSI Z
           if (final === 'Z' && params === '') {
-            events.push(keyEvent('tab', { shift: true }))
+            events.push(keyEvent('tab', {shift: true}))
             continue
           }
 
@@ -234,16 +237,15 @@ export function parseInput(data: Buffer): InputEvent[] {
           if (final === 'u') {
             const uParts = params.split(';')
             const codepoint = parseInt(uParts[0], 10)
-            const mods = uParts.length > 1
-              ? decodeMods(parseInt(uParts[1], 10))
-              : {}
+            const mods =
+              uParts.length > 1 ? decodeMods(parseInt(uParts[1], 10)) : {}
             const name = csiUKeyMap[codepoint]
             if (name) {
               events.push(keyEvent(name, mods))
             } else if (codepoint >= 1 && codepoint <= 26) {
               // Ctrl+letter encoded as codepoint 1-26
               const letter = String.fromCharCode(codepoint + 0x60)
-              events.push(keyEvent(letter, { ...mods, ctrl: true }))
+              events.push(keyEvent(letter, {...mods, ctrl: true}))
             } else {
               const char = String.fromCodePoint(codepoint)
               events.push(keyEvent(char, mods))
@@ -270,12 +272,12 @@ export function parseInput(data: Buffer): InputEvent[] {
         if (nextCode < 0x20 && nextCode !== ESC) {
           // Ctrl+Alt combination: ESC followed by a control character
           if (nextCode === 0x0d || nextCode === 0x0a) {
-            events.push(keyEvent('return', { alt: true }))
+            events.push(keyEvent('return', {alt: true}))
           } else if (nextCode === 0x09) {
-            events.push(keyEvent('tab', { alt: true }))
+            events.push(keyEvent('tab', {alt: true}))
           } else {
             const letter = String.fromCharCode(nextCode + 0x60)
-            events.push(keyEvent(letter, { ctrl: true, alt: true }))
+            events.push(keyEvent(letter, {ctrl: true, alt: true}))
           }
           i += 2
           continue
@@ -286,7 +288,7 @@ export function parseInput(data: Buffer): InputEvent[] {
       if (i + 1 < str.length && str.charCodeAt(i + 1) >= 0x20) {
         const altCodePoint = str.codePointAt(i + 1)!
         const altChar = String.fromCodePoint(altCodePoint)
-        events.push(keyEvent(altChar, { alt: true }))
+        events.push(keyEvent(altChar, {alt: true}))
         i += 1 + altChar.length
         continue
       }
@@ -310,7 +312,7 @@ export function parseInput(data: Buffer): InputEvent[] {
       } else {
         // Ctrl+A = 1, Ctrl+Z = 26
         const letter = String.fromCharCode(code + 0x60)
-        events.push(keyEvent(letter, { ctrl: true }))
+        events.push(keyEvent(letter, {ctrl: true}))
       }
       i++
       continue

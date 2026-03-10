@@ -1,5 +1,5 @@
-import type { Color, Color256, RGBColor, UnderlineStyle } from './types.js'
-import { OSC, CSI, ST } from './ansi.js'
+import type {Color, Color256, RGBColor, UnderlineStyle} from './types.js'
+import {OSC, CSI, ST} from './ansi.js'
 
 // --- Hyperlinks (OSC 8) ---
 

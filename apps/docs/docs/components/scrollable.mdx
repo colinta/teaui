@@ -30,12 +30,12 @@ run(<App />)
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `showScrollbars` | `boolean` | `true` | Show/hide scrollbars |
-| `scrollHeight` | `number` | `1` | Rows to scroll per mouse wheel tick |
-| `scrollWidth` | `number` | `2` | Columns to scroll per mouse wheel tick |
-| `children` | `ReactNode` | — | Single child to scroll |
+| Prop             | Type        | Default | Description                            |
+| ---------------- | ----------- | ------- | -------------------------------------- |
+| `showScrollbars` | `boolean`   | `true`  | Show/hide scrollbars                   |
+| `scrollHeight`   | `number`    | `1`     | Rows to scroll per mouse wheel tick    |
+| `scrollWidth`    | `number`    | `2`     | Columns to scroll per mouse wheel tick |
+| `children`       | `ReactNode` | —       | Single child to scroll                 |
 
 <details>
 <summary>Core API</summary>
@@ -44,7 +44,7 @@ run(<App />)
 import {Scrollable, Stack, Text} from '@teaui/core'
 
 const content = Stack.down(
-  Array.from({length: 50}, (_, i) => new Text({text: `Line ${i + 1}`}))
+  Array.from({length: 50}, (_, i) => new Text({text: `Line ${i + 1}`})),
 )
 
 new Scrollable({

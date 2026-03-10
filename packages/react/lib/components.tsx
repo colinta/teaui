@@ -41,9 +41,8 @@ type TUIView<
 
 type TUIContainer<
   T extends abstract new (arg: any, ...args: any) => any,
-  ChildrenProps extends keyof NonNullable<
-    ConstructorParameters<T>[0]
-  > = Children,
+  ChildrenProps extends keyof NonNullable<ConstructorParameters<T>[0]> =
+    Children,
 > = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: React.ReactNode}
 
 type CheckboxProps = TUIView<typeof WrCheckbox>
@@ -416,7 +415,9 @@ Drawer.right = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
     </tui-drawer>
   )
 }
-Drawer.bottom = function DrawerBottom(reactProps: Omit<DrawerProps, 'location'>) {
+Drawer.bottom = function DrawerBottom(
+  reactProps: Omit<DrawerProps, 'location'>,
+) {
   const {children, content, drawer, ...props} = reactProps
   return (
     <tui-drawer location="bottom" {...props}>

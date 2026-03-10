@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { parseInput } from '../src/input.js'
-import type { KeyEvent, MouseEvent, PasteEvent } from '../src/types.js'
+import {describe, it, expect} from 'vitest'
+import {parseInput} from '../src/input.js'
+import type {KeyEvent, MouseEvent, PasteEvent} from '../src/types.js'
 
 function key(
   key: string,
@@ -53,17 +53,17 @@ describe('parseInput', () => {
   describe('control characters', () => {
     it('parses ctrl+c', () => {
       const events = parseInput(Buffer.from([0x03]))
-      expect(events).toEqual([key('c', { ctrl: true })])
+      expect(events).toEqual([key('c', {ctrl: true})])
     })
 
     it('parses ctrl+a', () => {
       const events = parseInput(Buffer.from([0x01]))
-      expect(events).toEqual([key('a', { ctrl: true })])
+      expect(events).toEqual([key('a', {ctrl: true})])
     })
 
     it('parses ctrl+z', () => {
       const events = parseInput(Buffer.from([0x1a]))
-      expect(events).toEqual([key('z', { ctrl: true })])
+      expect(events).toEqual([key('z', {ctrl: true})])
     })
 
     it('parses enter (CR)', () => {
@@ -78,7 +78,7 @@ describe('parseInput', () => {
 
     it('parses shift+tab (backtab CSI Z)', () => {
       const events = parseInput(Buffer.from('\x1b[Z'))
-      expect(events).toEqual([key('tab', { shift: true })])
+      expect(events).toEqual([key('tab', {shift: true})])
     })
 
     it('parses backspace', () => {
@@ -115,17 +115,17 @@ describe('parseInput', () => {
 
     it('parses shift+arrow up', () => {
       const events = parseInput(Buffer.from('\x1b[1;2A'))
-      expect(events).toEqual([key('up', { shift: true })])
+      expect(events).toEqual([key('up', {shift: true})])
     })
 
     it('parses ctrl+arrow right', () => {
       const events = parseInput(Buffer.from('\x1b[1;5C'))
-      expect(events).toEqual([key('right', { ctrl: true })])
+      expect(events).toEqual([key('right', {ctrl: true})])
     })
 
     it('parses alt+arrow left', () => {
       const events = parseInput(Buffer.from('\x1b[1;3D'))
-      expect(events).toEqual([key('left', { alt: true })])
+      expect(events).toEqual([key('left', {alt: true})])
     })
   })
 
@@ -226,71 +226,71 @@ describe('parseInput', () => {
   describe('modifier keys on special keys', () => {
     it('parses shift+delete (CSI 3;2~)', () => {
       const events = parseInput(Buffer.from('\x1b[3;2~'))
-      expect(events).toEqual([key('delete', { shift: true })])
+      expect(events).toEqual([key('delete', {shift: true})])
     })
 
     it('parses ctrl+pageUp (CSI 5;5~)', () => {
       const events = parseInput(Buffer.from('\x1b[5;5~'))
-      expect(events).toEqual([key('pageUp', { ctrl: true })])
+      expect(events).toEqual([key('pageUp', {ctrl: true})])
     })
 
     it('parses ctrl+shift+end (CSI 1;6F)', () => {
       const events = parseInput(Buffer.from('\x1b[1;6F'))
-      expect(events).toEqual([key('end', { ctrl: true, shift: true })])
+      expect(events).toEqual([key('end', {ctrl: true, shift: true})])
     })
 
     it('parses shift+F1 (CSI 1;2P)', () => {
       const events = parseInput(Buffer.from('\x1b[1;2P'))
-      expect(events).toEqual([key('f1', { shift: true })])
+      expect(events).toEqual([key('f1', {shift: true})])
     })
 
     it('parses ctrl+F3 (CSI 1;5R)', () => {
       const events = parseInput(Buffer.from('\x1b[1;5R'))
-      expect(events).toEqual([key('f3', { ctrl: true })])
+      expect(events).toEqual([key('f3', {ctrl: true})])
     })
 
     it('parses alt+shift+F5 (CSI 15;4~)', () => {
       const events = parseInput(Buffer.from('\x1b[15;4~'))
-      expect(events).toEqual([key('f5', { alt: true, shift: true })])
+      expect(events).toEqual([key('f5', {alt: true, shift: true})])
     })
   })
 
   describe('alt key combos', () => {
     it('parses alt+a (ESC a)', () => {
       const events = parseInput(Buffer.from('\x1ba'))
-      expect(events).toEqual([key('a', { alt: true })])
+      expect(events).toEqual([key('a', {alt: true})])
     })
 
     it('parses alt+z', () => {
       const events = parseInput(Buffer.from('\x1bz'))
-      expect(events).toEqual([key('z', { alt: true })])
+      expect(events).toEqual([key('z', {alt: true})])
     })
   })
 
   describe('ctrl+alt key combos', () => {
     it('parses ctrl+alt+a (ESC followed by 0x01)', () => {
       const events = parseInput(Buffer.from('\x1b\x01'))
-      expect(events).toEqual([key('a', { ctrl: true, alt: true })])
+      expect(events).toEqual([key('a', {ctrl: true, alt: true})])
     })
 
     it('parses ctrl+alt+d (ESC followed by 0x04)', () => {
       const events = parseInput(Buffer.from('\x1b\x04'))
-      expect(events).toEqual([key('d', { ctrl: true, alt: true })])
+      expect(events).toEqual([key('d', {ctrl: true, alt: true})])
     })
 
     it('parses ctrl+alt+z (ESC followed by 0x1a)', () => {
       const events = parseInput(Buffer.from('\x1b\x1a'))
-      expect(events).toEqual([key('z', { ctrl: true, alt: true })])
+      expect(events).toEqual([key('z', {ctrl: true, alt: true})])
     })
 
     it('parses alt+return (ESC followed by 0x0d)', () => {
       const events = parseInput(Buffer.from('\x1b\x0d'))
-      expect(events).toEqual([key('return', { alt: true })])
+      expect(events).toEqual([key('return', {alt: true})])
     })
 
     it('parses alt+tab (ESC followed by 0x09)', () => {
       const events = parseInput(Buffer.from('\x1b\x09'))
-      expect(events).toEqual([key('tab', { alt: true })])
+      expect(events).toEqual([key('tab', {alt: true})])
     })
   })
 
@@ -532,17 +532,17 @@ describe('parseInput', () => {
 
     it('parses shift+enter (CSI 13;2 u)', () => {
       const events = parseInput(Buffer.from('\x1b[13;2u'))
-      expect(events).toEqual([key('return', { shift: true })])
+      expect(events).toEqual([key('return', {shift: true})])
     })
 
     it('parses alt+enter (CSI 13;3 u)', () => {
       const events = parseInput(Buffer.from('\x1b[13;3u'))
-      expect(events).toEqual([key('return', { alt: true })])
+      expect(events).toEqual([key('return', {alt: true})])
     })
 
     it('parses ctrl+shift+enter (CSI 13;6 u)', () => {
       const events = parseInput(Buffer.from('\x1b[13;6u'))
-      expect(events).toEqual([key('return', { ctrl: true, shift: true })])
+      expect(events).toEqual([key('return', {ctrl: true, shift: true})])
     })
 
     it('parses escape (CSI 27 u)', () => {
@@ -557,7 +557,7 @@ describe('parseInput', () => {
 
     it('parses shift+tab (CSI 9;2 u)', () => {
       const events = parseInput(Buffer.from('\x1b[9;2u'))
-      expect(events).toEqual([key('tab', { shift: true })])
+      expect(events).toEqual([key('tab', {shift: true})])
     })
 
     it('parses space (CSI 32 u)', () => {
@@ -572,7 +572,7 @@ describe('parseInput', () => {
 
     it('parses ctrl+backspace (CSI 127;5 u)', () => {
       const events = parseInput(Buffer.from('\x1b[127;5u'))
-      expect(events).toEqual([key('backspace', { ctrl: true })])
+      expect(events).toEqual([key('backspace', {ctrl: true})])
     })
 
     it('parses letter a (CSI 97 u)', () => {
@@ -582,27 +582,27 @@ describe('parseInput', () => {
 
     it('parses shift+a (CSI 97;2 u)', () => {
       const events = parseInput(Buffer.from('\x1b[97;2u'))
-      expect(events).toEqual([key('a', { shift: true })])
+      expect(events).toEqual([key('a', {shift: true})])
     })
 
     it('parses ctrl+a (CSI 97;5 u)', () => {
       const events = parseInput(Buffer.from('\x1b[97;5u'))
-      expect(events).toEqual([key('a', { ctrl: true })])
+      expect(events).toEqual([key('a', {ctrl: true})])
     })
 
     it('parses ctrl+alt+a (CSI 97;7 u)', () => {
       const events = parseInput(Buffer.from('\x1b[97;7u'))
-      expect(events).toEqual([key('a', { ctrl: true, alt: true })])
+      expect(events).toEqual([key('a', {ctrl: true, alt: true})])
     })
 
     it('parses ctrl+letter via codepoint 1-26 (CSI 1 u = ctrl+a)', () => {
       const events = parseInput(Buffer.from('\x1b[1u'))
-      expect(events).toEqual([key('a', { ctrl: true })])
+      expect(events).toEqual([key('a', {ctrl: true})])
     })
 
     it('parses meta modifier (CSI 97;9 u)', () => {
       const events = parseInput(Buffer.from('\x1b[97;9u'))
-      expect(events).toEqual([key('a', { meta: true })])
+      expect(events).toEqual([key('a', {meta: true})])
     })
   })
 

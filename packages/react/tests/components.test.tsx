@@ -42,7 +42,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <tui-stack direction="down">
           <Components.Br />
-        </tui-stack>
+        </tui-stack>,
       )
       await flush()
       const stack = window.children[0] as Container
@@ -89,7 +89,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Box width={10} height={5}>
           <Components.Space />
-        </Components.Box>
+        </Components.Box>,
       )
       await flush()
       const box = window.children[0] as Container
@@ -101,7 +101,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Button>
           <Components.Space />
-        </Components.Button>
+        </Components.Button>,
       )
       await flush()
       const btn = window.children[0] as Container
@@ -112,7 +112,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Stack direction="down">
           <Components.Space />
-        </Components.Stack>
+        </Components.Stack>,
       )
       await flush()
       const stack = window.children[0] as Container
@@ -124,7 +124,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Stack.down>
           <Components.Space />
-        </Components.Stack.down>
+        </Components.Stack.down>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Stack)
@@ -134,7 +134,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Stack.up>
           <Components.Space />
-        </Components.Stack.up>
+        </Components.Stack.up>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Stack)
@@ -144,7 +144,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Stack.left>
           <Components.Space />
-        </Components.Stack.left>
+        </Components.Stack.left>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Stack)
@@ -154,7 +154,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Stack.right>
           <Components.Space />
-        </Components.Stack.right>
+        </Components.Stack.right>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Stack)
@@ -164,7 +164,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Scrollable>
           <Components.Space />
-        </Components.Scrollable>
+        </Components.Scrollable>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Scrollable)
@@ -175,7 +175,7 @@ describe('component wrappers', () => {
         <Components.Collapsible
           collapsed={<Components.Space />}
           expanded={<Components.Box />}
-        />
+        />,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Collapsible)
@@ -189,7 +189,7 @@ describe('component wrappers', () => {
           <Components.Accordion.Section>
             <Components.Space />
           </Components.Accordion.Section>
-        </Components.Accordion>
+        </Components.Accordion>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Accordion)
@@ -201,7 +201,7 @@ describe('component wrappers', () => {
           <Components.Tabs.Section>
             <Components.Space />
           </Components.Tabs.Section>
-        </Components.Tabs>
+        </Components.Tabs>,
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Tabs)
@@ -213,7 +213,7 @@ describe('component wrappers', () => {
           <Components.Drawer
             content={<Components.Box />}
             drawer={<Components.Space />}
-          />
+          />,
         )
         await flush()
         expect(window.children[0]).toBeInstanceOf(Drawer)
@@ -224,7 +224,7 @@ describe('component wrappers', () => {
           <Components.Drawer.top
             content={<Components.Box />}
             drawer={<Components.Space />}
-          />
+          />,
         )
         await flush()
         expect(window.children[0]).toBeInstanceOf(Drawer)
@@ -235,7 +235,7 @@ describe('component wrappers', () => {
           <Components.Drawer.right
             content={<Components.Box />}
             drawer={<Components.Space />}
-          />
+          />,
         )
         await flush()
         expect(window.children[0]).toBeInstanceOf(Drawer)
@@ -246,7 +246,7 @@ describe('component wrappers', () => {
           <Components.Drawer.bottom
             content={<Components.Box />}
             drawer={<Components.Space />}
-          />
+          />,
         )
         await flush()
         const drawer = window.children[0] as Container
@@ -261,7 +261,7 @@ describe('component wrappers', () => {
           <Components.Drawer.left
             content={<Components.Box />}
             drawer={<Components.Space />}
-          />
+          />,
         )
         await flush()
         const drawer = window.children[0] as Container

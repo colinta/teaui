@@ -31,21 +31,27 @@ The `onMouse` callback receives `(event, system)` matching the signature of `Vie
 ## Usage
 
 ### Core
+
 ```ts
 new Mouse({
-  onMouse: (event, system) => { console.log(event.name, event.position) },
+  onMouse: (event, system) => {
+    console.log(event.name, event.position)
+  },
   children: [child1, child2],
 })
 
 // Listen only for wheel events
 new Mouse({
   mouse: 'mouse.wheel',
-  onMouse: (event) => { /* scroll handling */ },
+  onMouse: event => {
+    /* scroll handling */
+  },
   children: [content],
 })
 ```
 
 ### React/Preact
+
 ```tsx
 <Mouse onMouse={(event, system) => console.log(event.name)}>
   {children}

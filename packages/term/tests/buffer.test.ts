@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { ScreenBuffer } from '../src/buffer.js'
-import { CSI } from '../src/ansi.js'
+import {describe, it, expect} from 'vitest'
+import {ScreenBuffer} from '../src/buffer.js'
+import {CSI} from '../src/ansi.js'
 
 function flush(buf: ScreenBuffer): string {
   let output = ''

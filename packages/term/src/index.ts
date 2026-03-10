@@ -25,7 +25,7 @@ export type {
 } from './types.js'
 
 // Type guards
-export { isKeyEvent, isMouseEvent, isPasteEvent, isFocusEvent } from './types.js'
+export {isKeyEvent, isMouseEvent, isPasteEvent, isFocusEvent} from './types.js'
 
 // ANSI primitives
 export {
@@ -73,19 +73,19 @@ export {
 } from './ansi.js'
 
 // Style
-export { StyleBuilder } from './style.js'
+export {StyleBuilder} from './style.js'
 
 // Cursor
-export { CursorController } from './cursor.js'
+export {CursorController} from './cursor.js'
 
 // Input
-export { parseInput, InputReader } from './input.js'
+export {parseInput, InputReader} from './input.js'
 
 // Screen
-export { ScreenController, detectColorSupport } from './screen.js'
+export {ScreenController, detectColorSupport} from './screen.js'
 
 // Image
-export { itermImage, kittyImage, detectImageProtocol } from './image.js'
+export {itermImage, kittyImage, detectImageProtocol} from './image.js'
 
 // Modern features
 export {
@@ -103,8 +103,8 @@ export {
 } from './modern.js'
 
 // Buffer
-export { ScreenBuffer } from './buffer.js'
-export type { Cell } from './buffer.js'
+export {ScreenBuffer} from './buffer.js'
+export type {Cell} from './buffer.js'
 
 // Unicode
 export {
@@ -119,13 +119,13 @@ export {
   getLocale,
   setLocale,
 } from './unicode.js'
-export type { AnsiLocation } from './unicode.js'
+export type {AnsiLocation} from './unicode.js'
 
 // Colors (256-color palette utilities)
 export * as colors from './colors.js'
 
 // SGR style descriptor parser (replaces blessed program.style())
-export { parseStyleDescriptor } from './sgr.js'
+export {parseStyleDescriptor} from './sgr.js'
 
 // Terminal (main class)
-export { Terminal } from './terminal.js'
+export {Terminal} from './terminal.js'

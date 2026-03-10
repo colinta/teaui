@@ -22,11 +22,34 @@ pnpm run react
 import React, {useState, useMemo} from 'react'
 import {interceptConsoleLog, type Border} from '@teaui/core'
 import {
-  Accordion, Box, Button, Checkbox, CollapsibleText, ConsoleLog,
-  Digits, Drawer, FontStyle, type FontStyleValue,
-  H1, H2, H3, H4, H5, H6, Input, Progress,
-  Scrollable, Separator, Slider, Space, Spinner,
-  Stack, Style, Tabs, Text, run,
+  Accordion,
+  Box,
+  Button,
+  Checkbox,
+  CollapsibleText,
+  ConsoleLog,
+  Digits,
+  Drawer,
+  FontStyle,
+  type FontStyleValue,
+  H1,
+  H2,
+  H3,
+  H4,
+  H5,
+  H6,
+  Input,
+  Progress,
+  Scrollable,
+  Separator,
+  Slider,
+  Space,
+  Spinner,
+  Stack,
+  Style,
+  Tabs,
+  Text,
+  run,
 } from '@teaui/react'
 import YAML from 'yaml'
 
@@ -34,6 +57,7 @@ import YAML from 'yaml'
 //       Widgets showcase, Drawer demo, Borders/Buttons/Colors
 // See full source: apps/react/index.tsx
 ```
+
 </details>
 
 ---
@@ -101,21 +125,17 @@ pnpm install @teaui/core @teaui/react react @types/react
 ```
 
 ###### index.tsx
+
 ```tsx
 import React, {useReducer} from 'react'
 import {interceptConsoleLog} from '@teaui/core'
-import {
-  Box,
-  Button,
-  Stack,
-  run,
-} from '@teaui/react'
+import {Box, Button, Stack, run} from '@teaui/react'
 
 // Recommended:
 interceptConsoleLog()
 
 function App() {
-  const [bang, goto10] = useReducer((state) => state + '!', '')
+  const [bang, goto10] = useReducer(state => state + '!', '')
 
   return (
     <Box border="single">
@@ -140,7 +160,14 @@ node .dist/index.js
 ###### example.js
 
 ```javascript
-import {Screen, Box, Stack, Text, Button, interceptConsoleLog} from '@teaui/core'
+import {
+  Screen,
+  Box,
+  Stack,
+  Text,
+  Button,
+  interceptConsoleLog,
+} from '@teaui/core'
 
 // Recommended:
 interceptConsoleLog()

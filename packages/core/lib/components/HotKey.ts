@@ -1,7 +1,11 @@
 import type {Viewport} from '../Viewport.js'
 import {type Props as ContainerProps, Container} from '../Container.js'
 import {Size} from '../geometry.js'
-import {type KeyEvent, HotKey as HotKeyProp, toHotKeyDef} from '../events/index.js'
+import {
+  type KeyEvent,
+  HotKey as HotKeyProp,
+  toHotKeyDef,
+} from '../events/index.js'
 
 export interface Props extends ContainerProps {
   hotKey: HotKeyProp

@@ -107,9 +107,7 @@ function ansiToHtml(ansi: string): string {
       let j = i + 2
       while (j < ansi.length && ansi[j] !== 'm') j++
       const paramStr = ansi.slice(i + 2, j)
-      const params = paramStr
-        .split(';')
-        .map(s => parseInt(s, 10) || 0)
+      const params = paramStr.split(';').map(s => parseInt(s, 10) || 0)
 
       closeSpan()
 
@@ -255,9 +253,7 @@ async function buildScreenshots() {
 async function buildExamples() {
   mkdirSync(EXAMPLES_OUTPUT_DIR, {recursive: true})
 
-  const files = readdirSync(EXAMPLES_DIR).filter(f =>
-    /\.example\.tsx$/.test(f),
-  )
+  const files = readdirSync(EXAMPLES_DIR).filter(f => /\.example\.tsx$/.test(f))
 
   if (files.length === 0) {
     return
@@ -302,8 +298,10 @@ async function buildExamples() {
 
       // Write the display source code: strip 'export default' and append run(<App />)
       const sourcePath = join(EXAMPLES_DIR, file)
-      let source = readFileSync(sourcePath, 'utf-8')
-        .replace(/^export default /m, '')
+      let source = readFileSync(sourcePath, 'utf-8').replace(
+        /^export default /m,
+        '',
+      )
 
       // Add 'run' to the @teaui/react import and append run(<App />) call
       source = source.replace(

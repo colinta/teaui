@@ -271,7 +271,8 @@ export class Slider extends View {
 
       if (~~this.#step === this.#step) {
         this.#value =
-          this.#range[0] + Math.round((this.#value - this.#range[0]) / this.#step) * this.#step
+          this.#range[0] +
+          Math.round((this.#value - this.#range[0]) / this.#step) * this.#step
       }
     }
 

@@ -61,11 +61,15 @@ describe('Stack', () => {
       let val2 = ''
       const input1 = new Input({
         value: 'first',
-        onChange(v) { val1 = v },
+        onChange(v) {
+          val1 = v
+        },
       })
       const input2 = new Input({
         value: 'second',
-        onChange(v) { val2 = v },
+        onChange(v) {
+          val2 = v
+        },
       })
       const t = testRender(
         new Stack({children: [input1, input2], direction: 'down'}),
@@ -87,11 +91,15 @@ describe('Stack', () => {
       let val2 = ''
       const input1 = new Input({
         value: 'first',
-        onChange(v) { val1 = v },
+        onChange(v) {
+          val1 = v
+        },
       })
       const input2 = new Input({
         value: 'second',
-        onChange(v) { val2 = v },
+        onChange(v) {
+          val2 = v
+        },
       })
       const t = testRender(
         new Stack({children: [input1, input2], direction: 'down'}),

@@ -1,4 +1,4 @@
-import type { CursorShape } from './types.js'
+import type {CursorShape} from './types.js'
 import * as ansi from './ansi.js'
 
 export class CursorController {

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { StyleBuilder } from '../src/style.js'
-import { CSI } from '../src/ansi.js'
+import {describe, it, expect} from 'vitest'
+import {StyleBuilder} from '../src/style.js'
+import {CSI} from '../src/ansi.js'
 
 describe('StyleBuilder', () => {
   it('creates empty style by default', () => {
@@ -67,13 +67,13 @@ describe('StyleBuilder', () => {
   })
 
   it('supports RGB fg color', () => {
-    const s = new StyleBuilder().fg({ r: 255, g: 0, b: 128 })
+    const s = new StyleBuilder().fg({r: 255, g: 0, b: 128})
     expect(s.open()).toBe(`${CSI}38;2;255;0;128m`)
     expect(s.close()).toBe(`${CSI}39m`)
   })
 
   it('supports 256 bg color', () => {
-    const s = new StyleBuilder().bg({ index: 196 })
+    const s = new StyleBuilder().bg({index: 196})
     expect(s.open()).toBe(`${CSI}48;5;196m`)
     expect(s.close()).toBe(`${CSI}49m`)
   })

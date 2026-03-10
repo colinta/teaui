@@ -34,10 +34,7 @@ describe('renderToAnsi', () => {
   it('renders a Stack with children', () => {
     const view = new Stack({
       direction: 'down',
-      children: [
-        new Text({text: 'Line 1'}),
-        new Text({text: 'Line 2'}),
-      ],
+      children: [new Text({text: 'Line 1'}), new Text({text: 'Line 2'})],
     })
     const output = renderToAnsi(view, {width: 30, height: 5})
     expect(output).toContain('Line 1')

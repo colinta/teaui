@@ -33,7 +33,10 @@ const [screen, program] = await Screen.start(async () => {
       new Box({
         border: 'single',
         height: 3,
-        child: new Text({text: ' My Terminal App', style: new Style({bold: true})}),
+        child: new Text({
+          text: ' My Terminal App',
+          style: new Style({bold: true}),
+        }),
       }),
       ['flex1', subprocess],
     ]),
@@ -49,23 +52,23 @@ Extends `View`. Spawns a child process in a PTY and renders its output.
 
 #### Constructor Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `command` | `string` | *(required)* | Command to execute |
-| `args` | `string[]` | `[]` | Command arguments |
-| `env` | `Record<string, string>` | `{}` | Extra environment variables (merged with `process.env`) |
-| `cwd` | `string` | `undefined` | Working directory for the child |
-| `onData` | `(data: string) => void` | `undefined` | Called with raw child stdout data |
-| `onExit` | `(code: number, signal?: number) => void` | `undefined` | Called when the child exits |
-| `width` | `Dimension` | `'fill'` | View width |
-| `height` | `Dimension` | `'fill'` | View height |
+| Prop      | Type                                      | Default      | Description                                             |
+| --------- | ----------------------------------------- | ------------ | ------------------------------------------------------- |
+| `command` | `string`                                  | _(required)_ | Command to execute                                      |
+| `args`    | `string[]`                                | `[]`         | Command arguments                                       |
+| `env`     | `Record<string, string>`                  | `{}`         | Extra environment variables (merged with `process.env`) |
+| `cwd`     | `string`                                  | `undefined`  | Working directory for the child                         |
+| `onData`  | `(data: string) => void`                  | `undefined`  | Called with raw child stdout data                       |
+| `onExit`  | `(code: number, signal?: number) => void` | `undefined`  | Called when the child exits                             |
+| `width`   | `Dimension`                               | `'fill'`     | View width                                              |
+| `height`  | `Dimension`                               | `'fill'`     | View height                                             |
 
 #### Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `processState` | `'idle' \| 'starting' \| 'running' \| 'exited' \| 'error'` | Current process lifecycle state |
-| `exitCode` | `number \| null` | Exit code (only when `processState === 'exited'`) |
+| Property       | Type                                                       | Description                                       |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| `processState` | `'idle' \| 'starting' \| 'running' \| 'exited' \| 'error'` | Current process lifecycle state                   |
+| `exitCode`     | `number \| null`                                           | Exit code (only when `processState === 'exited'`) |
 
 #### Behavior
 
@@ -84,6 +87,7 @@ Extends `View`. Spawns a child process in a PTY and renders its output.
 ### `keyEventToAnsi(event: KeyEvent): string`
 
 Converts a TeaUI `KeyEvent` back to the raw bytes a terminal would send. Handles:
+
 - Printable characters
 - Ctrl+letter (`ctrl+c` → `\x03`)
 - Meta/Alt+key (`meta+f` → `\x1bf`)
@@ -119,6 +123,7 @@ Parent TeaUI App
 ```
 
 **Data flows:**
+
 - Child stdout → `pty.onData` → `xterm.write(data)` → buffer cells
 - Parent render → `SubprocessView.render()` → read xterm buffer → `viewport.write()`
 - User keypress → `receiveKey()` → `keyEventToAnsi()` → `pty.write()`
@@ -127,15 +132,16 @@ Parent TeaUI App
 
 ## Dependencies
 
-| Package | Why |
-|---------|-----|
-| `node-pty` | PTY spawning via `forkpty(3)` — the child needs a real terminal |
+| Package           | Why                                                                   |
+| ----------------- | --------------------------------------------------------------------- |
+| `node-pty`        | PTY spawning via `forkpty(3)` — the child needs a real terminal       |
 | `@xterm/headless` | Terminal emulator — parses ANSI, maintains cell buffer, zero DOM deps |
-| `@teaui/core` | View base class, Style, geometry, events |
+| `@teaui/core`     | View base class, Style, geometry, events                              |
 
 ## Examples
 
 See `apps/demos/` for working examples:
+
 - `subprocess-simple.ts` — Simple child program for testing
 - `subprocess-child.ts` — Interactive child with counter button
 - `subprocess-host.ts` — Parent embedding a single subprocess

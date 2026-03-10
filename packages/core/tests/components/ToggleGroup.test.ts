@@ -22,7 +22,10 @@ describe('ToggleGroup', () => {
       titles: ['A', 'B', 'C'],
       selected: [],
       multiple: true,
-      onChange(c, s) { changed = c; selected = s },
+      onChange(c, s) {
+        changed = c
+        selected = s
+      },
     })
     const t = testRender(tg, {width: 20, height: 3})
     t.sendMouse('mouse.button.down', {x: 1, y: 1})
@@ -38,7 +41,10 @@ describe('ToggleGroup', () => {
       titles: ['A', 'B', 'C'],
       selected: [],
       multiple: false,
-      onChange(c, s) { changed = c; selected = s },
+      onChange(c, s) {
+        changed = c
+        selected = s
+      },
     })
     const t = testRender(tg, {width: 20, height: 3})
     t.sendMouse('mouse.button.down', {x: 1, y: 1})
@@ -53,7 +59,9 @@ describe('ToggleGroup', () => {
       titles: ['A', 'B', 'C'],
       selected: [0],
       multiple: true,
-      onChange(_c, s) { selected = s },
+      onChange(_c, s) {
+        selected = s
+      },
     })
     const t = testRender(tg, {width: 20, height: 3})
     t.sendMouse('mouse.button.down', {x: 1, y: 1})
@@ -89,7 +97,9 @@ describe('ToggleGroup', () => {
 
   it('updates visual state after click', () => {
     let currentSelected: number[] = []
-    const onChange = (c: number, s: number[]) => { currentSelected = s }
+    const onChange = (c: number, s: number[]) => {
+      currentSelected = s
+    }
     const tg = new ToggleGroup({
       titles: ['A', 'B', 'C'],
       selected: currentSelected,
@@ -127,7 +137,9 @@ describe('ToggleGroup', () => {
       titles: ['A', 'B', 'C'],
       selected: [],
       multiple: true,
-      onChange(_c, s) { selected = s },
+      onChange(_c, s) {
+        selected = s
+      },
     })
     const t = testRender(tg, {width: 20, height: 3})
     // B starts at x=4 (border + A width + border)

@@ -169,11 +169,11 @@ TextProvider (wrap: true)
 
 ### Update Propagation
 
-| Trigger | What happens |
-|---|---|
-| **Text content changes** (`TextLiteral.text` setter) | Walks up to ancestor `TextContainer`, calls `invalidateText()` — re-runs `styledText()` on all nodes and updates `Text` views in place |
-| **Style prop changes** (`TextStyle.update()`) | Updates internal `#style`, then walks up to ancestor `TextContainer` and calls `invalidateText()` |
-| **Layout prop changes** (`TextProvider.update()`) | Updates `#style`, `#alignment`, `#wrap`, `#font`. Calls `invalidateSize()` which triggers a re-render. `TextContainer` re-reads `textProps` during the next `#invalidateNodes()` call |
+| Trigger                                              | What happens                                                                                                                                                                          |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text content changes** (`TextLiteral.text` setter) | Walks up to ancestor `TextContainer`, calls `invalidateText()` — re-runs `styledText()` on all nodes and updates `Text` views in place                                                |
+| **Style prop changes** (`TextStyle.update()`)        | Updates internal `#style`, then walks up to ancestor `TextContainer` and calls `invalidateText()`                                                                                     |
+| **Layout prop changes** (`TextProvider.update()`)    | Updates `#style`, `#alignment`, `#wrap`, `#font`. Calls `invalidateSize()` which triggers a re-render. `TextContainer` re-reads `textProps` during the next `#invalidateNodes()` call |
 
 ### Removal
 
@@ -194,13 +194,13 @@ differ in how they integrate with their respective frameworks.
 
 ### Summary
 
-| | React | Preact |
-|---|---|---|
-| **Reconciler** | `react-reconciler` package with explicit host config | Fake DOM layer (`RendererElement`) that Preact's built-in VDOM diffs against |
-| **Update trigger** | `resetAfterCommit` → `screen.render()` | Preact `options.diffed` hook → `screen.render()` |
-| **Container mode** | `createContainer(window, 0)` — LegacyRoot, synchronous | N/A — Preact is always synchronous |
-| **Text system** | Identical `TextReact.ts` | Identical `TextReact.ts` |
-| **Prop stripping** | `createInstance` strips `children`/`child` from props | `createView` destructures `children`/`child` from props |
+|                    | React                                                  | Preact                                                                       |
+| ------------------ | ------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **Reconciler**     | `react-reconciler` package with explicit host config   | Fake DOM layer (`RendererElement`) that Preact's built-in VDOM diffs against |
+| **Update trigger** | `resetAfterCommit` → `screen.render()`                 | Preact `options.diffed` hook → `screen.render()`                             |
+| **Container mode** | `createContainer(window, 0)` — LegacyRoot, synchronous | N/A — Preact is always synchronous                                           |
+| **Text system**    | Identical `TextReact.ts`                               | Identical `TextReact.ts`                                                     |
+| **Prop stripping** | `createInstance` strips `children`/`child` from props  | `createView` destructures `children`/`child` from props                      |
 
 ### React: Host Config Reconciler
 

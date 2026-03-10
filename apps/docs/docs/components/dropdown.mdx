@@ -35,13 +35,13 @@ run(<App />)
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | `string` | — | Dropdown label |
-| `choices` | `[string, T][]` | — | Array of [label, value] pairs |
-| `selected` | `T \| T[]` | — | Currently selected value(s) |
-| `onSelect` | `(value: T) => void` | — | Selection callback |
-| `multiple` | `boolean` | `false` | Allow multiple selection |
+| Prop       | Type                 | Default | Description                   |
+| ---------- | -------------------- | ------- | ----------------------------- |
+| `title`    | `string`             | —       | Dropdown label                |
+| `choices`  | `[string, T][]`      | —       | Array of [label, value] pairs |
+| `selected` | `T \| T[]`           | —       | Currently selected value(s)   |
+| `onSelect` | `(value: T) => void` | —       | Selection callback            |
+| `multiple` | `boolean`            | `false` | Allow multiple selection      |
 
 <details>
 <summary>Core API</summary>
@@ -51,9 +51,13 @@ import {Dropdown} from '@teaui/core'
 
 new Dropdown({
   title: 'Color',
-  choices: [['Red', 'red'], ['Green', 'green'], ['Blue', 'blue']],
+  choices: [
+    ['Red', 'red'],
+    ['Green', 'green'],
+    ['Blue', 'blue'],
+  ],
   selected: 'red',
-  onSelect: (val) => console.log(val),
+  onSelect: val => console.log(val),
 })
 ```
 

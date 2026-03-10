@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import {describe, it, expect} from 'vitest'
 import {
   cursorTo,
   cursorMove,
@@ -156,37 +156,37 @@ describe('ansi escape sequences', () => {
     })
 
     it('fgColor with 256 palette', () => {
-      expect(fgColor({ index: 0 })).toBe(`${CSI}38;5;0m`)
-      expect(fgColor({ index: 196 })).toBe(`${CSI}38;5;196m`)
-      expect(fgColor({ index: 255 })).toBe(`${CSI}38;5;255m`)
+      expect(fgColor({index: 0})).toBe(`${CSI}38;5;0m`)
+      expect(fgColor({index: 196})).toBe(`${CSI}38;5;196m`)
+      expect(fgColor({index: 255})).toBe(`${CSI}38;5;255m`)
     })
 
     it('bgColor with 256 palette', () => {
-      expect(bgColor({ index: 232 })).toBe(`${CSI}48;5;232m`)
+      expect(bgColor({index: 232})).toBe(`${CSI}48;5;232m`)
     })
 
     it('fgColor with RGB', () => {
-      expect(fgColor({ r: 255, g: 128, b: 0 })).toBe(`${CSI}38;2;255;128;0m`)
+      expect(fgColor({r: 255, g: 128, b: 0})).toBe(`${CSI}38;2;255;128;0m`)
     })
 
     it('bgColor with RGB', () => {
-      expect(bgColor({ r: 0, g: 0, b: 0 })).toBe(`${CSI}48;2;0;0;0m`)
+      expect(bgColor({r: 0, g: 0, b: 0})).toBe(`${CSI}48;2;0;0;0m`)
     })
 
     it('fgColor with HSL', () => {
       // Pure red: h=0, s=100, l=50 → rgb(255, 0, 0)
-      expect(fgColor({ h: 0, s: 100, l: 50 })).toBe(`${CSI}38;2;255;0;0m`)
+      expect(fgColor({h: 0, s: 100, l: 50})).toBe(`${CSI}38;2;255;0;0m`)
       // Pure green: h=120, s=100, l=50 → rgb(0, 255, 0)
-      expect(fgColor({ h: 120, s: 100, l: 50 })).toBe(`${CSI}38;2;0;255;0m`)
+      expect(fgColor({h: 120, s: 100, l: 50})).toBe(`${CSI}38;2;0;255;0m`)
       // Pure blue: h=240, s=100, l=50 → rgb(0, 0, 255)
-      expect(fgColor({ h: 240, s: 100, l: 50 })).toBe(`${CSI}38;2;0;0;255m`)
+      expect(fgColor({h: 240, s: 100, l: 50})).toBe(`${CSI}38;2;0;0;255m`)
     })
 
     it('bgColor with HSL', () => {
       // White: h=0, s=0, l=100 → rgb(255, 255, 255)
-      expect(bgColor({ h: 0, s: 0, l: 100 })).toBe(`${CSI}48;2;255;255;255m`)
+      expect(bgColor({h: 0, s: 0, l: 100})).toBe(`${CSI}48;2;255;255;255m`)
       // Black: h=0, s=0, l=0 → rgb(0, 0, 0)
-      expect(bgColor({ h: 0, s: 0, l: 0 })).toBe(`${CSI}48;2;0;0;0m`)
+      expect(bgColor({h: 0, s: 0, l: 0})).toBe(`${CSI}48;2;0;0;0m`)
     })
   })
 

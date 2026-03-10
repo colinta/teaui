@@ -56,9 +56,7 @@ describe('keyEventToAnsi', () => {
     })
 
     it('shift+tab → CSI Z', () => {
-      expect(keyEventToAnsi(key('tab', {char: '', shift: true}))).toBe(
-        '\x1b[Z',
-      )
+      expect(keyEventToAnsi(key('tab', {char: '', shift: true}))).toBe('\x1b[Z')
     })
 
     it('escape → \\x1b', () => {

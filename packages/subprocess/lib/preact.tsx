@@ -8,7 +8,10 @@ import type {SubprocessViewProps} from './SubprocessView.js'
 
 type SubprocessProps = SubprocessViewProps
 
-registerElement('tui-subprocess', (props: SubprocessProps) => new SubprocessView(props))
+registerElement(
+  'tui-subprocess',
+  (props: SubprocessProps) => new SubprocessView(props),
+)
 
 declare module 'preact' {
   namespace JSX {

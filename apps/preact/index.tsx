@@ -148,9 +148,7 @@ function Demo() {
                     </Style>
                     <br />
                     world @ {height}
-                    <Br />
-                    👍{'\n'}
-                    👋
+                    <Br />👍{'\n'}👋
                   </Text>
                   <Space width={1} />
                   <Button

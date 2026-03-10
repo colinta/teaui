@@ -1,5 +1,5 @@
-import { cursorTo, resetAll } from './ansi.js'
-import { syncStart, syncEnd } from './modern.js'
+import {cursorTo, resetAll} from './ansi.js'
+import {syncStart, syncEnd} from './modern.js'
 
 export interface Cell {
   char: string
@@ -33,8 +33,8 @@ export class ScreenBuffer {
   }
 
   private createGrid(): Cell[][] {
-    return Array.from({ length: this.height }, () =>
-      Array.from({ length: this.width }, () => ({
+    return Array.from({length: this.height}, () =>
+      Array.from({length: this.width}, () => ({
         char: EMPTY_CHAR,
         style: EMPTY_STYLE,
       })),
@@ -60,7 +60,7 @@ export class ScreenBuffer {
         this._cursorY >= 0 &&
         this._cursorY < this.height
       ) {
-        this.back[this._cursorY][this._cursorX] = { char, style }
+        this.back[this._cursorY][this._cursorX] = {char, style}
       }
       this._cursorX++
     }
@@ -69,7 +69,7 @@ export class ScreenBuffer {
   clear(): void {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        this.back[y][x] = { char: EMPTY_CHAR, style: EMPTY_STYLE }
+        this.back[y][x] = {char: EMPTY_CHAR, style: EMPTY_STYLE}
       }
     }
     this._cursorX = 0
@@ -126,7 +126,7 @@ export class ScreenBuffer {
         parts.push(b.char)
 
         // Sync front to back
-        this.front[y][x] = { char: b.char, style: b.style }
+        this.front[y][x] = {char: b.char, style: b.style}
       }
     }
 

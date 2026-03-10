@@ -20,11 +20,7 @@ function simpleWords(input: string) {
 const specs: [string, string, any][] = [
   ['one word', 'word', simpleWords('word')],
   ['two words', 'hello dolly', simpleWords('hello dolly')],
-  [
-    'ansi+word',
-    '\x1b[0mhello',
-    [[['\x1b[0m', 'h', 'e', 'l', 'l', 'o'], 0]],
-  ],
+  ['ansi+word', '\x1b[0mhello', [[['\x1b[0m', 'h', 'e', 'l', 'l', 'o'], 0]]],
 ]
 
 describe('words', () => {

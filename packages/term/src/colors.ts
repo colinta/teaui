@@ -42,10 +42,22 @@ const indexToHex_table: string[] = []
 
 ;(function () {
   const xtermColors = [
-    '#000000', '#800000', '#008000', '#808000',
-    '#000080', '#800080', '#008080', '#c0c0c0',
-    '#808080', '#ff0000', '#00ff00', '#ffff00',
-    '#0000ff', '#ff00ff', '#00ffff', '#ffffff',
+    '#000000',
+    '#800000',
+    '#008000',
+    '#808000',
+    '#000080',
+    '#800080',
+    '#008080',
+    '#c0c0c0',
+    '#808080',
+    '#ff0000',
+    '#00ff00',
+    '#ffff00',
+    '#0000ff',
+    '#ff00ff',
+    '#00ffff',
+    '#ffffff',
   ]
 
   function set(i: number, r: number, g: number, b: number) {
@@ -95,7 +107,12 @@ const _cache: Record<number, number> = {}
 export function match(r1: string): number
 export function match(r1: number, g1: number, b1: number): number
 export function match(r1: [number, number, number]): number
-export function match(r1: string | number | [number, number, number], g1?: any, b1?: any, lookup?: [number, number, number][]): number
+export function match(
+  r1: string | number | [number, number, number],
+  g1?: any,
+  b1?: any,
+  lookup?: [number, number, number][],
+): number
 export function match(
   r1: string | number | [number, number, number],
   g1?: any,
@@ -119,7 +136,9 @@ export function match(
 
     ;[r1, g1, b1] = hexToRGB(r1)
   } else if (Array.isArray(r1)) {
-    b1 = r1[2]; g1 = r1[1]; r1 = r1[0]
+    b1 = r1[2]
+    g1 = r1[1]
+    r1 = r1[0]
   }
 
   const hash = ((r1 as number) << 16) | ((g1 as number) << 8) | (b1 as number)
@@ -135,7 +154,10 @@ export function match(
     if (r1 === g1 && g1 === b1) {
       lookupEntries = indexToRGB_table
         .slice(231, 256)
-        .map((rgb, index) => [231 + index, rgb] as [number, [number, number, number]])
+        .map(
+          (rgb, index) =>
+            [231 + index, rgb] as [number, [number, number, number]],
+        )
       lookupEntries.push([16, [0, 0, 0]])
       lookupEntries.push([59, [95, 95, 95]])
       lookupEntries.push([102, [135, 135, 135]])
@@ -145,17 +167,29 @@ export function match(
     } else {
       lookupEntries = indexToRGB_table
         .slice(16)
-        .map((rgb, index) => [16 + index, rgb] as [number, [number, number, number]])
+        .map(
+          (rgb, index) =>
+            [16 + index, rgb] as [number, [number, number, number]],
+        )
     }
   } else {
-    lookupEntries = lookup.map((rgb, index) => [index, rgb] as [number, [number, number, number]])
+    lookupEntries = lookup.map(
+      (rgb, index) => [index, rgb] as [number, [number, number, number]],
+    )
   }
 
   let ldiff = Infinity
   let li = lookupEntries[0][0]
 
   for (const [index, rgb] of lookupEntries) {
-    const diff = colorDistance(r1 as number, g1 as number, b1 as number, rgb[0], rgb[1], rgb[2])
+    const diff = colorDistance(
+      r1 as number,
+      g1 as number,
+      b1 as number,
+      rgb[0],
+      rgb[1],
+      rgb[2],
+    )
 
     if (diff === 0) {
       li = index
@@ -184,7 +218,9 @@ export function RGBtoHex(
   b?: number,
 ): `#${string}` {
   if (Array.isArray(r)) {
-    b = r[2]; g = r[1]; r = r[0]
+    b = r[2]
+    g = r[1]
+    r = r[0]
   }
   return `#${toHex(r)}${toHex(g!)}${toHex(b!)}` as `#${string}`
 }
@@ -192,15 +228,23 @@ export function RGBtoHex(
 /**
  * RGB (0–255) to HSB (0–1 each).
  */
-export function RGBtoHSB(r: number, g: number, b: number): [number, number, number]
-export function RGBtoHSB(rgb: [number, number, number]): [number, number, number]
+export function RGBtoHSB(
+  r: number,
+  g: number,
+  b: number,
+): [number, number, number]
+export function RGBtoHSB(
+  rgb: [number, number, number],
+): [number, number, number]
 export function RGBtoHSB(
   r: number | [number, number, number],
   g?: number,
   b?: number,
 ): [number, number, number] {
   if (Array.isArray(r)) {
-    b = r[2]; g = r[1]; r = r[0]
+    b = r[2]
+    g = r[1]
+    r = r[0]
   }
 
   const max = Math.max(r, g!, b!)
@@ -233,15 +277,23 @@ export function RGBtoHSB(
 /**
  * HSB (0–1 each) to RGB (0–255).
  */
-export function HSBtoRGB(h: number, s: number, v: number): [number, number, number]
-export function HSBtoRGB(hsv: [number, number, number]): [number, number, number]
+export function HSBtoRGB(
+  h: number,
+  s: number,
+  v: number,
+): [number, number, number]
+export function HSBtoRGB(
+  hsv: [number, number, number],
+): [number, number, number]
 export function HSBtoRGB(
   h: number | [number, number, number],
   s?: number,
   v?: number,
 ): [number, number, number] {
   if (Array.isArray(h)) {
-    v = h[2]; s = h[1]; h = h[0]
+    v = h[2]
+    s = h[1]
+    h = h[0]
   }
 
   const i = Math.floor(h * 6)
@@ -252,13 +304,40 @@ export function HSBtoRGB(
   let r: number, g: number, b: number
 
   switch (i % 6) {
-    case 0: r = v!; g = t; b = p; break
-    case 1: r = q; g = v!; b = p; break
-    case 2: r = p; g = v!; b = t; break
-    case 3: r = p; g = q; b = v!; break
-    case 4: r = t; g = p; b = v!; break
-    case 5: r = v!; g = p; b = q; break
-    default: r = 0; g = 0; b = 0
+    case 0:
+      r = v!
+      g = t
+      b = p
+      break
+    case 1:
+      r = q
+      g = v!
+      b = p
+      break
+    case 2:
+      r = p
+      g = v!
+      b = t
+      break
+    case 3:
+      r = p
+      g = q
+      b = v!
+      break
+    case 4:
+      r = t
+      g = p
+      b = v!
+      break
+    case 5:
+      r = v!
+      g = p
+      b = q
+      break
+    default:
+      r = 0
+      g = 0
+      b = 0
   }
 
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]
@@ -281,8 +360,12 @@ export function hexToRGB(hex: string): [number, number, number] {
 // --- Color distance ---
 
 function colorDistance(
-  r1: number, g1: number, b1: number,
-  r2: number, g2: number, b2: number,
+  r1: number,
+  g1: number,
+  b1: number,
+  r2: number,
+  g2: number,
+  b2: number,
 ): number {
   return (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
 }
@@ -290,11 +373,21 @@ function colorDistance(
 // --- Reduce colors for low-color terminals ---
 
 const fourBitColors: number[] = indexToHex_table.map(color =>
-  match(color, undefined as any, undefined as any, indexToRGB_table.slice(0, 16)),
+  match(
+    color,
+    undefined as any,
+    undefined as any,
+    indexToRGB_table.slice(0, 16),
+  ),
 )
 
 const threeBitColors: number[] = indexToHex_table.map(color =>
-  match(color, undefined as any, undefined as any, indexToRGB_table.slice(0, 8)),
+  match(
+    color,
+    undefined as any,
+    undefined as any,
+    indexToRGB_table.slice(0, 8),
+  ),
 )
 
 export function reduce(color: number, total: number): number {

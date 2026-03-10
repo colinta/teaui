@@ -21,7 +21,7 @@ import {
 } from '../src/index.js'
 
 const term = new Terminal()
-const { columns: cols, rows } = term.size
+const {columns: cols, rows} = term.size
 
 let running = true
 let useSync = true
@@ -41,7 +41,15 @@ function renderFrame() {
 
   if (useSync) buf.push(syncStart())
 
-  const namedColors = ['red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'] as const
+  const namedColors = [
+    'red',
+    'green',
+    'yellow',
+    'blue',
+    'magenta',
+    'cyan',
+    'white',
+  ] as const
 
   for (let y = 0; y < rows; y++) {
     // Move cursor to start of row
@@ -77,10 +85,10 @@ function renderFrame() {
 }
 
 // Enter fullscreen
-term.enterFullscreen({ hideCursor: true, mouse: false })
+term.enterFullscreen({hideCursor: true, mouse: false})
 
 // Handle input
-const unsub = term.onInput((event) => {
+const unsub = term.onInput(event => {
   if (!isKeyEvent(event)) return
   if (event.key === 'q' || (event.key === 'c' && event.ctrl)) {
     running = false

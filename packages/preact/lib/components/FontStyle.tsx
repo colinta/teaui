@@ -23,7 +23,10 @@ const KEYS: (keyof FontStyleValue)[] = [
   'strikethrough',
 ]
 
-export function FontStyle({value, onChange}: FontStyleProps): preact.JSX.Element {
+export function FontStyle({
+  value,
+  onChange,
+}: FontStyleProps): preact.JSX.Element {
   const selected = useMemo(() => {
     const indices: number[] = []
     KEYS.forEach((key, i) => {

@@ -32,7 +32,7 @@ export interface HSLColor {
 }
 
 /** 0–255 palette index */
-export type Color256 = { index: number }
+export type Color256 = {index: number}
 
 export type Color = NamedColor | RGBColor | HSLColor | Color256
 
