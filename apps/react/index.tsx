@@ -37,8 +37,6 @@ import YAML from 'yaml'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-let _key = 0
-
 function indent(depth: number): string {
   return '  '.repeat(depth)
 }
