@@ -4,6 +4,10 @@ TeaUI is a terminal UI framework powered by React (or Preact). It renders
 full-screen interactive applications in the terminal using a custom React
 reconciler that maps JSX elements to core view components.
 
+### Code Formatting
+
+**Important: Always run `pnpm run format` before committing changes.**
+
 ## Repository Structure
 
 ```

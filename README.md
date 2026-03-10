@@ -73,6 +73,7 @@ pnpm demo inputs.ts
 I'll use TypeScript's JSX support here, if you want to use something else go ahead.
 
 ###### tsconfig.json
+
 ```json
 {
   "include": ["./"],
@@ -137,6 +138,7 @@ node .dist/index.js
 ### Example using core library
 
 ###### example.js
+
 ```javascript
 import {Screen, Box, Stack, Text, Button, interceptConsoleLog} from '@teaui/core'
 
