@@ -321,7 +321,7 @@ class Section extends Container {
             if (!child.isVisible) {
               continue
             }
-            child.render(viewport)
+            child.render(inner)
           }
         },
       )
