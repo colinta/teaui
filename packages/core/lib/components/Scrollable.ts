@@ -21,6 +21,12 @@ interface Props extends ContainerProps {
    * @default 2
    */
   scrollWidth?: number
+  /**
+   * When true, automatically scrolls to the bottom when content grows,
+   * as long as the view was already at the bottom. Useful for log views.
+   * @default false
+   */
+  keepAtBottom?: boolean
 }
 
 interface ContentOffset {
@@ -37,6 +43,8 @@ export class Scrollable extends Container {
   #showScrollbars: boolean = true
   #scrollHeight: number = 1
   #scrollWidth: number = 2
+  #keepAtBottom: boolean = false
+  #isAtBottom: boolean = true
   #contentOffset: ContentOffset
   #contentSize: Size = Size.zero
   #visibleSize: Size = Size.zero
@@ -54,10 +62,11 @@ export class Scrollable extends Container {
     super.update(props)
   }
 
-  #update({scrollHeight, scrollWidth, showScrollbars}: Props) {
+  #update({scrollHeight, scrollWidth, showScrollbars, keepAtBottom}: Props) {
     this.#showScrollbars = showScrollbars ?? true
     this.#scrollHeight = scrollHeight ?? 1
     this.#scrollWidth = scrollWidth ?? 2
+    this.#keepAtBottom = keepAtBottom ?? false
   }
 
   naturalSize(available: Size): Size {
@@ -144,10 +153,12 @@ export class Scrollable extends Container {
           [0, maxY],
         ),
       )
+      const y = Math.max(maxY, Math.min(0, offsetY))
       this.#contentOffset = {
         x: this.#contentOffset.x,
-        y: Math.max(maxY, Math.min(0, offsetY)),
+        y,
       }
+      this.#isAtBottom = y <= maxY
     }
   }
 
@@ -202,6 +213,9 @@ export class Scrollable extends Container {
     x = Math.min(0, Math.max(maxX, x - offsetX))
     y = Math.min(0, Math.max(maxY, y - offsetY))
     this.#contentOffset = {x, y}
+
+    // Track whether we're at the bottom (for keepAtBottom)
+    this.#isAtBottom = y <= maxY
   }
 
   get contentSize(): Size {
@@ -226,6 +240,12 @@ export class Scrollable extends Container {
 
     const tooWide = contentSize.width > viewport.contentSize.width
     const tooTall = contentSize.height > viewport.contentSize.height
+
+    // keepAtBottom: snap to end when content grows and we were at the bottom
+    if (this.#keepAtBottom && this.#isAtBottom && tooTall) {
+      const maxY = this.#maxOffsetY()
+      this.#contentOffset = {x: this.#contentOffset.x, y: maxY}
+    }
 
     // #contentOffset is _negative_ (indicates the amount to move the view away
     // from the origin, which will always be up/left of 0,0)
