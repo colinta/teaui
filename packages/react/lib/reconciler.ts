@@ -5,6 +5,7 @@ import {DefaultEventPriority} from 'react-reconciler/constants.js'
 import {
   Accordion,
   Box,
+  Breadcrumb,
   Button,
   Checkbox,
   Collapsible,
@@ -79,6 +80,9 @@ function createInstance(type: string, props: Props): any {
     case 'br':
     case 'tui-br':
       return new TextLiteral('\n')
+    case 'breadcrumb':
+    case 'tui-breadcrumb':
+      return new Breadcrumb(props as any)
     case 'checkbox':
     case 'tui-checkbox':
       return new Checkbox(props as any)

@@ -2,6 +2,7 @@ import React, {useMemo} from 'react'
 import type {
   Accordion as WrAccordion,
   Box as WrBox,
+  Breadcrumb as WrBreadcrumb,
   Button as WrButton,
   Checkbox as WrCheckbox,
   Collapsible as WrCollapsible,
@@ -30,6 +31,7 @@ import type {
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
+import {BreadcrumbContainer, BreadcrumbItem} from './components/BreadcrumbReact.js'
 export {FontStyle} from './components/FontStyle.js'
 export type {FontStyleValue} from './components/FontStyle.js'
 
@@ -45,6 +47,7 @@ type TUIContainer<
     Children,
 > = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: React.ReactNode}
 
+type BreadcrumbProps = TUIView<typeof WrBreadcrumb>
 type CheckboxProps = TUIView<typeof WrCheckbox>
 type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
 type ConsoleProps = TUIView<typeof WrConsoleLog>
@@ -99,6 +102,7 @@ declare module 'react' {
     interface IntrinsicElements {
       // views
       'tui-br': {}
+      'tui-breadcrumb': BreadcrumbProps
       'tui-checkbox': CheckboxProps
       'tui-collapsible-text': CollapsibleTextProps
       'tui-console': ConsoleProps
@@ -151,6 +155,20 @@ declare module 'react' {
 export function Br(): JSX.Element {
   return <tui-br />
 }
+// Standalone breadcrumb component (for backward compatibility)
+function BreadcrumbStandalone(reactProps: BreadcrumbProps): JSX.Element {
+  return <tui-breadcrumb {...reactProps} />
+}
+
+interface BreadcrumbComponent {
+  (reactProps: BreadcrumbProps): JSX.Element
+  Container: typeof BreadcrumbContainer
+  Item: typeof BreadcrumbItem
+}
+
+export const Breadcrumb: BreadcrumbComponent = BreadcrumbStandalone as BreadcrumbComponent
+Breadcrumb.Container = BreadcrumbContainer
+Breadcrumb.Item = BreadcrumbItem
 export function Checkbox(reactProps: CheckboxProps): JSX.Element {
   return <tui-checkbox {...reactProps} />
 }
