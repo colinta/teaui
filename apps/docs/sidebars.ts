@@ -48,6 +48,11 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: '░ Navigation',
+          items: ['components/breadcrumb'],
+        },
+        {
+          type: 'category',
           label: '░ Container',
           items: [
             'components/accordion',

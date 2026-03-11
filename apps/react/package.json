@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm --filter '@teaui/react...' build && pnpm tsc",
     "checksum": "pnpm check 'pnpm build'",
-    "demo": "pnpm checksum && cd .dist && node --enable-source-maps --",
+    "demo": "pnpm checksum && node demo-runner.js",
     "clean": "rm -rf .dist/"
   },
   "private": true,
