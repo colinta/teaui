@@ -32,9 +32,9 @@ interface Props<TData> extends ContainerProps {
 ```
  Name         │ Age │ Email              │ Status       // dim │ separators
 ───────────────────────────────────────────────────
- Alice        │  30 │ alice@example.com  │ Active  
+ Alice        │  30 │ alice@example.com  │ Active
 ▶Bob          │  25 │ bob@example.com    │ Pending ◀
- Charlie      │  35 │ charlie@ex.com     │ Active  
+ Charlie      │  35 │ charlie@ex.com     │ Active
 ```
 
 - Header row with column titles — clickable for sorting
@@ -48,11 +48,13 @@ interface Props<TData> extends ContainerProps {
 ## Interaction
 
 ### Mouse
+
 - Click header → sort by that column (toggle asc/desc)
 - Click row → select it
 - Scroll wheel → scroll the table body
 
 ### Keyboard
+
 - Up/Down arrows: move selection
 - Enter: confirm selection (fires `onSelect`)
 - Home/End: jump to first/last row
@@ -74,4 +76,3 @@ interface Props<TData> extends ContainerProps {
   - for the "middle" rows, the selected row should stay in place, and we move the
     rows up and down instead, creating a "moving window" effect. This means that
     given only the row-offset and total row count, we can recreate the UI.
-
