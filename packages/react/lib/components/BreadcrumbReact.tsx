@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from 'react'
+import React, {createContext, useContext, useState, useCallback, useMemo, useEffect} from 'react'
 import type {Color} from '@teaui/core'
 import {Stack} from '../components.js'
 
@@ -31,7 +24,7 @@ interface BreadcrumbContainerProps {
 export function BreadcrumbContainer({
   children,
   isActive = true,
-  palette,
+  palette
 }: BreadcrumbContainerProps) {
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
 
@@ -57,7 +50,7 @@ export function BreadcrumbContainer({
       registerBreadcrumb,
       unregisterBreadcrumb,
     }),
-    [registerBreadcrumb, unregisterBreadcrumb],
+    [registerBreadcrumb, unregisterBreadcrumb]
   )
 
   // Convert breadcrumb items to the format expected by the core Breadcrumb component
@@ -67,7 +60,7 @@ export function BreadcrumbContainer({
         title,
         onPress,
       })),
-    [breadcrumbs],
+    [breadcrumbs]
   )
 
   return (
@@ -114,7 +107,11 @@ export function BreadcrumbItem({title, onPress, id}: BreadcrumbProps) {
 
   // If there's no context, render a standalone breadcrumb
   if (!context) {
-    return <tui-breadcrumb items={[{title, onPress}]} />
+    return (
+      <tui-breadcrumb
+        items={[{title, onPress}]}
+      />
+    )
   }
 
   // If context exists, this component just registers and returns null

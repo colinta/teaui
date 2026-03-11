@@ -23,8 +23,7 @@ export class Breadcrumb extends Container {
   #items: BreadcrumbItem[] = []
   #isActive: boolean = true
   #palette: {fg: Color; bg: Color}[] = DEFAULT_PALETTE
-  #mouseRegions: Array<{item: BreadcrumbItem; startX: number; width: number}> =
-    []
+  #mouseRegions: Array<{item: BreadcrumbItem; startX: number; width: number}> = []
 
   constructor(props: Props) {
     super(props)
@@ -48,23 +47,23 @@ export class Breadcrumb extends Container {
     }
 
     let width = 0
-
+    
     for (let i = 0; i < this.#items.length; i++) {
       const item = this.#items[i]
       // Add padding around text (space before and after)
       width += 2 + unicode.lineWidth(item.title)
-
+      
       // Add separator width (except for the first item which gets home icon)
       if (i === 0) {
-        width += 2 // " 🏠 "
+        width += 2 // " 🏠 " 
       } else {
         width += 1 // "" arrow separator
       }
     }
-
+    
     // Add final arrow separator
     width += 1 // ""
-
+    
     return new Size(width, 1)
   }
 
@@ -74,10 +73,7 @@ export class Breadcrumb extends Container {
     if (isMouseClicked(event)) {
       // Find which breadcrumb item was clicked
       for (const region of this.#mouseRegions) {
-        if (
-          event.position.x >= region.startX &&
-          event.position.x < region.startX + region.width
-        ) {
+        if (event.position.x >= region.startX && event.position.x < region.startX + region.width) {
           region.item.onPress?.()
           break
         }
@@ -91,23 +87,21 @@ export class Breadcrumb extends Container {
     }
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
-
+    
     this.#mouseRegions = []
     let currentX = 0
-
+    
     for (let i = 0; i < this.#items.length; i++) {
       const item = this.#items[i]
       const isFirst = i === 0
       const isLast = i === this.#items.length - 1
       const colorIndex = i % this.#palette.length
       const colors = this.#palette[colorIndex]
-      const nextColors = !isLast
-        ? this.#palette[(i + 1) % this.#palette.length]
-        : null
-
+      const nextColors = !isLast ? this.#palette[(i + 1) % this.#palette.length] : null
+      
       let segmentText = ''
       let segmentWidth = 0
-
+      
       if (isFirst) {
         // First item gets home icon
         segmentText = ` 🏠 ${item.title} `
@@ -117,14 +111,14 @@ export class Breadcrumb extends Container {
         segmentText = ` ${item.title} `
         segmentWidth = 1 + unicode.lineWidth(segmentText) // +1 for arrow
       }
-
+      
       // Register mouse region for this segment
       this.#mouseRegions.push({
         item,
         startX: currentX + (isFirst ? 0 : 1), // Skip the arrow for click detection
-        width: segmentWidth - (isFirst ? 0 : 1),
+        width: segmentWidth - (isFirst ? 0 : 1)
       })
-
+      
       if (this.#isActive) {
         // Active rendering with colors and powerline arrows
         if (!isFirst) {
@@ -132,18 +126,18 @@ export class Breadcrumb extends Container {
           const prevColors = this.#palette[(i - 1) % this.#palette.length]
           const arrowStyle = new Style({
             foreground: prevColors.bg,
-            background: colors.bg,
+            background: colors.bg
           })
           viewport.write('', new Point(currentX, 0), arrowStyle)
           currentX += 1
         }
-
+        
         // Render segment with colors
         const segmentStyle = new Style({
           foreground: colors.fg,
-          background: colors.bg,
+          background: colors.bg
         })
-
+        
         const content = isFirst ? segmentText : segmentText
         for (let j = 0; j < content.length; j++) {
           if (currentX + j < viewport.contentSize.width) {
@@ -151,17 +145,18 @@ export class Breadcrumb extends Container {
           }
         }
         currentX += content.length
+        
       } else {
         // Inactive rendering - plain text with muted separators
         if (!isFirst) {
           // Render muted arrow
           const mutedStyle = new Style({
-            foreground: 'gray',
+            foreground: 'gray'
           })
           viewport.write('', new Point(currentX, 0), mutedStyle)
           currentX += 1
         }
-
+        
         // Render plain text
         const plainStyle = this.theme.ui({})
         const content = isFirst ? segmentText : segmentText
@@ -173,14 +168,13 @@ export class Breadcrumb extends Container {
         currentX += content.length
       }
     }
-
+    
     // Render final arrow for active state
     if (this.#isActive && this.#items.length > 0) {
-      const lastColors =
-        this.#palette[(this.#items.length - 1) % this.#palette.length]
+      const lastColors = this.#palette[(this.#items.length - 1) % this.#palette.length]
       const finalArrowStyle = new Style({
         foreground: lastColors.bg,
-        background: 'default',
+        background: 'default'
       })
       if (currentX < viewport.contentSize.width) {
         viewport.write('', new Point(currentX, 0), finalArrowStyle)
