@@ -145,10 +145,10 @@ describe('Scrollable', () => {
     })
 
     it('hides scrollbars when showScrollbars is false', () => {
-      const t = testRender(
-        makeScrollable(10, {showScrollbars: false}),
-        {width: 10, height: 5},
-      )
+      const t = testRender(makeScrollable(10, {showScrollbars: false}), {
+        width: 10,
+        height: 5,
+      })
       // No scrollbar characters on the rightmost column
       for (let y = 0; y < 5; y++) {
         expect(t.terminal.charAt(9, y)).not.toBe('█')
@@ -312,10 +312,10 @@ describe('Scrollable', () => {
 
   describe('ctrl+wheel fast scrolling', () => {
     it('ctrl multiplies vertical scroll by 5', () => {
-      const t = testRender(
-        makeScrollable(30, {showScrollbars: false}),
-        {width: 10, height: 5},
-      )
+      const t = testRender(makeScrollable(30, {showScrollbars: false}), {
+        width: 10,
+        height: 5,
+      })
       expect(t.terminal.textAtRow(0)).toContain('Line 0')
 
       t.sendMouse('mouse.wheel.down', {x: 0, y: 0}, {ctrl: true})

@@ -16,7 +16,7 @@ interface BreadcrumbItem {
 interface Props extends ContainerProps {
   items: BreadcrumbItem[]
   isActive?: boolean // default true — controls whether bg colours are shown and whether to use  (isActive) or  (inactive)
-  palette?: {fg: Color, bg: Color}[]
+  palette?: {fg: Color; bg: Color}[]
 }
 ```
 
@@ -31,8 +31,8 @@ interface Props extends ContainerProps {
            ^^^^^^^^^^^^^ background: bg-color3 - foreground of arrow is bg-color2, title is fg-color3
 ```
 
-- The `` separator uses the *previous* segment's bg as its **foreground** and the
-  *next* segment's bg as its **background** — this creates the seamless arrow effect
+- The `` separator uses the _previous_ segment's bg as its **foreground** and the
+  _next_ segment's bg as its **background** — this creates the seamless arrow effect
 - The final `` uses the last segment's bg as foreground and the default bg as background
 - Colour palette should cycle through a set of harmonious terminal colours
 

@@ -37,7 +37,9 @@ Jun                     # typing month to jump
 ```
 
 ## Year selection
+
 Scrollable w/ mouse, accepts numbers from keyboard
+
 ```
         ↑          ×    # cancel/Esc
        2024
@@ -69,17 +71,20 @@ interface Props extends ViewProps {
 ## Interaction
 
 ### Day Grid
+
 - Arrow keys to move selection
 - Mouse click to select a date
 - Previous-month days shown dimmed (still clickable)
 
 ### Month/Year Header
+
 - Clicking the **month** label → switches to month picker (grid of 12 months)
 - Clicking the **year** label → switches to year picker (grid/scrollable list)
 - Left/right arrows (or `<` `>` buttons) to navigate months
 - These pickers replace the day grid; selecting a value returns to the day view
 
 ### Keyboard
+
 - Arrow keys: move selected date
 - Enter: confirm selection (or make first selection in range)
 - Escape: cancel picker mode (return to day grid)

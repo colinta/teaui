@@ -16,7 +16,7 @@ interface PageProps extends ContainerProps {
 }
 
 interface SectionProps extends ContainerProps {
-  title?: string  // if any sections have a title, leave a space above the page selection for the title
+  title?: string // if any sections have a title, leave a space above the page selection for the title
 }
 
 // Page > Section relationship (same pattern as Accordion)
@@ -46,6 +46,7 @@ class Page extends Container {
 ## Interaction
 
 ### Keyboard
+
 - Space: next page
 - Page Down: next page
 - Page Up: previous page
@@ -54,6 +55,7 @@ class Page extends Container {
 - Number keys (1-9): jump to page
 
 ### Mouse
+
 - Click dots to jump to a page
 - Scroll wheel to navigate pages (optional)
 
@@ -71,7 +73,7 @@ class Page extends Container {
   Example:
   on page 2, click page 3.
   page 2 view moves to the left, page 3 view moves in from the right
-  *during the animation*
-    click page 5: finish the page 3 animation then bring in page 5 (skip page 4)
-    click page 1: interrupt the animation, bring in page 2 from the left (because
-    it's still visible) and then bring in page 1.
+  _during the animation_
+  click page 5: finish the page 3 animation then bring in page 5 (skip page 4)
+  click page 1: interrupt the animation, bring in page 2 from the left (because
+  it's still visible) and then bring in page 1.

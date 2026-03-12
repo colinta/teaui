@@ -12,7 +12,7 @@ The first N-1 children are the "Browsers". Each is given a draggable size. The l
 
 ```ts
 interface Props extends ContainerProps {
-  border?: boolean  // optional border
+  border?: boolean // optional border
 }
 ```
 

@@ -48,27 +48,31 @@ Wraps as necessary, aligns columns
 - `naturalSize()`: calculate total width of all items + separators that fit in the given width, calculate height from that.
 - Key styling: make the key stand out from the label
 
-
 ## Example
 
 ```tsx
-<Stack.right padding={{ left: 1, right: 1 }}>
+<Stack.right padding={{left: 1, right: 1}}>
   <Style foreground="#d58684">q</Style>
   <Style foreground="gray"> quit</Style>
-  <Style foreground="gray">{"   "}</Style>
+  <Style foreground="gray">{'   '}</Style>
   <Style foreground="#70be9b">↑↓</Style>
   <Style foreground="gray"> navigate</Style>
-  <Style foreground="gray">{"   "}</Style>
+  <Style foreground="gray">{'   '}</Style>
   <Style foreground="#70a2d1">Tab</Style>
   <Style foreground="gray"> switch panel</Style>
-  <Style foreground="gray">{"   "}</Style>
+  <Style foreground="gray">{'   '}</Style>
   <Style foreground="#ffa735">1-9</Style>
   <Style foreground="gray"> jump</Style>
-  <Style foreground="gray">{"   "}</Style>
+  <Style foreground="gray">{'   '}</Style>
   <Style foreground="#d58684">d</Style>
   <Style foreground="gray"> dismiss</Style>
-  <Style foreground="gray">{"   "}</Style>
-  <Style foreground="gray" dim>Esc</Style>
-  <Style foreground="gray" dim> list</Style>
+  <Style foreground="gray">{'   '}</Style>
+  <Style foreground="gray" dim>
+    Esc
+  </Style>
+  <Style foreground="gray" dim>
+    {' '}
+    list
+  </Style>
 </Stack.right>
 ```
