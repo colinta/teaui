@@ -21,18 +21,23 @@ const canvas = new Canvas({
     canvas.fillRect(w - 20, 5, 10, 8)
 
     // Circle outline
-    canvas.circle(Math.floor(w * 0.35), Math.floor(h * 0.65), Math.floor(h * 0.15))
+    canvas.circle(
+      Math.floor(w * 0.35),
+      Math.floor(h * 0.65),
+      Math.floor(h * 0.15),
+    )
 
     // Filled circle
-    canvas.fillCircle(Math.floor(w * 0.7), Math.floor(h * 0.5), Math.floor(h * 0.2))
+    canvas.fillCircle(
+      Math.floor(w * 0.7),
+      Math.floor(h * 0.5),
+      Math.floor(h * 0.2),
+    )
   },
 })
 
 demo(
   Stack.down({
-    children: [
-      new Text({text: 'Canvas Demo — Braille Drawing'}),
-      canvas,
-    ],
+    children: [new Text({text: 'Canvas Demo — Braille Drawing'}), canvas],
   }),
 )

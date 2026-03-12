@@ -77,7 +77,11 @@ export class Plot extends View {
     // Y-axis labels on the left
     let yLabelWidth = 0
     let yLabels: string[] = []
-    const chartHeight = totalH - titleHeight - (this.#xAxisLabels ? 1 : 0) - (this.#showAxes ? 1 : 0)
+    const chartHeight =
+      totalH -
+      titleHeight -
+      (this.#xAxisLabels ? 1 : 0) -
+      (this.#showAxes ? 1 : 0)
 
     if (this.#yAxisLabels && chartHeight > 0) {
       // Get labels from first chart
@@ -98,7 +102,8 @@ export class Plot extends View {
 
     // Draw title
     if (this.#title && titleHeight > 0) {
-      const titleX = chartX + Math.max(0, Math.floor((chartW - this.#title.length) / 2))
+      const titleX =
+        chartX + Math.max(0, Math.floor((chartW - this.#title.length) / 2))
       viewport.write(
         this.#title.slice(0, totalW),
         new Point(titleX, 0),
@@ -109,9 +114,9 @@ export class Plot extends View {
     // Draw y-axis labels
     if (this.#yAxisLabels && yLabels.length > 0 && chartH > 0) {
       for (let i = 0; i < yLabels.length; i++) {
-        const labelY = chartY + Math.round(
-          i * (chartH - 1) / Math.max(1, yLabels.length - 1),
-        )
+        const labelY =
+          chartY +
+          Math.round((i * (chartH - 1)) / Math.max(1, yLabels.length - 1))
         if (labelY < chartY + chartH) {
           const label = yLabels[i].padStart(yLabelWidth - 1)
           viewport.write(label, new Point(0, labelY), textStyle)
@@ -154,13 +159,16 @@ export class Plot extends View {
           const labelCount = Math.min(xLabels.length, Math.floor(chartW / 4))
           for (let i = 0; i < labelCount; i++) {
             const dataIdx = Math.round(
-              i * (xLabels.length - 1) / Math.max(1, labelCount - 1),
+              (i * (xLabels.length - 1)) / Math.max(1, labelCount - 1),
             )
             const label = xLabels[dataIdx]
-            const labelX = chartX + Math.round(
-              i * (chartW - 1) / Math.max(1, labelCount - 1),
+            const labelX =
+              chartX +
+              Math.round((i * (chartW - 1)) / Math.max(1, labelCount - 1))
+            const truncated = label.slice(
+              0,
+              Math.min(label.length, chartW - (labelX - chartX)),
             )
-            const truncated = label.slice(0, Math.min(label.length, chartW - (labelX - chartX)))
             viewport.write(truncated, new Point(labelX, xAxisY), textStyle)
           }
         }
@@ -168,9 +176,12 @@ export class Plot extends View {
     }
 
     // Render charts in the chart area
-    const chartRect = new Rect(new Point(chartX, chartY), new Size(chartW, chartH))
+    const chartRect = new Rect(
+      new Point(chartX, chartY),
+      new Size(chartW, chartH),
+    )
     for (const chart of this.#charts) {
-      viewport.clipped(chartRect, (clippedViewport) => {
+      viewport.clipped(chartRect, clippedViewport => {
         chart.renderChart(clippedViewport, {
           width: chartW,
           height: chartH,
