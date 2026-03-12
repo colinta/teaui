@@ -41,8 +41,6 @@ The current event system has no concept of an event being "consumed" — `receiv
 - `packages/core/lib/Screen.ts` — `registerKeyboard()`
 - `packages/react/lib/reconciler.ts` — `keyboard` / `tui-keyboard` element
 - `packages/react/lib/components.tsx` — `<Keyboard>` wrapper
-- `packages/preact/lib/preact.tsx` — `keyboard` / `tui-keyboard` element
-- `packages/preact/lib/components.tsx` — `<Keyboard>` wrapper
 
 ## Usage
 
@@ -57,7 +55,7 @@ new Keyboard({
 })
 ```
 
-### React/Preact
+### React
 
 ```tsx
 <Keyboard onKey={event => console.log(event.name)}>{children}</Keyboard>

@@ -8,7 +8,6 @@ const DEPENDENT_PACKAGES = [
   'packages/core/package.json',
   'packages/term/package.json',
   'packages/react/package.json',
-  'packages/preact/package.json',
   'packages/subprocess/package.json',
   'packages/cli/package.json',
 ]

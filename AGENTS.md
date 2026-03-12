@@ -1,6 +1,6 @@
 # TeaUI — Agent Guide
 
-TeaUI is a terminal UI framework powered by React (or Preact). It renders
+TeaUI is a terminal UI framework powered by React. It renders
 full-screen interactive applications in the terminal using a custom React
 reconciler that maps JSX elements to core view components.
 
@@ -15,13 +15,11 @@ packages/
   term/          Zero-dep terminal I/O library (ANSI parsing, SGR, unicode)
   core/          Core view system (View, Container, Screen, components)
   react/         React reconciler + JSX component wrappers
-  preact/        Preact reconciler + JSX component wrappers
   subprocess/    Embed terminal subprocesses as views
   cli/           CLI entry point
 
 apps/
   react/         React demo app (tabbed showcase)
-  preact/        Preact demo app
   demos/         Additional demo apps
   docs/          Docusaurus documentation site
     docs/        MDX documentation pages (components, API, reconciler)
@@ -47,7 +45,7 @@ apps/
 - **Components** — `packages/core/lib/components/`: Stack, Box, Input, Tabs,
   Accordion, Drawer, ToggleGroup, etc. Each is a View or Container subclass.
 
-### React/Preact Reconcilers (`packages/react/`, `packages/preact/`)
+### React Reconcilers (`packages/react/`)
 
 The reconcilers bridge React's virtual DOM to the core view tree. See
 [`apps/docs/docs/reconciler.mdx`](apps/docs/docs/reconciler.mdx) for the full
@@ -58,7 +56,6 @@ architecture document covering:
 - The text system: `TextLiteral`, `TextContainer`, `TextProvider`, `TextStyle`
 - Update propagation and `invalidateText()` / `invalidateNodes()` lifecycle
 - Prop comparison via `isSame()` (deep structural equality)
-- Differences between the React and Preact renderers
 
 ### Text System (Critical)
 
@@ -82,7 +79,7 @@ pnpm vitest run             # Run all tests
 pnpm react                  # Run the React demo app
 ```
 
-Build order matters: `term` → `core` → `react`/`preact` → apps.
+Build order matters: `term` → `core` → `react` → apps.
 
 Many test suites fail because Vite cannot resolve `@teaui/term` through its
 `exports` field at test time. This is a vitest/Vite configuration issue, not
@@ -107,27 +104,26 @@ a TODO.
 2. Export from `packages/core/lib/components/index.ts`
 3. Add to both reconcilers' `createInstance` switch
 4. Add JSX type declarations and wrapper component in
-   `packages/{react,preact}/lib/components.tsx`
+   `packages/react/lib/components.tsx`
 5. Add tests in `packages/core/tests/components/`
 
 ### Extending the reconcilers from external packages
 
-The React and Preact reconcilers expose `registerElement(type, factory)` so
+The React reconciler exposes `registerElement(type, factory)` so
 that external packages can add custom JSX element types without modifying
 the reconciler source.
 
 **Pattern** (used by `@teaui/subprocess`):
 
 1. Create a core `View` subclass in your package (e.g. `SubprocessView`)
-2. Create `lib/react.tsx` and `lib/preact.tsx` that:
-   - Call `registerElement('tui-myview', props => new MyView(props))`
-   - Declare the JSX intrinsic element via `declare module 'react'`
-   - Export a wrapper component: `export function MyView(props) { return <tui-myview {...props} /> }`
-3. Use **subpath exports** in `package.json` (`"./react"`, `"./preact"`)
-4. Declare `@teaui/react` and `@teaui/preact` as **optional peer dependencies**
-5. Use separate `tsconfig.react.json` / `tsconfig.preact.json` for JSX
-   compilation (React uses `"jsx": "react"`, Preact uses
-   `"jsx": "react-jsx"` with `"jsxImportSource": "preact"`)
+2. Create `lib/react.tsx` that:
+   - Calls `registerElement('tui-myview', props => new MyView(props))`
+   - Declares the JSX intrinsic element via `declare module 'react'`
+   - Exports a wrapper component: `export function MyView(props) { return <tui-myview {...props} /> }`
+3. Use **subpath exports** in `package.json` (`"./react"`)
+4. Declare `@teaui/react` as **optional peer dependencies**
+5. Use separate `tsconfig.react.json` for JSX
+   compilation (React uses `"jsx": "react"`)
 
 The registration happens as a side effect of importing the subpath module,
 so `import {Subprocess} from '@teaui/subprocess/react'` is all a consumer

@@ -37,12 +37,7 @@ export function inspect(
   }
 
   if (value instanceof Set) {
-    return `new Set(${inspect(
-      Array.from(value.values()),
-      wrap,
-      recursionDepth,
-      visited,
-    )})`
+    return `new Set(${inspect(Array.from(value.values()), wrap, recursionDepth, visited)})`
   }
 
   if (value instanceof Map) {
@@ -92,7 +87,7 @@ export function inspect(
   ) {
     return colorize.format(value)
   } else if (typeof value === 'function') {
-    return `function${value.name ? ` ${value.name}` : ''}() {…}`
+    return `function${value.name ? ` ${value.name}` : ''}() {${value}}`
   } else if (
     value instanceof Object &&
     value.constructor !== Object &&
@@ -120,12 +115,7 @@ export function inspect(
 
   const values = keys.map(
     key =>
-      `${colorize.key(key)}: ${inspect(
-        value[key],
-        wrap,
-        recursionDepth + 1,
-        visited,
-      )}`,
+      `${colorize.key(key)}: ${inspect(value[key], wrap, recursionDepth + 1, visited)}`,
   )
   const count = values.reduce((len, val) => len + val.length, 0)
   const newline = wrap && count > MAX

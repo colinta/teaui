@@ -20,11 +20,6 @@
       "types": "./.dist/react.d.ts",
       "import": "./.dist/react.js",
       "default": "./.dist/react.js"
-    },
-    "./preact": {
-      "types": "./.dist/preact.d.ts",
-      "import": "./.dist/preact.js",
-      "default": "./.dist/preact.js"
     }
   },
   "main": ".dist/index.js",
@@ -35,7 +30,7 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "clean": "rm -rf .dist/",
-    "build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json && pnpm tsc -p tsconfig.preact.json",
+    "build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -48,24 +43,18 @@
     "@xterm/headless": "^5.5.0"
   },
   "peerDependencies": {
-    "@teaui/react": "workspace:*",
-    "@teaui/preact": "workspace:*"
+    "@teaui/react": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@teaui/react": {
-      "optional": true
-    },
-    "@teaui/preact": {
       "optional": true
     }
   },
   "devDependencies": {
     "@teaui/shared": "workspace:*",
     "@teaui/react": "workspace:*",
-    "@teaui/preact": "workspace:*",
     "react": "^19.0.0",
     "@types/react": "^19.0.0",
-    "preact": "^10.0.0",
     "vitest": "^3.0.0"
   }
 }

@@ -14,7 +14,6 @@ apps/docs/
 │   ├── intro.mdx
 │   ├── getting-started.mdx
 │   ├── core-api.mdx
-│   ├── preact.mdx
 │   ├── themes.mdx
 │   └── components/           # One .mdx per component
 ├── examples/                 # ★ Source of truth for React examples

@@ -15,12 +15,12 @@ program
   .description('Create a new TeaUI application')
   .argument('<name>', 'Name of the application')
   .requiredOption(
-    '-f, --framework <framework> (none, react, or preact)',
+    '-f, --framework <framework> (none, react)',
     'Framework to use',
     value => {
-      if (!['react', 'preact', 'none'].includes(value)) {
+      if (!['react', 'none'].includes(value)) {
         throw new Error(
-          `Invalid framework: ${value}. Must be one of: react, preact, none`,
+          `Invalid framework: ${value}. Must be one of: react, none`,
         )
       }
       return value

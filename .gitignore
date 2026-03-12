@@ -8,3 +8,4 @@ apps/docs/.docusaurus/
 apps/docs/build/
 apps/docs/static/screenshots/
 apps/docs/static/examples/
+.prettierrc.json

@@ -2,7 +2,7 @@
   "scripts": {
     "docs": "pnpm -C apps/docs start",
     "demo": "pnpm -C apps/demos demo",
-    "react": "pnpm -C apps/react demo index",
+    "react": "pnpm -C apps/react demo",
     "publish": "pnpm -r publish --access public",
     "bump": "node shared/bump.js",
     "clean": "rm -rf packages/*/.dist apps/*/.dist",

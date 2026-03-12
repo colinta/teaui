@@ -153,7 +153,6 @@ name: TeaUI
 version: 1.0
 features:
   - React renderer
-  - Preact renderer
   - Core library
 config:
   border: rounded

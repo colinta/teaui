@@ -2,7 +2,7 @@
 
 I wanted a curses-style fullscreen application framework that could be powered by React. If you want to build a "streaming" TUI app, use Ink (it's good enough for claude!).
 
-The main library is in `packages/core`, powered by `packages/term` (which is available as a standalone **@teaui/term**, if you just want some ANSI features). Lots of demo code in `apps/demos/`, and `apps/react/` is where I experiment these days. I try to maintain the Preact support, too, HMU if anything is missing.
+The main library is in `packages/core`, powered by `packages/term` (which is available as a standalone **@teaui/term**, if you just want some ANSI features). Lots of demo code in `apps/demos/`, and `apps/react/` is where I experiment these days.
 
 ### React Demo
 

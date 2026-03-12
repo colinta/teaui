@@ -25,8 +25,6 @@ The `onMouse` callback receives `(event, system)` matching the signature of `Vie
 - `packages/core/lib/components/Mouse.ts` — Component
 - `packages/react/lib/reconciler.ts` — `mouse` / `tui-mouse` element
 - `packages/react/lib/components.tsx` — `<Mouse>` wrapper
-- `packages/preact/lib/preact.tsx` — `mouse` / `tui-mouse` element
-- `packages/preact/lib/components.tsx` — `<Mouse>` wrapper
 
 ## Usage
 
@@ -50,7 +48,7 @@ new Mouse({
 })
 ```
 
-### React/Preact
+### React
 
 ```tsx
 <Mouse onMouse={(event, system) => console.log(event.name)}>

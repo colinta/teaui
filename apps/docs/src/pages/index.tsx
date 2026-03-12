@@ -47,7 +47,7 @@ const FEATURES = [
   },
   {
     icon: '◆',
-    title: 'React & Preact',
+    title: 'React',
     desc: 'Use JSX or the OOP core API — your choice',
   },
   {

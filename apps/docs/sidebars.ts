@@ -67,7 +67,6 @@ const sidebars: SidebarsConfig = {
       ],
     },
     'core-api',
-    'preact',
     'themes',
   ],
 }
