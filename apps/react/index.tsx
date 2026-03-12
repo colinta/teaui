@@ -595,9 +595,9 @@ function BreadcrumbTab() {
   const [navigation] = useState([
     'Home',
     'Products',
-    'Electronics', 
+    'Electronics',
     'Smartphones',
-    'iPhone'
+    'iPhone',
   ])
 
   const handleBreadcrumbClick = useCallback((pageName: string) => {
@@ -606,13 +606,16 @@ function BreadcrumbTab() {
 
   // Get breadcrumb items up to the current page
   const currentIndex = navigation.indexOf(currentPage)
-  const breadcrumbItems = currentIndex >= 0 ? navigation.slice(0, currentIndex + 1) : navigation
+  const breadcrumbItems =
+    currentIndex >= 0 ? navigation.slice(0, currentIndex + 1) : navigation
 
   return (
     <Scrollable flex={1}>
       <Stack.down gap={2}>
         <Text>
-          <Style bold foreground="cyan">Breadcrumb Demo</Style>
+          <Style bold foreground="cyan">
+            Breadcrumb Demo
+          </Style>
         </Text>
 
         {/* Context-based breadcrumbs */}
@@ -629,8 +632,9 @@ function BreadcrumbTab() {
             <Br />
             <Text>Current page: {currentPage}</Text>
             <Text wrap>
-              Click any breadcrumb above to navigate. This uses the Breadcrumb.Container 
-              with individual Breadcrumb.Item components that register themselves.
+              Click any breadcrumb above to navigate. This uses the
+              Breadcrumb.Container with individual Breadcrumb.Item components
+              that register themselves.
             </Text>
           </Breadcrumb.Container>
         </Box>
@@ -641,12 +645,13 @@ function BreadcrumbTab() {
           <Breadcrumb
             items={breadcrumbItems.map(item => ({
               title: item,
-              onPress: () => handleBreadcrumbClick(item)
+              onPress: () => handleBreadcrumbClick(item),
             }))}
           />
           <Br />
           <Text wrap>
-            This is a standalone Breadcrumb component with all items passed as props.
+            This is a standalone Breadcrumb component with all items passed as
+            props.
           </Text>
         </Box>
 
@@ -656,7 +661,7 @@ function BreadcrumbTab() {
           <Breadcrumb
             items={breadcrumbItems.map(item => ({
               title: item,
-              onPress: () => handleBreadcrumbClick(item)
+              onPress: () => handleBreadcrumbClick(item),
             }))}
             isActive={false}
           />
@@ -672,7 +677,7 @@ function BreadcrumbTab() {
           <Breadcrumb
             items={breadcrumbItems.map(item => ({
               title: item,
-              onPress: () => handleBreadcrumbClick(item)
+              onPress: () => handleBreadcrumbClick(item),
             }))}
             palette={[
               {fg: 'white', bg: 'red'},
@@ -682,7 +687,8 @@ function BreadcrumbTab() {
           />
           <Br />
           <Text wrap>
-            This breadcrumb uses a custom color palette with red, yellow, and green segments.
+            This breadcrumb uses a custom color palette with red, yellow, and
+            green segments.
           </Text>
         </Box>
       </Stack.down>

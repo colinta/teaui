@@ -25,11 +25,7 @@ describe('Breadcrumb', () => {
 
     it('renders multiple items with separators', () => {
       const breadcrumb = new Breadcrumb({
-        items: [
-          {title: 'Home'},
-          {title: 'Blog'},
-          {title: 'Post'},
-        ],
+        items: [{title: 'Home'}, {title: 'Blog'}, {title: 'Post'}],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
       const content = t.terminal.textContent()
@@ -43,11 +39,7 @@ describe('Breadcrumb', () => {
 
     it('calculates natural size correctly', () => {
       const breadcrumb = new Breadcrumb({
-        items: [
-          {title: 'Home'},
-          {title: 'Blog'},
-          {title: 'Post'},
-        ],
+        items: [{title: 'Home'}, {title: 'Blog'}, {title: 'Post'}],
       })
       const size = breadcrumb.naturalSize(new Size(100, 100))
       expect(size.height).toBe(1)
@@ -107,7 +99,7 @@ describe('Breadcrumb', () => {
         ],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      
+
       // Click on the Home item (should be near the beginning)
       t.sendMouse('mouse.button.down', {x: 3, y: 0})
       t.sendMouse('mouse.button.up', {x: 3, y: 0})
@@ -115,7 +107,7 @@ describe('Breadcrumb', () => {
       expect(blogClicked).toBe(false)
 
       homeClicked = false
-      
+
       // Click on the Blog item (should be further right)
       // Need to account for " 🏠 Home " + "" + " Blog"
       t.sendMouse('mouse.button.down', {x: 15, y: 0})
@@ -143,7 +135,7 @@ describe('Breadcrumb', () => {
         ],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      
+
       // Click on what should be the arrow separator between items
       // This is approximate since we don't know exact positioning
       t.sendMouse('mouse.button.down', {x: 10, y: 0})
@@ -160,11 +152,11 @@ describe('Breadcrumb', () => {
         ],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      
+
       // Click should not crash
       t.sendMouse('mouse.button.down', {x: 5, y: 0})
       t.sendMouse('mouse.button.up', {x: 5, y: 0})
-      
+
       expect(t.terminal.textContent()).toContain('Home')
     })
   })
@@ -192,13 +184,13 @@ describe('Breadcrumb', () => {
         isActive: true,
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      
+
       breadcrumb.update({
         items: [{title: 'Home'}],
         isActive: false,
       })
       t.render()
-      
+
       // Component should still render
       expect(t.terminal.textContent()).toContain('Home')
     })

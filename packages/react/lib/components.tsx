@@ -31,7 +31,10 @@ import type {
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
-import {BreadcrumbContainer, BreadcrumbItem} from './components/BreadcrumbReact.js'
+import {
+  BreadcrumbContainer,
+  BreadcrumbItem,
+} from './components/BreadcrumbReact.js'
 export {FontStyle} from './components/FontStyle.js'
 export type {FontStyleValue} from './components/FontStyle.js'
 
@@ -166,7 +169,8 @@ interface BreadcrumbComponent {
   Item: typeof BreadcrumbItem
 }
 
-export const Breadcrumb: BreadcrumbComponent = BreadcrumbStandalone as BreadcrumbComponent
+export const Breadcrumb: BreadcrumbComponent =
+  BreadcrumbStandalone as BreadcrumbComponent
 Breadcrumb.Container = BreadcrumbContainer
 Breadcrumb.Item = BreadcrumbItem
 export function Checkbox(reactProps: CheckboxProps): JSX.Element {
