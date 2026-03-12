@@ -113,7 +113,7 @@ describe('BarChart', () => {
 
   it('computes y range starting from 0', () => {
     const chart = new BarChart(barData, {
-      extract: (d) => d.value,
+      extract: d => d.value,
     })
     const range = chart.getYRange()
     expect(range.min).toBe(0)
@@ -122,7 +122,7 @@ describe('BarChart', () => {
 
   it('computes x range as index range', () => {
     const chart = new BarChart(barData, {
-      extract: (d) => d.value,
+      extract: d => d.value,
     })
     const range = chart.getXRange()
     expect(range.min).toBe(0)
@@ -131,7 +131,7 @@ describe('BarChart', () => {
 
   it('handles empty data', () => {
     const chart = new BarChart<{value: number}>([], {
-      extract: (d) => d.value,
+      extract: d => d.value,
     })
     const range = chart.getYRange()
     expect(range.min).toBeLessThanOrEqual(range.max)
@@ -139,15 +139,15 @@ describe('BarChart', () => {
 
   it('generates x labels', () => {
     const chart = new BarChart(barData, {
-      extract: (d) => d.value,
-      xLabels: (d) => d.label,
+      extract: d => d.value,
+      xLabels: d => d.label,
     })
     expect(chart.getXLabels()).toEqual(['Jan', 'Feb', 'Mar', 'Apr'])
   })
 
   it('renders without throwing', () => {
     const chart = new BarChart(barData, {
-      extract: (d) => d.value,
+      extract: d => d.value,
     })
     const t = testRender(chart, {width: 20, height: 10})
     const content = t.terminal.textContent()
@@ -156,7 +156,7 @@ describe('BarChart', () => {
 
   it('renders bars with block characters', () => {
     const chart = new BarChart([{value: 100}], {
-      extract: (d) => d.value,
+      extract: d => d.value,
       barWidth: 1,
     })
     const t = testRender(chart, {width: 1, height: 4})
@@ -168,7 +168,7 @@ describe('BarChart', () => {
   it('renders partial height bars with fractional blocks', () => {
     // A bar at half height in a 2-row area = 1 full row
     const chart = new BarChart([{value: 50}], {
-      extract: (d) => d.value,
+      extract: d => d.value,
       barWidth: 1,
     })
     const t = testRender(chart, {width: 1, height: 2})
@@ -179,7 +179,7 @@ describe('BarChart', () => {
 
   it('supports custom bar width', () => {
     const chart = new BarChart([{value: 100}, {value: 100}], {
-      extract: (d) => d.value,
+      extract: d => d.value,
       barWidth: 3,
       gap: 1,
     })
@@ -215,8 +215,8 @@ describe('Plot', () => {
     ]
     const plot = new Plot({title: 'Bar Plot', width: 30, height: 10})
     const chart = new BarChart(barData, {
-      extract: (d) => d.value,
-      xLabels: (d) => d.label,
+      extract: d => d.value,
+      xLabels: d => d.label,
     })
     plot.add(chart)
 
@@ -278,7 +278,10 @@ describe('Plot', () => {
       extract: (d: DataPoint) => [d.x, d.y],
     })
     const chart2 = new LineChart(
-      [{x: 0, y: 1, label: 'X'}, {x: 4, y: 6, label: 'Y'}],
+      [
+        {x: 0, y: 1, label: 'X'},
+        {x: 4, y: 6, label: 'Y'},
+      ],
       {extract: (d: DataPoint) => [d.x, d.y]},
     )
     plot.add(chart1)

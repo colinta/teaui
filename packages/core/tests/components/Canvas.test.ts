@@ -404,7 +404,9 @@ describe('Canvas', () => {
       })
       const t = testRender(canvas, {width: 1, height: 1})
       // First render has pixels
-      expect(t.terminal.charAt(0, 0)).toBe(String.fromCharCode(0x2800 | 0x01 | 0x08))
+      expect(t.terminal.charAt(0, 0)).toBe(
+        String.fromCharCode(0x2800 | 0x01 | 0x08),
+      )
 
       // Re-render: draw callback is called again, draws nothing this time
       t.render()

@@ -31,7 +31,7 @@ const linePlot = new Plot({
 })
 
 const lineChart = new LineChart<SalesData>(salesData, {
-  extract: (row, ) => [salesData.indexOf(row), row.sales],
+  extract: row => [salesData.indexOf(row), row.sales],
   xLabels: row => row.month,
   yLabels: value => `$${Math.round(value)}`,
 })
