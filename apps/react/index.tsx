@@ -3,8 +3,6 @@ import {interceptConsoleLog, type Border} from '@teaui/core'
 import {
   Accordion,
   Box,
-  Br,
-  Breadcrumb,
   Button,
   Checkbox,
   Collapsible,
@@ -26,7 +24,6 @@ import {
   Scrollable,
   Separator,
   Slider,
-  Space,
   Spinner,
   Stack,
   Style,
@@ -35,6 +32,7 @@ import {
   run,
 } from '@teaui/react'
 import YAML from 'yaml'
+import {BreadcrumbTab} from './breadcrumb.js'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -588,112 +586,6 @@ const BORDERS: {name: string; border: Border}[] = [
   {name: 'bold', border: 'bold'},
   {name: 'dotted', border: 'dotted'},
 ]
-
-function BreadcrumbTab() {
-  const [currentPage, setCurrentPage] = useState('Home')
-  const [navigation] = useState([
-    'Home',
-    'Products',
-    'Electronics',
-    'Smartphones',
-    'iPhone',
-  ])
-
-  const handleBreadcrumbClick = useCallback((pageName: string) => {
-    setCurrentPage(pageName)
-  }, [])
-
-  // Get breadcrumb items up to the current page
-  const currentIndex = navigation.indexOf(currentPage)
-  const breadcrumbItems =
-    currentIndex >= 0 ? navigation.slice(0, currentIndex + 1) : navigation
-
-  return (
-    <Scrollable flex={1}>
-      <Stack.down gap={2}>
-        <Text>
-          <Style bold foreground="cyan">
-            Breadcrumb Demo
-          </Style>
-        </Text>
-
-        {/* Context-based breadcrumbs */}
-        <Box border="single" padding={1}>
-          <Breadcrumb.Container>
-            <Text>Context-based breadcrumbs:</Text>
-            {breadcrumbItems.map((item, index) => (
-              <Breadcrumb.Item
-                key={item}
-                title={item}
-                onPress={() => handleBreadcrumbClick(item)}
-              />
-            ))}
-            <Br />
-            <Text>Current page: {currentPage}</Text>
-            <Text wrap>
-              Click any breadcrumb above to navigate. This uses the
-              Breadcrumb.Container with individual Breadcrumb.Item components
-              that register themselves.
-            </Text>
-          </Breadcrumb.Container>
-        </Box>
-
-        {/* Standalone breadcrumb */}
-        <Box border="single" padding={1}>
-          <Text>Standalone breadcrumb:</Text>
-          <Breadcrumb
-            items={breadcrumbItems.map(item => ({
-              title: item,
-              onPress: () => handleBreadcrumbClick(item),
-            }))}
-          />
-          <Br />
-          <Text wrap>
-            This is a standalone Breadcrumb component with all items passed as
-            props.
-          </Text>
-        </Box>
-
-        {/* Inactive breadcrumb */}
-        <Box border="single" padding={1}>
-          <Text>Inactive breadcrumb (muted style):</Text>
-          <Breadcrumb
-            items={breadcrumbItems.map(item => ({
-              title: item,
-              onPress: () => handleBreadcrumbClick(item),
-            }))}
-            isActive={false}
-          />
-          <Br />
-          <Text wrap>
-            Same breadcrumb with isActive=false for a muted appearance.
-          </Text>
-        </Box>
-
-        {/* Custom palette */}
-        <Box border="single" padding={1}>
-          <Text>Custom color palette:</Text>
-          <Breadcrumb
-            items={breadcrumbItems.map(item => ({
-              title: item,
-              onPress: () => handleBreadcrumbClick(item),
-            }))}
-            palette={[
-              {fg: 'white', bg: 'red'},
-              {fg: 'black', bg: 'yellow'},
-              {fg: 'white', bg: 'green'},
-            ]}
-          />
-          <Br />
-          <Text wrap>
-            This breadcrumb uses a custom color palette with red, yellow, and
-            green segments.
-          </Text>
-        </Box>
-      </Stack.down>
-    </Scrollable>
-  )
-}
 
 function MoreTab() {
   const [debug, setDebug] = useState(false)

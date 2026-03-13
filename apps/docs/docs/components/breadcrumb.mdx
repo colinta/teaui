@@ -1,0 +1,79 @@
+---
+sidebar_position: 2
+title: Breadcrumb
+---
+
+# Breadcrumb
+
+A horizontal breadcrumb navigation bar with powerline-style arrow separators. Supports click and hover interactions on each item.
+
+## Props
+
+| Prop       | Type               | Default         | Description                          |
+| ---------- | ------------------ | --------------- | ------------------------------------ |
+| `items`    | `BreadcrumbItem[]` | `[]`            | Array of breadcrumb items to display |
+| `isActive` | `boolean`          | `true`          | Whether to show colored backgrounds  |
+| `palette`  | `PaletteEntry[]`   | Default palette | Color palette cycling through items  |
+
+### BreadcrumbItem
+
+| Field     | Type         | Description                         |
+| --------- | ------------ | ----------------------------------- |
+| `title`   | `string`     | Text label for the breadcrumb       |
+| `onPress` | `() => void` | Optional callback when item clicked |
+
+## Usage
+
+```tsx
+import {Breadcrumb} from '@teaui/react'
+
+function MyNav() {
+  const [path, setPath] = useState(['Home', 'Products', 'Electronics'])
+
+  return (
+    <Breadcrumb
+      items={path.map((name, i) => ({
+        title: name,
+        onPress:
+          i < path.length - 1 ? () => setPath(path.slice(0, i + 1)) : undefined,
+      }))}
+    />
+  )
+}
+```
+
+## Behavior
+
+- The first item displays a 🏠 home icon prefix
+- Items are separated by powerline arrow (``) characters
+- Titles longer than 25 characters are truncated with `…`
+- **Hover**: Moving the mouse over an item underlines it and brightens its
+  background color. The adjacent powerline arrows update their colors to match,
+  keeping the transitions seamless.
+- **Click**: Clicking an item (including its leading arrow) fires its `onPress` callback
+- **Active mode** (`isActive={true}`, default): Items have colored backgrounds from the palette
+- **Inactive mode** (`isActive={false}`): Items render as plain text with muted `›` separators; hover shows underline
+
+## PaletteEntry
+
+| Field     | Type    | Description                                                     |
+| --------- | ------- | --------------------------------------------------------------- |
+| `fg`      | `Color` | Foreground (text) colour                                        |
+| `bg`      | `Color` | Background colour                                               |
+| `fgHover` | `Color` | Optional foreground colour on hover (defaults to `fg`)          |
+| `bgHover` | `Color` | Optional background colour on hover (defaults to brighter `bg`) |
+
+## Custom Palette
+
+```tsx
+<Breadcrumb
+  items={items}
+  palette={[
+    {fg: 'white', bg: '#817', fgHover: 'white', bgHover: '#c256ad'},
+    {fg: 'white', bg: '#09c', fgHover: 'black', bgHover: '#66d2ff'},
+    {fg: 'white', bg: '#639', fgHover: 'white', bgHover: '#996ad3'},
+  ]}
+/>
+```
+
+The palette cycles through the items. Each item gets `palette[i % palette.length]`.
