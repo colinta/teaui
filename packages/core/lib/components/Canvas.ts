@@ -47,27 +47,24 @@ export class Canvas extends View {
     return this.#cellRows * 4
   }
 
-  /**
-   * Pre-size the pixel buffer to match the given terminal cell dimensions.
-   * Call this before drawing if you need to draw outside of a `draw` callback
-   * or `render()` cycle.
-   */
-  resize(cols: number, rows: number) {
-    this.#ensureSize(cols, rows)
-  }
-
   naturalSize(available: Size): Size {
     return available
   }
 
+  /**
+   * Render the canvas into the viewport. If a `draw` callback is set, the pixel
+   * buffer is cleared and the callback is invoked after sizing. External callers
+   * (e.g. LineChart) can also use `withContext` to draw into the canvas at a
+   * specific size without needing a full render cycle.
+   */
   render(viewport: Viewport) {
     if (viewport.isEmpty) {
       return
     }
 
-    const newCols = viewport.contentSize.width
-    const newRows = viewport.contentSize.height
-    this.#ensureSize(newCols, newRows)
+    const cols = viewport.contentSize.width
+    const rows = viewport.contentSize.height
+    this.#ensureSize(cols, rows)
 
     if (this.#draw) {
       this.#pixels.fill(0)
@@ -82,6 +79,21 @@ export class Canvas extends View {
       const char = String.fromCharCode(0x2800 | bits)
       viewport.write(char, pt, style)
     })
+  }
+
+  /**
+   * Size the pixel buffer, clear it, and invoke the callback. This is the safe way
+   * to draw into a Canvas programmatically — the buffer is guaranteed to be sized
+   * before any drawing occurs.
+   *
+   * @param cols  Terminal columns (pixelWidth will be cols * 2)
+   * @param rows  Terminal rows (pixelHeight will be rows * 4)
+   * @param fn    Drawing function — call set/line/rect/circle/etc. on the canvas
+   */
+  withContext(cols: number, rows: number, fn: (canvas: Canvas) => void) {
+    this.#ensureSize(cols, rows)
+    this.#pixels.fill(0)
+    fn(this)
   }
 
   #ensureSize(cols: number, rows: number) {

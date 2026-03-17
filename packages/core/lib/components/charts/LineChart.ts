@@ -77,48 +77,46 @@ export class LineChart<T> extends Chart<T> {
   renderChart(viewport: Viewport, layout: ChartLayout): void {
     if (viewport.isEmpty || this.data.length === 0) return
 
-    // Ensure the canvas buffer is sized before drawing
-    this.#canvas.resize(layout.width, layout.height)
-    this.#canvas.clear()
+    const extract = this.#extract
 
-    const pixelW = layout.width * 2
-    const pixelH = layout.height * 4
+    this.#canvas.withContext(layout.width, layout.height, canvas => {
+      const pixelW = canvas.pixelWidth
+      const pixelH = canvas.pixelHeight
 
-    // Map data points to pixel coordinates and draw lines between them
-    let prevPx: number | undefined
-    let prevPy: number | undefined
+      let prevPx: number | undefined
+      let prevPy: number | undefined
 
-    for (const row of this.data) {
-      const [x, y] = this.#extract(row)
-      const px = Math.round(
-        interpolate(
-          x,
-          [layout.xRange.min, layout.xRange.max],
-          [0, pixelW - 1],
-          true,
-        ),
-      )
-      // Y is inverted: top of screen = min pixel Y = max data Y
-      const py = Math.round(
-        interpolate(
-          y,
-          [layout.yRange.min, layout.yRange.max],
-          [pixelH - 1, 0],
-          true,
-        ),
-      )
+      for (const row of this.data) {
+        const [x, y] = extract(row)
+        const px = Math.round(
+          interpolate(
+            x,
+            [layout.xRange.min, layout.xRange.max],
+            [0, pixelW - 1],
+            true,
+          ),
+        )
+        // Y is inverted: top of screen = min pixel Y = max data Y
+        const py = Math.round(
+          interpolate(
+            y,
+            [layout.yRange.min, layout.yRange.max],
+            [pixelH - 1, 0],
+            true,
+          ),
+        )
 
-      if (prevPx !== undefined && prevPy !== undefined) {
-        this.#canvas.line(prevPx, prevPy, px, py)
-      } else {
-        this.#canvas.set(px, py)
+        if (prevPx !== undefined && prevPy !== undefined) {
+          canvas.line(prevPx, prevPy, px, py)
+        } else {
+          canvas.set(px, py)
+        }
+
+        prevPx = px
+        prevPy = py
       }
+    })
 
-      prevPx = px
-      prevPy = py
-    }
-
-    // Render the internal canvas into the viewport
     this.#canvas.render(viewport)
   }
 }

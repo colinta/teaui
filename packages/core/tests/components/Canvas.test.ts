@@ -427,6 +427,46 @@ describe('Canvas', () => {
     })
   })
 
+  describe('withContext', () => {
+    it('sizes the buffer and clears before drawing', () => {
+      const canvas = new Canvas()
+
+      canvas.withContext(3, 2, c => {
+        expect(c.pixelWidth).toBe(6)
+        expect(c.pixelHeight).toBe(8)
+        c.set(0, 0)
+        c.set(5, 7)
+      })
+
+      expect(canvas.isSet(0, 0)).toBe(true)
+      expect(canvas.isSet(5, 7)).toBe(true)
+    })
+
+    it('clears previous content', () => {
+      const canvas = new Canvas()
+
+      canvas.withContext(2, 2, c => {
+        c.set(0, 0)
+      })
+      expect(canvas.isSet(0, 0)).toBe(true)
+
+      canvas.withContext(2, 2, c => {
+        // draw nothing
+      })
+      expect(canvas.isSet(0, 0)).toBe(false)
+    })
+
+    it('renders correctly after withContext', () => {
+      const canvas = new Canvas()
+      canvas.withContext(1, 1, c => {
+        c.set(0, 0)
+      })
+
+      const t = testRender(canvas, {width: 1, height: 1})
+      expect(t.terminal.charAt(0, 0)).toBe('\u2801')
+    })
+  })
+
   describe('rendering', () => {
     it('renders horizontal line as braille characters', () => {
       const canvas = new Canvas({width: 3, height: 1})
