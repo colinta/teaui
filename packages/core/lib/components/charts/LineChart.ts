@@ -77,7 +77,8 @@ export class LineChart<T> extends Chart<T> {
   renderChart(viewport: Viewport, layout: ChartLayout): void {
     if (viewport.isEmpty || this.data.length === 0) return
 
-    // The canvas renders braille into the viewport
+    // Ensure the canvas buffer is sized before drawing
+    this.#canvas.resize(layout.width, layout.height)
     this.#canvas.clear()
 
     const pixelW = layout.width * 2

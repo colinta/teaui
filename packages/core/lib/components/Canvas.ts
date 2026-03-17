@@ -47,6 +47,15 @@ export class Canvas extends View {
     return this.#cellRows * 4
   }
 
+  /**
+   * Pre-size the pixel buffer to match the given terminal cell dimensions.
+   * Call this before drawing if you need to draw outside of a `draw` callback
+   * or `render()` cycle.
+   */
+  resize(cols: number, rows: number) {
+    this.#ensureSize(cols, rows)
+  }
+
   naturalSize(available: Size): Size {
     return available
   }

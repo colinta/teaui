@@ -86,6 +86,19 @@ describe('LineChart', () => {
     expect(content.length).toBeGreaterThan(0)
   })
 
+  it('renders data on the first frame (not blank)', () => {
+    const chart = new LineChart(sampleData, {
+      extract: (d: DataPoint) => [d.x, d.y],
+    })
+    const t = testRender(chart, {width: 20, height: 10})
+    // At least some cells should have non-empty braille (not just U+2800 spaces)
+    const content = t.terminal.textContent()
+    const hasVisibleBraille = [...content].some(
+      ch => ch.charCodeAt(0) > 0x2800 && ch.charCodeAt(0) <= 0x28ff,
+    )
+    expect(hasVisibleBraille).toBe(true)
+  })
+
   it('renders empty data without throwing', () => {
     const chart = new LineChart<DataPoint>([], {
       extract: (d: DataPoint) => [d.x, d.y],
@@ -205,6 +218,22 @@ describe('Plot', () => {
     expect(content).toContain('│')
     expect(content).toContain('─')
     expect(content).toContain('└')
+  })
+
+  it('renders chart data on the first frame', () => {
+    const plot = new Plot({width: 40, height: 12})
+    const chart = new LineChart(sampleData, {
+      extract: (d: DataPoint) => [d.x, d.y],
+    })
+    plot.add(chart)
+
+    const t = testRender(plot, {width: 40, height: 12})
+    const content = t.terminal.textContent()
+    // The chart area should contain visible braille characters, not just blanks
+    const hasVisibleBraille = [...content].some(
+      ch => ch.charCodeAt(0) > 0x2800 && ch.charCodeAt(0) <= 0x28ff,
+    )
+    expect(hasVisibleBraille).toBe(true)
   })
 
   it('renders with a BarChart', () => {
