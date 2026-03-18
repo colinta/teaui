@@ -15,6 +15,7 @@ import {
   Digits,
   Drawer,
   Dropdown,
+  Geometry,
   H1,
   HotKey,
   Keyboard,
@@ -34,6 +35,7 @@ import {
   Space,
   Spinner,
   Stack,
+  Table,
   Tabs,
   ToggleGroup,
   Tree,
@@ -170,6 +172,9 @@ function createInstance(type: string, props: Props): any {
     case 'style':
     case 'tui-style':
       return new TextStyle(props as any)
+    case 'table':
+    case 'tui-table':
+      return new Table(props as any)
     case 'tui-text':
       return new TextProvider(props as any)
 

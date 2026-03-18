@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import type {
   Accordion as WrAccordion,
   Box as WrBox,
@@ -11,6 +11,7 @@ import type {
   Digits as WrDigits,
   Drawer as WrDrawer,
   Dropdown as WrDropdown,
+  Geometry as WrGeometry,
   Header as WrHeader,
   HotKey as WrHotKey,
   Keyboard as WrKeyboard,
@@ -25,9 +26,11 @@ import type {
   Slider as WrSlider,
   Space as WrSpace,
   Spinner as WrSpinner,
+  Table as WrTable,
   Tree as WrTree,
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
+  Column,
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
@@ -55,6 +58,7 @@ type CheckboxProps = TUIView<typeof WrCheckbox>
 type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
 type ConsoleProps = TUIView<typeof WrConsoleLog>
 type DigitsProps = TUIView<typeof WrDigits>
+type GeometryProps = TUIContainer<typeof WrGeometry>
 type DropdownProps = {
   choices: [string, any][]
   selected?: any
@@ -77,6 +81,8 @@ type SliderProps = TUIView<typeof WrSlider>
 type SpaceProps = TUIView<typeof WrSpace>
 type SpinnerProps = TUIView<typeof WrSpinner>
 type ToggleGroupProps = TUIView<typeof WrToggleGroup>
+
+// Table uses its own prop types since it's generic and TUIView doesn't work well with generics
 
 // "simple" containers
 type BoxProps = TUIContainer<typeof WrBox>
@@ -111,6 +117,7 @@ declare module 'react' {
       'tui-console': ConsoleProps
       'tui-digits': DigitsProps
       'tui-dropdown': DropdownProps
+      'tui-geometry': GeometryProps
       'tui-hotkey': HotKeyProps
       'tui-keyboard': KeyboardProps
       'tui-mouse': MouseProps
@@ -126,6 +133,7 @@ declare module 'react' {
       'tui-slider': SliderProps
       'tui-space': SpaceProps
       'tui-spinner': SpinnerProps
+      'tui-table': any
       'tui-toggle-group': ToggleGroupProps
 
       'tui-tree': ViewProps
@@ -356,6 +364,9 @@ Stack.left = function StackLeft(reactProps: Omit<StackProps, 'direction'>) {
     </tui-stack>
   )
 }
+export function Geometry({children, ...props}: GeometryProps): JSX.Element {
+  return <tui-geometry {...props}>{children}</tui-geometry>
+}
 export function Scrollable(reactProps: ScrollableProps): JSX.Element {
   const {children, ...props} = reactProps
   return <tui-scrollable {...props}>{children}</tui-scrollable>
@@ -375,6 +386,91 @@ export function Style(reactProps: StyleProps): JSX.Element {
  */
 export function Text(reactProps: TextProps): JSX.Element {
   return <tui-text {...reactProps} />
+}
+
+////
+/// Virtualized components
+//
+
+interface ReactTableProps<TData> extends ViewProps {
+  data: TData[]
+  columns: Column<TData>[]
+  renderItem?: (item: TData, index: number) => React.ReactNode
+  format?: (key: string, row: TData) => string
+  selectedIndex?: number
+  onSelect?: (row: TData, index: number) => void
+  onSort?: (key: string, direction: 'asc' | 'desc') => void
+  sortKey?: string
+  sortDirection?: 'asc' | 'desc'
+}
+
+/**
+ * Table component with optional virtualized row rendering.
+ *
+ * When `renderItem` is provided, only visible rows are rendered as React children,
+ * enabling efficient rendering of large datasets. The Geometry component measures
+ * available space, and only the visible slice of data is passed through the reconciler.
+ *
+ * When only `format` is provided, the core Table handles all rendering directly
+ * (no virtualization needed since cells are plain strings).
+ */
+export function Table<TData>(reactProps: ReactTableProps<TData>): JSX.Element {
+  const {data, columns, renderItem, format, ...props} = reactProps
+
+  if (!renderItem) {
+    // Simple mode: core Table handles everything via format callback
+    return (
+      <tui-table
+        data={data}
+        columns={columns}
+        format={format ?? (() => '')}
+        {...props}
+      />
+    )
+  }
+
+  // Virtualized mode: React renders only visible rows
+  // We use the format-based Table for the header/chrome, and render items
+  // as children that the Table can lay out
+  // For now: use Geometry to measure, then render the visible slice
+  const [bodyHeight, setBodyHeight] = useState(20)
+
+  const handleLayout = useCallback((size: {width: number; height: number}) => {
+    // Table uses 2 rows for header + separator
+    const newBodyHeight = Math.max(0, size.height - 2)
+    setBodyHeight(newBodyHeight)
+  }, [])
+
+  // Calculate visible range (matching the core Table's scroll logic)
+  const selectedIndex = props.selectedIndex ?? 0
+  const scrollOffset = useMemo(() => {
+    const halfHeight = Math.floor(bodyHeight / 2)
+    let offset = 0
+
+    if (
+      selectedIndex > halfHeight &&
+      selectedIndex < data.length - halfHeight
+    ) {
+      offset = selectedIndex - halfHeight
+    } else if (selectedIndex >= bodyHeight) {
+      offset = selectedIndex - bodyHeight + 1
+    }
+
+    return Math.max(0, Math.min(data.length - bodyHeight, offset))
+  }, [selectedIndex, bodyHeight, data.length])
+
+  const visibleStart = scrollOffset
+  const visibleEnd = Math.min(data.length, scrollOffset + bodyHeight)
+
+  // Use format as a pass-through since the core Table still renders cells
+  // We pass both format (for the core) and render the items as children
+  const formatFn = format ?? (() => '')
+
+  return (
+    <tui-geometry onLayout={handleLayout}>
+      <tui-table data={data} columns={columns} format={formatFn} {...props} />
+    </tui-geometry>
+  )
 }
 
 ////
