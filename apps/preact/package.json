@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm --filter '@teaui/preact...' build && pnpm tsc",
-    "checksum": "pnpm check 'pnpm build'",
+    "checksum": "pnpm check",
     "demo": "pnpm checksum && cd .dist && node --enable-source-maps --",
     "clean": "rm -rf .dist/"
   },

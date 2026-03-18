@@ -185,26 +185,22 @@ export async function compare(directories, needs) {
 }
 
 export function main(...args) {
-  const command = args.pop()
   const directories = []
   const needs = []
   let autoResolve = true
+  let command = 'pnpm build'
 
   for (const arg of args) {
     if (arg.startsWith('--needs=')) {
       needs.push(arg.slice('--needs='.length))
       autoResolve = false
+    } else if (arg.startsWith('-')) {
+      console.error(`Unknown option: ${arg}`)
+      process.exit(1)
     } else {
       directories.push(arg)
       autoResolve = false
     }
-  }
-
-  if (!command) {
-    console.error('Usage: check [--needs=<dir>]... [<dir>...] <command>')
-    console.error('    If no --needs or dirs are given, they are auto-resolved')
-    console.error('    from workspace:* dependencies in package.json.')
-    process.exit(1)
   }
 
   const run = async () => {
