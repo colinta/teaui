@@ -31,6 +31,7 @@ import type {
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
   Column,
+  SortDirection,
   ViewProps,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
@@ -386,9 +387,14 @@ interface ReactTableProps<TData> extends ViewProps {
   format?: (key: string, row: TData) => string
   selectedIndex?: number
   onSelect?: (row: TData, index: number) => void
-  onSort?: (key: string, direction: 'asc' | 'desc') => void
+  /** Notification fired after the Table's internal sort state changes. */
+  onSort?: (key: string, direction: SortDirection) => void
+  /** Initial sort column key. Must match a column with `sortable: true`. */
   sortKey?: string
-  sortDirection?: 'asc' | 'desc'
+  /** Initial sort direction. Default: 'asc'. */
+  sortDirection?: SortDirection
+  /** Show a row number column (right-aligned, header '#'). Default: false. */
+  showRowNumbers?: boolean
 }
 
 /**

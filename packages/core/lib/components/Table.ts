@@ -17,19 +17,40 @@ export interface Column<TData> {
   title: string
   width?: number | 'auto'
   align?: 'left' | 'center' | 'right'
+  /**
+   * Whether clicking this column header sorts the table. Default: false.
+   */
+  sortable?: boolean
 }
 
-type SortDirection = 'asc' | 'desc'
+export type SortDirection = 'asc' | 'desc'
 
 interface Props<TData> extends ViewProps {
   data: TData[]
   columns: Column<TData>[]
   format: (key: string, row: TData) => string
   selectedIndex?: number
+  /**
+   * Fired when the user presses Enter on a row, or clicks a data row.
+   */
   onSelect?: (row: TData, index: number) => void
+  /**
+   * Notification fired after the sort changes (header click on a sortable column).
+   * The Table manages sort state internally — this is for external sync.
+   */
   onSort?: (key: string, direction: SortDirection) => void
+  /**
+   * Initial sort column key. Must match a column with `sortable: true`.
+   */
   sortKey?: string
+  /**
+   * Initial sort direction. Default: 'asc'.
+   */
   sortDirection?: SortDirection
+  /**
+   * Show a row number column (right-aligned, header '#'). Default: false.
+   */
+  showRowNumbers?: boolean
 }
 
 /**
@@ -44,6 +65,7 @@ interface Props<TData> extends ViewProps {
  * ```
  */
 export class Table<TData> extends Container {
+  #sourceData: TData[] = []
   #data: TData[] = []
   #columns: Column<TData>[] = []
   #format: Props<TData>['format'] = () => ''
@@ -52,17 +74,19 @@ export class Table<TData> extends Container {
   #onSort: Props<TData>['onSort']
   #sortKey?: string
   #sortDirection: SortDirection = 'asc'
+  #showRowNumbers: boolean = false
 
   // scroll state
   #scrollOffset = 0
   #bodyHeight = 0
+  #selectionDirty = true
 
   constructor(props: Props<TData>) {
     super(props)
     this.#update(props)
   }
 
-  update(props: Props<TData>) {
+  update(props: Partial<Props<TData>>) {
     this.#update(props)
     super.update(props)
   }
@@ -76,17 +100,61 @@ export class Table<TData> extends Container {
     onSort,
     sortKey,
     sortDirection,
-  }: Props<TData>) {
-    this.#data = data ?? []
-    this.#columns = columns ?? []
-    this.#format = format ?? (() => '')
+    showRowNumbers,
+  }: Partial<Props<TData>>) {
+    if (showRowNumbers !== undefined) {
+      this.#showRowNumbers = showRowNumbers
+    }
+    const dataChanged = data !== undefined && data !== this.#sourceData
+    const sortChanged =
+      sortKey !== undefined &&
+      (sortKey !== this.#sortKey || sortDirection !== this.#sortDirection)
+
+    this.#columns = columns ?? this.#columns
+    this.#format = format ?? this.#format
     if (selectedIndex !== undefined) {
       this.#selectedIndex = selectedIndex
+      this.#selectionDirty = true
     }
-    this.#onSelect = onSelect
-    this.#onSort = onSort
-    this.#sortKey = sortKey
-    this.#sortDirection = sortDirection ?? 'asc'
+    if (onSelect !== undefined) {
+      this.#onSelect = onSelect
+    }
+    if (onSort !== undefined) {
+      this.#onSort = onSort
+    }
+    if (sortKey !== undefined) {
+      this.#sortKey = sortKey
+    }
+    if (sortDirection !== undefined) {
+      this.#sortDirection = sortDirection
+    }
+
+    if (data !== undefined) {
+      this.#sourceData = data
+    }
+
+    if (dataChanged || sortChanged) {
+      this.#sortData()
+    }
+  }
+
+  #sortData() {
+    if (!this.#sortKey) {
+      this.#data = [...this.#sourceData]
+      if (this.#sortDirection === 'desc') {
+        this.#data.reverse()
+      }
+      return
+    }
+
+    const key = this.#sortKey
+    const dir = this.#sortDirection
+    this.#data = [...this.#sourceData].sort((a, b) => {
+      const aVal = this.#format(key, a)
+      const bVal = this.#format(key, b)
+      const cmp = aVal.localeCompare(bVal, undefined, {numeric: true})
+      return dir === 'asc' ? cmp : -cmp
+    })
   }
 
   get selectedIndex() {
@@ -95,7 +163,7 @@ export class Table<TData> extends Container {
 
   set selectedIndex(value: number) {
     this.#selectedIndex = Math.max(0, Math.min(this.#data.length - 1, value))
-    this.#ensureSelectedVisible()
+    this.#selectionDirty = true
     this.invalidateRender()
   }
 
@@ -110,6 +178,14 @@ export class Table<TData> extends Container {
         break
       case 'down':
         this.selectedIndex = this.#selectedIndex + 1
+        break
+      case 'pageup':
+        this.selectedIndex =
+          this.#selectedIndex - Math.max(1, this.#bodyHeight - 2)
+        break
+      case 'pagedown':
+        this.selectedIndex =
+          this.#selectedIndex + Math.max(1, this.#bodyHeight - 2)
         break
       case 'home':
         this.selectedIndex = 0
@@ -152,25 +228,57 @@ export class Table<TData> extends Container {
 
   #handleHeaderClick(x: number) {
     const INDENT = 1
-    const widths = this.#calculateColumnWidths(this.contentSize.width - INDENT)
-    let currentX = INDENT
+    const rowNumWidth = this.#rowNumberWidth()
+
+    // Click on row number column → sort by original array order
+    if (this.#showRowNumbers && x >= INDENT && x < INDENT + rowNumWidth) {
+      const direction: SortDirection =
+        !this.#sortKey && this.#sortDirection === 'asc' ? 'desc' : 'asc'
+      this.#sortKey = undefined
+      this.#sortDirection = direction
+      this.#sortData()
+      this.invalidateRender()
+      this.#onSort?.('#', direction)
+      return
+    }
+
+    const widths = this.#calculateColumnWidths(
+      this.contentSize.width - INDENT - rowNumWidth,
+    )
+    let currentX = INDENT + rowNumWidth
     for (let i = 0; i < this.#columns.length; i++) {
       const colWidth = widths[i]
       // account for separator (3 chars: ' │ ')
       const nextX = currentX + colWidth + (i < this.#columns.length - 1 ? 3 : 0)
       if (x >= currentX && x < nextX) {
         const col = this.#columns[i]
-        if (this.#onSort) {
-          const direction: SortDirection =
-            this.#sortKey === col.key && this.#sortDirection === 'asc'
-              ? 'desc'
-              : 'asc'
-          this.#onSort(col.key, direction)
+        if (!col.sortable) {
+          return
         }
+
+        const direction: SortDirection =
+          this.#sortKey === col.key && this.#sortDirection === 'asc'
+            ? 'desc'
+            : 'asc'
+        this.#sortKey = col.key
+        this.#sortDirection = direction
+        this.#sortData()
+        this.invalidateRender()
+        this.#onSort?.(col.key, direction)
         return
       }
       currentX = nextX
     }
+  }
+
+  /** Width of the row number column (including trailing separator space). */
+  #rowNumberWidth(): number {
+    if (!this.#showRowNumbers) {
+      return 0
+    }
+    // Width of the largest row number, minimum width of '#' header
+    const digitWidth = Math.max(1, String(this.#data.length).length)
+    return digitWidth + 3 // digits + ' │ '
   }
 
   #calculateColumnWidths(totalWidth: number): number[] {
@@ -224,6 +332,31 @@ export class Table<TData> extends Container {
 
     const maxScroll = Math.max(0, this.#data.length - this.#bodyHeight)
     this.#scrollOffset = Math.max(0, Math.min(maxScroll, this.#scrollOffset))
+
+    // Ensure the selected row doesn't land on an indicator row.
+    // Top indicator occupies position 0 when scrollOffset > 0.
+    // Bottom indicator occupies the last position when there are rows below.
+    if (this.#data.length > this.#bodyHeight) {
+      const rowsAbove = this.#scrollOffset
+      const rowsBelow =
+        this.#data.length - this.#scrollOffset - this.#bodyHeight
+
+      if (rowsAbove > 0 && this.#selectedIndex === this.#scrollOffset) {
+        // Selected would be on the top indicator row — scroll up to make room
+        this.#scrollOffset = Math.max(0, this.#selectedIndex - 1)
+      }
+
+      if (
+        rowsBelow > 0 &&
+        this.#selectedIndex === this.#scrollOffset + this.#bodyHeight - 1
+      ) {
+        // Selected would be on the bottom indicator row — scroll down to make room
+        this.#scrollOffset = Math.min(
+          maxScroll,
+          this.#selectedIndex - this.#bodyHeight + 2,
+        )
+      }
+    }
   }
 
   #alignText(
@@ -232,7 +365,7 @@ export class Table<TData> extends Container {
     align: Column<TData>['align'],
   ): string {
     const textWidth = unicode.lineWidth(text)
-    if (textWidth >= width) {
+    if (textWidth > width) {
       // truncate
       let w = 0
       let result = ''
@@ -278,7 +411,8 @@ export class Table<TData> extends Container {
     const height = viewport.contentSize.height
     // Reserve 1 character at the left for the selection marker (▶)
     const INDENT = 1
-    const contentWidth = width - INDENT
+    const rowNumWidth = this.#rowNumberWidth()
+    const contentWidth = width - INDENT - rowNumWidth
     const widths = this.#calculateColumnWidths(contentWidth)
     const dimStyle = new Style({dim: true})
     const headerStyle = new Style({dim: true, bold: true})
@@ -290,6 +424,24 @@ export class Table<TData> extends Container {
 
     // Header row
     let headerX = INDENT
+
+    // Row number column header
+    if (this.#showRowNumbers) {
+      const numColWidth = rowNumWidth - 3 // subtract separator
+      const aligned = this.#alignText('#', numColWidth, 'right')
+      viewport.write(aligned, new Point(headerX, 0), headerStyle)
+
+      // Show sort arrow when sorting by original order (sortKey is undefined)
+      if (!this.#sortKey) {
+        const arrow = this.#sortDirection === 'asc' ? '▲' : '▼'
+        viewport.write(arrow, new Point(headerX, 0), headerStyle)
+      }
+
+      headerX += numColWidth
+      viewport.write(' │ ', new Point(headerX, 0), dimStyle)
+      headerX += 3
+    }
+
     for (let i = 0; i < this.#columns.length; i++) {
       const col = this.#columns[i]
       const aligned = this.#alignText(col.title, widths[i], col.align ?? 'left')
@@ -299,8 +451,14 @@ export class Table<TData> extends Container {
       if (this.#sortKey === col.key) {
         const arrow = this.#sortDirection === 'asc' ? '▲' : '▼'
         const titleWidth = unicode.lineWidth(col.title)
-        // Place arrow 1 space after title, but clamp to last position in column
-        const arrowOffset = Math.min(titleWidth + 1, widths[i] - 1)
+        const align = col.align ?? 'left'
+        const titleStart =
+          align === 'right'
+            ? widths[i] - titleWidth
+            : align === 'center'
+              ? Math.floor((widths[i] - titleWidth) / 2)
+              : 0
+        const arrowOffset = Math.min(titleStart + titleWidth + 1, widths[i] - 1)
         viewport.write(arrow, new Point(headerX + arrowOffset, 0), headerStyle)
       }
 
@@ -319,7 +477,10 @@ export class Table<TData> extends Container {
 
     // Body
     this.#bodyHeight = Math.max(0, height - 2)
-    this.#ensureSelectedVisible()
+    if (this.#selectionDirty) {
+      this.#selectionDirty = false
+      this.#ensureSelectedVisible()
+    }
 
     const rowsAbove = this.#scrollOffset
     const rowsBelow = Math.max(
@@ -372,6 +533,18 @@ export class Table<TData> extends Container {
 
       // Render the row cells (dimmed when occluded, highlighted when selected)
       let cellX = INDENT
+
+      // Row number column
+      if (this.#showRowNumbers) {
+        const numColWidth = rowNumWidth - 3 // subtract separator
+        const numText = String(rowIndex + 1)
+        const aligned = this.#alignText(numText, numColWidth, 'right')
+        viewport.write(aligned, new Point(cellX, y), effectiveRowStyle)
+        cellX += numColWidth
+        viewport.write(' │ ', new Point(cellX, y), effectiveSepStyle)
+        cellX += 3
+      }
+
       for (let j = 0; j < this.#columns.length; j++) {
         const col = this.#columns[j]
         const text = this.#format(col.key, row)

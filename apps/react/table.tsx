@@ -1,5 +1,5 @@
-import React, {useState, useMemo, useCallback} from 'react'
-import {interceptConsoleLog, type Column} from '@teaui/core'
+import React, {useState, useCallback} from 'react'
+import {interceptConsoleLog, type Column, type SortDirection} from '@teaui/core'
 import {Box, Stack, Style, Table, Text, run} from '@teaui/react'
 
 interceptConsoleLog()
@@ -198,11 +198,11 @@ const DATA: Person[] = [
 ]
 
 const COLUMNS: Column<Person>[] = [
-  {key: 'name', title: 'Name', width: 12},
-  {key: 'age', title: 'Age', width: 6, align: 'right'},
+  {key: 'name', title: 'Name', width: 12, sortable: true},
+  {key: 'age', title: 'Age', width: 6, align: 'right', sortable: true},
   {key: 'email', title: 'Email'},
-  {key: 'status', title: 'Status', width: 10},
-  {key: 'city', title: 'City'},
+  {key: 'status', title: 'Status', width: 10, sortable: true},
+  {key: 'city', title: 'City', sortable: true},
 ]
 
 function StatusBadge({status}: {status: string}) {
@@ -217,29 +217,17 @@ function StatusBadge({status}: {status: string}) {
 
 function App() {
   const [sortKey, setSortKey] = useState('name')
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [selected, setSelected] = useState<Person | null>(null)
+  const [showRowNumbers, setShowRowNumbers] = useState(true)
 
-  const sortedData = useMemo(() => {
-    return [...DATA].sort((a, b) => {
-      const aVal = a[sortKey as keyof Person]
-      const bVal = b[sortKey as keyof Person]
-      const cmp = String(aVal).localeCompare(String(bVal), undefined, {
-        numeric: true,
-      })
-      return sortDirection === 'asc' ? cmp : -cmp
-    })
-  }, [sortKey, sortDirection])
-
-  const handleSort = useCallback((key: string, direction: 'asc' | 'desc') => {
+  const handleSort = useCallback((key: string, direction: SortDirection) => {
     setSortKey(key)
     setSortDirection(direction)
   }, [])
 
-  const handleSelect = useCallback((row: Person, index: number) => {
+  const handleSelect = useCallback((row: Person, _index: number) => {
     setSelected(row)
-    setSelectedIndex(index)
   }, [])
 
   const format = useCallback((key: string, row: Person) => {
@@ -270,7 +258,7 @@ function App() {
             <Style dim>│</Style>
           </Text>
           <Text>
-            <Style dim>{sortedData.length} rows</Style>
+            <Style dim>{DATA.length} rows</Style>
           </Text>
           {selected ? (
             <>
@@ -282,14 +270,14 @@ function App() {
           ) : null}
         </Stack.right>
         <Table
-          data={sortedData}
+          data={DATA}
           columns={COLUMNS}
           format={format}
-          selectedIndex={selectedIndex}
-          onSelect={handleSelect}
-          onSort={handleSort}
           sortKey={sortKey}
           sortDirection={sortDirection}
+          onSelect={handleSelect}
+          onSort={handleSort}
+          showRowNumbers
           flex={1}
         />
       </Stack.down>
