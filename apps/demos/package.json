@@ -4,8 +4,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "build": "pnpm --filter @teaui/term --filter @teaui/core --filter @teaui/subprocess build && pnpm tsc",
-    "checksum": "pnpm check 'pnpm build'",
+    "build": "pnpm --filter @teaui/term --filter @teaui/core --filter @teaui/react --filter @teaui/preact --filter @teaui/subprocess build && pnpm tsc",
+    "checksum": "pnpm check",
     "demo": "node run.mjs",
     "clean": "rm -rf .dist/"
   },

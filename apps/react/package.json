@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm --filter '@teaui/react...' build && pnpm tsc",
-    "checksum": "pnpm check 'pnpm build'",
+    "checksum": "pnpm check",
     "demo": "pnpm checksum && node demo-runner.js",
     "clean": "rm -rf .dist/"
   },
