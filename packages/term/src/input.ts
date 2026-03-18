@@ -53,8 +53,8 @@ const csiUKeyMap: Record<number, string> = {
 const tildeKeyMap: Record<number, string> = {
   2: 'insert',
   3: 'delete',
-  5: 'pageUp',
-  6: 'pageDown',
+  5: 'pageup',
+  6: 'pagedown',
   15: 'f5',
   17: 'f6',
   18: 'f7',

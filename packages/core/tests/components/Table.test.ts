@@ -55,7 +55,7 @@ describe('Table', () => {
       expect(rows).toEqual([
         ' Name     │   Age │ City',
         '──────────────────────────────',
-        '▶Alice    │    30 │ New Yor…',
+        '▶Alice    │    30 │ New York',
         ' Bob      │    25 │ Chicago',
         ' Charlie  │    35 │ Austin',
         ' Diana    │    28 │ Seattle',
@@ -90,7 +90,7 @@ describe('Table', () => {
       expect(rows).toEqual([
         ' Name     │   Age │ City',
         '──────────────────────────────',
-        ' Alice    │    30 │ New Yor…',
+        ' Alice    │    30 │ New York',
         ' Bob      │    25 │ Chicago',
         '▶Charlie  │    35 │ Austin',
         ' Diana    │    28 │ Seattle',
@@ -101,10 +101,10 @@ describe('Table', () => {
 
     it('moves selection with arrow keys', () => {
       const t = testRender(makeTable(), {width: 30, height: 8})
-      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New Yor…')
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York')
 
       t.sendKey('down')
-      expect(t.terminal.textAtRow(2)).toBe(' Alice    │    30 │ New Yor…')
+      expect(t.terminal.textAtRow(2)).toBe(' Alice    │    30 │ New York')
       expect(t.terminal.textAtRow(3)).toBe('▶Bob      │    25 │ Chicago')
     })
 
@@ -114,7 +114,7 @@ describe('Table', () => {
         height: 8,
       })
       t.sendKey('up')
-      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New Yor…')
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York')
     })
 
     it('clamps selection at bottom', () => {
@@ -132,7 +132,7 @@ describe('Table', () => {
         height: 8,
       })
       t.sendKey('home')
-      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New Yor…')
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York')
 
       t.sendKey('end')
       expect(t.terminal.textAtRow(6)).toBe('▶Eve      │    42 │ Denver')
@@ -166,7 +166,7 @@ describe('Table', () => {
       expect(rows).toEqual([
         ' Name     │   Age │ City',
         '──────────────────────────────',
-        '▶Alice    │    30 │ New Yor…',
+        '▶Alice    │    30 │ New York',
         ' Bob      │    25 │ Chicago',
         ' Char [ ↓ 3 more rows ] in',
       ])
@@ -194,7 +194,7 @@ describe('Table', () => {
       expect(rows).toEqual([
         ' Name     │   Age │ City',
         '──────────────────────────────',
-        ' Alice    │    30 │ New Yor…',
+        ' Alice    │    30 │ New York',
         '▶Bob      │    25 │ Chicago',
         ' Char [ ↓ 3 more rows ] in',
       ])
@@ -208,7 +208,7 @@ describe('Table', () => {
       expect(rows).toEqual([
         ' Name     │   Age │ City',
         '──────────────────────────────',
-        '▶Alice    │    30 │ New Yor…',
+        '▶Alice    │    30 │ New York',
         ' Bob      │    25 │ Chicago',
         ' Charlie  │    35 │ Austin',
         ' Diana    │    28 │ Seattle',
@@ -271,6 +271,95 @@ describe('Table', () => {
       const selectedRow = rows.find(r => r.includes('Row11'))
       expect(selectedRow).toBeDefined()
       expect(selectedRow).toContain('▶')
+    })
+  })
+
+  describe('row numbers', () => {
+    it('renders row number column with # header', () => {
+      const rows = renderRows(
+        makeTable({showRowNumbers: true, sortKey: 'name'}),
+        {width: 35, height: 8},
+      )
+      expect(rows).toEqual([
+        ' # │ Name ▲   │   Age │ City',
+        '───────────────────────────────────',
+        '▶1 │ Alice    │    30 │ New York',
+        ' 2 │ Bob      │    25 │ Chicago',
+        ' 3 │ Charlie  │    35 │ Austin',
+        ' 4 │ Diana    │    28 │ Seattle',
+        ' 5 │ Eve      │    42 │ Denver',
+        '',
+      ])
+    })
+
+    it('shows sort arrow on # when sorting by original order', () => {
+      const rows = renderRows(makeTable({showRowNumbers: true}), {
+        width: 35,
+        height: 4,
+      })
+      // No sortKey → sorting by original order, arrow replaces #
+      expect(rows[0]).toBe(' ▲ │ Name     │   Age │ City')
+    })
+
+    it('does not show row numbers when disabled', () => {
+      const rows = renderRows(makeTable({showRowNumbers: false}), {
+        width: 30,
+        height: 4,
+      })
+      expect(rows[0]).toBe(' Name     │   Age │ City')
+      expect(rows[0]).not.toContain('#')
+    })
+
+    it('widens row number column for 2-digit counts', () => {
+      const bigData: Row[] = Array.from({length: 12}, (_, i) => ({
+        name: 'Row' + i,
+        age: i,
+        city: 'City' + i,
+      }))
+      const rows = renderRows(
+        new Table<Row>({
+          data: bigData,
+          columns: COLUMNS,
+          format,
+          selectedIndex: 0,
+          showRowNumbers: true,
+          sortKey: 'name',
+        }),
+        {width: 35, height: 14},
+      )
+      // 2-digit column: header is ' #', single digits are right-aligned
+      expect(rows[0]).toBe('  # │ Name ▲   │   Age │ City')
+      expect(rows[2]).toBe('▶ 1 │ Row0     │     0 │ City0')
+      expect(rows[11]).toBe(' 10 │ Row9     │     9 │ City9')
+      expect(rows[13]).toBe(' 12 │ Row11    │    11 │ City11')
+    })
+
+    it('widens row number column for 3-digit counts', () => {
+      const bigData: Row[] = Array.from({length: 150}, (_, i) => ({
+        name: 'R' + i,
+        age: i,
+        city: 'C' + i,
+      }))
+      const rows = renderRows(
+        new Table<Row>({
+          data: bigData,
+          columns: COLUMNS,
+          format,
+          selectedIndex: 149,
+          showRowNumbers: true,
+          sortKey: 'name',
+        }),
+        {width: 40, height: 6},
+      )
+      // 3-digit column: header is '  #', numbers are right-aligned
+      expect(rows).toEqual([
+        '   # │ Name ▲   │   Age │ City',
+        '────────────────────────────────────────',
+        ' 147 │ R1 [ ↑ 147 more rows ]',
+        ' 148 │ R147     │   147 │ C147',
+        ' 149 │ R148     │   148 │ C148',
+        '▶150 │ R149     │   149 │ C149',
+      ])
     })
   })
 
