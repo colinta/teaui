@@ -9,6 +9,9 @@ import {
   type MouseEvent,
   type KeyEvent,
   isMouseClicked,
+  isMouseDragging,
+  isMousePressEnd,
+  isMousePressStart,
 } from '../events/index.js'
 import {System} from '../System.js'
 
@@ -91,6 +94,8 @@ export class Table<TData> extends Container {
   #showSelected: boolean = false
   #onSelectionChange: Props<TData>['onSelectionChange']
   #selectedItems: Set<TData> = new Set()
+  #dragSelectState: 'select' | 'deselect' | undefined = undefined
+  #dragScrollPinned: number | undefined = undefined
 
   // scroll state
   #scrollOffset = 0
@@ -238,6 +243,19 @@ export class Table<TData> extends Container {
   receiveMouse(event: MouseEvent, system: System) {
     super.receiveMouse(event, system)
 
+    // During drag-select, pin the viewport and suppress scroll
+    if (this.#dragSelectState !== undefined) {
+      if (isMouseDragging(event)) {
+        this.#handleDragSelect(event.position.y)
+        return
+      }
+      if (isMousePressEnd(event)) {
+        this.#dragSelectState = undefined
+        this.#dragScrollPinned = undefined
+        return
+      }
+    }
+
     if (event.name === 'mouse.wheel.up') {
       this.#scrollOffset = Math.max(0, this.#scrollOffset - 1)
       this.invalidateRender()
@@ -245,6 +263,19 @@ export class Table<TData> extends Container {
       const maxScroll = Math.max(0, this.#data.length - this.#bodyHeight)
       this.#scrollOffset = Math.min(maxScroll, this.#scrollOffset + 1)
       this.invalidateRender()
+    } else if (isMousePressStart(event) && this.#isSelectable) {
+      const y = event.position.y
+      if (y >= 2) {
+        const rowIndex = this.#scrollOffset + (y - 2)
+        if (rowIndex >= 0 && rowIndex < this.#data.length) {
+          const item = this.#data[rowIndex]
+          const wasChecked = this.#selectedItems.has(item)
+          this.#dragSelectState = wasChecked ? 'deselect' : 'select'
+          this.#dragScrollPinned = this.#scrollOffset
+          this.#applyDragSelect(rowIndex)
+          this.selectedIndex = rowIndex
+        }
+      }
     } else if (isMouseClicked(event)) {
       const y = event.position.y
       // header row = 0, separator = 1, data rows start at 2
@@ -254,14 +285,45 @@ export class Table<TData> extends Container {
         const rowIndex = this.#scrollOffset + (y - 2)
         if (rowIndex < this.#data.length) {
           this.selectedIndex = rowIndex
-          if (this.#isSelectable) {
-            this.#toggleSelection(rowIndex)
-          } else {
+          if (!this.#isSelectable) {
             this.#onSelect?.(this.#data[rowIndex], rowIndex)
           }
         }
       }
     }
+  }
+
+  #handleDragSelect(y: number) {
+    if (y < 2) {
+      return
+    }
+    const rowIndex = this.#scrollOffset + (y - 2)
+    if (rowIndex >= 0 && rowIndex < this.#data.length) {
+      this.#applyDragSelect(rowIndex)
+      // Move cursor without triggering #ensureSelectedVisible
+      this.#selectedIndex = rowIndex
+      this.invalidateRender()
+    }
+  }
+
+  #applyDragSelect(rowIndex: number) {
+    const item = this.#data[rowIndex]
+    const changed =
+      this.#dragSelectState === 'select'
+        ? !this.#selectedItems.has(item)
+        : this.#selectedItems.has(item)
+
+    if (!changed) {
+      return
+    }
+
+    if (this.#dragSelectState === 'select') {
+      this.#selectedItems.add(item)
+    } else {
+      this.#selectedItems.delete(item)
+    }
+    this.invalidateRender()
+    this.#onSelectionChange?.(new Set(this.#selectedItems))
   }
 
   #handleHeaderClick(x: number) {
@@ -580,6 +642,11 @@ export class Table<TData> extends Container {
     if (this.#selectionDirty) {
       this.#selectionDirty = false
       this.#ensureSelectedVisible()
+    }
+
+    // Pin viewport during drag-select
+    if (this.#dragScrollPinned !== undefined) {
+      this.#scrollOffset = this.#dragScrollPinned
     }
 
     const rowsAbove = this.#scrollOffset
