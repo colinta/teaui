@@ -51,6 +51,18 @@ interface Props<TData> extends ViewProps {
    * Show a row number column (right-aligned, header '#'). Default: false.
    */
   showRowNumbers?: boolean
+  /**
+   * Enable multi-selection (space bar or click to toggle). Default: false.
+   */
+  isSelectable?: boolean
+  /**
+   * Show a checkbox column ([ ]/[⨉]) for multi-selection. Implies isSelectable. Default: false.
+   */
+  showSelected?: boolean
+  /**
+   * Notification fired when the set of selected items changes.
+   */
+  onSelectionChange?: (selectedItems: Set<TData>) => void
 }
 
 /**
@@ -75,6 +87,10 @@ export class Table<TData> extends Container {
   #sortKey?: string
   #sortDirection: SortDirection = 'asc'
   #showRowNumbers: boolean = false
+  #isSelectable: boolean = false
+  #showSelected: boolean = false
+  #onSelectionChange: Props<TData>['onSelectionChange']
+  #selectedItems: Set<TData> = new Set()
 
   // scroll state
   #scrollOffset = 0
@@ -101,9 +117,24 @@ export class Table<TData> extends Container {
     sortKey,
     sortDirection,
     showRowNumbers,
+    isSelectable,
+    showSelected,
+    onSelectionChange,
   }: Partial<Props<TData>>) {
     if (showRowNumbers !== undefined) {
       this.#showRowNumbers = showRowNumbers
+    }
+    if (isSelectable !== undefined) {
+      this.#isSelectable = isSelectable
+    }
+    if (showSelected !== undefined) {
+      this.#showSelected = showSelected
+      if (showSelected) {
+        this.#isSelectable = true
+      }
+    }
+    if (onSelectionChange !== undefined) {
+      this.#onSelectionChange = onSelectionChange
     }
     const dataChanged = data !== undefined && data !== this.#sourceData
     const sortChanged =
@@ -198,6 +229,9 @@ export class Table<TData> extends Container {
           this.#onSelect(this.#data[this.#selectedIndex], this.#selectedIndex)
         }
         break
+      case 'space':
+        this.#toggleSelection(this.#selectedIndex)
+        break
     }
   }
 
@@ -220,7 +254,11 @@ export class Table<TData> extends Container {
         const rowIndex = this.#scrollOffset + (y - 2)
         if (rowIndex < this.#data.length) {
           this.selectedIndex = rowIndex
-          this.#onSelect?.(this.#data[rowIndex], rowIndex)
+          if (this.#isSelectable) {
+            this.#toggleSelection(rowIndex)
+          } else {
+            this.#onSelect?.(this.#data[rowIndex], rowIndex)
+          }
         }
       }
     }
@@ -228,10 +266,29 @@ export class Table<TData> extends Container {
 
   #handleHeaderClick(x: number) {
     const INDENT = 1
+    const checkboxWidth = this.#checkboxWidth()
     const rowNumWidth = this.#rowNumberWidth()
 
+    // Click on checkbox column header → toggle all
+    if (this.#showSelected && x >= INDENT && x < INDENT + checkboxWidth) {
+      if (this.#selectedItems.size === this.#data.length) {
+        this.#selectedItems.clear()
+      } else {
+        for (const item of this.#data) {
+          this.#selectedItems.add(item)
+        }
+      }
+      this.invalidateRender()
+      this.#onSelectionChange?.(new Set(this.#selectedItems))
+      return
+    }
+
     // Click on row number column → sort by original array order
-    if (this.#showRowNumbers && x >= INDENT && x < INDENT + rowNumWidth) {
+    if (
+      this.#showRowNumbers &&
+      x >= INDENT + checkboxWidth &&
+      x < INDENT + checkboxWidth + rowNumWidth
+    ) {
       const direction: SortDirection =
         !this.#sortKey && this.#sortDirection === 'asc' ? 'desc' : 'asc'
       this.#sortKey = undefined
@@ -243,9 +300,9 @@ export class Table<TData> extends Container {
     }
 
     const widths = this.#calculateColumnWidths(
-      this.contentSize.width - INDENT - rowNumWidth,
+      this.contentSize.width - INDENT - checkboxWidth - rowNumWidth,
     )
-    let currentX = INDENT + rowNumWidth
+    let currentX = INDENT + checkboxWidth + rowNumWidth
     for (let i = 0; i < this.#columns.length; i++) {
       const colWidth = widths[i]
       // account for separator (3 chars: ' │ ')
@@ -269,6 +326,29 @@ export class Table<TData> extends Container {
       }
       currentX = nextX
     }
+  }
+
+  #toggleSelection(rowIndex: number) {
+    if (!this.#isSelectable || rowIndex < 0 || rowIndex >= this.#data.length) {
+      return
+    }
+
+    const item = this.#data[rowIndex]
+    if (this.#selectedItems.has(item)) {
+      this.#selectedItems.delete(item)
+    } else {
+      this.#selectedItems.add(item)
+    }
+    this.invalidateRender()
+    this.#onSelectionChange?.(new Set(this.#selectedItems))
+  }
+
+  /** Width of the checkbox column (including trailing separator). */
+  #checkboxWidth(): number {
+    if (!this.#showSelected) {
+      return 0
+    }
+    return 3 + 3 // '[⨉]' (3) + ' │ ' (3)
   }
 
   /** Width of the row number column (including trailing separator space). */
@@ -411,19 +491,39 @@ export class Table<TData> extends Container {
     const height = viewport.contentSize.height
     // Reserve 1 character at the left for the selection marker (▶)
     const INDENT = 1
+    const checkboxWidth = this.#checkboxWidth()
     const rowNumWidth = this.#rowNumberWidth()
-    const contentWidth = width - INDENT - rowNumWidth
+    const contentWidth = width - INDENT - checkboxWidth - rowNumWidth
     const widths = this.#calculateColumnWidths(contentWidth)
     const dimStyle = new Style({dim: true})
     const headerStyle = new Style({dim: true, bold: true})
-    const selectedStyle = new Style({
+    // Cursor row (not checked)
+    const cursorStyle = new Style({
       foreground: this.theme.textColor,
       background: this.theme.highlightColor,
+      bold: true,
+    })
+    // Checked rows: light magenta background
+    const checkedRowStyle = new Style({
+      background: '#3a2040',
+    })
+    // Cursor + checked: slightly brighter magenta
+    const cursorCheckedStyle = new Style({
+      foreground: this.theme.textColor,
+      background: '#4d2a55',
       bold: true,
     })
 
     // Header row
     let headerX = INDENT
+
+    // Checkbox column header
+    if (this.#showSelected) {
+      viewport.write('[ ]', new Point(headerX, 0), headerStyle)
+      headerX += 3
+      viewport.write(' │ ', new Point(headerX, 0), dimStyle)
+      headerX += 3
+    }
 
     // Row number column header
     if (this.#showRowNumbers) {
@@ -497,7 +597,7 @@ export class Table<TData> extends Container {
 
       const isSelected = rowIndex === this.#selectedIndex
       const row = this.#data[rowIndex]
-      const rowStyle = isSelected ? selectedStyle : Style.NONE
+      const isChecked = this.#selectedItems.has(row)
 
       // Determine if this row has a scroll indicator overlaid on top
       let scrollIndicator: string | undefined
@@ -514,25 +614,52 @@ export class Table<TData> extends Container {
       const occludedSepStyle = new Style({dim: true})
       const indicatorStyle = new Style({bold: true, background: '#333333'})
 
-      // Pick effective styles: occluded > selected > normal
+      // Pick effective styles: occluded > cursor+checked > cursor > checked > normal
+      const rowHighlight =
+        isSelected && isChecked
+          ? cursorCheckedStyle
+          : isSelected
+            ? cursorStyle
+            : isChecked
+              ? checkedRowStyle
+              : Style.NONE
+      const sepHighlight =
+        isSelected && isChecked
+          ? cursorCheckedStyle
+          : isSelected
+            ? cursorStyle
+            : isChecked
+              ? checkedRowStyle
+              : dimStyle
       const effectiveRowStyle = scrollIndicator
         ? occludedRowStyle
-        : isSelected
-          ? selectedStyle
-          : Style.NONE
+        : rowHighlight
       const effectiveSepStyle = scrollIndicator
         ? occludedSepStyle
-        : isSelected
-          ? selectedStyle
-          : dimStyle
+        : sepHighlight
 
+      if (!scrollIndicator && (isSelected || isChecked)) {
+        viewport.write(' '.repeat(width), new Point(0, y), rowHighlight)
+      }
       if (isSelected && !scrollIndicator) {
-        viewport.write(' '.repeat(width), new Point(0, y), selectedStyle)
-        viewport.write('▶', new Point(0, y), selectedStyle)
+        viewport.write(
+          '▶',
+          new Point(0, y),
+          isChecked ? cursorCheckedStyle : cursorStyle,
+        )
       }
 
       // Render the row cells (dimmed when occluded, highlighted when selected)
       let cellX = INDENT
+
+      // Checkbox column
+      if (this.#showSelected) {
+        const checkText = isChecked ? '[⨉]' : '[ ]'
+        viewport.write(checkText, new Point(cellX, y), effectiveRowStyle)
+        cellX += 3
+        viewport.write(' │ ', new Point(cellX, y), effectiveSepStyle)
+        cellX += 3
+      }
 
       // Row number column
       if (this.#showRowNumbers) {

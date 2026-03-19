@@ -363,6 +363,87 @@ describe('Table', () => {
     })
   })
 
+  describe('selection (multi-select)', () => {
+    it('renders checkbox column with showSelected', () => {
+      const rows = renderRows(
+        makeTable({showSelected: true, selectedIndex: 0}),
+        {width: 35, height: 8},
+      )
+      expect(rows[0]).toBe(' [ ] │ Name     │   Age │ City')
+      expect(rows[2]).toBe('▶[ ] │ Alice    │    30 │ New York')
+      expect(rows[3]).toBe(' [ ] │ Bob      │    25 │ Chicago')
+    })
+
+    it('space bar toggles selection', () => {
+      const t = testRender(makeTable({showSelected: true, selectedIndex: 0}), {
+        width: 35,
+        height: 8,
+      })
+      expect(t.terminal.textAtRow(2)).toBe('▶[ ] │ Alice    │    30 │ New York')
+
+      t.sendKey('space')
+      expect(t.terminal.textAtRow(2)).toBe('▶[⨉] │ Alice    │    30 │ New York')
+
+      // Toggle off
+      t.sendKey('space')
+      expect(t.terminal.textAtRow(2)).toBe('▶[ ] │ Alice    │    30 │ New York')
+    })
+
+    it('multiple rows can be selected', () => {
+      const t = testRender(makeTable({showSelected: true, selectedIndex: 0}), {
+        width: 35,
+        height: 8,
+      })
+      t.sendKey('space') // select Alice
+      t.sendKey('down')
+      t.sendKey('space') // select Bob
+      expect(t.terminal.textAtRow(2)).toBe(' [⨉] │ Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(3)).toBe('▶[⨉] │ Bob      │    25 │ Chicago')
+      expect(t.terminal.textAtRow(4)).toBe(' [ ] │ Charlie  │    35 │ Austin')
+    })
+
+    it('fires onSelectionChange callback', () => {
+      let lastSelection: Set<Row> | null = null
+      const t = testRender(
+        makeTable({
+          showSelected: true,
+          selectedIndex: 0,
+          onSelectionChange(items) {
+            lastSelection = items
+          },
+        }),
+        {width: 35, height: 8},
+      )
+      t.sendKey('space')
+      expect(lastSelection).not.toBeNull()
+      expect(lastSelection!.size).toBe(1)
+      expect([...lastSelection!][0].name).toBe('Alice')
+
+      t.sendKey('down')
+      t.sendKey('space')
+      expect(lastSelection!.size).toBe(2)
+    })
+
+    it('isSelectable works without showSelected', () => {
+      let lastSelection: Set<Row> | null = null
+      const t = testRender(
+        makeTable({
+          isSelectable: true,
+          selectedIndex: 0,
+          onSelectionChange(items) {
+            lastSelection = items
+          },
+        }),
+        {width: 30, height: 8},
+      )
+      // No checkbox column
+      expect(t.terminal.textAtRow(0)).not.toContain('[ ]')
+      // But space still toggles
+      t.sendKey('space')
+      expect(lastSelection!.size).toBe(1)
+    })
+  })
+
   describe('column layout', () => {
     it('right-aligns values in right-aligned columns', () => {
       const rows = renderRows(makeTable(), {width: 30, height: 4})
