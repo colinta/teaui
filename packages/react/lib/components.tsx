@@ -395,6 +395,12 @@ interface ReactTableProps<TData> extends ViewProps {
   sortDirection?: SortDirection
   /** Show a row number column (right-aligned, header '#'). Default: false. */
   showRowNumbers?: boolean
+  /** Enable multi-selection (space bar or click to toggle). Default: false. */
+  isSelectable?: boolean
+  /** Show a checkbox column ([ ]/[⨉]) for multi-selection. Implies isSelectable. Default: false. */
+  showSelected?: boolean
+  /** Notification fired when the set of selected items changes. */
+  onSelectionChange?: (selectedItems: Set<TData>) => void
 }
 
 /**

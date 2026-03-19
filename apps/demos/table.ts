@@ -219,15 +219,21 @@ const table = new Table<Person>({
   sortKey: 'name',
   sortDirection: 'asc',
   showRowNumbers: true,
+  showSelected: true,
   onSelect(row, index) {
     console.log(`Selected: ${row.name} (row ${index})`)
   },
   onSort(key, direction) {
     console.log(`Sort changed: ${key} ${direction}`)
   },
+  onSelectionChange(items) {
+    console.log(
+      `Selection: ${[...items].map(p => p.name).join(', ')} (${items.size})`,
+    )
+  },
 })
 
-const checkbox = new Checkbox({
+const rowNumCheckbox = new Checkbox({
   title: 'Show row numbers',
   value: true,
   onChange(value) {
@@ -235,8 +241,19 @@ const checkbox = new Checkbox({
   },
 })
 
+const selectCheckbox = new Checkbox({
+  title: 'Show checkboxes',
+  value: true,
+  onChange(value) {
+    table.update({showSelected: value})
+  },
+})
+
 demo(
   Stack.down({
-    children: [checkbox, ['flex1', table]],
+    children: [
+      Stack.right({gap: 2, children: [rowNumCheckbox, selectCheckbox]}),
+      ['flex1', table],
+    ],
   }),
 )
