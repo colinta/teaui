@@ -91,9 +91,13 @@ export class Table<TData> extends Container {
   #sortDirection: SortDirection = 'asc'
   #showRowNumbers: boolean = false
   #isSelectable: boolean = false
-  #showSelected: boolean = false
+  #showSelected: boolean | undefined = undefined
   #onSelectionChange: Props<TData>['onSelectionChange']
   #selectedItems: Set<TData> = new Set()
+  get #isShowSelected(): boolean {
+    return this.#showSelected ?? this.#isSelectable
+  }
+
   #dragSelectState: 'select' | 'deselect' | undefined = undefined
   #dragScrollPinned: number | undefined = undefined
 
@@ -134,9 +138,6 @@ export class Table<TData> extends Container {
     }
     if (showSelected !== undefined) {
       this.#showSelected = showSelected
-      if (showSelected) {
-        this.#isSelectable = true
-      }
     }
     if (onSelectionChange !== undefined) {
       this.#onSelectionChange = onSelectionChange
@@ -332,7 +333,7 @@ export class Table<TData> extends Container {
     const rowNumWidth = this.#rowNumberWidth()
 
     // Click on checkbox column header → toggle all
-    if (this.#showSelected && x >= INDENT && x < INDENT + checkboxWidth) {
+    if (this.#isShowSelected && x >= INDENT && x < INDENT + checkboxWidth) {
       if (this.#selectedItems.size === this.#data.length) {
         this.#selectedItems.clear()
       } else {
@@ -407,7 +408,7 @@ export class Table<TData> extends Container {
 
   /** Width of the checkbox column (including trailing separator). */
   #checkboxWidth(): number {
-    if (!this.#showSelected) {
+    if (!this.#isShowSelected) {
       return 0
     }
     return 3 + 3 // '[⨉]' (3) + ' │ ' (3)
@@ -580,8 +581,15 @@ export class Table<TData> extends Container {
     let headerX = INDENT
 
     // Checkbox column header
-    if (this.#showSelected) {
-      viewport.write('[ ]', new Point(headerX, 0), headerStyle)
+    if (this.#isShowSelected) {
+      const checkedCount = this.#selectedItems.size
+      const headerCheck =
+        checkedCount === 0
+          ? '[ ]'
+          : checkedCount === this.#data.length
+            ? '[⨉]'
+            : '[·]'
+      viewport.write(headerCheck, new Point(headerX, 0), headerStyle)
       headerX += 3
       viewport.write(' │ ', new Point(headerX, 0), dimStyle)
       headerX += 3
@@ -720,7 +728,7 @@ export class Table<TData> extends Container {
       let cellX = INDENT
 
       // Checkbox column
-      if (this.#showSelected) {
+      if (this.#isShowSelected) {
         const checkText = isChecked ? '[⨉]' : '[ ]'
         viewport.write(checkText, new Point(cellX, y), effectiveRowStyle)
         cellX += 3

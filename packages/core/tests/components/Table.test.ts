@@ -366,7 +366,7 @@ describe('Table', () => {
   describe('selection (multi-select)', () => {
     it('renders checkbox column with showSelected', () => {
       const rows = renderRows(
-        makeTable({showSelected: true, selectedIndex: 0}),
+        makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
         {width: 35, height: 8},
       )
       expect(rows[0]).toBe(' [ ] │ Name     │   Age │ City')
@@ -375,10 +375,13 @@ describe('Table', () => {
     })
 
     it('space bar toggles selection', () => {
-      const t = testRender(makeTable({showSelected: true, selectedIndex: 0}), {
-        width: 35,
-        height: 8,
-      })
+      const t = testRender(
+        makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
+        {
+          width: 35,
+          height: 8,
+        },
+      )
       expect(t.terminal.textAtRow(2)).toBe('▶[ ] │ Alice    │    30 │ New York')
 
       t.sendKey('space')
@@ -390,10 +393,13 @@ describe('Table', () => {
     })
 
     it('multiple rows can be selected', () => {
-      const t = testRender(makeTable({showSelected: true, selectedIndex: 0}), {
-        width: 35,
-        height: 8,
-      })
+      const t = testRender(
+        makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
+        {
+          width: 35,
+          height: 8,
+        },
+      )
       t.sendKey('space') // select Alice
       t.sendKey('down')
       t.sendKey('space') // select Bob
@@ -406,6 +412,7 @@ describe('Table', () => {
       let lastSelection: Set<Row> | null = null
       const t = testRender(
         makeTable({
+          isSelectable: true,
           showSelected: true,
           selectedIndex: 0,
           onSelectionChange(items) {
@@ -424,11 +431,44 @@ describe('Table', () => {
       expect(lastSelection!.size).toBe(2)
     })
 
-    it('isSelectable works without showSelected', () => {
+    it('header shows [·] when some items checked', () => {
+      const t = testRender(
+        makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
+        {width: 35, height: 8},
+      )
+      expect(t.terminal.textAtRow(0)).toContain('[ ]')
+      t.sendKey('space') // check Alice
+      expect(t.terminal.textAtRow(0)).toContain('[·]')
+    })
+
+    it('header shows [⨉] when all items checked', () => {
+      const t = testRender(
+        makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
+        {width: 35, height: 8},
+      )
+      // Check all 5 rows
+      for (let i = 0; i < 5; i++) {
+        t.sendKey('space')
+        t.sendKey('down')
+      }
+      expect(t.terminal.textAtRow(0)).toContain('[⨉]')
+    })
+
+    it('isSelectable shows checkbox column by default', () => {
+      const t = testRender(makeTable({isSelectable: true, selectedIndex: 0}), {
+        width: 35,
+        height: 4,
+      })
+      // Checkbox column appears automatically
+      expect(t.terminal.textAtRow(0)).toContain('[ ]')
+    })
+
+    it('isSelectable with showSelected=false hides checkbox column', () => {
       let lastSelection: Set<Row> | null = null
       const t = testRender(
         makeTable({
           isSelectable: true,
+          showSelected: false,
           selectedIndex: 0,
           onSelectionChange(items) {
             lastSelection = items

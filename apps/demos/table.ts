@@ -219,7 +219,7 @@ const table = new Table<Person>({
   sortKey: 'name',
   sortDirection: 'asc',
   showRowNumbers: true,
-  showSelected: true,
+  isSelectable: true,
   onSelect(row, index) {
     console.log(`Selected: ${row.name} (row ${index})`)
   },
