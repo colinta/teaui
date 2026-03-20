@@ -11,6 +11,7 @@ import type {
   Digits as WrDigits,
   Drawer as WrDrawer,
   Dropdown as WrDropdown,
+  Modal as WrModal,
   Geometry as WrGeometry,
   Header as WrHeader,
   HotKey as WrHotKey,
@@ -82,6 +83,8 @@ type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 // Table uses its own prop types since it's generic and TUIView doesn't work well with generics
 
+type ModalProps = TUIContainer<typeof WrModal>
+
 // "simple" containers
 type BoxProps = TUIContainer<typeof WrBox>
 type ButtonProps = TUIContainer<typeof WrButton>
@@ -135,6 +138,8 @@ declare module 'react' {
       'tui-toggle-group': ToggleGroupProps
 
       'tui-tree': ViewProps
+
+      'tui-modal': ModalProps
 
       // "simple" containers
       'tui-box': BoxProps
@@ -285,6 +290,10 @@ export function Tree<T>(reactProps: TreeProps<T>): JSX.Element {
     return title
   }, [title])
   return <tui-tree {...props}>{titleView}</tui-tree>
+}
+
+export function Modal({children, ...props}: ModalProps): JSX.Element {
+  return <tui-modal {...props}>{children}</tui-modal>
 }
 
 ////

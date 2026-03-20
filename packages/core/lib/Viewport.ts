@@ -6,6 +6,7 @@ import {Style} from './Style.js'
 import {Rect, Point, Size} from './geometry.js'
 import {Screen} from './Screen.js'
 import {View} from './View.js'
+import type {Modal} from './components/Modal.js'
 import type {HotKeyDef, MouseEventListenerName} from './events/index.js'
 import {define} from './util.js'
 
@@ -75,17 +76,19 @@ export class Viewport {
   }
 
   /**
+   * Request that a modal be presented above the current view tree.
+   * The modal receives `presentedRect` (this view's absolute rect) and
+   * `windowSize` (the full screen size) before rendering.
+   *
    * @return boolean Whether the modal creation was successful
    */
-  requestModal(modal: View, onClose: () => void): boolean {
+  requestModal(modal: Modal): boolean {
     if (!this.#currentRender) {
       return false
     }
 
     return this.#screen.requestModal(
-      this.#currentRender,
       modal,
-      onClose,
       new Rect(this.#offset, this.#contentSize),
     )
   }

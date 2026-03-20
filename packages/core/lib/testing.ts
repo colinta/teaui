@@ -26,6 +26,7 @@ import type {
   HotKeyDef,
   MouseEventListenerName,
 } from './events/index.js'
+import type {Modal} from './components/Modal.js'
 import {FocusManager} from './managers/FocusManager.js'
 import {MouseManager} from './managers/MouseManager.js'
 import {ModalManager} from './managers/ModalManager.js'
@@ -70,13 +71,14 @@ class TestScreen {
     // Cache the screen proxy so moveToScreen identity checks work
     if (!this.#screenProxy) {
       this.#screenProxy = {
-        requestModal: (
-          parent: View,
-          modal: View,
-          onClose: () => void,
-          rect: Rect,
-        ) => {
-          return this.#modalManager.requestModal(parent, modal, onClose, rect)
+        rootView: this.#view,
+        preRender: (view: View) => {
+          this.#modalManager.reset()
+          this.#mouseManager.reset()
+          this.#focusManager.reset(view === this.#view)
+        },
+        requestModal: (modal: Modal, rect: Rect) => {
+          return this.#modalManager.requestModal(modal, rect)
         },
         registerHotKey: (view: View, key: HotKeyDef) => {
           this.#focusManager.registerHotKey(view, key)
@@ -112,6 +114,7 @@ class TestScreen {
   render() {
     this.#buffer.resize(this.#size)
 
+    this.#modalManager.reset()
     this.#focusManager.reset(true)
     this.#mouseManager.reset()
 
@@ -119,12 +122,16 @@ class TestScreen {
     const viewport = new Viewport(this.asScreen(), this.#buffer, renderSize)
     this.#view.render(viewport)
 
+    const rerenderView = this.#modalManager.renderModals(
+      this.asScreen(),
+      viewport,
+    )
     const focusNeedsRender = this.#focusManager.commit()
     if (focusNeedsRender) {
       this.#focusManager.reset(true)
       this.#mouseManager.reset()
       const viewport2 = new Viewport(this.asScreen(), this.#buffer, renderSize)
-      this.#view.render(viewport2)
+      rerenderView.render(viewport2)
       this.#focusManager.commit()
     }
 

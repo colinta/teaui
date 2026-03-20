@@ -18,6 +18,7 @@ import {
   Geometry,
   H1,
   HotKey,
+  Modal,
   Keyboard,
   Mouse,
   H2,
@@ -163,6 +164,9 @@ function createInstance(type: string, props: Props): any {
     case 'collapsible':
     case 'tui-collapsible':
       return new Collapsible(props as any)
+    case 'modal':
+    case 'tui-modal':
+      return new Modal(props as any)
     case 'stack':
     case 'tui-stack':
       return new Stack(props as any)

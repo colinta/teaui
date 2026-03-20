@@ -26,6 +26,7 @@ import {
   translateTermMouseEvent,
 } from './events/translate.js'
 import {FocusManager} from './managers/FocusManager.js'
+import type {Modal} from './components/Modal.js'
 import {ModalManager} from './managers/ModalManager.js'
 import {MouseManager} from './managers/MouseManager.js'
 import {TickManager} from './managers/TickManager.js'
@@ -335,13 +336,11 @@ export class Screen {
   }
 
   /**
-   * Requests a modal. A modal will be created if:
-   * (a) no modal is already displayed
-   * or
-   * (b) a modal is requesting a nested modal
+   * Requests a modal to be presented. The modal is pushed onto a stack and
+   * rendered after the main view tree. Multiple modals can be stacked.
    */
-  requestModal(parent: View, modal: View, onClose: () => void, rect: Rect) {
-    return this.#modalManager.requestModal(parent, modal, onClose, rect)
+  requestModal(modal: Modal, rect: Rect) {
+    return this.#modalManager.requestModal(modal, rect)
   }
 
   /**

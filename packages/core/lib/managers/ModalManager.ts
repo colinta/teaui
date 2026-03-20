@@ -1,90 +1,54 @@
 import type {View} from '../View.js'
-import {Container} from '../Container.js'
 import type {Viewport} from '../Viewport.js'
 import type {Screen} from '../Screen.js'
 import type {Rect} from '../geometry.js'
-import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {Modal} from '../components/Modal.js'
+
+interface ModalEntry {
+  modal: Modal
+  presentedRect: Rect
+}
 
 export class ModalManager {
-  #modalView = new Modal()
-  #modal: [View, () => void, Rect] | undefined
+  #stack: ModalEntry[] = []
 
   reset() {
-    this.#modal = undefined
+    this.#stack = []
   }
 
-  requestModal(
-    parent: View,
-    modal: View,
-    onClose: () => void,
-    rect: Rect,
-  ): boolean {
-    if (!this.#canRequestModal(parent)) {
-      return false
-    }
-
-    if (this.#modal && this.#modal[0] !== modal) {
-      this.#modal[1]()
-    }
-
-    this.#modal = [modal, onClose, rect]
-
+  requestModal(modal: Modal, rect: Rect): boolean {
+    this.#stack.push({modal, presentedRect: rect})
     return true
   }
 
-  renderModals(screen: Screen, viewport: Viewport) {
-    this.#modalView.moveToScreen(screen)
-
+  renderModals(screen: Screen, viewport: Viewport): View {
     let lastView: View = screen.rootView
-    // this.#modal can be assigned _another modal_
-    while (this.#modal) {
-      const [view, onClose, rect] = this.#modal
 
-      // preRender calls reset() which assigns this.#modal = undefined
-      screen.preRender(view)
-      lastView = view
+    // Drain the stack: process entries one at a time.
+    // screen.preRender() resets the modal manager (calls reset()), which
+    // clears the stack. So we shift entries off one by one rather than
+    // snapshotting, ensuring that nested modals pushed during render()
+    // are appended to the stack and processed in subsequent iterations.
+    while (this.#stack.length > 0) {
+      const {modal, presentedRect} = this.#stack.shift()!
 
-      this.#modalView.updateView(view, onClose)
-      this.#modalView.naturalSize(viewport.contentSize)
+      modal.presentedRect = presentedRect
+      modal.windowSize = viewport.contentSize
 
-      viewport.parentRect = rect
-      this.#modalView.render(viewport)
+      // preRender resets managers (including this one via reset()).
+      // Any modals already in the stack are lost — but we shifted ours
+      // out first, and new modals pushed during render() go onto the
+      // now-empty stack.
+      screen.preRender(modal)
+      lastView = modal
+
+      modal.moveToScreen(screen)
+      modal.naturalSize(viewport.contentSize)
+
+      viewport.parentRect = presentedRect
+      modal.render(viewport)
     }
 
     return lastView
-  }
-
-  #canRequestModal(view: View): boolean {
-    return this.#modal === undefined
-  }
-}
-
-class Modal extends Container {
-  #view: View | null = null
-  #onClose: (() => void) | null = null
-
-  updateView(view: View, onClose: () => void) {
-    this.#onClose = onClose
-
-    if (this.#view === view) {
-      return
-    }
-
-    if (this.#view) {
-      this.removeChild(this.#view)
-    }
-    this.add(view)
-    this.#view = view
-  }
-
-  receiveMouse(event: MouseEvent) {
-    if (isMouseClicked(event)) {
-      this.#onClose?.()
-    }
-  }
-
-  render(viewport: Viewport) {
-    viewport.registerMouse('mouse.button.left')
-    super.render(viewport)
   }
 }

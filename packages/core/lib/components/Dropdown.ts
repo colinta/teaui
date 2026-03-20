@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Modal,
   Stack,
   ScrollableList,
   Separator,
@@ -55,6 +56,7 @@ export class Dropdown<T, M extends boolean> extends View {
   dropdownSelector: DropdownSelector<T>
   #title?: string[]
   #showModal = false
+  #modal: Modal
   readonly #multiple: boolean
   #onSelectCallback?: SelectMultipleFn<T> | SelectOneFn<T>
 
@@ -68,6 +70,16 @@ export class Dropdown<T, M extends boolean> extends View {
       choices: [],
       selected: [],
       onSelect: () => this.#onSelect(),
+    })
+
+    this.#modal = new Modal({
+      dim: false,
+      dismissOnClick: true,
+      dismissOnEsc: true,
+      onDismiss: () => {
+        this.#showModal = false
+      },
+      child: this.dropdownSelector,
     })
 
     this.#update(props as Props<T, M>)
@@ -158,9 +170,7 @@ export class Dropdown<T, M extends boolean> extends View {
     }
 
     if (this.#showModal) {
-      viewport.requestModal(this.dropdownSelector, () => {
-        this.#showModal = false
-      })
+      viewport.requestModal(this.#modal)
     }
 
     viewport.registerMouse(['mouse.move', 'mouse.button.left'])
