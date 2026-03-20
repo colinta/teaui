@@ -7,6 +7,7 @@ import {
   Box,
   Breadcrumb,
   Button,
+  Canvas,
   Checkbox,
   Collapsible,
   CollapsibleText,
@@ -86,6 +87,9 @@ function createInstance(type: string, props: Props): any {
     case 'breadcrumb':
     case 'tui-breadcrumb':
       return new Breadcrumb(props as any)
+    case 'canvas':
+    case 'tui-canvas':
+      return new Canvas(props as any)
     case 'checkbox':
     case 'tui-checkbox':
       return new Checkbox(props as any)
@@ -101,6 +105,9 @@ function createInstance(type: string, props: Props): any {
     case 'dropdown':
     case 'tui-dropdown':
       return new Dropdown(props as any)
+    case 'geometry':
+    case 'tui-geometry':
+      return new Geometry(props as any)
     case 'hotkey':
     case 'tui-hotkey':
       return new HotKey(props as any)

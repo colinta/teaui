@@ -4,6 +4,7 @@ import type {
   Box as WrBox,
   Breadcrumb as WrBreadcrumb,
   Button as WrButton,
+  Canvas as WrCanvas,
   Checkbox as WrCheckbox,
   Collapsible as WrCollapsible,
   CollapsibleText as WrCollapsibleText,
@@ -53,6 +54,7 @@ type TUIContainer<
 > = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: React.ReactNode}
 
 type BreadcrumbProps = TUIView<typeof WrBreadcrumb>
+type CanvasProps = TUIView<typeof WrCanvas>
 type CheckboxProps = TUIView<typeof WrCheckbox>
 type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
 type ConsoleProps = TUIView<typeof WrConsoleLog>
@@ -113,6 +115,7 @@ declare module 'react' {
       // views
       'tui-br': {}
       'tui-breadcrumb': BreadcrumbProps
+      'tui-canvas': CanvasProps
       'tui-checkbox': CheckboxProps
       'tui-collapsible-text': CollapsibleTextProps
       'tui-console': ConsoleProps
@@ -172,6 +175,10 @@ export function Br(): JSX.Element {
 
 export function Breadcrumb(reactProps: BreadcrumbProps): JSX.Element {
   return <tui-breadcrumb {...reactProps} />
+}
+
+export function Canvas(reactProps: CanvasProps): JSX.Element {
+  return <tui-canvas {...reactProps} />
 }
 
 export function Checkbox(reactProps: CheckboxProps): JSX.Element {
