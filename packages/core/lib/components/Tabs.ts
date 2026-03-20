@@ -61,6 +61,15 @@ export class Tabs extends Container {
     return this.children.filter(view => view instanceof TabTitle)
   }
 
+  get border() {
+    return this.#border
+  }
+  set border(value: boolean) {
+    if (value === this.#border) return
+    this.#border = value
+    this.invalidateSize()
+  }
+
   update(props: Props) {
     super.update(props)
     this.#update(props)

@@ -95,6 +95,15 @@ export class Slider extends View {
     super.update(props)
   }
 
+  get border() {
+    return this.#border
+  }
+  set border(value: boolean) {
+    if (value === this.#border) return
+    this.#border = value
+    this.invalidateSize()
+  }
+
   #update({direction, border, buttons, range, value, step, onChange}: Props) {
     this.#direction = direction ?? 'horizontal'
     this.#border = border ?? false
