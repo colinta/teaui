@@ -207,13 +207,9 @@ function hex(n: number): string {
 }
 
 function renderAnsiToHtmlFragment(ansi: string): string {
-  const html = ansiToHtml(ansi)
-    .split('\n')
-    .map(line => line.replace(/\s+$/, ''))
-    .join('\n')
-    .replace(/\n+$/, '')
+  const html = ansiToHtml(ansi).replace(/\n+$/, '')
 
-  return `<pre style="background:${DEFAULT_BG};color:${DEFAULT_FG};font-family:'Fira Code',monospace;padding:8px;margin:0;line-height:1.4;overflow-x:auto;">${html}</pre>`
+  return `<pre style="background:${DEFAULT_BG};color:${DEFAULT_FG};font-family:'Fira Code',monospace;padding:8px;margin:0;line-height:1.2;overflow-x:auto;">${html}</pre>`
 }
 
 async function buildScreenshots() {

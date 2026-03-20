@@ -15,7 +15,7 @@
   text-align: center;
   user-select: none;
   white-space: pre;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
 .terminal-body {
@@ -30,7 +30,7 @@
   background: #393939 !important;
   font-family: 'Fira Code', monospace !important;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
 /* Example component: code + output side by side */
