@@ -67,6 +67,15 @@ class TestScreen {
     return this.#view
   }
 
+  /**
+   * Advance time by `dt` milliseconds, triggering any registered tick
+   * animations and re-rendering.
+   */
+  tick(dt: number) {
+    this.#tickManager.triggerTick(dt)
+    this.render()
+  }
+
   asScreen(): Screen {
     // Cache the screen proxy so moveToScreen identity checks work
     if (!this.#screenProxy) {

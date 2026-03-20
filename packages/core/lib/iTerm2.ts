@@ -1,5 +1,3 @@
-import {StringDecoder} from 'string_decoder'
-
 import type {Color} from './Color.js'
 import {colorToHex} from './Color.js'
 
@@ -33,8 +31,8 @@ export class iTerm2 {
       const hex = colorToHex(bg).slice(1)
 
       program.once('data', (input: any) => {
-        const decoder = new StringDecoder('utf8')
-        const response = decoder.write(input)
+        const response =
+          typeof input === 'string' ? input : new TextDecoder().decode(input)
         iTerm2._restoreBg = parseBackgroundResponse(response)
 
         program.write(setBackgroundCommand(hex))

@@ -214,7 +214,11 @@ export class Tabs extends Container {
         this.#separatorLocation === undefined &&
         this.#selectedTab === index
       ) {
-        this.#separatorLocation = [x, x + tabRect.size.width]
+        const borderOffset = this.#border ? 2 : 0
+        this.#separatorLocation = [
+          x - borderOffset,
+          x - borderOffset + tabRect.size.width,
+        ]
       }
 
       x += tabRect.size.width
