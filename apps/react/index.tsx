@@ -25,9 +25,10 @@ import {
   Separator,
   Slider,
   Logo,
-  Space,
+  Pin,
   Spinner,
   Stack,
+  ZStack,
   Style,
   Tabs,
   Text,
@@ -689,38 +690,38 @@ function MoreTab() {
 
 function Demo() {
   return (
-    <Box border="rounded" flex={1}>
-      <Stack.down flex={1}>
-        <Stack.right>
-          <Space />
-          <Logo />
-          <Space />
-        </Stack.right>
-        <Tabs border flex={1}>
-          <Tabs.Section title="YAML → JSON">
-            <YamlTab />
-          </Tabs.Section>
-          <Tabs.Section title="Digits">
-            <DigitsTab />
-          </Tabs.Section>
-          <Tabs.Section title="Styles">
-            <StylesTab />
-          </Tabs.Section>
-          <Tabs.Section title="Widgets">
-            <WidgetsTab />
-          </Tabs.Section>
-          <Tabs.Section title="Drawer">
-            <DrawerTab />
-          </Tabs.Section>
-          <Tabs.Section title="Breadcrumbs">
-            <BreadcrumbTab />
-          </Tabs.Section>
-          <Tabs.Section title="More">
-            <MoreTab />
-          </Tabs.Section>
-        </Tabs>
-      </Stack.down>
-    </Box>
+    <ZStack flex={1}>
+      <Box border="rounded" flex={1}>
+        <Stack.down flex={1}>
+          <Tabs border flex={1}>
+            <Tabs.Section title="YAML → JSON">
+              <YamlTab />
+            </Tabs.Section>
+            <Tabs.Section title="Digits">
+              <DigitsTab />
+            </Tabs.Section>
+            <Tabs.Section title="Styles">
+              <StylesTab />
+            </Tabs.Section>
+            <Tabs.Section title="Widgets">
+              <WidgetsTab />
+            </Tabs.Section>
+            <Tabs.Section title="Drawer">
+              <DrawerTab />
+            </Tabs.Section>
+            <Tabs.Section title="Breadcrumbs">
+              <BreadcrumbTab />
+            </Tabs.Section>
+            <Tabs.Section title="More">
+              <MoreTab />
+            </Tabs.Section>
+          </Tabs>
+        </Stack.down>
+      </Box>
+      <Pin location="top-right">
+        <Logo isAnimating />
+      </Pin>
+    </ZStack>
   )
 }
 
