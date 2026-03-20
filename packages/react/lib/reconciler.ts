@@ -37,6 +37,7 @@ import {
   Slider,
   Space,
   Spinner,
+  Logo,
   Stack,
   Table,
   Tabs,
@@ -154,6 +155,8 @@ function createInstance(type: string, props: Props): any {
     case 'spinner':
     case 'tui-spinner':
       return new Spinner(props as any)
+    case 'tui-logo':
+      return new Logo(props as any)
     case 'toggle-group':
     case 'tui-toggle-group':
       return new ToggleGroup(props as any)

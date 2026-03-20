@@ -33,6 +33,7 @@ import type {
   Tree as WrTree,
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
+  Logo as WrLogo,
   Column,
   SortDirection,
   ViewProps,
@@ -82,6 +83,7 @@ type SeparatorProps = TUIView<typeof WrSeparator>
 type SliderProps = TUIView<typeof WrSlider>
 type SpaceProps = TUIView<typeof WrSpace>
 type SpinnerProps = TUIView<typeof WrSpinner>
+type LogoProps = TUIView<typeof WrLogo>
 type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 // Table uses its own prop types since it's generic and TUIView doesn't work well with generics
@@ -140,6 +142,7 @@ declare module 'react' {
       'tui-slider': SliderProps
       'tui-space': SpaceProps
       'tui-spinner': SpinnerProps
+      'tui-logo': LogoProps
       'tui-table': any
       'tui-toggle-group': ToggleGroupProps
 
@@ -281,6 +284,9 @@ export function Space(reactProps: SpaceProps): JSX.Element {
 }
 export function Spinner(reactProps: SpinnerProps): JSX.Element {
   return <tui-spinner {...reactProps} />
+}
+export function Logo(reactProps: LogoProps): JSX.Element {
+  return <tui-logo {...reactProps} />
 }
 export function ToggleGroup(reactProps: ToggleGroupProps): JSX.Element {
   return <tui-toggle-group {...reactProps} />

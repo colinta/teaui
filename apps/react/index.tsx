@@ -24,6 +24,8 @@ import {
   Scrollable,
   Separator,
   Slider,
+  Logo,
+  Space,
   Spinner,
   Stack,
   Style,
@@ -689,11 +691,11 @@ function Demo() {
   return (
     <Box border="rounded" flex={1}>
       <Stack.down flex={1}>
-        <Text alignment="center">
-          <Style bold foreground="cyan">
-            ☕ TeaUI React Demo
-          </Style>
-        </Text>
+        <Stack.right>
+          <Space />
+          <Logo />
+          <Space />
+        </Stack.right>
         <Tabs border flex={1}>
           <Tabs.Section title="YAML → JSON">
             <YamlTab />
