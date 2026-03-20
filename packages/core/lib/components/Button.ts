@@ -34,6 +34,7 @@ export class Button extends Container {
   #textView: Text
   #border: Border = 'default'
   #align: Alignment = 'center'
+  #hasFocus: boolean = false
 
   constructor(props: Props) {
     super(props)
@@ -50,7 +51,11 @@ export class Button extends Container {
   }
 
   childTheme(view: View) {
-    return childTheme(super.childTheme(view), this.isPressed, this.isHover)
+    return childTheme(
+      super.childTheme(view),
+      this.isPressed,
+      this.isHover || this.#hasFocus,
+    )
   }
 
   #update({title, border, align, hotKey, onClick}: Props) {
@@ -63,7 +68,7 @@ export class Button extends Container {
   }
 
   naturalSize(available: Size): Size {
-    const [left, right] = this.#borderSize()
+    const [left, right] = this.#borderSize(false)
     return super.naturalSize(available).grow(left + right, 0)
   }
 
@@ -78,8 +83,9 @@ export class Button extends Container {
     this.invalidateSize()
   }
 
-  #borderSize(): [number, number] {
-    const [left, right] = BORDERS[this.#border]
+  #borderSize(hasFocus: boolean): [number, number] {
+    const borders = hasFocus ? BORDERS_FOCUS : BORDERS
+    const [left, right] = borders[this.#border]
     return [unicode.lineWidth(left), unicode.lineWidth(right)]
   }
 
@@ -96,6 +102,8 @@ export class Button extends Container {
   }
 
   render(viewport: Viewport) {
+    const hasFocus = viewport.registerFocus()
+    this.#hasFocus = hasFocus
     if (viewport.isEmpty) {
       return super.render(viewport)
     }
@@ -108,11 +116,11 @@ export class Button extends Container {
 
     const textStyle = this.theme.ui({
       isPressed: this.isPressed,
-      isHover: this.isHover,
+      isHover: this.isHover || hasFocus,
     })
     const topsStyle = this.theme.ui({
       isPressed: this.isPressed,
-      isHover: this.isHover,
+      isHover: this.isHover || hasFocus,
       isOrnament: true,
     })
 
@@ -131,7 +139,7 @@ export class Button extends Container {
       }
     })
 
-    const [leftWidth, rightWidth] = this.#borderSize()
+    const [leftWidth, rightWidth] = this.#borderSize(hasFocus)
     const naturalSize = super.naturalSize(
       viewport.contentSize.shrink(leftWidth + rightWidth, 0),
     )
@@ -146,7 +154,8 @@ export class Button extends Container {
         Math.round((viewport.contentSize.height - naturalSize.height) / 2),
       )
 
-    const [left, right] = BORDERS[this.#border],
+    const borders = hasFocus ? BORDERS_FOCUS : BORDERS
+    const [left, right] = borders[this.#border],
       leftX = offset.x - leftWidth,
       rightX = offset.x + naturalSize.width
 
@@ -162,9 +171,17 @@ export class Button extends Container {
 
 const BORDERS: Record<Border, BorderChars> = {
   default: ['[ ', ' ]'],
-  arrows: [' ', ' '],
+  // arrows: [' ', ' '],
+  arrows: ['\uE0B3', '\uE0B1'],
   none: [' ', ' '],
 }
 
-// E0A0 
-// E0B0 
+const BORDERS_FOCUS: Record<Border, BorderChars> = {
+  default: ['⟦ ', ' ⟧'],
+  // arrows: [' ', ' '],
+  arrows: ['\uE0B2', '\uE0B0'],
+  none: [' ', ' '],
+}
+
+// E0A0 \uE0A0\uE0A1\uE0A2          
+// E0B0 \uE0B0\uE0B1\uE0B2\uE0B3     

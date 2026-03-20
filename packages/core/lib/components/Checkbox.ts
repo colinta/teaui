@@ -12,6 +12,7 @@ import {
   styleTextForHotKey,
 } from '../events/index.js'
 import {childTheme} from '../UI.js'
+import {Style} from '../Style.js'
 import {System} from '../System.js'
 
 interface StyleProps {
@@ -28,6 +29,7 @@ export class Checkbox extends Container {
   #hotKey?: HotKey
   #onChange: StyleProps['onChange']
   #textView: Text
+  #hasFocus: boolean = false
 
   constructor(props: Props) {
     super(props)
@@ -50,7 +52,11 @@ export class Checkbox extends Container {
   }
 
   childTheme(view: View) {
-    return childTheme(super.childTheme(view), this.isPressed, this.isHover)
+    return childTheme(
+      super.childTheme(view),
+      this.isPressed,
+      this.isHover || this.#hasFocus,
+    )
   }
 
   update(props: Props) {
@@ -91,7 +97,14 @@ export class Checkbox extends Container {
     }
   }
 
+  receiveKey(_: import('../events/index.js').KeyEvent) {
+    this.#value = !this.#value
+    this.#onChange?.(this.#value)
+  }
+
   render(viewport: Viewport) {
+    const hasFocus = viewport.registerFocus()
+    this.#hasFocus = hasFocus
     if (viewport.isEmpty) {
       return super.render(viewport)
     }
@@ -100,7 +113,7 @@ export class Checkbox extends Container {
 
     const uiStyle = this.theme.ui({
       isPressed: this.isPressed,
-      isHover: this.isHover,
+      isHover: this.isHover || hasFocus,
     })
 
     viewport.paint(uiStyle)
@@ -114,21 +127,25 @@ export class Checkbox extends Container {
       Math.round((viewport.contentSize.height - naturalSize.height) / 2),
     )
 
-    const box = this.boxChars()[this.#value ? 'checked' : 'unchecked']
-    viewport.write(box, new Point(0, offset.y), uiStyle)
-    viewport.clipped(new Rect(offset, naturalSize), uiStyle, inside => {
+    const chars = hasFocus ? BOX_FOCUS : BOX
+    const box = chars[this.boxStyle()][this.#value ? 'checked' : 'unchecked']
+    const textStyle = hasFocus
+      ? uiStyle.merge(new Style({bold: true}))
+      : uiStyle
+    viewport.write(box, new Point(0, offset.y), textStyle)
+    viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
       super.render(inside)
     })
   }
 
-  boxChars(): Record<'unchecked' | 'checked', string> {
-    return BOX.checkbox
+  boxStyle(): 'checkbox' | 'radio' {
+    return 'checkbox'
   }
 }
 
 export class Radio extends Checkbox {
-  boxChars(): Record<'unchecked' | 'checked', string> {
-    return BOX.radio
+  boxStyle(): 'checkbox' | 'radio' {
+    return 'radio'
   }
 }
 
@@ -143,6 +160,20 @@ const BOX: Record<
   radio: {
     unchecked: '◯ ',
     checked: '⦿ ',
+  },
+}
+
+const BOX_FOCUS: Record<
+  'checkbox' | 'radio',
+  Record<'unchecked' | 'checked', string>
+> = {
+  checkbox: {
+    unchecked: '🞐 ',
+    checked: '🞕 ',
+  },
+  radio: {
+    unchecked: '◎ ',
+    checked: '🞋 ',
   },
 }
 

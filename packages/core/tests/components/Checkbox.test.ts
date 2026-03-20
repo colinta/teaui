@@ -4,21 +4,22 @@ import {Checkbox} from '../../lib/components/Checkbox.js'
 
 describe('Checkbox', () => {
   describe('rendering', () => {
-    it('renders unchecked box', () => {
+    it('renders unchecked when focused', () => {
       const t = testRender(new Checkbox({title: 'Option', value: false}), {
         width: 20,
         height: 1,
       })
-      expect(t.terminal.textContent()).toContain('☐')
+      // Single focusable element auto-focuses → focus indicator
+      expect(t.terminal.textContent()).toContain('🞐')
+      expect(t.terminal.textContent()).toContain('Option')
     })
 
-    it('renders checked box', () => {
+    it('renders checked when focused', () => {
       const t = testRender(new Checkbox({title: 'Option', value: true}), {
         width: 20,
         height: 1,
       })
-      const content = t.terminal.textContent()
-      expect(content).toMatch(/[◼︎☐]/)
+      expect(t.terminal.textContent()).toContain('🞕')
     })
 
     it('renders with short title', () => {
@@ -26,7 +27,6 @@ describe('Checkbox', () => {
         width: 10,
         height: 1,
       })
-      expect(t.terminal.textContent()).toContain('☐')
       expect(t.terminal.textContent()).toContain('OK')
     })
   })
@@ -35,7 +35,7 @@ describe('Checkbox', () => {
     it('toggles on click', () => {
       let checked = false
       const cb = new Checkbox({
-        text: 'Option',
+        title: 'Option',
         value: false,
         onChange(value) {
           checked = value
@@ -50,7 +50,7 @@ describe('Checkbox', () => {
     it('toggles off on second click', () => {
       let checked = true
       const cb = new Checkbox({
-        text: 'Option',
+        title: 'Option',
         value: true,
         onChange(value) {
           checked = value
@@ -60,6 +60,22 @@ describe('Checkbox', () => {
       t.sendMouse('mouse.button.down', {x: 0, y: 0})
       t.sendMouse('mouse.button.up', {x: 0, y: 0})
       expect(checked).toBe(false)
+    })
+  })
+
+  describe('keyboard interaction', () => {
+    it('toggles on key press when focused', () => {
+      let checked = false
+      const cb = new Checkbox({
+        title: 'Option',
+        value: false,
+        onChange(value) {
+          checked = value
+        },
+      })
+      const t = testRender(cb, {width: 20, height: 1})
+      t.sendKey('return')
+      expect(checked).toBe(true)
     })
   })
 })
