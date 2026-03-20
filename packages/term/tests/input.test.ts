@@ -152,12 +152,12 @@ describe('parseInput', () => {
 
     it('parses page up', () => {
       const events = parseInput(Buffer.from('\x1b[5~'))
-      expect(events).toEqual([key('pageUp')])
+      expect(events).toEqual([key('pageup')])
     })
 
     it('parses page down', () => {
       const events = parseInput(Buffer.from('\x1b[6~'))
-      expect(events).toEqual([key('pageDown')])
+      expect(events).toEqual([key('pagedown')])
     })
   })
 
@@ -229,9 +229,9 @@ describe('parseInput', () => {
       expect(events).toEqual([key('delete', {shift: true})])
     })
 
-    it('parses ctrl+pageUp (CSI 5;5~)', () => {
+    it('parses ctrl+pageup (CSI 5;5~)', () => {
       const events = parseInput(Buffer.from('\x1b[5;5~'))
-      expect(events).toEqual([key('pageUp', {ctrl: true})])
+      expect(events).toEqual([key('pageup', {ctrl: true})])
     })
 
     it('parses ctrl+shift+end (CSI 1;6F)', () => {

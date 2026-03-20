@@ -5,7 +5,7 @@ import {Checkbox} from '../../lib/components/Checkbox.js'
 describe('Checkbox', () => {
   describe('rendering', () => {
     it('renders unchecked box', () => {
-      const t = testRender(new Checkbox({text: 'Option', value: false}), {
+      const t = testRender(new Checkbox({title: 'Option', value: false}), {
         width: 20,
         height: 1,
       })
@@ -13,17 +13,21 @@ describe('Checkbox', () => {
     })
 
     it('renders checked box', () => {
-      const t = testRender(new Checkbox({text: 'Option', value: true}), {
+      const t = testRender(new Checkbox({title: 'Option', value: true}), {
         width: 20,
         height: 1,
       })
       const content = t.terminal.textContent()
-      expect(content).toMatch(/[☑◼]/)
+      expect(content).toMatch(/[◼︎☐]/)
     })
 
-    it('renders without text', () => {
-      const t = testRender(new Checkbox({value: false}), {width: 5, height: 1})
+    it('renders with short title', () => {
+      const t = testRender(new Checkbox({title: 'OK', value: false}), {
+        width: 10,
+        height: 1,
+      })
       expect(t.terminal.textContent()).toContain('☐')
+      expect(t.terminal.textContent()).toContain('OK')
     })
   })
 

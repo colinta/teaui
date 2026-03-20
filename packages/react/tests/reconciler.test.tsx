@@ -79,8 +79,9 @@ describe('reconciler', () => {
     })
 
     it('groups adjacent text literals into the same TextContainer', async () => {
+      const name = 'world'
       const {window} = renderToWindow(
-        <tui-stack direction="down">hello world</tui-stack>,
+        <tui-stack direction="down">hello {name}!</tui-stack>,
       )
       await flush()
       const stack = window.children[0] as Container
@@ -88,6 +89,7 @@ describe('reconciler', () => {
       expect(stack.children.length).toBe(1)
       expect(stack.children[0]).toBeInstanceOf(TextContainer)
       const tc = stack.children[0] as TextContainer
+      // JSX "hello {name}!" creates 3 adjacent text nodes: "hello ", "world", "!"
       expect(tc.nodes.length).toBe(3)
     })
 
