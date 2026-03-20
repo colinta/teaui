@@ -258,7 +258,7 @@ class DropdownSelector<T> extends Container {
     })
     this.#scrollView = new ScrollableList({
       items: this.#choices.map(([, choice]) => choice),
-      cellForItem: (choice, row) => this.cellForItem(choice, row),
+      renderItem: (choice, row) => this.renderItem(choice, row),
     })
     const content = new Stack({direction: 'down', children: []})
 
@@ -349,7 +349,7 @@ class DropdownSelector<T> extends Container {
     this.#scrollView.updateItems(choices.map(([, choice]) => choice))
   }
 
-  cellForItem(choice: T, row: number): View {
+  renderItem(choice: T, row: number): View {
     const button = this.#cellButton(choice, row)
 
     return Stack.right({

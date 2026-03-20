@@ -20,7 +20,7 @@ function App() {
     <ScrollableList
       height={15}
       items={items}
-      cellForItem={item => new Text({text: item})}
+      renderItem={item => new Text({text: item})}
     />
   )
 }
@@ -33,7 +33,7 @@ run(<App />)
 | Prop             | Type                             | Default | Description                             |
 | ---------------- | -------------------------------- | ------- | --------------------------------------- |
 | `items`          | `T[]`                            | —       | Data array                              |
-| `cellForItem`    | `(item: T, row: number) => View` | —       | View factory for each item              |
+| `renderItem`     | `(item: T, row: number) => View` | —       | View factory for each item              |
 | `showScrollbars` | `boolean`                        | `true`  | Show/hide scrollbars                    |
 | `scrollHeight`   | `number`                         | `1`     | Rows per mouse wheel tick               |
 | `keepAtBottom`   | `boolean`                        | `false` | Auto-scroll to bottom (useful for logs) |
@@ -49,7 +49,7 @@ const items = Array.from({length: 1000}, (_, i) => `Item ${i + 1}`)
 new ScrollableList({
   height: 15,
   items,
-  cellForItem: item => new Text({text: item}),
+  renderItem: item => new Text({text: item}),
 })
 ```
 

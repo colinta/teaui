@@ -22,7 +22,7 @@ export class Log extends Container {
   #scrollableList = new ScrollableList({
     scrollHeight: 10,
     items: this.#logs,
-    cellForItem: log => {
+    renderItem: log => {
       return new LogLineView(log)
     },
     keepAtBottom: true,

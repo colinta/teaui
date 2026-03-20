@@ -7,7 +7,7 @@ import {type MouseEvent, isMouseDragging} from '../events/index.js'
 
 interface Props<T> extends ViewProps {
   items: T[]
-  cellForItem: (item: T, row: number) => View
+  renderItem: (item: T, row: number) => View
   /**
    * Show/hide the scrollbars
    * @default true
@@ -36,7 +36,7 @@ export class ScrollableList<T> extends Container {
    * `scrollableList.invalidateRow(row)`.
    */
   #items: T[]
-  #cellForItem: Props<T>['cellForItem']
+  #renderItem: Props<T>['renderItem']
   #keepAtBottom: boolean
   #isAtBottom = true
   #showScrollbars: boolean
@@ -49,7 +49,7 @@ export class ScrollableList<T> extends Container {
   #totalHeight?: number
 
   constructor({
-    cellForItem,
+    renderItem,
     items,
     keepAtBottom,
     scrollHeight,
@@ -59,7 +59,7 @@ export class ScrollableList<T> extends Container {
     super(viewProps)
     this.#showScrollbars = showScrollbars ?? true
     this.#contentOffset = {row: 0, offset: 0}
-    this.#cellForItem = cellForItem
+    this.#renderItem = renderItem
     this.#scrollHeight = scrollHeight ?? 1
     this.#items = items
     this.#keepAtBottom = keepAtBottom ?? false
@@ -232,7 +232,7 @@ export class ScrollableList<T> extends Container {
     const item = this.#items[row]
     let view = this.#viewCache.get(item)
     if (!view) {
-      view = this.#cellForItem(item, row)
+      view = this.#renderItem(item, row)
       if (view) {
         this.#viewCache.set(item, view)
       }
