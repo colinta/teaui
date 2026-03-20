@@ -137,13 +137,9 @@ export default function Home() {
         <section className="features-section">
           {FEATURES.map((f, i) => (
             <div key={i} className="feature-card">
-              <div className="feature-border-top">┌{'─'.repeat(28)}┐</div>
-              <div className="feature-content">
-                <span className="feature-icon">{f.icon}</span>
-                <div className="feature-title">{f.title}</div>
-                <div className="feature-desc">{f.desc}</div>
-              </div>
-              <div className="feature-border-bot">└{'─'.repeat(28)}┘</div>
+              <span className="feature-icon">{f.icon}</span>
+              <div className="feature-title">{f.title}</div>
+              <div className="feature-desc">{f.desc}</div>
             </div>
           ))}
         </section>
