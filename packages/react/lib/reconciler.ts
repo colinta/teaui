@@ -22,6 +22,7 @@ import {
   Modal,
   Keyboard,
   Mouse,
+  Pane,
   H2,
   H3,
   H4,
@@ -196,6 +197,9 @@ function createInstance(type: string, props: Props): any {
     case 'accordion-section':
     case 'tui-accordion-section':
       return new Accordion.Section(props as any)
+    case 'pane':
+    case 'tui-pane':
+      return new Pane(props as any)
     case 'drawer':
     case 'tui-drawer':
       return new Drawer(props as any)

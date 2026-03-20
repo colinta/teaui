@@ -11,6 +11,7 @@ import type {
   ConsoleLog as WrConsoleLog,
   Digits as WrDigits,
   Drawer as WrDrawer,
+  Pane as WrPane,
   Dropdown as WrDropdown,
   Modal as WrModal,
   Geometry as WrGeometry,
@@ -99,6 +100,8 @@ type StackProps = TUIContainer<typeof WrStack>
 type StyleProps = TUIContainer<typeof TextStyle>
 type TextProps = TUIContainer<typeof TextProvider>
 
+type PaneProps = TUIContainer<typeof WrPane>
+
 // "complex" containers
 type AccordionProps = TUIContainer<typeof WrAccordion>
 type AccordionSectionProps = TUIContainer<typeof WrAccordion.Section>
@@ -143,6 +146,7 @@ declare module 'react' {
       'tui-tree': ViewProps
 
       'tui-modal': ModalProps
+      'tui-pane': PaneProps
 
       // "simple" containers
       'tui-box': BoxProps
@@ -507,6 +511,10 @@ Accordion.Section = function SliderHorizontal(
 ) {
   const {children, ...props} = reactProps
   return <tui-accordion-section {...props}>{children}</tui-accordion-section>
+}
+
+export function Pane({children, ...props}: PaneProps): JSX.Element {
+  return <tui-pane {...props}>{children}</tui-pane>
 }
 
 interface Drawer {

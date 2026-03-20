@@ -1,0 +1,94 @@
+---
+sidebar_position: 5
+title: Pane
+---
+
+# Pane
+
+A split-pane container for index/detail layouts. The first N-1 children are
+collapsible "browser" panes with draggable separators. The last child is the
+"detail" pane that takes remaining space.
+
+import Example from '../../src/components/Example'
+import PaneExample from '../../examples/pane.example'
+
+<Example {...PaneExample} />
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Pane, Text, Stack, run} from '@teaui/react'
+
+function App() {
+  return (
+    <Pane border>
+      <Stack.down>
+        <Text>Inbox</Text>
+        <Text>Drafts</Text>
+        <Text>Sent</Text>
+      </Stack.down>
+      <Text>Select an item to view details.</Text>
+    </Pane>
+  )
+}
+
+run(<App />)
+```
+
+## Props
+
+| Prop          | Type      | Default | Description                                                                                         |
+| ------------- | --------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `border`      | `boolean` | `false` | Draw a border around the pane                                                                       |
+| `collapsible` | `boolean` | `true`  | Whether browser panes can be collapsed. When `false`, min pane width is 4 and collapse is disabled. |
+
+Plus all standard `ViewProps` (flex, width, height, padding, theme, etc.)
+
+## Interactions
+
+- **Drag** a separator to resize the adjacent browser pane.
+- **Click** a separator to collapse or expand its browser pane (when `collapsible`).
+- When dragged to a very small width (≤ 3 chars) and `collapsible` is true,
+  the separator shows `←` arrows on alternating rows to indicate the pane will
+  collapse on release.
+- When collapsed, the separator renders as `║` (double-line) to indicate the
+  collapsed state.
+- When `collapsible` is `false`, the minimum pane width is 4 and the collapse
+  gesture is disabled entirely.
+- When a border is enabled, separators connect to the top/bottom borders with
+  `┬`/`┴` (expanded) or `╥`/`╨` (collapsed).
+
+## Multiple Browser Panes
+
+You can have multiple browser panes. All children except the last are browser
+panes with their own separator:
+
+```tsx
+<Pane border>
+  <Stack.down>
+    <Text>Categories</Text>
+  </Stack.down>
+  <Stack.down>
+    <Text>Items</Text>
+  </Stack.down>
+  <Text>Detail view</Text>
+</Pane>
+```
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Pane, Text, Stack} from '@teaui/core'
+
+new Pane({
+  border: true,
+  children: [
+    Stack.down([new Text({text: 'Sidebar'})]),
+    new Text({text: 'Detail'}),
+  ],
+})
+```
+
+</details>
