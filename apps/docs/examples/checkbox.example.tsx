@@ -1,7 +1,7 @@
 import React from 'react'
 import {Stack, Checkbox} from '@teaui/react'
 
-export default function App() {
+function App() {
   return (
     <Stack.down>
       <Checkbox title="Enable notifications" isChecked />
@@ -10,3 +10,5 @@ export default function App() {
     </Stack.down>
   )
 }
+
+export default {width: 40, height: 3, title: 'Checkbox', App}

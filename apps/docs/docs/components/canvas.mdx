@@ -1,0 +1,75 @@
+---
+sidebar_position: 6
+title: Canvas
+---
+
+import Example from '@site/src/components/Example'
+
+# Canvas
+
+A pixel-level drawing surface using Unicode Braille characters (`⠀`–`⣿`). Each terminal cell is a 2×4 pixel grid, giving sub-character resolution for drawing lines, rectangles, circles, and arbitrary shapes.
+
+<Example name="canvas" title="Canvas" />
+
+## Props
+
+| Prop   | Type                       | Default | Description                                                                 |
+| ------ | -------------------------- | ------- | --------------------------------------------------------------------------- |
+| `draw` | `(canvas: Canvas) => void` | —       | Drawing callback, invoked each render after the buffer is cleared and sized |
+
+The canvas fills all available space by default. The `draw` callback receives the `Canvas` instance with the pixel buffer already sized — use `pixelWidth` and `pixelHeight` to query dimensions.
+
+## Drawing API
+
+All coordinates are in **pixel** space (not terminal cells). Each terminal cell is 2 pixels wide × 4 pixels tall.
+
+| Method                  | Description                                |
+| ----------------------- | ------------------------------------------ |
+| `set(x, y)`             | Set a single pixel                         |
+| `unset(x, y)`           | Clear a single pixel                       |
+| `toggle(x, y)`          | Toggle a pixel on/off                      |
+| `isSet(x, y)`           | Check if a pixel is set                    |
+| `clear()`               | Clear the entire buffer                    |
+| `line(x0, y0, x1, y1)`  | Draw a line (Bresenham's algorithm)        |
+| `rect(x, y, w, h)`      | Draw a rectangle outline                   |
+| `fillRect(x, y, w, h)`  | Draw a filled rectangle                    |
+| `circle(cx, cy, r)`     | Draw a circle outline (midpoint algorithm) |
+| `fillCircle(cx, cy, r)` | Draw a filled circle                       |
+
+## Properties
+
+| Property      | Type     | Description                              |
+| ------------- | -------- | ---------------------------------------- |
+| `pixelWidth`  | `number` | Total pixel width (terminal columns × 2) |
+| `pixelHeight` | `number` | Total pixel height (terminal rows × 4)   |
+
+## Programmatic Drawing
+
+Use `withContext` to draw into a canvas at a specific size outside of a render cycle:
+
+```tsx
+import {Canvas} from '@teaui/core'
+
+const canvas = new Canvas()
+canvas.withContext(40, 10, c => {
+  // pixelWidth = 80, pixelHeight = 40
+  c.circle(40, 20, 15)
+  c.line(0, 0, 79, 39)
+})
+```
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Canvas} from '@teaui/core'
+
+new Canvas({
+  draw: canvas => {
+    canvas.rect(0, 0, canvas.pixelWidth, canvas.pixelHeight)
+    canvas.fillCircle(canvas.pixelWidth / 2, canvas.pixelHeight / 2, 10)
+  },
+})
+```
+
+</details>

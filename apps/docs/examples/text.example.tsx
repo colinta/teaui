@@ -1,7 +1,7 @@
 import React from 'react'
 import {Stack, Text} from '@teaui/react'
 
-export default function App() {
+function App() {
   return (
     <Stack.down>
       <Text>Left aligned</Text>
@@ -10,3 +10,5 @@ export default function App() {
     </Stack.down>
   )
 }
+
+export default {width: 30, height: 3, title: 'Text', App}

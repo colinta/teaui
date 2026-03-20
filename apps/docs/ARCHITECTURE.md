@@ -17,8 +17,7 @@ apps/docs/
 │   ├── themes.mdx
 │   └── components/           # One .mdx per component
 ├── examples/                 # ★ Source of truth for React examples
-│   ├── specs.ts              # Render size config for each example
-│   ├── button.example.tsx    # React component (displayed + rendered)
+│   ├── button.example.tsx    # React component + render spec (displayed + rendered)
 │   ├── stack.example.tsx
 │   └── ...
 ├── screenshots/              # Legacy core-API-only screenshot specs
@@ -61,38 +60,35 @@ output on a component's documentation page.
 import React from 'react'
 import {Button} from '@teaui/react'
 
-export default function App() {
+function App() {
   return <Button onClick={() => console.log('clicked!')}>Click Me</Button>
 }
+
+export default {width: 30, height: 3, title: 'Button', App}
 ```
 
-Each example exports a default `App` component. **Example files must not have
-side effects** — no `run()` or `interceptConsoleLog()` calls at the top level,
-since the build script imports the file to get the component. The `run()` import
-and call are added automatically for display (see below).
+Each example exports a default object with `{width, height, title, App}`. The
+`App` component is the React element to render, and `width`/`height`/`title`
+configure the headless terminal size and screenshot title bar.
 
-Render sizes are configured separately in `examples/specs.ts`:
-
-```ts
-export const exampleSpecs = {
-  button: {width: 30, height: 3, title: 'Button'},
-  // ...
-}
-```
+**Example files must not have side effects** — no `run()` or
+`interceptConsoleLog()` calls at the top level, since the build script imports
+the file to get the component. The `run()` import and call are added
+automatically for display (see below).
 
 ### Build pipeline
 
 The `scripts/build-screenshots.ts` script runs before every build (`prebuild`)
 and `start`:
 
-1. **Import** the example's default export (the `App` component)
-2. **Render** it headlessly using the React reconciler into a `Window` view tree
+1. **Import** the example's default export (`{width, height, title, App}`)
+2. **Render** the `App` component headlessly using the React reconciler into a `Window` view tree
 3. **Convert** the view tree to ANSI via `renderToAnsi()` from `@teaui/core`
 4. **Convert** ANSI escape codes to styled HTML (supports 16/256/24-bit color,
    bold, italic, underline, dim, inverse)
 5. **Write** `static/examples/{name}.html` (the rendered screenshot)
 6. **Transform** the source for display and write to `static/examples/{name}.tsx`:
-   - Strip `export default` from the component declaration
+   - Strip the `export default {…}` spec object
    - Add `run` to the `@teaui/react` import if not already present
    - Append `run(<App />)` at the end
 

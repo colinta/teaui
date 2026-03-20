@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Stack, Button} from '@teaui/react'
 
-export default function App() {
+function App() {
   return (
     <Box border="single">
       <Stack.down>
@@ -11,3 +11,5 @@ export default function App() {
     </Box>
   )
 }
+
+export default {width: 40, height: 5, title: 'Stack', App}

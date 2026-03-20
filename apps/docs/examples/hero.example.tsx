@@ -2,7 +2,7 @@ import React, {useReducer} from 'react'
 import {interceptConsoleLog} from '@teaui/core'
 import {Box, Button, Stack, run} from '@teaui/react'
 
-export default function App() {
+function App() {
   const [bang, goto10] = useReducer(s => s + '!', '')
   return (
     <Box border="single">
@@ -13,3 +13,5 @@ export default function App() {
     </Box>
   )
 }
+
+export default {width: 40, height: 5, title: 'Output', App}

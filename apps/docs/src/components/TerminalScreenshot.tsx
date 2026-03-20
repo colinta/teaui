@@ -3,7 +3,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl'
 import '../css/terminal.css'
 
 interface Props {
-  /** Screenshot name (without .html extension) */
+  /** Screenshot name (without extension) */
   name: string
   /** Optional title shown in the terminal title bar */
   title?: string
@@ -20,7 +20,7 @@ export default function TerminalScreenshot({
   title,
   dir = 'screenshots',
 }: Props) {
-  const url = useBaseUrl(`/${dir}/${name}.html`)
+  const url = useBaseUrl(`/${dir}/${name}.html.txt`)
   const [html, setHtml] = useState<string | null>(null)
 
   useEffect(() => {

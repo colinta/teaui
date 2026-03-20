@@ -1,0 +1,70 @@
+---
+sidebar_position: 5
+title: Table
+---
+
+import Example from '@site/src/components/Example'
+
+# Table
+
+A data table with sortable column headers, keyboard-navigable and scrollable rows, and optional row selection.
+
+<Example name="table" title="Table" />
+
+## Props
+
+| Prop                | Type                                              | Default | Description                                                     |
+| ------------------- | ------------------------------------------------- | ------- | --------------------------------------------------------------- |
+| `data`              | `TData[]`                                         | —       | Array of row data objects                                       |
+| `columns`           | `Column<TData>[]`                                 | —       | Column definitions                                              |
+| `format`            | `(key: string, row: TData) => string`             | —       | Format a cell value as a string                                 |
+| `renderItem`        | `(item: TData, index: number) => ReactNode`       | —       | Virtualized row rendering (React only)                          |
+| `selectedIndex`     | `number`                                          | —       | Currently focused row index                                     |
+| `onSelect`          | `(row: TData, index: number) => void`             | —       | Fired on Enter or click on a row                                |
+| `onSort`            | `(key: string, direction: SortDirection) => void` | —       | Fired when sort changes via header click                        |
+| `sortKey`           | `string`                                          | —       | Initial sort column key (must match a sortable column)          |
+| `sortDirection`     | `'asc' \| 'desc'`                                 | `'asc'` | Initial sort direction                                          |
+| `showRowNumbers`    | `boolean`                                         | `false` | Show a row number column                                        |
+| `isSelectable`      | `boolean`                                         | `false` | Enable multi-selection via space bar or click                   |
+| `showSelected`      | `boolean`                                         | `false` | Show checkbox column for multi-selection (implies isSelectable) |
+| `onSelectionChange` | `(selectedItems: Set<TData>) => void`             | —       | Fired when the set of selected items changes                    |
+
+### Column
+
+| Field      | Type                            | Default  | Description                   |
+| ---------- | ------------------------------- | -------- | ----------------------------- |
+| `key`      | `string`                        | —        | Data field key                |
+| `title`    | `string`                        | —        | Column header text            |
+| `width`    | `number \| 'auto'`              | `'auto'` | Column width in characters    |
+| `align`    | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment                |
+| `sortable` | `boolean`                       | `false`  | Enable sorting on this column |
+
+## Keyboard Navigation
+
+| Key       | Action                                     |
+| --------- | ------------------------------------------ |
+| `↑` / `↓` | Move selection                             |
+| `Enter`   | Select row (fires `onSelect`)              |
+| `Space`   | Toggle row selection (when `isSelectable`) |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Table} from '@teaui/core'
+
+new Table({
+  data: [
+    {name: 'Alice', age: 30},
+    {name: 'Bob', age: 25},
+  ],
+  columns: [
+    {key: 'name', title: 'Name', sortable: true},
+    {key: 'age', title: 'Age', width: 6, align: 'right'},
+  ],
+  format: (key, row) => String(row[key]),
+  onSelect: (row, index) => console.log('Selected:', row.name),
+})
+```
+
+</details>

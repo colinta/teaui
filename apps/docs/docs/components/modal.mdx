@@ -1,0 +1,62 @@
+---
+sidebar_position: 5
+title: Modal
+---
+
+import Example from '@site/src/components/Example'
+
+# Modal
+
+A modal overlay rendered above the main view tree. Supports dimmed backgrounds, click-to-dismiss, and escape-to-dismiss. Used internally by `Dropdown`, and available for building alerts, dialogs, and popovers.
+
+Present a modal by calling `viewport.requestModal(modal)` during a view's `render()`. Multiple modals can be stacked (e.g. a modal form that presents an alert).
+
+<Example name="modal" title="Modal" />
+
+## Props
+
+| Prop             | Type         | Default | Description                                                      |
+| ---------------- | ------------ | ------- | ---------------------------------------------------------------- |
+| `dim`            | `boolean`    | `false` | Paint the entire screen with a dimmed overlay before rendering   |
+| `dimStyle`       | `Style`      | —       | Custom dim style. Defaults to theme's dim text/background colors |
+| `dismissOnClick` | `boolean`    | `true`  | Clicking outside the modal content dismisses it                  |
+| `dismissOnEsc`   | `boolean`    | `false` | Pressing Escape dismisses the modal                              |
+| `onDismiss`      | `() => void` | —       | Called when the modal is dismissed                               |
+| `children`       | `ReactNode`  | —       | Modal content                                                    |
+
+## Properties Set by ModalManager
+
+These are set automatically before the modal renders. Use them for positioning.
+
+| Property        | Type   | Description                                       |
+| --------------- | ------ | ------------------------------------------------- |
+| `presentedRect` | `Rect` | The rect of the view that called `requestModal()` |
+| `windowSize`    | `Size` | The full screen size                              |
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Modal, Box, Text} from '@teaui/core'
+
+const content = new Box({
+  border: 'rounded',
+  padding: 1,
+  child: new Text({lines: ['Hello from modal!']}),
+})
+
+const modal = new Modal({
+  dim: true,
+  dismissOnClick: true,
+  dismissOnEsc: true,
+  onDismiss: () => {
+    // handle dismiss
+  },
+  child: content,
+})
+
+// In a view's render() method:
+viewport.requestModal(modal)
+```
+
+</details>

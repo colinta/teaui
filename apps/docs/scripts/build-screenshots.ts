@@ -241,7 +241,7 @@ async function buildScreenshots() {
       const ansi = renderToAnsi(view, spec.size)
       const fragment = renderAnsiToHtmlFragment(ansi)
 
-      const outputPath = join(OUTPUT_DIR, `${name}.html`)
+      const outputPath = join(OUTPUT_DIR, `${name}.html.txt`)
       writeFileSync(outputPath, fragment, 'utf-8')
       console.log(`  ✓ ${name} (${spec.size.width}×${spec.size.height})`)
     } catch (err) {
@@ -261,47 +261,45 @@ async function buildExamples() {
 
   // Lazy-import renderReact only when we have examples
   const {renderReact} = await import('../screenshots/renderReact.js')
-  const {exampleSpecs} = await import('../examples/specs.js')
 
   console.log(`Building ${files.length} example(s)...`)
 
   for (const file of files) {
     const name = file.replace(/\.example\.tsx$/, '')
-    const spec = exampleSpecs[name]
-
-    if (!spec) {
-      console.error(`  ✗ ${name}: no spec found in examples/specs.ts`)
-      continue
-    }
 
     try {
-      // Import the example module to get the React element
+      // Import the example module — default export is {width, height, title, App}
       const examplePath = join(EXAMPLES_DIR, file)
       const mod = await import(examplePath)
+      const spec = mod.default
 
-      // The example's default export is the App component
-      const App = mod.default ?? mod.App
-      if (!App) {
-        console.error(`  ✗ ${name}: no default/App export found`)
+      if (!spec || !spec.App) {
+        console.error(
+          `  ✗ ${name}: expected default export {width, height, title, App}`,
+        )
         continue
       }
+
+      const {App, width, height, title} = spec
 
       // Render the React component
       const {createElement} = await import('react')
       const view = renderReact(createElement(App))
-      const ansi = renderToAnsi(view, spec)
+      const ansi = renderToAnsi(view, {width, height})
       const fragment = renderAnsiToHtmlFragment(ansi)
 
       // Write the rendered HTML
-      const htmlPath = join(EXAMPLES_OUTPUT_DIR, `${name}.html`)
+      const htmlPath = join(EXAMPLES_OUTPUT_DIR, `${name}.html.txt`)
       writeFileSync(htmlPath, fragment, 'utf-8')
 
-      // Write the display source code: strip 'export default' and append run(<App />)
-      const sourcePath = join(EXAMPLES_DIR, file)
-      let source = readFileSync(sourcePath, 'utf-8').replace(
-        /^export default /m,
-        '',
-      )
+      // Write the display source code:
+      // - Strip the `export default {…}` spec line
+      // - Add 'run' to the @teaui/react import
+      // - Append run(<App />)
+      let source = readFileSync(examplePath, 'utf-8')
+
+      // Remove the export default spec object (last line(s))
+      source = source.replace(/\n*export default \{[^}]*\}\s*$/m, '')
 
       // Add 'run' to the @teaui/react import and append run(<App />) call
       source = source.replace(
@@ -316,7 +314,7 @@ async function buildExamples() {
       const codePath = join(EXAMPLES_OUTPUT_DIR, `${name}.tsx`)
       writeFileSync(codePath, displaySource, 'utf-8')
 
-      console.log(`  ✓ ${name} (${spec.width}×${spec.height})`)
+      console.log(`  ✓ ${name} (${width}×${height})`)
     } catch (err) {
       console.error(`  ✗ ${name}: ${err}`)
     }

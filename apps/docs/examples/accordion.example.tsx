@@ -1,7 +1,7 @@
 import React from 'react'
 import {Accordion, Text} from '@teaui/react'
 
-export default function App() {
+function App() {
   return (
     <Accordion>
       <Accordion.Section title="Section 1" isOpen>
@@ -16,3 +16,5 @@ export default function App() {
     </Accordion>
   )
 }
+
+export default {width: 30, height: 6, title: 'Accordion', App}

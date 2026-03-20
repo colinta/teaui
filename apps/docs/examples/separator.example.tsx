@@ -1,7 +1,7 @@
 import React from 'react'
 import {Stack, Text, Separator} from '@teaui/react'
 
-export default function App() {
+function App() {
   return (
     <Stack.down>
       <Text>Above</Text>
@@ -10,3 +10,5 @@ export default function App() {
     </Stack.down>
   )
 }
+
+export default {width: 30, height: 3, title: 'Separator', App}

@@ -1,0 +1,73 @@
+---
+sidebar_position: 6
+title: Geometry
+---
+
+import Example from '@site/src/components/Example'
+
+# Geometry
+
+A container that reports its available size via an `onLayout` callback. Fills all available space by default. Useful for responsive layouts, virtualized lists, and any case where you need to know the viewport dimensions before deciding what to render.
+
+<Example name="geometry" title="Geometry" />
+
+## Props
+
+| Prop       | Type                   | Default | Description                                          |
+| ---------- | ---------------------- | ------- | ---------------------------------------------------- |
+| `onLayout` | `(size: Size) => void` | —       | Called during render with the available content size |
+| `children` | `ReactNode`            | —       | Child views                                          |
+
+The `onLayout` callback fires whenever the available size changes (e.g. terminal resize). The `Size` object has `width` and `height` properties in terminal columns/rows.
+
+## Use Cases
+
+### Virtualized rendering
+
+Use `Geometry` to measure how many rows are visible, then render only that slice of data:
+
+```tsx
+function VirtualList({items}: {items: string[]}) {
+  const [visibleCount, setVisibleCount] = useState(10)
+
+  return (
+    <Geometry onLayout={size => setVisibleCount(size.height)}>
+      {items.slice(0, visibleCount).map((item, i) => (
+        <Text key={i}>{item}</Text>
+      ))}
+    </Geometry>
+  )
+}
+```
+
+### Responsive layout
+
+Switch between layouts based on available width:
+
+```tsx
+function Responsive({children}: {children: React.ReactNode}) {
+  const [wide, setWide] = useState(false)
+
+  return (
+    <Geometry onLayout={size => setWide(size.width > 80)}>
+      <Stack direction={wide ? 'right' : 'down'}>{children}</Stack>
+    </Geometry>
+  )
+}
+```
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Geometry, Text} from '@teaui/core'
+
+new Geometry({
+  onLayout: size => {
+    console.log(`Available: ${size.width}×${size.height}`)
+  },
+  child: new Text({lines: ['Content goes here']}),
+})
+```
+
+</details>

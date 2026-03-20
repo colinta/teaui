@@ -15,7 +15,7 @@ interface Props {
  * Source and screenshots are generated at build time from examples/*.example.tsx files.
  */
 export default function Example({name, title}: Props) {
-  const htmlUrl = useBaseUrl(`/examples/${name}.html`)
+  const htmlUrl = useBaseUrl(`/examples/${name}.html.txt`)
   const codeUrl = useBaseUrl(`/examples/${name}.tsx`)
   const [html, setHtml] = useState<string | null>(null)
   const [code, setCode] = useState<string | null>(null)

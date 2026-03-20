@@ -1,7 +1,7 @@
 import React from 'react'
 import {Tabs, Text} from '@teaui/react'
 
-export default function App() {
+function App() {
   return (
     <Tabs border>
       <Tabs.Section title="Info">
@@ -16,3 +16,5 @@ export default function App() {
     </Tabs>
   )
 }
+
+export default {width: 35, height: 5, title: 'Tabs', App}
