@@ -20,7 +20,7 @@ export class Spinner extends View {
 
   update({isAnimating, ...props}: Props) {
     super.update(props)
-    this.#update(props)
+    this.#update({isAnimating})
   }
 
   #update({isAnimating}: Props) {

@@ -271,7 +271,6 @@ export function BreadcrumbTab() {
   )
 }
 
-// Run only if this file is being executed directly (like Python's if __name__ == '__main__':)
 if (import.meta.url === `file://${process.argv[1]}`) {
   run(<BreadcrumbTab />)
 }
