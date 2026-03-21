@@ -1,0 +1,58 @@
+---
+sidebar_position: 3
+title: Calendar
+---
+
+import Example from '@site/src/components/Example'
+
+# Calendar
+
+A month-grid calendar widget with day, month, and year selection. Supports
+keyboard and mouse navigation, date range selection, and configurable first day
+of the week.
+
+<Example name="calendar" title="Calendar" />
+
+## Features
+
+- **Day grid** — Displays a 6-week grid for the visible month with previous/next
+  month days shown dimmed.
+- **Month picker** — Click the month name in the header to switch to a 4×3 grid
+  of month abbreviations.
+- **Year picker** — Click the year in the header to switch to a scrollable year
+  list with keyboard search.
+- **Range selection** — Set `selection="range"` to allow selecting a date range, including click-and-drag with the mouse.
+- **First day of week** — Set `firstDayOfWeek={1}` for Monday-start calendars.
+
+## Props
+
+| Prop              | Type                           | Default      | Description                                              |
+| ----------------- | ------------------------------ | ------------ | -------------------------------------------------------- |
+| `date`            | `Date`                         | `new Date()` | Currently selected date                                  |
+| `visibleDate`     | `Date`                         | `new Date()` | The month/year displayed in the grid                     |
+| `onChangeVisible` | `(date: Date) => void`         | —            | Called when navigating months/years (day is always 1)    |
+| `onChange`        | `(d1: Date, d2: Date) => void` | —            | Called on date selection (d2 == d1 for single selection) |
+| `selection`       | `'single' \| 'range'`          | `'single'`   | Whether to select a single date or a range               |
+| `firstDayOfWeek`  | `0 \| 1`                       | `0`          | 0 = Sunday, 1 = Monday                                   |
+
+## Keyboard Shortcuts
+
+| Key             | Action                               |
+| --------------- | ------------------------------------ |
+| `←` `→` `↑` `↓` | Move selection by day / week         |
+| `Enter`         | Confirm selection (or set range end) |
+| `Escape`        | Exit month/year picker               |
+| `Page Up`       | Previous month                       |
+| `Page Down`     | Next month                           |
+| `Home`          | First day of month                   |
+| `End`           | Last day of month                    |
+
+### In year picker
+
+| Key         | Action                   |
+| ----------- | ------------------------ |
+| `↑` `↓`     | Scroll years             |
+| `0-9`       | Type a year to search    |
+| `Backspace` | Delete last search digit |
+| `Enter`     | Confirm searched year    |
+| `Escape`    | Return to day view       |
