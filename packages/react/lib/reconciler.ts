@@ -7,6 +7,7 @@ import {
   Box,
   Breadcrumb,
   Button,
+  Calendar,
   Canvas,
   Checkbox,
   Collapsible,
@@ -91,6 +92,9 @@ function createInstance(type: string, props: Props): any {
     case 'breadcrumb':
     case 'tui-breadcrumb':
       return new Breadcrumb(props as any)
+    case 'calendar':
+    case 'tui-calendar':
+      return new Calendar(props as any)
     case 'canvas':
     case 'tui-canvas':
       return new Canvas(props as any)
