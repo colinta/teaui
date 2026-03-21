@@ -1,10 +1,12 @@
 import * as unicode from '@teaui/term'
 
 import type {Viewport} from '../Viewport.js'
-import {type Props as ContainerProps, Container} from '../Container.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {Style} from '../Style.js'
 import {define} from '../util.js'
+import {ZStack} from './ZStack.js'
+
+type ContainerProps = ConstructorParameters<typeof ZStack>[0] & {}
 
 export type Border =
   | 'none'
@@ -55,7 +57,7 @@ interface Props extends ContainerProps {
   highlight?: boolean
 }
 
-export class Box extends Container {
+export class Box extends ZStack {
   #border: Border | BorderChars = 'single'
   #borderChars: CalculatedBorderChars = BORDERS.single
   #borderSizes: BorderSizes = BORDER_SIZE_ZERO
