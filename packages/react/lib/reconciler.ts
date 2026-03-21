@@ -39,7 +39,6 @@ import {
   Space,
   Spinner,
   Logo,
-  Pin,
   ZStack,
   Stack,
   Table,
@@ -163,8 +162,6 @@ function createInstance(type: string, props: Props): any {
       return new Spinner(props as any)
     case 'tui-logo':
       return new Logo(props as any)
-    case 'tui-pin':
-      return new Pin(props as any)
     case 'tui-zstack':
       return new ZStack(props as any)
     case 'toggle-group':

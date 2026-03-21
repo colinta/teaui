@@ -26,7 +26,6 @@ import {
   Separator,
   Slider,
   Logo,
-  Pin,
   Spinner,
   Stack,
   ZStack,
@@ -779,7 +778,7 @@ function MoreTab() {
 
 function Demo() {
   return (
-    <ZStack flex={1}>
+    <ZStack flex={1} location="top-right">
       <Box border="rounded" flex={1}>
         <Stack.down flex={1}>
           <Tabs border flex={1}>
@@ -810,9 +809,7 @@ function Demo() {
           </Tabs>
         </Stack.down>
       </Box>
-      <Pin location="top-right">
-        <Logo isAnimating />
-      </Pin>
+      <Logo isAnimating />
     </ZStack>
   )
 }

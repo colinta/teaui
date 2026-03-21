@@ -35,7 +35,6 @@ import type {
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
   Logo as WrLogo,
-  Pin as WrPin,
   ZStack as WrZStack,
   Column,
   SortDirection,
@@ -88,7 +87,6 @@ type SliderProps = TUIView<typeof WrSlider>
 type SpaceProps = TUIView<typeof WrSpace>
 type SpinnerProps = TUIView<typeof WrSpinner>
 type LogoProps = TUIView<typeof WrLogo>
-type PinProps = TUIContainer<typeof WrPin>
 type ZStackProps = TUIContainer<typeof WrZStack>
 type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
@@ -150,7 +148,6 @@ declare module 'react' {
       'tui-space': SpaceProps
       'tui-spinner': SpinnerProps
       'tui-logo': LogoProps
-      'tui-pin': PinProps
       'tui-zstack': ZStackProps
       'tui-table': any
       'tui-toggle-group': ToggleGroupProps
@@ -300,9 +297,6 @@ export function Spinner(reactProps: SpinnerProps): JSX.Element {
 }
 export function Logo(reactProps: LogoProps): JSX.Element {
   return <tui-logo {...reactProps} />
-}
-export function Pin(reactProps: PinProps): JSX.Element {
-  return <tui-pin {...reactProps} />
 }
 export function ZStack(reactProps: ZStackProps): JSX.Element {
   return <tui-zstack {...reactProps} />
