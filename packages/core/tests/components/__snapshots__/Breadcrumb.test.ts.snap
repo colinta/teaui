@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Breadcrumb > rendering > renders inactive state 1`] = `" 🏠 Home  Blog"`;
+
+exports[`Breadcrumb > rendering > renders multiple items with separators 1`] = `" 🏠 Home  Blog  Post "`;
+
+exports[`Breadcrumb > rendering > renders single item with home icon 1`] = `" 🏠 Home "`;
+
+exports[`Breadcrumb > rendering > uses custom palette when provided 1`] = `" 🏠 Home  Blog "`;

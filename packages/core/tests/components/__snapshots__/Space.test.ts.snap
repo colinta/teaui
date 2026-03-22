@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Space > fills remaining space between siblings 1`] = `
+"A
+B"
+`;
+
+exports[`Space > pushes content apart in a vertical stack 1`] = `
+"Top
+Bottom"
+`;

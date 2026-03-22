@@ -9,9 +9,7 @@ describe('Checkbox', () => {
         width: 20,
         height: 1,
       })
-      // Single focusable element auto-focuses → focus indicator
-      expect(t.terminal.textContent()).toContain('🞐')
-      expect(t.terminal.textContent()).toContain('Option')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders checked when focused', () => {
@@ -19,7 +17,7 @@ describe('Checkbox', () => {
         width: 20,
         height: 1,
       })
-      expect(t.terminal.textContent()).toContain('🞕')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders with short title', () => {
@@ -27,7 +25,7 @@ describe('Checkbox', () => {
         width: 10,
         height: 1,
       })
-      expect(t.terminal.textContent()).toContain('OK')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 

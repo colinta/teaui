@@ -500,4 +500,70 @@ describe('Canvas', () => {
       expect(t.terminal.charAt(0, 1)).toBe(String.fromCharCode(0x2800 | 0x47))
     })
   })
+
+  describe('snapshot rendering', () => {
+    it('renders shapes on a 40×20 canvas', () => {
+      const canvas = new Canvas({
+        draw(canvas) {
+          const w = canvas.pixelWidth
+          const h = canvas.pixelHeight
+
+          // Lines from the origin
+          canvas.line(0, 0, w - 1, h - 1) // diagonal
+          canvas.line(0, 0, w - 1, 0) // horizontal top
+          canvas.line(0, 0, 0, h - 1) // vertical left
+
+          // Rectangle outline
+          canvas.rect(10, 10, 30, 20)
+
+          // Filled rectangle
+          canvas.fillRect(w - 20, 5, 10, 8)
+
+          // Circle outline
+          canvas.circle(
+            Math.floor(w * 0.35),
+            Math.floor(h * 0.65),
+            Math.floor(h * 0.15),
+          )
+
+          // Filled circle
+          canvas.fillCircle(
+            Math.floor(w * 0.7),
+            Math.floor(h * 0.5),
+            Math.floor(h * 0.2),
+          )
+        },
+      })
+      const t = testRender(canvas, {width: 40, height: 20})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders concentric circles', () => {
+      const canvas = new Canvas({
+        draw(canvas) {
+          const cx = Math.floor(canvas.pixelWidth / 2)
+          const cy = Math.floor(canvas.pixelHeight / 2)
+          for (let r = 5; r <= 35; r += 10) {
+            canvas.circle(cx, cy, r)
+          }
+        },
+      })
+      const t = testRender(canvas, {width: 40, height: 20})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders a filled rectangle grid', () => {
+      const canvas = new Canvas({
+        draw(canvas) {
+          for (let x = 0; x < canvas.pixelWidth; x += 12) {
+            for (let y = 0; y < canvas.pixelHeight; y += 12) {
+              canvas.fillRect(x + 1, y + 1, 8, 8)
+            }
+          }
+        },
+      })
+      const t = testRender(canvas, {width: 40, height: 20})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
 })

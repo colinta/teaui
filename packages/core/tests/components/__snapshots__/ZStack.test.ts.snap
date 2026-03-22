@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ZStack > later children render on top of earlier ones 1`] = `"BBAAAAA"`;
+
+exports[`ZStack > location > bottom-center 1`] = `
+"
+
+
+
+  ┌─┐
+  │·│
+  └─┘"
+`;
+
+exports[`ZStack > location > bottom-left 1`] = `
+"
+
+
+
+┌─┐
+│·│
+└─┘"
+`;
+
+exports[`ZStack > location > bottom-right 1`] = `
+"
+
+
+
+    ┌─┐
+    │·│
+    └─┘"
+`;
+
+exports[`ZStack > location > center 1`] = `
+"
+
+  ┌─┐
+  │·│
+  └─┘"
+`;
+
+exports[`ZStack > location > left 1`] = `
+"
+
+┌─┐
+│·│
+└─┘"
+`;
+
+exports[`ZStack > location > right 1`] = `
+"
+
+    ┌─┐
+    │·│
+    └─┘"
+`;
+
+exports[`ZStack > location > top-center 1`] = `
+"  ┌─┐
+  │·│
+  └─┘"
+`;
+
+exports[`ZStack > location > top-left 1`] = `
+"┌─┐
+│·│
+└─┘"
+`;
+
+exports[`ZStack > location > top-right 1`] = `
+"    ┌─┐
+    │·│
+    └─┘"
+`;
+
+exports[`ZStack > overlays a small view on top of a larger one 1`] = `"AB23456"`;
+
+exports[`ZStack > renders a single child 1`] = `"Hello"`;
+
+exports[`ZStack > stacks multiple layers 1`] = `"Z.YYXXX"`;

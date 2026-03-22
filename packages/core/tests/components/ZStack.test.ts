@@ -11,7 +11,7 @@ describe('ZStack', () => {
       width: 10,
       height: 1,
     })
-    expect(t.terminal.textContent()).toBe('Hello')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('later children render on top of earlier ones', () => {
@@ -21,8 +21,7 @@ describe('ZStack', () => {
       }),
       {width: 7, height: 1},
     )
-    // 'BB' overwrites the first two characters of 'AAAAAAA'
-    expect(t.terminal.textContent()).toBe('BBAAAAA')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('naturalSize is the max of all children', () => {
@@ -49,7 +48,7 @@ describe('ZStack', () => {
       }),
       {width: 7, height: 1},
     )
-    expect(t.terminal.textContent()).toBe('AB23456')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('stacks multiple layers', () => {
@@ -63,8 +62,7 @@ describe('ZStack', () => {
       }),
       {width: 7, height: 1},
     )
-    // Z overwrites first char, ..YY overwrites chars 2-3, X fills the rest
-    expect(t.terminal.textContent()).toBe('Z.YYXXX')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('renders empty with no children', () => {
@@ -97,49 +95,37 @@ describe('ZStack', () => {
 
     it('top-left', () => {
       const t = testRender(makeAtLocation('top-left'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(['┌─┐', '│·│', '└─┘'].join('\n'))
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('top-center', () => {
       const t = testRender(makeAtLocation('top-center'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(
-        ['  ┌─┐', '  │·│', '  └─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('top-right', () => {
       const t = testRender(makeAtLocation('top-right'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(
-        ['    ┌─┐', '    │·│', '    └─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('left', () => {
       const t = testRender(makeAtLocation('left'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(
-        ['', '', '┌─┐', '│·│', '└─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('center', () => {
       const t = testRender(makeAtLocation('center'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(
-        ['', '', '  ┌─┐', '  │·│', '  └─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('right', () => {
       const t = testRender(makeAtLocation('right'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(
-        ['', '', '    ┌─┐', '    │·│', '    └─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('bottom-left', () => {
       const t = testRender(makeAtLocation('bottom-left'), {width: 7, height: 7})
-      expect(t.terminal.textContent()).toBe(
-        ['', '', '', '', '┌─┐', '│·│', '└─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('bottom-center', () => {
@@ -147,9 +133,7 @@ describe('ZStack', () => {
         width: 7,
         height: 7,
       })
-      expect(t.terminal.textContent()).toBe(
-        ['', '', '', '', '  ┌─┐', '  │·│', '  └─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('bottom-right', () => {
@@ -157,9 +141,7 @@ describe('ZStack', () => {
         width: 7,
         height: 7,
       })
-      expect(t.terminal.textContent()).toBe(
-        ['', '', '', '', '    ┌─┐', '    │·│', '    └─┘'].join('\n'),
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 })

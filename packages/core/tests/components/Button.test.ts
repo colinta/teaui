@@ -6,15 +6,17 @@ describe('Button', () => {
   describe('rendering', () => {
     it('renders with top and bottom border decorations', () => {
       const t = testRender(new Button({text: 'OK'}), {width: 10, height: 3})
-      expect(t.terminal.getRow(0)).toMatch(/▔/)
-      expect(t.terminal.getRow(2)).toMatch(/▁/)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
-    it('renders without crashing at various sizes', () => {
-      for (const height of [1, 3, 5]) {
-        const t = testRender(new Button({text: 'Test'}), {width: 12, height})
-        expect(t.terminal.textContent()).toBeDefined()
-      }
+    it('renders at height 1', () => {
+      const t = testRender(new Button({text: 'Test'}), {width: 12, height: 1})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders at height 5', () => {
+      const t = testRender(new Button({text: 'Test'}), {width: 12, height: 5})
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -43,7 +45,6 @@ describe('Button', () => {
       })
       const t = testRender(btn, {width: 14, height: 3})
       t.sendMouse('mouse.button.down', {x: 5, y: 1})
-      // Release far outside the button area
       t.sendMouse('mouse.button.up', {x: 50, y: 50})
       expect(clicked).toBe(false)
     })

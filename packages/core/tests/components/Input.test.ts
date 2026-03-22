@@ -9,7 +9,7 @@ describe('Input', () => {
         width: 20,
         height: 1,
       })
-      expect(t.terminal.textContent()).toContain('hello')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders placeholder when empty', () => {
@@ -17,7 +17,7 @@ describe('Input', () => {
         new Input({value: '', placeholder: 'Type here...'}),
         {width: 20, height: 1},
       )
-      expect(t.terminal.textContent()).toContain('Type here...')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders empty input without crashing', () => {
@@ -119,7 +119,6 @@ describe('Input', () => {
         },
       })
       const t = testRender(input, {width: 20, height: 1})
-      // Move cursor to start, then delete
       t.sendKey('left')
       t.sendKey('left')
       t.sendKey('left')
@@ -260,7 +259,6 @@ describe('Input', () => {
     it('inserts pasted text at cursor position mid-text', () => {
       const input = new Input({value: 'ac'})
       const t = testRender(input, {width: 30, height: 1})
-      // Move cursor to position 1 (between 'a' and 'c')
       t.sendKey('home')
       t.sendKey('right')
       t.sendPaste('b')
@@ -270,7 +268,6 @@ describe('Input', () => {
     it('replaces selection with pasted text', () => {
       const input = new Input({value: 'hello world'})
       const t = testRender(input, {width: 30, height: 1})
-      // Select all with Ctrl+A then paste
       t.sendKey('home')
       t.sendKey('end', {shift: true})
       t.sendPaste('goodbye')

@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Separator > renders horizontal separator in vertical stack 1`] = `
+"Above
+──────────
+Below"
+`;

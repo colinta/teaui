@@ -1,0 +1,47 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Box > border styles > renders bold border 1`] = `
+"┏━━━┓
+┃   ┃
+┗━━━┛"
+`;
+
+exports[`Box > border styles > renders dotted border 1`] = `
+"⡖⠒⠒⠒⢲
+⡇   ⢸
+⠧⠤⠤⠤⠼"
+`;
+
+exports[`Box > border styles > renders double border 1`] = `
+"╔═══╗
+║   ║
+╚═══╝"
+`;
+
+exports[`Box > border styles > renders rounded border 1`] = `
+"╭───╮
+│   │
+╰───╯"
+`;
+
+exports[`Box > border styles > renders single border 1`] = `
+"┌───┐
+│   │
+└───┘"
+`;
+
+exports[`Box > content > renders larger box 1`] = `
+"┌───────┐
+│       │
+│       │
+│       │
+└───────┘"
+`;
+
+exports[`Box > content > renders text inside single border 1`] = `
+"┌────┐
+│Hi  │
+└────┘"
+`;
+
+exports[`Box > no border > renders without border 1`] = `"Hello"`;

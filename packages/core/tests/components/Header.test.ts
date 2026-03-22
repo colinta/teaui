@@ -8,17 +8,7 @@ describe('Header', () => {
       width: 20,
       height: 2,
     })
-    expect(t.terminal.textContent()).toContain('Title')
-  })
-
-  it('renders underline border', () => {
-    const t = testRender(new Header({text: 'Title', border: 'single'}), {
-      width: 20,
-      height: 2,
-    })
-    // Second row should contain separator chars
-    const borderRow = t.terminal.getRow(1)
-    expect(borderRow).toMatch(/─/)
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('renders bold text when bold prop set', () => {
@@ -36,7 +26,6 @@ describe('Header', () => {
       width: 20,
       height: 2,
     })
-    const borderRow = t.terminal.getRow(1)
-    expect(borderRow).toMatch(/═/)
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 })

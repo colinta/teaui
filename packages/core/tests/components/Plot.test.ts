@@ -361,4 +361,39 @@ describe('Plot', () => {
     // Should contain dollar-formatted labels
     expect(content).toContain('$')
   })
+
+  describe('snapshot rendering', () => {
+    it('renders a line chart', () => {
+      const plot = new Plot({title: 'Sales', width: 40, height: 12})
+      const chart = new LineChart(sampleData, {
+        extract: (d: DataPoint) => [d.x, d.y],
+        xLabels: (d: DataPoint) => d.label,
+        yLabels: (v: number) => String(Math.round(v)),
+      })
+      plot.add(chart)
+
+      const t = testRender(plot, {width: 40, height: 12})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders a bar chart', () => {
+      const barData = [
+        {value: 10, label: 'Jan'},
+        {value: 25, label: 'Feb'},
+        {value: 15, label: 'Mar'},
+        {value: 30, label: 'Apr'},
+        {value: 20, label: 'May'},
+      ]
+      const plot = new Plot({title: 'Revenue', width: 40, height: 12})
+      const chart = new BarChart(barData, {
+        extract: d => d.value,
+        xLabels: d => d.label,
+        yLabels: (v: number) => String(Math.round(v)),
+      })
+      plot.add(chart)
+
+      const t = testRender(plot, {width: 40, height: 12})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
 })

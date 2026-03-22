@@ -18,9 +18,7 @@ describe('Stack', () => {
         }),
         {width: 10, height: 3},
       )
-      expect(t.terminal.textAtRow(0)).toBe('Line 1')
-      expect(t.terminal.textAtRow(1)).toBe('Line 2')
-      expect(t.terminal.textAtRow(2)).toBe('Line 3')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders single child', () => {
@@ -31,7 +29,7 @@ describe('Stack', () => {
         }),
         {width: 10, height: 1},
       )
-      expect(t.terminal.textContent()).toBe('Only')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -48,10 +46,7 @@ describe('Stack', () => {
         }),
         {width: 9, height: 1},
       )
-      const row = t.terminal.textAtRow(0)
-      expect(row).toContain('A')
-      expect(row).toContain('B')
-      expect(row).toContain('C')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 

@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Text > renders multiline text from lines array 1`] = `
+"Line 1
+Line 2
+Line 3"
+`;
+
+exports[`Text > renders text content 1`] = `"Hello, world!"`;
+
+exports[`Text > truncates long text when wrap is disabled 1`] = `"Hello"`;
+
+exports[`Text > wraps long text when wrap is enabled 1`] = `
+"Hello
+World"
+`;

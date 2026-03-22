@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Tabs > animates separator when selecting another tab 1`] = `
+"   Info  Settings  Help
+┌╴━━━━━━╶───────────────╶─────────┐
+│Information panel                │
+│                                 │
+└─────────────────────────────────┘"
+`;
+
+exports[`Tabs > animates separator when selecting another tab 2`] = `
+"   Info  Settings  Help
+┌╴─╴━━━━━━╶─────────────╶─────────┐
+│Settings panel                   │
+│                                 │
+└─────────────────────────────────┘"
+`;
+
+exports[`Tabs > animates separator when selecting another tab 3`] = `
+"   Info  Settings  Help
+┌╴─────╴━━━━━━━━━━╶─────╶─────────┐
+│Settings panel                   │
+│                                 │
+└─────────────────────────────────┘"
+`;
+
+exports[`Tabs > renders first tab selected with border 1`] = `
+"   Info  Settings  Help
+┌╴━━━━━━╶───────────────╶─────────┐
+│Information panel                │
+│                                 │
+└─────────────────────────────────┘"
+`;
+
+exports[`Tabs > renders without border 1`] = `
+" Tab A  Tab B
+━━━━━━━╶──────
+Content A"
+`;

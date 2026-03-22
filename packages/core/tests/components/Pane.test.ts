@@ -34,22 +34,13 @@ describe('Pane', () => {
     it('renders two panes with separator', () => {
       const {pane} = createPane()
       const t = testRender(pane, {width: 40, height: 3})
-      const content = t.terminal.textContent()
-      expect(content).toContain('┃')
-      expect(content).toContain('LEFT')
-      expect(content).toContain('RIGHT')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders with border', () => {
       const {pane} = createPane({border: true})
       const t = testRender(pane, {width: 30, height: 5})
-      expect(t.terminal.textRect(0, 0, 30, 5)).toBe(
-        '╭─────┰──────────────────────╮\n' +
-          '│LEFT ┃RIGHT                 │\n' +
-          '│     ┃                      │\n' +
-          '│     ┃                      │\n' +
-          '╰─────┸──────────────────────╯',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -60,10 +51,7 @@ describe('Pane', () => {
       const detail = new Text({text: 'DETAIL'})
       const pane = new Pane({children: [a, b, detail]})
       const t = testRender(pane, {width: 60, height: 3})
-      const content = t.terminal.textContent()
-      expect(content).toContain('A')
-      expect(content).toContain('B')
-      expect(content).toContain('DETAIL')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -72,9 +60,7 @@ describe('Pane', () => {
       const detail = new Text({text: 'ONLY'})
       const pane = new Pane({children: [detail]})
       const t = testRender(pane, {width: 20, height: 3})
-      const content = t.terminal.textContent()
-      expect(content).toContain('ONLY')
-      expect(content).not.toContain('┃')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 

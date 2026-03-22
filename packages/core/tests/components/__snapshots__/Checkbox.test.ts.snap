@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Checkbox > rendering > renders checked when focused 1`] = `"🞕 Option"`;
+
+exports[`Checkbox > rendering > renders unchecked when focused 1`] = `"🞐 Option"`;
+
+exports[`Checkbox > rendering > renders with short title 1`] = `"🞐 OK"`;

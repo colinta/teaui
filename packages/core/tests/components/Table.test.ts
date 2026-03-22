@@ -51,52 +51,34 @@ function renderRows(
 describe('Table', () => {
   describe('header rendering', () => {
     it('renders header, separator, and data rows', () => {
-      const rows = renderRows(makeTable(), {width: 30, height: 8})
-      expect(rows).toEqual([
-        ' Name     │   Age │ City',
-        '──────────────────────────────',
-        '▶Alice    │    30 │ New York',
-        ' Bob      │    25 │ Chicago',
-        ' Charlie  │    35 │ Austin',
-        ' Diana    │    28 │ Seattle',
-        ' Eve      │    42 │ Denver',
-        '',
-      ])
+      const t = testRender(makeTable(), {width: 30, height: 8})
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('shows ascending sort indicator after column title', () => {
-      const rows = renderRows(
-        makeTable({sortKey: 'name', sortDirection: 'asc'}),
-        {width: 30, height: 4},
-      )
-      expect(rows[0]).toBe(' Name ▲   │   Age │ City')
+      const t = testRender(makeTable({sortKey: 'name', sortDirection: 'asc'}), {
+        width: 30,
+        height: 4,
+      })
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('shows descending sort indicator', () => {
-      const rows = renderRows(
+      const t = testRender(
         makeTable({sortKey: 'city', sortDirection: 'desc'}),
         {width: 30, height: 4},
       )
-      expect(rows[0]).toBe(' Name     │   Age │ City ▼')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
   describe('selection', () => {
     it('shows ▶ on selected row', () => {
-      const rows = renderRows(makeTable({selectedIndex: 2}), {
+      const t = testRender(makeTable({selectedIndex: 2}), {
         width: 30,
         height: 8,
       })
-      expect(rows).toEqual([
-        ' Name     │   Age │ City',
-        '──────────────────────────────',
-        ' Alice    │    30 │ New York',
-        ' Bob      │    25 │ Chicago',
-        '▶Charlie  │    35 │ Austin',
-        ' Diana    │    28 │ Seattle',
-        ' Eve      │    42 │ Denver',
-        '',
-      ])
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('moves selection with arrow keys', () => {
@@ -159,70 +141,38 @@ describe('Table', () => {
 
   describe('scroll indicators', () => {
     it('↓ indicator overlaid on dimmed last row', () => {
-      const rows = renderRows(makeTable({selectedIndex: 0}), {
+      const t = testRender(makeTable({selectedIndex: 0}), {
         width: 30,
         height: 5,
       })
-      expect(rows).toEqual([
-        ' Name     │   Age │ City',
-        '──────────────────────────────',
-        '▶Alice    │    30 │ New York',
-        ' Bob      │    25 │ Chicago',
-        ' Char [ ↓ 3 more rows ] in',
-      ])
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('both indicators overlaid on dimmed rows', () => {
-      const rows = renderRows(makeTable({selectedIndex: 2}), {
+      const t = testRender(makeTable({selectedIndex: 2}), {
         width: 30,
         height: 5,
       })
-      expect(rows).toEqual([
-        ' Name     │   Age │ City',
-        '──────────────────────────────',
-        ' Bob  [ ↑ 2 more rows ] ago',
-        '▶Charlie  │    35 │ Austin',
-        ' Dian [ ↓ 2 more rows ] tle',
-      ])
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('no ↑ when scrollOffset is 0', () => {
-      const rows = renderRows(makeTable({selectedIndex: 1}), {
+      const t = testRender(makeTable({selectedIndex: 1}), {
         width: 30,
         height: 5,
       })
-      expect(rows).toEqual([
-        ' Name     │   Age │ City',
-        '──────────────────────────────',
-        ' Alice    │    30 │ New York',
-        '▶Bob      │    25 │ Chicago',
-        ' Char [ ↓ 3 more rows ] in',
-      ])
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('no indicators when all rows fit', () => {
-      const rows = renderRows(makeTable({selectedIndex: 0}), {
+      const t = testRender(makeTable({selectedIndex: 0}), {
         width: 30,
         height: 9,
       })
-      expect(rows).toEqual([
-        ' Name     │   Age │ City',
-        '──────────────────────────────',
-        '▶Alice    │    30 │ New York',
-        ' Bob      │    25 │ Chicago',
-        ' Charlie  │    35 │ Austin',
-        ' Diana    │    28 │ Seattle',
-        ' Eve      │    42 │ Denver',
-        '',
-        '',
-      ])
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('selected row is never hidden by bottom indicator (height=16)', () => {
-      // 20 data rows, bodyHeight=14, halfHeight=7.
-      // selectedIndex=13: data.length - halfHeight = 13, so moving window
-      // condition (13 < 13) is false. The selected row must NOT land on
-      // the indicator row — it must be visible with ▶.
       const bigData: Row[] = Array.from({length: 20}, (_, i) => ({
         name: 'Row' + String(i).padStart(2, '0'),
         age: 20 + i,
@@ -242,7 +192,6 @@ describe('Table', () => {
         }),
         {width: 30, height: 16},
       )
-      // The selected row must be visible with ▶ (not covered by indicator)
       const selectedRow = rows.find(r => r.includes('Row13'))
       expect(selectedRow).toBeDefined()
       expect(selectedRow).toContain('▶')
@@ -276,38 +225,27 @@ describe('Table', () => {
 
   describe('row numbers', () => {
     it('renders row number column with # header', () => {
-      const rows = renderRows(
-        makeTable({showRowNumbers: true, sortKey: 'name'}),
-        {width: 35, height: 8},
-      )
-      expect(rows).toEqual([
-        ' # │ Name ▲   │   Age │ City',
-        '───────────────────────────────────',
-        '▶1 │ Alice    │    30 │ New York',
-        ' 2 │ Bob      │    25 │ Chicago',
-        ' 3 │ Charlie  │    35 │ Austin',
-        ' 4 │ Diana    │    28 │ Seattle',
-        ' 5 │ Eve      │    42 │ Denver',
-        '',
-      ])
+      const t = testRender(makeTable({showRowNumbers: true, sortKey: 'name'}), {
+        width: 35,
+        height: 8,
+      })
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('shows sort arrow on # when sorting by original order', () => {
-      const rows = renderRows(makeTable({showRowNumbers: true}), {
+      const t = testRender(makeTable({showRowNumbers: true}), {
         width: 35,
         height: 4,
       })
-      // No sortKey → sorting by original order, arrow replaces #
-      expect(rows[0]).toBe(' ▲ │ Name     │   Age │ City')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('does not show row numbers when disabled', () => {
-      const rows = renderRows(makeTable({showRowNumbers: false}), {
+      const t = testRender(makeTable({showRowNumbers: false}), {
         width: 30,
         height: 4,
       })
-      expect(rows[0]).toBe(' Name     │   Age │ City')
-      expect(rows[0]).not.toContain('#')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('widens row number column for 2-digit counts', () => {
@@ -316,7 +254,7 @@ describe('Table', () => {
         age: i,
         city: 'City' + i,
       }))
-      const rows = renderRows(
+      const t = testRender(
         new Table<Row>({
           data: bigData,
           columns: COLUMNS,
@@ -327,11 +265,7 @@ describe('Table', () => {
         }),
         {width: 35, height: 14},
       )
-      // 2-digit column: header is ' #', single digits are right-aligned
-      expect(rows[0]).toBe('  # │ Name ▲   │   Age │ City')
-      expect(rows[2]).toBe('▶ 1 │ Row0     │     0 │ City0')
-      expect(rows[11]).toBe(' 10 │ Row9     │     9 │ City9')
-      expect(rows[13]).toBe(' 12 │ Row11    │    11 │ City11')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('widens row number column for 3-digit counts', () => {
@@ -340,7 +274,7 @@ describe('Table', () => {
         age: i,
         city: 'C' + i,
       }))
-      const rows = renderRows(
+      const t = testRender(
         new Table<Row>({
           data: bigData,
           columns: COLUMNS,
@@ -351,36 +285,23 @@ describe('Table', () => {
         }),
         {width: 40, height: 6},
       )
-      // 3-digit column: header is '  #', numbers are right-aligned
-      expect(rows).toEqual([
-        '   # │ Name ▲   │   Age │ City',
-        '────────────────────────────────────────',
-        ' 147 │ R1 [ ↑ 147 more rows ]',
-        ' 148 │ R147     │   147 │ C147',
-        ' 149 │ R148     │   148 │ C148',
-        '▶150 │ R149     │   149 │ C149',
-      ])
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
   describe('selection (multi-select)', () => {
     it('renders checkbox column with showSelected', () => {
-      const rows = renderRows(
+      const t = testRender(
         makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
         {width: 35, height: 8},
       )
-      expect(rows[0]).toBe(' [ ] │ Name     │   Age │ City')
-      expect(rows[2]).toBe('▶[ ] │ Alice    │    30 │ New York')
-      expect(rows[3]).toBe(' [ ] │ Bob      │    25 │ Chicago')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('space bar toggles selection', () => {
       const t = testRender(
         makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
-        {
-          width: 35,
-          height: 8,
-        },
+        {width: 35, height: 8},
       )
       expect(t.terminal.textAtRow(2)).toBe('▶[ ] │ Alice    │    30 │ New York')
 
@@ -395,10 +316,7 @@ describe('Table', () => {
     it('multiple rows can be selected', () => {
       const t = testRender(
         makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
-        {
-          width: 35,
-          height: 8,
-        },
+        {width: 35, height: 8},
       )
       t.sendKey('space') // select Alice
       t.sendKey('down')
@@ -459,7 +377,6 @@ describe('Table', () => {
         width: 35,
         height: 4,
       })
-      // Checkbox column appears automatically
       expect(t.terminal.textAtRow(0)).toContain('[ ]')
     })
 
@@ -476,9 +393,7 @@ describe('Table', () => {
         }),
         {width: 30, height: 8},
       )
-      // No checkbox column
       expect(t.terminal.textAtRow(0)).not.toContain('[ ]')
-      // But space still toggles
       t.sendKey('space')
       expect(lastSelection!.size).toBe(1)
     })
@@ -491,7 +406,7 @@ describe('Table', () => {
     })
 
     it('uses fixed widths for specified columns', () => {
-      const rows = renderRows(
+      const t = testRender(
         makeTable({
           columns: [
             {key: 'name', title: 'Name', width: 10},
@@ -500,7 +415,7 @@ describe('Table', () => {
         }),
         {width: 20, height: 4},
       )
-      expect(rows[0]).toBe(' Name       │ Age')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 })

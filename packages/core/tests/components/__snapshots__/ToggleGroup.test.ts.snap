@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ToggleGroup > renders correctly 1`] = `
+"╭───┬───┬───╮
+│ A │ B │ C │
+╰───┴───┴───╯"
+`;
+
+exports[`ToggleGroup > shows selected state 1`] = `
+"╭───┲━━━┱───╮
+│ A ┃ B ┃ C │
+╰───┺━━━┹───╯"
+`;
+
+exports[`ToggleGroup > shows unselected state 1`] = `
+"╭───┬───┬───╮
+│ A │ B │ C │
+╰───┴───┴───╯"
+`;
+
+exports[`ToggleGroup > updates visual state after click 1`] = `
+"╭───┬───┬───╮
+│ A │ B │ C │
+╰───┴───┴───╯"
+`;
+
+exports[`ToggleGroup > updates visual state after click 2`] = `
+"┏━━━┓───┬───╮
+┃ A ┃ B │ C │
+┗━━━┛───┴───╯"
+`;

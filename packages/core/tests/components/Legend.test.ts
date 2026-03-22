@@ -14,8 +14,7 @@ describe('Legend', () => {
       }),
       {width: 30, height: 1},
     )
-    expect(t.terminal.textContent()).toContain('q quit')
-    expect(t.terminal.textContent()).toContain('? help')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('maps named keys to sigils', () => {
@@ -29,10 +28,7 @@ describe('Legend', () => {
       }),
       {width: 40, height: 1},
     )
-    const text = t.terminal.textContent()
-    expect(text).toContain('⤦ select')
-    expect(text).toContain('␛ cancel')
-    expect(text).toContain('⇥ switch')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('maps modifier+key arrays', () => {
@@ -42,7 +38,7 @@ describe('Legend', () => {
       }),
       {width: 20, height: 1},
     )
-    expect(t.terminal.textContent()).toContain('⌃C quit')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('maps Ctrl+C string syntax', () => {
@@ -52,7 +48,7 @@ describe('Legend', () => {
       }),
       {width: 20, height: 1},
     )
-    expect(t.terminal.textContent()).toContain('⌃C quit')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('maps compound keys like up/down', () => {
@@ -62,7 +58,7 @@ describe('Legend', () => {
       }),
       {width: 20, height: 1},
     )
-    expect(t.terminal.textContent()).toContain('↑↓ navigate')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('uses custom separator', () => {
@@ -76,8 +72,7 @@ describe('Legend', () => {
       }),
       {width: 30, height: 1},
     )
-    const text = t.terminal.textContent()
-    expect(text).toContain('• ')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('wraps to multiple rows when items exceed width', () => {
@@ -92,16 +87,7 @@ describe('Legend', () => {
       }),
       {width: 30, height: 4},
     )
-    const text = t.terminal.textContent()
-    // Should have content on multiple lines
-    expect(text).toContain('q')
-    expect(text).toContain('quit')
-    expect(text).toContain('?')
-    expect(text).toContain('help')
-    expect(text).toContain('⤦')
-    expect(text).toContain('select')
-    expect(text).toContain('␛')
-    expect(text).toContain('cancel')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('renders empty items without error', () => {
@@ -137,7 +123,7 @@ describe('Legend', () => {
       }),
       {width: 30, height: 3},
     )
-    expect(t.terminal.textContent()).toContain('q quit')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('maps cmd key', () => {
@@ -147,6 +133,6 @@ describe('Legend', () => {
       }),
       {width: 20, height: 1},
     )
-    expect(t.terminal.textContent()).toContain('⌘S save')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 })

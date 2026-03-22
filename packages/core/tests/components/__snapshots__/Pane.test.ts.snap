@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Pane > basic layout > renders two panes with separator 1`] = `
+"LEFT ┃RIGHT
+     ┃
+     ┃"
+`;
+
+exports[`Pane > basic layout > renders with border 1`] = `
+"╭─────┰──────────────────────╮
+│LEFT ┃RIGHT                 │
+│     ┃                      │
+│     ┃                      │
+╰─────┸──────────────────────╯"
+`;
+
+exports[`Pane > multiple browser panes > renders three panes with two separators 1`] = `
+"A    ┃B    ┃DETAIL
+     ┃     ┃
+     ┃     ┃"
+`;
+
+exports[`Pane > single child > renders just the detail pane with no separators 1`] = `"ONLY"`;

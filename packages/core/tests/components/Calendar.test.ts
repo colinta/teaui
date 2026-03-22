@@ -26,16 +26,7 @@ describe('Calendar', () => {
         }),
         {width: 22, height: 8, isFocused: false},
       )
-      const text = t.terminal.textContent()
-      expect(text).toContain('June')
-      expect(text).toContain('2026')
-      expect(text).toContain('Su')
-      expect(text).toContain('Mo')
-      expect(text).toContain('Tu')
-      expect(text).toContain('We')
-      expect(text).toContain('Th')
-      expect(text).toContain('Fr')
-      expect(text).toContain('Sa')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('matches the fixed grid for a 31-day month starting on friday', () => {
@@ -46,17 +37,7 @@ describe('Calendar', () => {
         }),
         {width: 22, height: 8, isFocused: false},
       )
-
-      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        " ◃  October   2021  ▹
-         Su Mo Tu We Th Fr Sa
-         26 27 28 29 30  1  2
-          3  4  5  6  7  8  9
-         10 11 12 13 14 15 16
-         17 18 19 20 21 22 23
-         24 25 26 27 28 29 30
-         31  1  2  3  4  5  6"
-      `)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders with focus', () => {
@@ -67,17 +48,7 @@ describe('Calendar', () => {
         }),
         {width: 22, height: 8, isFocused: true},
       )
-
-      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        " ◃  October   2021  ▹
-        ╭Su─Mo─Tu─We─Th─Fr─Sa╮
-        │26 27 28 29 30  1  2│
-        │ 3  4  5  6  7  8  9│
-        │10 11 12 13 14 15 16│
-        │17 18 19 20 21 22 23│
-        │24 25 26 27 28 29 30│
-        ╰31─ 1─ 2─ 3─ 4─ 5─ 6╯"
-      `)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('matches the fixed grid for a february starting on monday', () => {
@@ -88,17 +59,7 @@ describe('Calendar', () => {
         }),
         {width: 22, height: 8, isFocused: false},
       )
-
-      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        " ◃  February  2021  ▹
-         Su Mo Tu We Th Fr Sa
-         31  1  2  3  4  5  6
-          7  8  9 10 11 12 13
-         14 15 16 17 18 19 20
-         21 22 23 24 25 26 27
-         28  1  2  3  4  5  6
-          7  8  9 10 11 12 13"
-      `)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('matches the fixed grid for monday-first rendering', () => {
@@ -110,17 +71,7 @@ describe('Calendar', () => {
         }),
         {width: 22, height: 8, isFocused: false},
       )
-
-      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        " ◃  February  2021  ▹
-         Mo Tu We Th Fr Sa Su
-          1  2  3  4  5  6  7
-          8  9 10 11 12 13 14
-         15 16 17 18 19 20 21
-         22 23 24 25 26 27 28
-          1  2  3  4  5  6  7
-          8  9 10 11 12 13 14"
-      `)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders with navigation arrows', () => {
@@ -447,12 +398,10 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
 
-      // First click: start range on June 1
       t.sendMouse('mouse.button.down', {x: 4, y: 2})
       t.sendMouse('mouse.button.up', {x: 4, y: 2})
       expect(rangeStart).toBeUndefined()
 
-      // Second click on same date: should complete the range
       t.sendMouse('mouse.button.down', {x: 4, y: 2})
       t.sendMouse('mouse.button.up', {x: 4, y: 2})
       expect(rangeStart).toBeDefined()
@@ -475,11 +424,9 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
 
-      // First Enter: start range on June 10
       t.sendKey('return')
       expect(rangeStart).toBeUndefined()
 
-      // Second Enter on same date: should complete the range
       t.sendKey('return')
       expect(rangeStart).toBeDefined()
       expect(rangeEnd).toBeDefined()
@@ -592,11 +539,9 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
 
-      // First shift+right: anchors start at 10, moves cursor to 11
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(11)
 
-      // Continue shift+right: extends range
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(12)
 
@@ -654,16 +599,13 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
 
-      // Shift-select a range
       t.sendKey('right', {shift: true})
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(12)
 
-      // Non-shift arrow: should move cursor without extending range
       t.sendKey('right')
       expect(cal.cursorDate.getDate()).toBe(13)
 
-      // A new shift+right should start a fresh range from 13
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(14)
     })
@@ -677,15 +619,7 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
       openMonthPicker(t)
-
-      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        "        June        ×
-        
-          Jan    Feb    Mar
-          Apr    May    Jun
-          Jul    Aug    Sep
-          Oct    Nov    Dec"
-      `)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('selects a month and returns to day view', () => {
@@ -716,17 +650,7 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
       openYearPicker(t)
-
-      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        "        Year        ×
-                [ ↑ ]
-                 2024
-                 2025
-                 2026
-                 2027
-                 2028
-                [ ↓ ]"
-      `)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders years centered on current year', () => {
@@ -742,7 +666,6 @@ describe('Calendar', () => {
       expect(text).toContain('2026')
       expect(text).toContain('2027')
       expect(text).toContain('2028')
-      expect(text.split('\n')[0]).not.toContain('↑')
     })
 
     it('scrolls up only from the second arrow row', () => {

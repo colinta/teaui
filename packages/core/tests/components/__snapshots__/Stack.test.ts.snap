@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Stack > horizontal layout (right) > renders children left to right 1`] = `"ABC"`;
+
+exports[`Stack > vertical layout (down) > renders children top to bottom 1`] = `
+"Line 1
+Line 2
+Line 3"
+`;
+
+exports[`Stack > vertical layout (down) > renders single child 1`] = `"Only"`;

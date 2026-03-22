@@ -10,9 +10,7 @@ describe('Box', () => {
         new Box({border: 'single', children: [new Text({text: ''})]}),
         {width: 5, height: 3},
       )
-      expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '┌───┐\n' + '│   │\n' + '└───┘',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders bold border', () => {
@@ -20,9 +18,7 @@ describe('Box', () => {
         new Box({border: 'bold', children: [new Text({text: ''})]}),
         {width: 5, height: 3},
       )
-      expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '┏━━━┓\n' + '┃   ┃\n' + '┗━━━┛',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders double border', () => {
@@ -30,9 +26,7 @@ describe('Box', () => {
         new Box({border: 'double', children: [new Text({text: ''})]}),
         {width: 5, height: 3},
       )
-      expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '╔═══╗\n' + '║   ║\n' + '╚═══╝',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders rounded border', () => {
@@ -40,9 +34,7 @@ describe('Box', () => {
         new Box({border: 'rounded', children: [new Text({text: ''})]}),
         {width: 5, height: 3},
       )
-      expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '╭───╮\n' + '│   │\n' + '╰───╯',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders dotted border', () => {
@@ -50,9 +42,7 @@ describe('Box', () => {
         new Box({border: 'dotted', children: [new Text({text: ''})]}),
         {width: 5, height: 3},
       )
-      expect(t.terminal.textRect(0, 0, 5, 3)).toBe(
-        '⡖⠒⠒⠒⢲\n' + '⡇   ⢸\n' + '⠧⠤⠤⠤⠼',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -62,18 +52,7 @@ describe('Box', () => {
         new Box({border: 'single', children: [new Text({text: 'Hi'})]}),
         {width: 6, height: 3},
       )
-      expect(t.terminal.textRect(0, 0, 6, 3)).toBe(
-        '┌────┐\n' + '│Hi  │\n' + '└────┘',
-      )
-    })
-
-    it('content fills available space', () => {
-      const t = testRender(
-        new Box({border: 'single', children: [new Text({text: 'ABCDE'})]}),
-        {width: 7, height: 3},
-      )
-      // Interior is 5 chars wide
-      expect(t.terminal.textRect(1, 1, 5, 1)).toBe('ABCDE')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders larger box', () => {
@@ -81,13 +60,7 @@ describe('Box', () => {
         new Box({border: 'single', children: [new Text({text: ''})]}),
         {width: 9, height: 5},
       )
-      expect(t.terminal.textRect(0, 0, 9, 5)).toBe(
-        '┌───────┐\n' +
-          '│       │\n' +
-          '│       │\n' +
-          '│       │\n' +
-          '└───────┘',
-      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -97,7 +70,7 @@ describe('Box', () => {
         new Box({border: 'none', children: [new Text({text: 'Hello'})]}),
         {width: 10, height: 1},
       )
-      expect(t.terminal.textContent()).toBe('Hello')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 })

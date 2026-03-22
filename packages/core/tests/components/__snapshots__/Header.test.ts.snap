@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Header > renders double border 1`] = `
+" Title
+═══════"
+`;
+
+exports[`Header > renders header text with single border 1`] = `
+" Title
+───────"
+`;

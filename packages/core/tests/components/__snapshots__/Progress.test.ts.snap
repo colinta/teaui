@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Progress > multi-line > renders half progress bar at height 3 1`] = `
+"▄▄▄▄▄▄▄▄▄▄▄────────╮
+███████████        │
+▀▀▀▀▀▀▀▀▀▀▀────────╯"
+`;
+
+exports[`Progress > multi-line > shows percent left at height 3 1`] = `
+"     ▄▄▄▄▄▄▄▄──────╮
+ 50% ████████      │
+     ▀▀▀▀▀▀▀▀──────╯"
+`;
+
+exports[`Progress > multi-line > shows percent right at height 3 1`] = `
+"▄▄▄▄▄▄▄▄──────╮
+████████      │  50%
+▀▀▀▀▀▀▀▀──────╯"
+`;
+
+exports[`Progress > renders empty progress bar 1`] = `"╶──────────────────╴"`;
+
+exports[`Progress > renders full progress bar 1`] = `"████████████████████"`;
+
+exports[`Progress > renders half progress bar 1`] = `"███████████────────╴"`;
+
+exports[`Progress > showPercent > location: left > shows 0% on the left 1`] = `"  0% ╶─────────────╴"`;
+
+exports[`Progress > showPercent > location: left > shows 5% on the left 1`] = `"  5% ██────────────╴"`;
+
+exports[`Progress > showPercent > location: left > shows 50% on the left 1`] = `" 50% ████████──────╴"`;
+
+exports[`Progress > showPercent > location: left > shows 100% on the left 1`] = `"100% ███████████████"`;
+
+exports[`Progress > showPercent > location: right > shows 0% on the right 1`] = `"╶─────────────╴   0%"`;
+
+exports[`Progress > showPercent > location: right > shows 5% on the right 1`] = `"██────────────╴   5%"`;
+
+exports[`Progress > showPercent > location: right > shows 50% on the right 1`] = `"████████──────╴  50%"`;
+
+exports[`Progress > showPercent > location: right > shows 100% on the right 1`] = `"███████████████ 100%"`;
+
+exports[`Progress > showPercent > shows percent centered by default 1`] = `"████████50%────────╴"`;
+
+exports[`Progress > showPercent > shows percent centered explicitly 1`] = `"████████50%────────╴"`;

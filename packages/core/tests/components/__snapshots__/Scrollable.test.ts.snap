@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Scrollable > basic rendering > clips content that overflows vertically 1`] = `
+"Line 0   █
+Line 1
+Line 2"
+`;
+
+exports[`Scrollable > basic rendering > renders content that fits without scrolling 1`] = `
+"Line 0
+Line 1
+Line 2"
+`;

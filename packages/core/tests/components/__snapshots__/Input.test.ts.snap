@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Input > rendering > renders initial value 1`] = `"hello"`;
+
+exports[`Input > rendering > renders placeholder when empty 1`] = `"Type here..."`;

@@ -10,9 +10,7 @@ describe('ToggleGroup', () => {
       multiple: true,
     })
     const t = testRender(tg, {width: 20, height: 3})
-    expect(t.terminal.textContent()).toContain('A')
-    expect(t.terminal.textContent()).toContain('B')
-    expect(t.terminal.textContent()).toContain('C')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('calls onChange on click (multiple)', () => {
@@ -69,30 +67,24 @@ describe('ToggleGroup', () => {
     expect(selected).toEqual([])
   })
 
-  it('shows selected state with thick borders', () => {
+  it('shows selected state', () => {
     const tg = new ToggleGroup({
       titles: ['A', 'B', 'C'],
       selected: [1],
       multiple: true,
     })
     const t = testRender(tg, {width: 20, height: 3})
-    const content = t.terminal.textContent()
-    console.log('selected [1]:', JSON.stringify(content))
-    expect(content).toContain('━')
-    expect(content).toContain('┃')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
-  it('shows unselected state with thin borders', () => {
+  it('shows unselected state', () => {
     const tg = new ToggleGroup({
       titles: ['A', 'B', 'C'],
       selected: [],
       multiple: true,
     })
     const t = testRender(tg, {width: 20, height: 3})
-    const content = t.terminal.textContent()
-    console.log('selected []:', JSON.stringify(content))
-    expect(content).not.toContain('━')
-    expect(content).not.toContain('┃')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('updates visual state after click', () => {
@@ -108,9 +100,7 @@ describe('ToggleGroup', () => {
     })
     const t = testRender(tg, {width: 20, height: 3})
 
-    let content = t.terminal.textContent()
-    console.log('before click:', JSON.stringify(content))
-    expect(content).not.toContain('━')
+    expect(t.terminal.textContent()).toMatchSnapshot()
 
     // Click A
     t.sendMouse('mouse.button.down', {x: 1, y: 1})
@@ -126,9 +116,7 @@ describe('ToggleGroup', () => {
     })
     t.render()
 
-    content = t.terminal.textContent()
-    console.log('after click:', JSON.stringify(content))
-    expect(content).toContain('━')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('clicking second button works', () => {
@@ -142,12 +130,8 @@ describe('ToggleGroup', () => {
       },
     })
     const t = testRender(tg, {width: 20, height: 3})
-    // B starts at x=4 (border + A width + border)
-    // "╭───┬───┬───╮"  positions: ╭=0, ─=1,2,3, ┬=4, ─=5,6,7, ┬=8, ─=9,10,11, ╮=12
-    // Click at x=5, y=1 should be in B
     t.sendMouse('mouse.button.down', {x: 5, y: 1})
     t.sendMouse('mouse.button.up', {x: 5, y: 1})
-    console.log('clicked B, selected:', selected)
     expect(selected).toEqual([1])
   })
 })

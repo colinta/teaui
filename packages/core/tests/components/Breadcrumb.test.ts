@@ -32,7 +32,7 @@ describe('Breadcrumb', () => {
       const long = 'A'.repeat(30)
       const clipped = Breadcrumb.clippedTitle(long)
       expect(clipped.endsWith('…')).toBe(true)
-      expect(clipped.length).toBeLessThanOrEqual(26) // 25 + ellipsis
+      expect(clipped.length).toBeLessThanOrEqual(26)
     })
   })
 
@@ -47,7 +47,6 @@ describe('Breadcrumb', () => {
       expect(segs[0].arrowWidth).toBe(0)
       expect(segs[0].arrowX).toBe(0)
       expect(segs[0].textX).toBe(0)
-      // " 🏠 Home " — spaces + emoji + title
       expect(segs[0].textWidth).toBeGreaterThan(0)
     })
 
@@ -80,29 +79,21 @@ describe('Breadcrumb', () => {
 
     it('returns normal styles when not hovered', () => {
       const {segmentStyle, arrowStyle, finalArrowStyle} =
-        Breadcrumb.highlightStyles(
-          blue,
-          null,
-          /*isHovered*/ false,
-          /*isActive*/ true,
-          /*isFirst*/ true,
-          /*isLast*/ true,
-          /*prevHovered*/ false,
-        )
+        Breadcrumb.highlightStyles(blue, null, false, true, true, true, false)
       expect(segmentStyle.underline).toBeFalsy()
-      expect(arrowStyle).toBeNull() // first item has no left arrow
-      expect(finalArrowStyle).not.toBeNull() // last item has trailing arrow
+      expect(arrowStyle).toBeNull()
+      expect(finalArrowStyle).not.toBeNull()
     })
 
     it('does not underline when active and hovered', () => {
       const {segmentStyle} = Breadcrumb.highlightStyles(
         blue,
         null,
-        /*isHovered*/ true,
-        /*isActive*/ true,
-        /*isFirst*/ true,
-        /*isLast*/ true,
-        /*prevHovered*/ false,
+        true,
+        true,
+        true,
+        true,
+        false,
       )
       expect(segmentStyle.underline).toBeFalsy()
     })
@@ -111,11 +102,11 @@ describe('Breadcrumb', () => {
       const {segmentStyle} = Breadcrumb.highlightStyles(
         blue,
         null,
-        /*isHovered*/ true,
-        /*isActive*/ false,
-        /*isFirst*/ true,
-        /*isLast*/ true,
-        /*prevHovered*/ false,
+        true,
+        false,
+        true,
+        true,
+        false,
       )
       expect(segmentStyle.underline).toBe(true)
     })
@@ -124,41 +115,37 @@ describe('Breadcrumb', () => {
       const {arrowStyle} = Breadcrumb.highlightStyles(
         green,
         blue,
-        /*isHovered*/ true,
-        /*isActive*/ true,
-        /*isFirst*/ false,
-        /*isLast*/ false,
-        /*prevHovered*/ false,
+        true,
+        true,
+        false,
+        false,
+        false,
       )
       expect(arrowStyle).not.toBeNull()
-      // The arrow bg should be the brightened version of green (this item's bg)
-      // Arrow fg should be blue (previous item's bg, not hovered)
     })
 
     it('adjusts left arrow fg when previous item is hovered', () => {
       const {arrowStyle} = Breadcrumb.highlightStyles(
         green,
         blue,
-        /*isHovered*/ false,
-        /*isActive*/ true,
-        /*isFirst*/ false,
-        /*isLast*/ false,
-        /*prevHovered*/ true,
+        false,
+        true,
+        false,
+        false,
+        true,
       )
       expect(arrowStyle).not.toBeNull()
-      // The arrow fg should be the brightened blue (previous item hovered)
-      // The arrow bg should be normal green
     })
 
     it('trailing arrow uses brightened bg as fg when hovered', () => {
       const {finalArrowStyle} = Breadcrumb.highlightStyles(
         blue,
         green,
-        /*isHovered*/ true,
-        /*isActive*/ true,
-        /*isFirst*/ false,
-        /*isLast*/ true,
-        /*prevHovered*/ false,
+        true,
+        true,
+        false,
+        true,
+        false,
       )
       expect(finalArrowStyle).not.toBeNull()
     })
@@ -176,10 +163,7 @@ describe('Breadcrumb', () => {
         items: [{title: 'Home'}],
       })
       const t = testRender(breadcrumb, {width: 20, height: 1})
-      const content = t.terminal.textContent()
-      expect(content).toContain('🏠')
-      expect(content).toContain('Home')
-      expect(content).toMatch(/🏠.*Home/)
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders multiple items with separators', () => {
@@ -187,12 +171,7 @@ describe('Breadcrumb', () => {
         items: [{title: 'Home'}, {title: 'Blog'}, {title: 'Post'}],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      const content = t.terminal.textContent()
-      expect(content).toContain('🏠')
-      expect(content).toContain('Home')
-      expect(content).toContain('Blog')
-      expect(content).toContain('Post')
-      expect(content).toContain('')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('calculates natural size correctly', () => {
@@ -205,17 +184,13 @@ describe('Breadcrumb', () => {
       expect(size.width).toBeLessThan(35)
     })
 
-    it('renders inactive state without background colors', () => {
+    it('renders inactive state', () => {
       const breadcrumb = new Breadcrumb({
         items: [{title: 'Home'}, {title: 'Blog'}],
         isActive: false,
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      const content = t.terminal.textContent()
-      expect(content).toContain('🏠')
-      expect(content).toContain('Home')
-      expect(content).toContain('Blog')
-      expect(content).toContain('')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('uses custom palette when provided', () => {
@@ -227,8 +202,7 @@ describe('Breadcrumb', () => {
         ],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
-      expect(t.terminal.textContent()).toContain('Home')
-      expect(t.terminal.textContent()).toContain('Blog')
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 
@@ -254,7 +228,6 @@ describe('Breadcrumb', () => {
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
 
-      // Click on the Home item (should be near the beginning)
       t.sendMouse('mouse.button.down', {x: 3, y: 0})
       t.sendMouse('mouse.button.up', {x: 3, y: 0})
       expect(homeClicked).toBe(true)
@@ -262,7 +235,6 @@ describe('Breadcrumb', () => {
 
       homeClicked = false
 
-      // Click on the Blog item (should be further right)
       t.sendMouse('mouse.button.down', {x: 15, y: 0})
       t.sendMouse('mouse.button.up', {x: 15, y: 0})
       expect(homeClicked).toBe(false)
@@ -276,7 +248,6 @@ describe('Breadcrumb', () => {
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
 
-      // Approximate: Blog starts after " 🏠 Home " + arrow
       t.sendMouse('mouse.move.in', {x: 15, y: 0})
       t.render()
 
@@ -304,12 +275,10 @@ describe('Breadcrumb', () => {
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
 
-      // Hover over Home
       t.sendMouse('mouse.move.in', {x: 3, y: 0})
       t.render()
       expect(t.terminal.styleOf('Home')?.underline).toBe(true)
 
-      // Move mouse outside the component area to trigger exit
       t.sendMouse('mouse.move.in', {x: 3, y: 5})
       t.render()
       expect(t.terminal.styleOf('Home')?.underline).toBeFalsy()
@@ -317,14 +286,10 @@ describe('Breadcrumb', () => {
 
     it('handles missing onPress callbacks gracefully', () => {
       const breadcrumb = new Breadcrumb({
-        items: [
-          {title: 'Home'}, // No onPress
-          {title: 'Blog'}, // No onPress
-        ],
+        items: [{title: 'Home'}, {title: 'Blog'}],
       })
       const t = testRender(breadcrumb, {width: 30, height: 1})
 
-      // Click should not crash
       t.sendMouse('mouse.button.down', {x: 5, y: 0})
       t.sendMouse('mouse.button.up', {x: 5, y: 0})
 

@@ -17,10 +17,6 @@ describe('Separator', () => {
       }),
       {width: 10, height: 3},
     )
-    expect(t.terminal.textAtRow(0)).toBe('Above')
-    // Separator should be a line of horizontal chars
-    const sepRow = t.terminal.getRow(1)
-    expect(sepRow).toMatch(/[─━═⠒]/)
-    expect(t.terminal.textAtRow(2)).toBe('Below')
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 })

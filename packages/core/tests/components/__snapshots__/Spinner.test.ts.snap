@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Spinner > construction > accepts isAnimating=false 1`] = `"⣾"`;
+
+exports[`Spinner > construction > defaults to animating 1`] = `"⣾"`;

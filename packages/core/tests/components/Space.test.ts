@@ -17,13 +17,7 @@ describe('Space', () => {
       }),
       {width: 10, height: 5},
     )
-    // Top should be at row 0
-    expect(t.terminal.textAtRow(0)).toBe('Top')
-    // Bottom should be pushed down (not adjacent to Top)
-    // Find which row has 'Bottom'
-    const pos = t.terminal.find('Bottom')
-    expect(pos).not.toBeNull()
-    expect(pos!.y).toBeGreaterThan(0)
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
   it('fills remaining space between siblings', () => {
@@ -34,10 +28,6 @@ describe('Space', () => {
       }),
       {width: 5, height: 3},
     )
-    // A at top, B somewhere below
-    expect(t.terminal.textAtRow(0)).toBe('A')
-    const pos = t.terminal.find('B')
-    expect(pos).not.toBeNull()
-    expect(pos!.y).toBeGreaterThan(0)
+    expect(t.terminal.textContent()).toMatchSnapshot()
   })
 })
