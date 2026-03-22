@@ -1,4 +1,6 @@
 export {Accordion} from './Accordion.js'
+export {Alert} from './Alert.js'
+export {Callout} from './Callout.js'
 export {Calendar} from './Calendar.js'
 export {Breadcrumb} from './Breadcrumb.js'
 export {HotKey} from './HotKey.js'

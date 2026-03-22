@@ -1,9 +1,11 @@
 import React, {forwardRef, useCallback, useMemo, useState} from 'react'
 import type {
   Accordion as WrAccordion,
+  Alert as WrAlert,
   Box as WrBox,
   Breadcrumb as WrBreadcrumb,
   Button as WrButton,
+  Callout as WrCallout,
   Calendar as WrCalendar,
   Canvas as WrCanvas,
   Checkbox as WrCheckbox,
@@ -96,6 +98,8 @@ type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 // Table uses its own prop types since it's generic and TUIView doesn't work well with generics
 
+type AlertProps = TUIContainer<typeof WrAlert>
+type CalloutProps = TUIContainer<typeof WrCallout>
 type ModalProps = TUIContainer<typeof WrModal>
 
 // "simple" containers
@@ -163,7 +167,9 @@ declare module 'react' {
       'tui-pane': WithRef<PaneProps, WrPane>
 
       // "simple" containers
+      'tui-alert': WithRef<AlertProps, WrAlert>
       'tui-box': WithRef<BoxProps, WrBox>
+      'tui-callout': WithRef<CalloutProps, WrCallout>
       'tui-button': WithRef<ButtonProps, WrButton>
       'tui-collapsible': WithRef<CollapsibleProps, WrCollapsible>
 
@@ -421,6 +427,48 @@ export const Modal = forwardRef<WrModal, ModalProps>(function Modal(
 ////
 /// "Simple" containers
 //
+
+interface AlertReactProps extends AlertProps {
+  visible?: boolean
+  onDismiss?: () => void
+  dim?: boolean
+  dismissOnEsc?: boolean
+  dismissOnClick?: boolean
+}
+
+export function Alert({
+  visible,
+  onDismiss,
+  dim = true,
+  dismissOnEsc = true,
+  dismissOnClick = true,
+  children,
+  ...props
+}: AlertReactProps): JSX.Element | null {
+  if (!visible) return null
+
+  return (
+    <Modal
+      dim={dim}
+      dismissOnEsc={dismissOnEsc}
+      dismissOnClick={dismissOnClick}
+      onDismiss={onDismiss}
+    >
+      <tui-alert {...props}>{children}</tui-alert>
+    </Modal>
+  )
+}
+
+export const Callout = forwardRef<WrCallout, CalloutProps>(function Callout(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-callout ref={ref} {...props}>
+      {children}
+    </tui-callout>
+  )
+})
 
 export const Box = forwardRef<WrBox, BoxProps>(function Box(
   {children, ...props},

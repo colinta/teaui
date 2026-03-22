@@ -1,0 +1,54 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Callout > renders with direction right 1`] = `
+"▏ LeftRight
+▏"
+`;
+
+exports[`Callout > renders with multiple children 1`] = `
+"▏ Steps
+▏ ───────────────────────
+▏ Step 1: Do this.
+▏ Step 2: Do that.
+▏"
+`;
+
+exports[`Callout > renders with purpose cancel 1`] = `
+"▏ Danger
+▏ ──────────────────────────
+▏ This is dangerous.
+▏"
+`;
+
+exports[`Callout > renders with purpose primary 1`] = `
+"▏ Info
+▏ ──────────────────────────
+▏ Blue themed callout.
+▏"
+`;
+
+exports[`Callout > renders with purpose proceed 1`] = `
+"▏ Success
+▏ ──────────────────────────
+▏ All good!
+▏"
+`;
+
+exports[`Callout > renders with title 1`] = `
+"▏ Note
+▏ ───────────────────────
+▏ Remember to save.
+▏"
+`;
+
+exports[`Callout > renders without title 1`] = `
+"▏ A simple callout.
+▏"
+`;
+
+exports[`Callout > wraps long text 1`] = `
+"▏ This is a longer
+▏ message that
+▏ should wrap.
+▏"
+`;

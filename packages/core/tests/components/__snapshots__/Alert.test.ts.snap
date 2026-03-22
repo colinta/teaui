@@ -1,0 +1,46 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Alert > renders with direction right 1`] = `
+"
+ ╭────────────────╮
+ │LeftRight       │
+ ╰────────────────╯"
+`;
+
+exports[`Alert > renders with multiple children 1`] = `
+"
+ ╭──────────────────────────╮
+ │Confirm                   │
+ │──────────────────────────│
+ │Are you sure?             │
+ │                          │
+ │                          │
+ ╰──────────────────────────╯"
+`;
+
+exports[`Alert > renders with purpose 1`] = `
+"
+ ╭──────────────────────────╮
+ │Error                     │
+ │──────────────────────────│
+ │Something went wrong      │
+ │                          │
+ ╰──────────────────────────╯"
+`;
+
+exports[`Alert > renders with title 1`] = `
+"
+ ╭──────────────────────────╮
+ │Warning                   │
+ │──────────────────────────│
+ │Something happened        │
+ │                          │
+ ╰──────────────────────────╯"
+`;
+
+exports[`Alert > renders without title 1`] = `
+"
+ ╭────────────────────────╮
+ │A simple message        │
+ ╰────────────────────────╯"
+`;

@@ -4,9 +4,11 @@ import ReactReconciler from 'react-reconciler'
 import {DefaultEventPriority} from 'react-reconciler/constants.js'
 import {
   Accordion,
+  Alert,
   Box,
   Breadcrumb,
   Button,
+  Callout,
   Calendar,
   Canvas,
   Checkbox,
@@ -177,9 +179,15 @@ function createInstance(type: string, props: Props): any {
       return new Tree(props as any)
 
     // "simple" containers
+    case 'alert':
+    case 'tui-alert':
+      return new Alert(props as any)
     case 'box':
     case 'tui-box':
       return new Box(props as any)
+    case 'callout':
+    case 'tui-callout':
+      return new Callout(props as any)
     case 'button':
     case 'tui-button':
       return new Button(props as any)

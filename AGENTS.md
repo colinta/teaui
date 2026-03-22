@@ -22,6 +22,20 @@ apps/
 
 ## Key Architecture
 
+### Prefer constants
+
+Don't inline character and style options. Put styles into private methods, put
+characters into constants at the bottom.
+
+```ts
+  #backgroundStyle(option?: ...): Style {
+    return new Style(...)
+  }
+}
+
+const LEFT_ARROW = '←';
+```
+
 ### Core View System (`packages/core/`)
 
 - **`View`** — Base class. Handles sizing (`naturalSize`), rendering (`render`),
