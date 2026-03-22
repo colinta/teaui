@@ -147,9 +147,13 @@ export function parseInput(data: Buffer): InputEvent[] {
       const startIdx = i + PASTE_START.length
       const endIdx = str.indexOf(PASTE_END, startIdx)
       if (endIdx !== -1) {
+        const pasteText = str
+          .slice(startIdx, endIdx)
+          .replaceAll('\r\n', '\n')
+          .replaceAll('\r', '\n')
         events.push({
           type: 'paste',
-          text: str.slice(startIdx, endIdx),
+          text: pasteText,
         } satisfies PasteEvent)
         i = endIdx + PASTE_END.length
         continue
