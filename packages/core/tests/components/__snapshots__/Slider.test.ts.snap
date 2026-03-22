@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Slider > inside scrollable viewport > renders horizontal slider at offset 0 1`] = `"─────────╴"`;
+
+exports[`Slider > inside scrollable viewport > renders horizontal slider scrolled right 1`] = `"█╶────────"`;
+
+exports[`Slider > inside scrollable viewport > renders horizontal slider with border in wide scrollable 1`] = `
+"╭─────────
+│────────╴
+╰─────────"
+`;
+
+exports[`Slider > inside scrollable viewport > renders horizontal slider with buttons in wide scrollable 1`] = `"[◃]───────────╴"`;
+
+exports[`Slider > inside scrollable viewport > renders vertical slider in tall scrollable 1`] = `
+"│
+│
+│
+│
+╵"
+`;
+
+exports[`Slider > inside scrollable viewport > renders vertical slider scrolled down 1`] = `
+"█
+╷
+│
+│
+│"
+`;
+
+exports[`Slider > inside scrollable viewport > renders vertical slider with border in tall scrollable 1`] = `
+"╭─╮
+│││
+│││
+│││
+│╵│"
+`;

@@ -1,5 +1,39 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Progress > inside scrollable viewport > renders 0% in wide scrollable 1`] = `"╶─────────"`;
+
+exports[`Progress > inside scrollable viewport > renders 100% in wide scrollable 1`] = `"██████████"`;
+
+exports[`Progress > inside scrollable viewport > renders 100% scrolled to end 1`] = `"██████████"`;
+
+exports[`Progress > inside scrollable viewport > renders full width at offset 0 1`] = `"██████████"`;
+
+exports[`Progress > inside scrollable viewport > renders multi-line progress in wide scrollable 1`] = `
+"▄▄▄▄▄▄▄▄▄▄
+██████████
+▀▀▀▀▀▀▀▀▀▀"
+`;
+
+exports[`Progress > inside scrollable viewport > renders scrolled portion at offset 10 1`] = `"█────────╴"`;
+
+exports[`Progress > inside scrollable viewport > renders vertical progress in tall scrollable 1`] = `
+"╭─╮
+│ │
+│ │
+│ │
+│ │"
+`;
+
+exports[`Progress > inside scrollable viewport > renders vertical progress scrolled down 1`] = `
+"▐█▌
+▐█▌
+▐█▌
+▐█▌
+▐█▌"
+`;
+
+exports[`Progress > inside scrollable viewport > renders with showPercent in wide scrollable 1`] = `"█████████████50"`;
+
 exports[`Progress > multi-line > renders half progress bar at height 3 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄────────╮
 ███████████        │

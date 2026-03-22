@@ -11,3 +11,19 @@ exports[`Scrollable > basic rendering > renders content that fits without scroll
 Line 1
 Line 2"
 `;
+
+exports[`Scrollable > children fill full content width > flex slider in nested stacks fills scrollable content width 1`] = `
+"╭─┬─────────────────
+│◃│─────────────────
+╰─┴─────────────────
+
+AAAAAAAAAAAAAAAAAAAA"
+`;
+
+exports[`Scrollable > children fill full content width > progress bar fills scrollable content width 1`] = `
+"████████████████████
+
+AAAAAAAAAAAAAAAAAAAA"
+`;
+
+exports[`Scrollable > offset and onOffsetChange > sets initial offset via prop 1`] = `"██████────"`;

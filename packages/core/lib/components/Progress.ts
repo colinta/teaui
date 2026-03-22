@@ -164,7 +164,7 @@ export class Progress extends View {
       barStartX +
       Math.round(interpolate(this.#value, this.#range, [0, barWidth - 1], true))
 
-    viewport.visibleRect.forEachPoint(pt => {
+    viewport.contentRect.forEachPoint(pt => {
       let char: string,
         style = textStyle
 
@@ -252,7 +252,7 @@ export class Progress extends View {
         true,
       ),
     )
-    viewport.visibleRect.forEachPoint(pt => {
+    viewport.contentRect.forEachPoint(pt => {
       let char: string,
         style = textStyle
       if (pt.y >= progressY) {

@@ -306,13 +306,10 @@ export class Slider extends View {
     const hasBorder = this.#border && viewport.contentSize.height >= 3
     const height = hasBorder ? 3 : 1
     const marginX = this.#buttons ? 3 : hasBorder ? 1 : 0
-    const outerRect = new Rect(
-      [0, 0],
-      [viewport.visibleRect.size.width, height],
-    )
+    const outerRect = new Rect([0, 0], [viewport.contentSize.width, height])
     const innerRect = new Rect(
       [marginX, 0],
-      [viewport.visibleRect.size.width - 2 * marginX, height],
+      [viewport.contentSize.width - 2 * marginX, height],
     )
     viewport.registerMouse(['mouse.move', 'mouse.button.left'], outerRect)
 
@@ -389,13 +386,10 @@ export class Slider extends View {
     const width = hasBorder ? 3 : 1
     const marginY =
       this.#buttons && hasBorder ? 3 : this.#buttons || hasBorder ? 1 : 0
-    const outerRect = new Rect(
-      [0, 0],
-      [width, viewport.visibleRect.size.height],
-    )
+    const outerRect = new Rect([0, 0], [width, viewport.contentSize.height])
     const innerRect = new Rect(
       [0, marginY],
-      [width, viewport.visibleRect.size.height - 2 * marginY],
+      [width, viewport.contentSize.height - 2 * marginY],
     )
     viewport.registerMouse(['mouse.move', 'mouse.button.left'], outerRect)
 

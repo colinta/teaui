@@ -3,6 +3,10 @@ import {testRender} from '../../lib/testing.js'
 import {Scrollable} from '../../lib/components/Scrollable.js'
 import {Stack} from '../../lib/components/Stack.js'
 import {Text} from '../../lib/components/Text.js'
+import {Slider} from '../../lib/components/Slider.js'
+import {Progress} from '../../lib/components/Progress.js'
+import {CollapsibleText} from '../../lib/components/CollapsibleText.js'
+import {Point} from '../../lib/geometry.js'
 
 function makeLines(count: number): Text[] {
   return Array.from({length: count}, (_, i) => new Text({text: `Line ${i}`}))
@@ -538,6 +542,206 @@ describe('Scrollable', () => {
       t.render()
 
       expect(t.terminal.textAtRow(0)).toBe(topLine)
+    })
+  })
+
+  describe('scrollable prop restricts scrolling direction', () => {
+    it('horizontal-only scrollable ignores vertical scroll', () => {
+      const scrollable = new Scrollable({
+        scrollable: 'horizontal',
+        showScrollbars: false,
+        contentSize: {width: 20, height: 10},
+        children: [new Progress({value: 50})],
+      })
+      const t = testRender(scrollable, {width: 10, height: 3})
+      const before = t.terminal.textContent()
+
+      // vertical scroll should be ignored
+      scrollable.scrollBy(0, 5)
+      t.render()
+      expect(t.terminal.textContent()).toBe(before)
+
+      // horizontal scroll should work
+      scrollable.scrollBy(3, 0)
+      t.render()
+      expect(t.terminal.textContent()).not.toBe(before)
+    })
+
+    it('vertical-only scrollable ignores horizontal scroll', () => {
+      const scrollable = new Scrollable({
+        scrollable: 'vertical',
+        showScrollbars: false,
+        contentSize: {width: 20, height: 10},
+        children: [new Progress({value: 50, direction: 'vertical'})],
+      })
+      const t = testRender(scrollable, {width: 3, height: 5})
+      const before = t.terminal.textContent()
+
+      // horizontal scroll should be ignored
+      scrollable.scrollBy(5, 0)
+      t.render()
+      expect(t.terminal.textContent()).toBe(before)
+
+      // vertical scroll should work
+      scrollable.scrollBy(0, 3)
+      t.render()
+      expect(t.terminal.textContent()).not.toBe(before)
+    })
+  })
+
+  describe('showScrollbars variants', () => {
+    it('shows only horizontal scrollbar', () => {
+      const lines = Array.from(
+        {length: 10},
+        (_, i) => new Text({text: `Row${i}-${'abcdefghijklmnopqrstuvwxyz'}`}),
+      )
+      const scrollable = new Scrollable({
+        showScrollbars: 'horizontal',
+        children: [new Stack({direction: 'down', children: lines})],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+      // last row should have scrollbar indicator
+      let hasHorizontal = false
+      for (let x = 0; x < 10; x++) {
+        if (t.terminal.charAt(x, 4) === '█') {
+          hasHorizontal = true
+          break
+        }
+      }
+      expect(hasHorizontal).toBe(true)
+      // last column should NOT have scrollbar (vertical hidden)
+      let hasVertical = false
+      for (let y = 0; y < 4; y++) {
+        if (t.terminal.charAt(9, y) === '█') {
+          hasVertical = true
+          break
+        }
+      }
+      expect(hasVertical).toBe(false)
+    })
+
+    it('shows only vertical scrollbar', () => {
+      const lines = Array.from(
+        {length: 10},
+        (_, i) => new Text({text: `Row${i}-${'abcdefghijklmnopqrstuvwxyz'}`}),
+      )
+      const scrollable = new Scrollable({
+        showScrollbars: 'vertical',
+        children: [new Stack({direction: 'down', children: lines})],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+      // last column should have scrollbar indicator
+      let hasVertical = false
+      for (let y = 0; y < 5; y++) {
+        if (t.terminal.charAt(9, y) === '█') {
+          hasVertical = true
+          break
+        }
+      }
+      expect(hasVertical).toBe(true)
+      // last row should NOT have horizontal scrollbar
+      let hasHorizontal = false
+      for (let x = 0; x < 9; x++) {
+        if (t.terminal.charAt(x, 4) === '█') {
+          hasHorizontal = true
+          break
+        }
+      }
+      expect(hasHorizontal).toBe(false)
+    })
+  })
+
+  describe('children fill full content width', () => {
+    it('flex slider in nested stacks fills scrollable content width', () => {
+      // Reproduces the bug where a flex Slider inside nested Stacks inside
+      // a Scrollable only rendered within the visible rect, not the full
+      // content area. A wide CollapsibleText makes the content 40 cols,
+      // but viewport is only 20.
+      const scrollable = new Scrollable({
+        flex: 1,
+        showScrollbars: false,
+        children: [
+          Stack.down({
+            gap: 1,
+            children: [
+              Stack.down({
+                children: [
+                  Stack.right({
+                    gap: 1,
+                    children: [
+                      new Slider({
+                        flex: 1,
+                        direction: 'horizontal',
+                        range: [0, 100],
+                        value: 42,
+                        buttons: true,
+                        step: 1,
+                        border: true,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new CollapsibleText({
+                text: 'A'.repeat(40),
+              }),
+            ],
+          }),
+        ],
+      })
+      const t = testRender(scrollable, {width: 20, height: 5})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('progress bar fills scrollable content width', () => {
+      const scrollable = new Scrollable({
+        flex: 1,
+        showScrollbars: false,
+        children: [
+          Stack.down({
+            gap: 1,
+            children: [
+              new Progress({value: 50}),
+              new Text({text: 'A'.repeat(40)}),
+            ],
+          }),
+        ],
+      })
+      const t = testRender(scrollable, {width: 20, height: 3})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
+
+  describe('offset and onOffsetChange', () => {
+    it('sets initial offset via prop', () => {
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        contentSize: {width: 20},
+        offset: new Point(5, 0),
+        children: [new Progress({value: 50})],
+      })
+      const t = testRender(scrollable, {width: 10, height: 1})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('calls onOffsetChange when scrolling', () => {
+      let lastOffset: Point | undefined
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        contentSize: {width: 30},
+        onOffsetChange: offset => {
+          lastOffset = offset
+        },
+        children: [new Progress({value: 50})],
+      })
+      const t = testRender(scrollable, {width: 10, height: 1})
+
+      scrollable.scrollBy(3, 0)
+      t.render()
+
+      expect(lastOffset).toBeDefined()
+      expect(lastOffset!.x).toBe(3)
+      expect(lastOffset!.y).toBe(0)
     })
   })
 })
