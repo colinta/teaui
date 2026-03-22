@@ -143,14 +143,20 @@ describe('ZStack', () => {
     })
 
     it('bottom-center', () => {
-      const t = testRender(makeAtLocation('bottom-center'), {width: 7, height: 7})
+      const t = testRender(makeAtLocation('bottom-center'), {
+        width: 7,
+        height: 7,
+      })
       expect(t.terminal.textContent()).toBe(
         ['', '', '', '', '  ┌─┐', '  │·│', '  └─┘'].join('\n'),
       )
     })
 
     it('bottom-right', () => {
-      const t = testRender(makeAtLocation('bottom-right'), {width: 7, height: 7})
+      const t = testRender(makeAtLocation('bottom-right'), {
+        width: 7,
+        height: 7,
+      })
       expect(t.terminal.textContent()).toBe(
         ['', '', '', '', '    ┌─┐', '    │·│', '    └─┘'].join('\n'),
       )
