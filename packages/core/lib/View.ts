@@ -495,6 +495,11 @@ export abstract class View {
    */
   receiveKey(event: KeyEvent) {}
   /**
+   * Called when text is pasted from the clipboard (bracketed paste).
+   * Only dispatched to the currently focused view.
+   */
+  receivePaste(text: string) {}
+  /**
    * To register for this event, call `viewport.registerMouse()`
    */
   receiveMouse(event: MouseEvent, system: System) {

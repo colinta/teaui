@@ -3,6 +3,7 @@ import {
   cursorTo,
   isKeyEvent,
   isMouseEvent,
+  isPasteEvent,
   isFocusEvent,
   type InputEvent as TermInputEvent,
 } from '@teaui/term'
@@ -116,6 +117,11 @@ export class TerminalProgram implements SGRTerminal {
         }
 
         screen.trigger(keyEvent)
+        return
+      }
+
+      if (isPasteEvent(event)) {
+        screen.trigger({type: 'paste', text: event.text})
         return
       }
 
@@ -326,6 +332,9 @@ export class Screen {
       case 'key':
         this.triggerKeyboard(event)
         break
+      case 'paste':
+        this.triggerPaste(event.text)
+        break
       case 'mouse': {
         this.triggerMouse(event)
         break
@@ -373,6 +382,10 @@ export class Screen {
   triggerKeyboard(event: KeyEvent) {
     event = translateKeyEvent(event)
     this.#focusManager.trigger(event)
+  }
+
+  triggerPaste(text: string) {
+    this.#focusManager.triggerPaste(text)
   }
 
   /**

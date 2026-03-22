@@ -54,6 +54,12 @@ export class FocusManager {
     }
   }
 
+  triggerPaste(text: string) {
+    if (this.#currentFocus && this.#currentFocus !== UNFOCUS) {
+      this.#currentFocus.receivePaste(text)
+    }
+  }
+
   /**
    * Returns whether the current view has focus.
    */

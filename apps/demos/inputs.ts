@@ -1,4 +1,11 @@
-import {Box, Stack, Input, Space, interceptConsoleLog} from '@teaui/core'
+import {
+  Box,
+  Stack,
+  Input,
+  Space,
+  interceptConsoleLog,
+  Scrollable,
+} from '@teaui/core'
 
 import {demo} from './demo.js'
 
@@ -54,16 +61,18 @@ function box(input: Input) {
 }
 
 demo(
-  Stack.down({
-    children: [
-      //
-      box(singleLine),
-      box(emptySingleLine),
-      box(wrapLine),
-      box(emptyMultiLine),
-      box(restrictedLine),
-      box(restrictedMultiLine),
-    ],
+  new Scrollable({
+    child: Stack.down({
+      children: [
+        //
+        box(singleLine),
+        box(emptySingleLine),
+        box(wrapLine),
+        box(emptyMultiLine),
+        box(restrictedLine),
+        box(restrictedMultiLine),
+      ],
+    }),
   }),
   false,
 )

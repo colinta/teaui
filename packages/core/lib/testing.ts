@@ -221,6 +221,11 @@ class TestScreen {
     this.#mouseManager.trigger(event, system)
     this.render()
   }
+
+  sendPaste(text: string) {
+    this.#focusManager.triggerPaste(text)
+    this.render()
+  }
 }
 
 /**

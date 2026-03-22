@@ -9,5 +9,20 @@ import type {MouseEvent, SystemMouseEvent} from './mouse.js'
 import type {KeyEvent} from './key.js'
 import type {FocusEvent, ResizeEvent} from './window.js'
 
-export type Event = MouseEvent | KeyEvent | FocusEvent | ResizeEvent
-export type SystemEvent = SystemMouseEvent | KeyEvent | FocusEvent | ResizeEvent
+export interface PasteEvent {
+  type: 'paste'
+  text: string
+}
+
+export type Event =
+  | MouseEvent
+  | KeyEvent
+  | PasteEvent
+  | FocusEvent
+  | ResizeEvent
+export type SystemEvent =
+  | SystemMouseEvent
+  | KeyEvent
+  | PasteEvent
+  | FocusEvent
+  | ResizeEvent

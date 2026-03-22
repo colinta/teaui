@@ -1,6 +1,11 @@
 import type {ColorSupport, FullscreenOptions} from './types.js'
 import * as ansi from './ansi.js'
-import {keyboardEnhanceEnable, keyboardEnhanceDisable} from './modern.js'
+import {
+  keyboardEnhanceEnable,
+  keyboardEnhanceDisable,
+  bracketedPasteEnable,
+  bracketedPasteDisable,
+} from './modern.js'
 
 export function detectColorSupport(
   env: Record<string, string | undefined> = process.env,
@@ -83,6 +88,7 @@ export class ScreenController {
     if (mouse) this.write(ansi.mouseEnable())
     if (focusEvents) this.write(ansi.focusEventsEnable())
     this.write(keyboardEnhanceEnable())
+    this.write(bracketedPasteEnable())
     this.write(ansi.eraseScreen() + ansi.cursorTo(0, 0))
 
     return this
@@ -90,6 +96,7 @@ export class ScreenController {
 
   exitFullscreen(): this {
     if (this.fullscreenState) {
+      this.write(bracketedPasteDisable())
       this.write(keyboardEnhanceDisable())
       if (this.fullscreenState.focusEvents)
         this.write(ansi.focusEventsDisable())

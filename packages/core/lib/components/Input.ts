@@ -312,6 +312,35 @@ export class Input extends View {
     }
   }
 
+  receivePaste(text: string) {
+    const pasteChars = unicode.printableChars(
+      this.#multiline ? text : text.replaceAll('\n', ''),
+    )
+    if (pasteChars.length === 0) return
+
+    const prevText = this.#value
+
+    if (isEmptySelection(this.#cursor)) {
+      this.#chars = this.#chars
+        .slice(0, this.#cursor.start)
+        .concat(pasteChars, this.#chars.slice(this.#cursor.start))
+      this.#cursor.start = this.#cursor.end =
+        this.#cursor.start + pasteChars.length
+    } else {
+      this.#chars = this.#chars
+        .slice(0, this.minSelected())
+        .concat(pasteChars, this.#chars.slice(this.maxSelected()))
+      this.#cursor.start = this.#cursor.end =
+        this.minSelected() + pasteChars.length
+    }
+
+    this.#updateLines(this.#chars, undefined)
+
+    if (prevText !== this.#value) {
+      this.#onChange?.(this.#value)
+    }
+  }
+
   receiveMouse(event: MouseEvent, system: System) {
     if (event.name === 'mouse.button.down') {
       system.requestFocus()

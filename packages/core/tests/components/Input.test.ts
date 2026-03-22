@@ -248,4 +248,74 @@ describe('Input', () => {
       expect(changed).toBe(false)
     })
   })
+
+  describe('paste', () => {
+    it('inserts pasted text at cursor', () => {
+      const input = new Input({value: ''})
+      const t = testRender(input, {width: 30, height: 1})
+      t.sendPaste('hello world')
+      expect(input.value).toBe('hello world')
+    })
+
+    it('inserts pasted text at cursor position mid-text', () => {
+      const input = new Input({value: 'ac'})
+      const t = testRender(input, {width: 30, height: 1})
+      // Move cursor to position 1 (between 'a' and 'c')
+      t.sendKey('home')
+      t.sendKey('right')
+      t.sendPaste('b')
+      expect(input.value).toBe('abc')
+    })
+
+    it('replaces selection with pasted text', () => {
+      const input = new Input({value: 'hello world'})
+      const t = testRender(input, {width: 30, height: 1})
+      // Select all with Ctrl+A then paste
+      t.sendKey('home')
+      t.sendKey('end', {shift: true})
+      t.sendPaste('goodbye')
+      expect(input.value).toBe('goodbye')
+    })
+
+    it('fires onChange on paste', () => {
+      let changed: string | undefined
+      const input = new Input({
+        value: '',
+        onChange(value) {
+          changed = value
+        },
+      })
+      const t = testRender(input, {width: 30, height: 1})
+      t.sendPaste('pasted')
+      expect(changed).toBe('pasted')
+    })
+
+    it('strips newlines in single-line mode', () => {
+      const input = new Input({value: ''})
+      const t = testRender(input, {width: 30, height: 1})
+      t.sendPaste('line1\nline2\nline3')
+      expect(input.value).toBe('line1line2line3')
+    })
+
+    it('preserves newlines in multiline mode', () => {
+      const input = new Input({value: '', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendPaste('line1\nline2')
+      expect(input.value).toBe('line1\nline2')
+    })
+
+    it('does nothing for empty paste', () => {
+      let changed = false
+      const input = new Input({
+        value: 'hello',
+        onChange() {
+          changed = true
+        },
+      })
+      const t = testRender(input, {width: 30, height: 1})
+      t.sendPaste('')
+      expect(input.value).toBe('hello')
+      expect(changed).toBe(false)
+    })
+  })
 })
