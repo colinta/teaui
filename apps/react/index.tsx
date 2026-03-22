@@ -36,6 +36,7 @@ import {
 import YAML from 'yaml'
 import {BreadcrumbTab} from './breadcrumb.js'
 import {CalendarTab} from './calendar.js'
+import {LegendTab} from './legend.js'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -714,6 +715,9 @@ function Demo() {
             </Tabs.Section>
             <Tabs.Section title="Calendar">
               <CalendarTab />
+            </Tabs.Section>
+            <Tabs.Section title="Legend">
+              <LegendTab />
             </Tabs.Section>
             <Tabs.Section title="More">
               <MoreTab />

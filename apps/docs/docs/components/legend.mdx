@@ -1,0 +1,65 @@
+---
+sidebar_position: 5
+title: Legend
+---
+
+import Example from '@site/src/components/Example'
+
+# Legend
+
+A hotkey legend bar that displays keyboard shortcuts. Commonly placed at the
+bottom of a screen to show available actions.
+
+Keys can be specified as plain strings (`'q'`, `'?'`) or named keys that are
+automatically mapped to sigils (`'enter'` → `⤦`, `'escape'` → `␛`, etc.).
+Modifier+key combinations can be expressed as arrays (`['ctrl', 'C']`) or
+strings (`'Ctrl+C'`).
+
+<Example name="legend" title="Legend" />
+
+## Custom Separator
+
+Use the `separator` prop to change the delimiter between items (default is
+double-space).
+
+<Example name="legend-separator" title="Legend — Bullet Separator" />
+
+## Props
+
+| Prop        | Type           | Default | Description              |
+| ----------- | -------------- | ------- | ------------------------ |
+| `items`     | `LegendItem[]` | `[]`    | Array of key/label pairs |
+| `separator` | `string`       | `'  '`  | Delimiter between items  |
+
+### LegendItem
+
+| Field   | Type                 | Description                                  |
+| ------- | -------------------- | -------------------------------------------- |
+| `key`   | `string \| string[]` | Key name(s) — mapped to sigils automatically |
+| `label` | `string`             | Description shown after the key              |
+
+## Key Sigil Reference
+
+| Input                          | Rendered |
+| ------------------------------ | -------- |
+| `'enter'` / `'return'`         | `⤦`      |
+| `'up'`                         | `↑`      |
+| `'down'`                       | `↓`      |
+| `'left'`                       | `←`      |
+| `'right'`                      | `→`      |
+| `'cmd'` / `'command'`          | `⌘`      |
+| `'ctrl'` / `'control'`         | `⌃`      |
+| `'alt'` / `'option'` / `'opt'` | `⌥`      |
+| `'shift'`                      | `⇧`      |
+| `'escape'` / `'esc'`           | `␛`      |
+| `'tab'`                        | `⇥`      |
+| `'space'`                      | `␣`      |
+| `'backspace'`                  | `⌫`      |
+| `'delete'`                     | `⌦`      |
+
+Plain strings (e.g. `'q'`, `'?'`, `'1-9'`) are rendered as-is.
+
+## Wrapping
+
+When items don't fit on a single line, Legend automatically wraps to multiple
+rows with column-aligned keys and labels.

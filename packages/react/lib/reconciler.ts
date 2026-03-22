@@ -30,6 +30,7 @@ import {
   H5,
   H6,
   Input,
+  Legend,
   Progress,
   Screen,
   type ScreenOptions,
@@ -145,6 +146,9 @@ function createInstance(type: string, props: Props): any {
     case 'input':
     case 'tui-input':
       return new Input(props as any)
+    case 'legend':
+    case 'tui-legend':
+      return new Legend(props as any)
     case 'separator':
     case 'tui-separator':
       return new Separator(props as any)

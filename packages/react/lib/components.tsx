@@ -22,6 +22,7 @@ import type {
   Mouse as WrMouse,
   Stack as WrStack,
   Input as WrInput,
+  Legend as WrLegend,
   // Log,
   Progress as WrProgress,
   // ScrollableList,
@@ -81,6 +82,7 @@ type HotKeyProps = TUIView<typeof WrHotKey>
 type KeyboardProps = TUIContainer<typeof WrKeyboard>
 type MouseProps = TUIContainer<typeof WrMouse>
 type InputProps = TUIView<typeof WrInput>
+type LegendProps = TUIView<typeof WrLegend>
 type ProgressProps = TUIView<typeof WrProgress>
 type SeparatorProps = TUIView<typeof WrSeparator>
 type SliderProps = TUIView<typeof WrSlider>
@@ -149,6 +151,7 @@ declare module 'react' {
       'tui-spinner': SpinnerProps
       'tui-logo': LogoProps
       'tui-zstack': ZStackProps
+      'tui-legend': WithRef<LegendProps, WrLegend>
       'tui-table': any
       'tui-toggle-group': ToggleGroupProps
 
@@ -246,6 +249,11 @@ export function Input(reactProps: InputProps): JSX.Element {
 export function Progress(reactProps: ProgressProps): JSX.Element {
   return <tui-progress {...reactProps} />
 }
+export const Legend = forwardRef<WrLegend, LegendProps>(
+  function Legend(reactProps, ref): JSX.Element {
+    return <tui-legend ref={ref} {...reactProps} />
+  },
+)
 
 interface Separator {
   (reactProps: SeparatorProps): JSX.Element
