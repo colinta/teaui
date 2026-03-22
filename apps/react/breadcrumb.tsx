@@ -1,4 +1,5 @@
 import React, {useState, useCallback} from 'react'
+import {interceptConsoleLog} from '@teaui/core'
 import {
   Box,
   Br,
@@ -272,5 +273,7 @@ export function BreadcrumbTab() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  interceptConsoleLog()
+
   run(<BreadcrumbTab />)
 }
