@@ -176,11 +176,11 @@ export function YamlTab() {
                 <Style foreground="red">{error}</Style>
               </Text>
             ) : (
-              <Scrollable flex={1}>
+              <Scrollable.down flex={1}>
                 <Text>
                   {parsed !== null ? syntaxHighlightJSON(parsed) : ''}
                 </Text>
-              </Scrollable>
+              </Scrollable.down>
             )}
           </Stack.down>
         </Box>

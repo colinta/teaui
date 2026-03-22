@@ -40,150 +40,149 @@ export function WidgetsTab() {
   }, 'center')
 
   return (
-    <Scrollable flex={1}>
-      <Stack.down gap={1}>
-        <Text>
-          <Style bold foreground="cyan">
-            Widget Showcase
-          </Style>
-        </Text>
+    <Scrollable flex={1} gap={1}>
+      <Text pin="horizontal">
+        <Style bold foreground="cyan">
+          Widget Showcase
+        </Style>
+      </Text>
 
-        {/* Progress bars */}
+      {/* Progress bars */}
+      <Stack.down pin="horizontal">
+        <Text>
+          <Style bold>Progress Bars</Style>
+        </Text>
+        <Stack.right gap={1}>
+          <Slider
+            flex={1}
+            direction="horizontal"
+            range={[0, 100]}
+            value={progressVal}
+            buttons
+            step={1}
+            border
+            onChange={setProgressVal}
+          />
+          <Button
+            title={`Location: ${progressLocation}`}
+            onClick={cycleProgressLocation}
+          />
+        </Stack.right>
+        <Progress
+          value={progressVal}
+          showPercent
+          location={progressLocation}
+          theme="blue"
+        />
+        <Progress
+          value={progressVal}
+          showPercent
+          location={progressLocation}
+          theme="green"
+        />
+        <Progress
+          value={progressVal}
+          showPercent
+          location={progressLocation}
+          theme="orange"
+        />
+        <Progress
+          value={progressVal}
+          showPercent
+          location={progressLocation}
+          theme="red"
+          height={2}
+        />
+      </Stack.down>
+
+      <Separator.horizontal pin="horizontal" />
+
+      {/* Spinner + Checkbox */}
+      <Stack.right pin="horizontal" gap={2}>
         <Stack.down>
           <Text>
-            <Style bold>Progress Bars</Style>
+            <Style bold>Spinner</Style>
           </Text>
           <Stack.right gap={1}>
-            <Slider
-              flex={1}
-              direction="horizontal"
-              range={[0, 100]}
-              value={progressVal}
-              buttons
-              step={1}
-              border
-              onChange={setProgressVal}
-            />
-            <Button
-              title={`Location: ${progressLocation}`}
-              onClick={cycleProgressLocation}
+            <Spinner isAnimating={showSpinner} padding={1} />
+            <Checkbox
+              title="Animate"
+              value={showSpinner}
+              onChange={setShowSpinner}
             />
           </Stack.right>
-          <Progress
-            value={progressVal}
-            showPercent
-            location={progressLocation}
-            theme="blue"
-          />
-          <Progress
-            value={progressVal}
-            showPercent
-            location={progressLocation}
-            theme="green"
-          />
-          <Progress
-            value={progressVal}
-            showPercent
-            location={progressLocation}
-            theme="orange"
-          />
-          <Progress
-            value={progressVal}
-            showPercent
-            location={progressLocation}
-            theme="red"
-            height={2}
-          />
         </Stack.down>
 
-        <Separator.horizontal />
-
-        {/* Spinner + Checkbox */}
-        <Stack.right gap={2}>
-          <Stack.down>
-            <Text>
-              <Style bold>Spinner</Style>
-            </Text>
-            <Stack.right gap={1}>
-              <Spinner isAnimating={showSpinner} padding={1} />
-              <Checkbox
-                title="Animate"
-                value={showSpinner}
-                onChange={setShowSpinner}
-              />
-            </Stack.right>
-          </Stack.down>
-
-          {/* Headers */}
-          <Stack.down>
-            <Text>
-              <Style bold>Headers</Style>
-            </Text>
-            <Stack.right gap={2}>
-              <Stack.down>
-                <H1 text="H1" />
-                <H2 text="H2" />
-                <H3 text="H3" />
-              </Stack.down>
-              <Stack.down>
-                <H4 text="H4" />
-                <H5 text="H5" />
-                <H6 text="H6" />
-              </Stack.down>
-            </Stack.right>
-          </Stack.down>
-        </Stack.right>
-
-        <Separator.horizontal />
-
-        {/* Accordion */}
-        <Text>
-          <Style bold>Accordion</Style>
-        </Text>
-        <Accordion multiple>
-          <Accordion.Section title="Section A">
-            <Text wrap>
-              This is the content of section A. Accordions can hold any content
-              and support single or multiple open sections.
-            </Text>
-          </Accordion.Section>
-          <Accordion.Section title="Section B">
-            <Text wrap>
-              Section B has different content. You can nest any TeaUI components
-              inside accordion sections.
-            </Text>
-          </Accordion.Section>
-          <Accordion.Section title="Section C">
+        {/* Headers */}
+        <Stack.down>
+          <Text>
+            <Style bold>Headers</Style>
+          </Text>
+          <Stack.right gap={2}>
             <Stack.down>
-              <Text wrap>Section C even has a progress bar:</Text>
-              <Progress value={75} showPercent theme="green" />
+              <H1 text="H1" />
+              <H2 text="H2" />
+              <H3 text="H3" />
             </Stack.down>
-          </Accordion.Section>
-        </Accordion>
+            <Stack.down>
+              <H4 text="H4" />
+              <H5 text="H5" />
+              <H6 text="H6" />
+            </Stack.down>
+          </Stack.right>
+        </Stack.down>
+      </Stack.right>
 
-        <Separator.horizontal />
+      <Separator.horizontal pin="horizontal" />
 
-        {/* Collapsible */}
-        <Text>
-          <Style bold>Collapsible / CollapsibleText</Style>
-        </Text>
-        <Collapsible
-          isCollapsed
-          collapsed={
-            <Text>
-              <Style italic>Click to expand…</Style>
-            </Text>
-          }
-          expanded={
-            <Text wrap>
-              <Style bold>Expanded!</Style> This is the full content of the
-              collapsible section. It can contain any amount of text or nested
-              components.
-            </Text>
-          }
-        />
-        <CollapsibleText text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc consectetur molestie faucibus. Phasellus iaculis pellentesque felis eu fringilla. Ut in sollicitudin nisi. Praesent in mauris tortor. Nam interdum, magna eu pellentesque scelerisque." />
-      </Stack.down>
+      {/* Accordion */}
+      <Text pin="horizontal">
+        <Style bold>Accordion</Style>
+      </Text>
+      <Accordion pin="horizontal" multiple>
+        <Accordion.Section title="Section A">
+          <Text wrap>
+            This is the content of section A. Accordions can hold any content
+            and support single or multiple open sections.
+          </Text>
+        </Accordion.Section>
+        <Accordion.Section title="Section B">
+          <Text wrap>
+            Section B has different content. You can nest any TeaUI components
+            inside accordion sections.
+          </Text>
+        </Accordion.Section>
+        <Accordion.Section title="Section C">
+          <Stack.down>
+            <Text wrap>Section C even has a progress bar:</Text>
+            <Progress value={75} showPercent theme="green" />
+          </Stack.down>
+        </Accordion.Section>
+      </Accordion>
+
+      <Separator.horizontal pin="horizontal" />
+
+      {/* Collapsible */}
+      <Text pin="horizontal">
+        <Style bold>Collapsible / CollapsibleText</Style>
+      </Text>
+      <Collapsible
+        pin="horizontal"
+        isCollapsed
+        collapsed={
+          <Text>
+            <Style italic>Click to expand…</Style>
+          </Text>
+        }
+        expanded={
+          <Text wrap>
+            <Style bold>Expanded!</Style> This is the full content of the
+            collapsible section. It can contain any amount of text or nested
+            components.
+          </Text>
+        }
+      />
+      <CollapsibleText text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc consectetur molestie faucibus. Phasellus iaculis pellentesque felis eu fringilla. Ut in sollicitudin nisi. Praesent in mauris tortor. Nam interdum, magna eu pellentesque scelerisque." />
     </Scrollable>
   )
 }

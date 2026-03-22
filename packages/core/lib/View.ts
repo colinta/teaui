@@ -28,6 +28,8 @@ export function parseFlexShorthand(flex: FlexShorthand): FlexSize {
   return flex
 }
 
+export type Pin = 'horizontal' | 'vertical'
+
 export interface Props {
   theme?: Theme | Purpose
   // size and positioning
@@ -43,6 +45,16 @@ export interface Props {
   isVisible?: boolean
   // only used as a child of <Stack> views
   flex?: FlexShorthand
+  /**
+   * Pin this view's size to the visible rect in the given direction. Only
+   * meaningful inside a scrollable Stack — a pinned view will not scroll in the
+   * pinned direction and its size in that dimension will match the visible area
+   * rather than the full content area.
+   *
+   * - `'horizontal'` — pin width to visible width (don't scroll horizontally)
+   * - `'vertical'` — pin height to visible height (don't scroll vertically)
+   */
+  pin?: Pin
   // use this however you want
   debug?: boolean
 }
@@ -77,6 +89,7 @@ export abstract class View {
   #isVisible: NonNullable<Props['isVisible']> = true
   padding: Edges | undefined
   flex: FlexSize = 'natural'
+  pin: Pin | undefined = undefined
 
   // mouse handling helpers
   #isHover = false
@@ -126,6 +139,7 @@ export abstract class View {
     isVisible,
     padding,
     flex,
+    pin,
     debug,
   }: Props) {
     this.#theme = typeof theme === 'string' ? Theme[theme] : theme
@@ -141,6 +155,7 @@ export abstract class View {
 
     this.padding = toEdges(padding)
     this.flex = flex === undefined ? 'natural' : parseFlexShorthand(flex)
+    this.pin = pin
     this.debug = debug ?? false
 
     Object.defineProperties(this, {
@@ -150,6 +165,9 @@ export abstract class View {
       },
       flex: {
         enumerable: flex !== undefined,
+      },
+      pin: {
+        enumerable: pin !== undefined,
       },
     })
   }

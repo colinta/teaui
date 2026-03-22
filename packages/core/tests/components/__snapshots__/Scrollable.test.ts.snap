@@ -27,3 +27,35 @@ AAAAAAAAAAAAAAAAAAAA"
 `;
 
 exports[`Scrollable > offset and onOffsetChange > sets initial offset via prop 1`] = `"██████────"`;
+
+exports[`Scrollable > pin > horizontally pinned child uses visible width, not content width 1`] = `
+"████████──────╴
+AAAAAAAAAAAAAAA"
+`;
+
+exports[`Scrollable > pin > multiple pinned children all stay visible 1`] = `
+"Header
+████████─╴
+ABCDEFGHIJ"
+`;
+
+exports[`Scrollable > pin > pinned child does not overlap vertical scrollbar 1`] = `
+"╶───────╴█
+XXXXXXXXX
+XXXXXXXXX
+XXXXXXXXX
+█        █"
+`;
+
+exports[`Scrollable > pin > pinned slider fills visible width in wide scrollable 1`] = `
+"──────╴█╶──────
+AAAAAAAAAAAAAAA"
+`;
+
+exports[`Scrollable > pin > vertically pinned child in horizontal stack uses visible height 1`] = `
+"╭───╮
+│   │
+▐███▌
+▐███▌
+▐███▌"
+`;

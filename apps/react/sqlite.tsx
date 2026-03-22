@@ -124,13 +124,11 @@ function BrowseAnything() {
             <Style underline>
               <Text>{header}</Text>
             </Style>
-            <Scrollable flex={1}>
-              <Stack.down>
-                {rows.map((row, i) => (
-                  <Text key={i}>{row}</Text>
-                ))}
-              </Stack.down>
-            </Scrollable>
+            <Scrollable.down flex={1}>
+              {rows.map((row, i) => (
+                <Text key={i}>{row}</Text>
+              ))}
+            </Scrollable.down>
           </Stack.down>
         ) : (
           <Text>Select a table from the left panel</Text>

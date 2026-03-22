@@ -245,7 +245,7 @@ export function BreadcrumbTab() {
       </Box>
 
       {/* Current Screen Content */}
-      <Scrollable>{renderScreen(navigation.current)}</Scrollable>
+      <Scrollable.down>{renderScreen(navigation.current)}</Scrollable.down>
 
       {/* Instructions */}
       <Box border="single" padding={1}>

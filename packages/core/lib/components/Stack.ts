@@ -234,7 +234,17 @@ export class Stack extends Container {
 
       const flexSize = this.#sizes.get(child) ?? 'natural'
       if (flexSize === 'natural') {
-        const childSize = child.naturalSize(remainingSize)
+        // For pinned children, use the visible rect size in the pinned
+        // dimension so naturalSize computes based on visible area.
+        let availableForChild = remainingSize
+        if (child.pin === 'horizontal' && this.isVertical) {
+          availableForChild = remainingSize.mutableCopy()
+          availableForChild.width = viewport.visibleRect.size.width
+        } else if (child.pin === 'vertical' && !this.isVertical) {
+          availableForChild = remainingSize.mutableCopy()
+          availableForChild.height = viewport.visibleRect.size.height
+        }
+        const childSize = child.naturalSize(availableForChild)
 
         if (this.isVertical) {
           flexViews.push(['natural', childSize.height, child])
@@ -280,6 +290,13 @@ export class Stack extends Container {
     for (const [flexSize, amount, child] of flexViews) {
       const childSize = viewport.contentSize.mutableCopy()
 
+      // For pinned children, use the visible rect size in the pinned dimension
+      if (child.pin === 'horizontal' && this.isVertical) {
+        childSize.width = viewport.visibleRect.size.width
+      } else if (child.pin === 'vertical' && !this.isVertical) {
+        childSize.height = viewport.visibleRect.size.height
+      }
+
       if (!isFirst) {
         remainingDimension -= this.#gap
       }
@@ -323,7 +340,21 @@ export class Stack extends Container {
         }
       }
 
-      viewport.clipped(new Rect(origin, childSize), inside => {
+      const clipOrigin = origin.mutableCopy()
+      const clipSize = childSize.mutableCopy()
+
+      // Pin support: if a child is pinned in the cross-axis direction,
+      // use the visible rect dimensions instead of the content dimensions.
+      // This makes the child stay fixed in that axis while scrolling.
+      if (child.pin === 'horizontal' && this.isVertical) {
+        clipSize.width = viewport.visibleRect.size.width
+        clipOrigin.x = viewport.visibleRect.origin.x
+      } else if (child.pin === 'vertical' && !this.isVertical) {
+        clipSize.height = viewport.visibleRect.size.height
+        clipOrigin.y = viewport.visibleRect.origin.y
+      }
+
+      viewport.clipped(new Rect(clipOrigin, clipSize), inside => {
         child.render(inside)
       })
 

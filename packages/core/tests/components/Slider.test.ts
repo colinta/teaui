@@ -54,7 +54,12 @@ describe('Slider', () => {
         showScrollbars: false,
         contentSize: {height: 10},
         children: [
-          new Slider({range: [0, 100], value: 50, direction: 'vertical'}),
+          new Slider({
+            flex: 1,
+            range: [0, 100],
+            value: 50,
+            direction: 'vertical',
+          }),
         ],
       })
       const t = testRender(scrollable, {width: 1, height: 5})
@@ -67,7 +72,12 @@ describe('Slider', () => {
         contentSize: {height: 10},
         offset: new Point(0, 5),
         children: [
-          new Slider({range: [0, 100], value: 50, direction: 'vertical'}),
+          new Slider({
+            flex: 1,
+            range: [0, 100],
+            value: 50,
+            direction: 'vertical',
+          }),
         ],
       })
       const t = testRender(scrollable, {width: 1, height: 5})
@@ -80,6 +90,7 @@ describe('Slider', () => {
         contentSize: {height: 10},
         children: [
           new Slider({
+            flex: 1,
             range: [0, 100],
             value: 50,
             direction: 'vertical',

@@ -1,16 +1,35 @@
 import type {Viewport} from '../Viewport.js'
 import {type Props as ContainerProps, Container} from '../Container.js'
+import {type Props as ViewProps, View} from '../View.js'
 import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
 import {Style} from '../Style.js'
-import {type Orientation} from './types.js'
+import {type Orientation, type Direction} from './types.js'
+import {Stack} from './Stack.js'
 
 interface Props extends ContainerProps {
   /**
-   * Show/hide the scrollbars
+   * Layout direction for children. Scrollable manages an internal Stack,
+   * so children are laid out in this direction.
+   * @default 'down'
+   */
+  direction?: Direction
+  /**
+   * Gap between children (passed to internal Stack).
+   * @default 0
+   */
+  gap?: number
+  /**
+   * Which directions to allow scrolling.
+   * @default 'both'
+   */
+  scrollable?: 'both' | 'horizontal' | 'vertical'
+  /**
+   * Show/hide the scrollbars. `true` shows both, `false` hides both, or
+   * specify `'horizontal'` or `'vertical'` to show only one.
    * @default true
    */
-  showScrollbars?: boolean
+  showScrollbars?: boolean | 'horizontal' | 'vertical'
   /**
    * How many rows to scroll by when using the mouse wheel.
    * @default 1
@@ -27,6 +46,34 @@ interface Props extends ContainerProps {
    * @default false
    */
   keepAtBottom?: boolean
+  /**
+   * Override the content size. Useful for testing or when the content size
+   * is known ahead of time. When not provided, the content size is computed
+   * from the children's naturalSize.
+   */
+  contentSize?: {width?: number; height?: number}
+  /**
+   * The current scroll offset. Use with `onOffsetChange` for controlled scrolling.
+   */
+  offset?: Point
+  /**
+   * Callback when the scroll offset changes.
+   */
+  onOffsetChange?: (offset: Point) => void
+}
+
+type ShorthandProps = NonNullable<Props['children']> | Omit<Props, 'direction'>
+
+function fromShorthand(
+  props: ShorthandProps,
+  direction: Direction,
+  extraProps: Omit<Props, 'children' | 'direction'> = {},
+): Props {
+  if (Array.isArray(props)) {
+    return {children: props, direction, ...extraProps}
+  } else {
+    return {...props, direction, ...extraProps}
+  }
 }
 
 interface ContentOffset {
@@ -35,42 +82,154 @@ interface ContentOffset {
 }
 
 /**
- * Scrollable is meant to scroll _a single view_, ie a Stack view. But all the
- * container views are optimized to check their _visibleRect_, and won't render
- * children that are not in view, saving some CPU cycles.
+ * Scrollable manages an internal Stack for layout and adds scroll offset,
+ * scrollbar rendering, and mouse wheel handling on top.
+ *
+ * Children added to the Scrollable are delegated to the internal Stack.
+ * Use `direction` to control layout (default: 'down'), or the static
+ * constructors `Scrollable.down()`, `Scrollable.right()`, etc.
  */
 export class Scrollable extends Container {
-  #showScrollbars: boolean = true
+  #stack: Stack
+  #scrollable: 'both' | 'horizontal' | 'vertical' = 'both'
+  #showScrollbars: boolean | 'horizontal' | 'vertical' = true
   #scrollHeight: number = 1
   #scrollWidth: number = 2
   #keepAtBottom: boolean = false
   #isAtBottom: boolean = true
   #contentOffset: ContentOffset
   #contentSize: Size = Size.zero
+  #contentSizeOverride?: {width?: number; height?: number}
   #visibleSize: Size = Size.zero
   #prevMouseDown?: Orientation = undefined
+  #onOffsetChange?: (offset: Point) => void
 
-  constructor(props: Props) {
+  static down(
+    props: ShorthandProps = {},
+    extraProps: Omit<Props, 'children' | 'direction'> = {},
+  ): Scrollable {
+    return new Scrollable(fromShorthand(props, 'down', extraProps))
+  }
+
+  static up(
+    props: ShorthandProps = {},
+    extraProps: Omit<Props, 'children' | 'direction'> = {},
+  ): Scrollable {
+    return new Scrollable(fromShorthand(props, 'up', extraProps))
+  }
+
+  static right(
+    props: ShorthandProps = {},
+    extraProps: Omit<Props, 'children' | 'direction'> = {},
+  ): Scrollable {
+    return new Scrollable(fromShorthand(props, 'right', extraProps))
+  }
+
+  static left(
+    props: ShorthandProps = {},
+    extraProps: Omit<Props, 'children' | 'direction'> = {},
+  ): Scrollable {
+    return new Scrollable(fromShorthand(props, 'left', extraProps))
+  }
+
+  constructor({children, child, direction, gap, ...props}: Props) {
     super(props)
+
+    this.#stack = new Stack({direction: direction ?? 'down', gap})
+    // Add the Stack as the actual child of the Container
+    super.add(this.#stack)
 
     this.#contentOffset = {x: 0, y: 0}
     this.#update(props)
+
+    // Add user children to the internal Stack
+    if (child) {
+      this.#stack.add(child)
+    }
+    if (children) {
+      for (const c of children) {
+        this.#stack.add(c)
+      }
+    }
   }
 
-  update(props: Props) {
+  update({children, child, direction, gap, ...props}: Props) {
     this.#update(props)
+
+    if (direction !== undefined) {
+      this.#stack.direction = direction
+    }
+    if (gap !== undefined) {
+      this.#stack.gap = gap
+    }
+
+    // Delegate child management to the internal Stack
+    if (child !== undefined || children !== undefined) {
+      const allChildren: View[] = []
+      if (children) {
+        allChildren.push(...children)
+      }
+      if (child) {
+        allChildren.push(child)
+      }
+
+      this.#stack.update({
+        direction: direction ?? this.#stack.direction,
+        gap: gap ?? this.#stack.gap,
+        children: allChildren,
+      })
+    }
+
     super.update(props)
   }
 
-  #update({scrollHeight, scrollWidth, showScrollbars, keepAtBottom}: Props) {
+  #update({
+    scrollable,
+    scrollHeight,
+    scrollWidth,
+    showScrollbars,
+    keepAtBottom,
+    contentSize: contentSizeOverride,
+    offset,
+    onOffsetChange,
+  }: Props) {
+    this.#scrollable = scrollable ?? 'both'
     this.#showScrollbars = showScrollbars ?? true
     this.#scrollHeight = scrollHeight ?? 1
     this.#scrollWidth = scrollWidth ?? 2
     this.#keepAtBottom = keepAtBottom ?? false
+    this.#contentSizeOverride = contentSizeOverride
+    this.#onOffsetChange = onOffsetChange
+    if (offset) {
+      this.#contentOffset = {x: -offset.x, y: -offset.y}
+    }
+  }
+
+  /**
+   * Children are delegated to the internal Stack.
+   */
+  add(child: View, at?: number) {
+    this.#stack.add(child, at)
+  }
+
+  removeChild(child: View) {
+    this.#stack.removeChild(child)
+  }
+
+  removeAllChildren() {
+    this.#stack.removeAllChildren()
+  }
+
+  /**
+   * Returns the children of the internal Stack (the user's children),
+   * not the Scrollable's direct children (which is just the Stack).
+   */
+  get children(): View[] {
+    return this.#stack.children
   }
 
   naturalSize(available: Size): Size {
-    const size = super.naturalSize(available).mutableCopy()
+    const size = this.#stack.naturalSize(available).mutableCopy()
     size.width = Math.min(size.width, available.width)
     size.height = Math.min(size.height, available.height)
     return size
@@ -204,6 +363,17 @@ export class Scrollable extends Container {
       return
     }
 
+    // Restrict scrolling to allowed direction(s)
+    if (this.#scrollable === 'horizontal') {
+      offsetY = 0
+    } else if (this.#scrollable === 'vertical') {
+      offsetX = 0
+    }
+
+    if (offsetX === 0 && offsetY === 0) {
+      return
+    }
+
     const tooWide = this.#contentSize.width > this.contentSize.width
     const tooTall = this.#contentSize.height > this.contentSize.height
 
@@ -216,11 +386,24 @@ export class Scrollable extends Container {
 
     // Track whether we're at the bottom (for keepAtBottom)
     this.#isAtBottom = y <= maxY
+
+    this.#onOffsetChange?.(new Point(-x || 0, -y || 0))
+  }
+
+  #showHorizontalScrollbar(): boolean {
+    return (
+      this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
+    )
+  }
+
+  #showVerticalScrollbar(): boolean {
+    return this.#showScrollbars === true || this.#showScrollbars === 'vertical'
   }
 
   get contentSize(): Size {
-    const delta = this.#showScrollbars ? 1 : 0
-    return super.contentSize.shrink(delta, delta)
+    const deltaW = this.#showVerticalScrollbar() ? 1 : 0
+    const deltaH = this.#showHorizontalScrollbar() ? 1 : 0
+    return super.contentSize.shrink(deltaW, deltaH)
   }
 
   render(viewport: Viewport) {
@@ -231,15 +414,24 @@ export class Scrollable extends Container {
     viewport.registerMouse('mouse.wheel')
 
     let contentSize = Size.zero.mutableCopy()
-    for (const child of this.children) {
-      const childSize = child.naturalSize(viewport.contentSize)
-      contentSize.width = Math.max(contentSize.width, childSize.width)
-      contentSize.height = Math.max(contentSize.height, childSize.height)
+    if (this.#contentSizeOverride) {
+      contentSize.width =
+        this.#contentSizeOverride.width ?? viewport.contentSize.width
+      contentSize.height =
+        this.#contentSizeOverride.height ?? viewport.contentSize.height
+    } else {
+      const stackSize = this.#stack.naturalSize(viewport.contentSize)
+      contentSize.width = stackSize.width
+      contentSize.height = stackSize.height
     }
     this.#contentSize = contentSize
 
-    const tooWide = contentSize.width > viewport.contentSize.width
-    const tooTall = contentSize.height > viewport.contentSize.height
+    const canScrollHoriz = this.#scrollable !== 'vertical'
+    const canScrollVert = this.#scrollable !== 'horizontal'
+    const tooWide =
+      canScrollHoriz && contentSize.width > viewport.contentSize.width
+    const tooTall =
+      canScrollVert && contentSize.height > viewport.contentSize.height
 
     // keepAtBottom: snap to end when content grows and we were at the bottom
     if (this.#keepAtBottom && this.#isAtBottom && tooTall) {
@@ -247,29 +439,48 @@ export class Scrollable extends Container {
       this.#contentOffset = {x: this.#contentOffset.x, y: maxY}
     }
 
+    const showVBar = this.#showVerticalScrollbar() && tooTall
+    const showHBar = this.#showHorizontalScrollbar() && tooWide
+
     // #contentOffset is _negative_ (indicates the amount to move the view away
     // from the origin, which will always be up/left of 0,0)
+    // Children are laid out in a region that is at least as wide/tall as the
+    // content, and at least as wide/tall as the viewport (minus scrollbars).
+    // This ensures flex children expand to fill the visible area, while
+    // children that overflow extend beyond it.
+    const visibleWidth = viewport.contentSize.width - (showVBar ? 1 : 0)
+    const visibleHeight = viewport.contentSize.height - (showHBar ? 1 : 0)
+
+    // First clip to exclude scrollbar area — this ensures that the inner
+    // viewport's visibleRect does not include the scrollbar column/row.
+    // Without this, pinned children (which size to visibleRect) would
+    // overlap the scrollbar.
+    const scrollableArea = new Rect(
+      Point.zero,
+      new Size(visibleWidth, visibleHeight),
+    )
     const outside = new Rect(
       [this.#contentOffset.x, this.#contentOffset.y],
-      viewport.contentSize
-        .shrink(this.#contentOffset.x, this.#contentOffset.y)
-        .shrink(
-          this.#showScrollbars && tooTall ? 1 : 0,
-          this.#showScrollbars && tooWide ? 1 : 0,
-        ),
+      [
+        Math.max(contentSize.width, visibleWidth),
+        Math.max(contentSize.height, visibleHeight),
+      ],
     )
-    viewport.clipped(outside, inside => {
-      for (const child of this.children) {
-        child.render(inside)
-      }
+    viewport.clipped(scrollableArea, contentViewport => {
+      contentViewport.clipped(outside, inside => {
+        this.#stack.render(inside)
+      })
     })
 
+    // Note: #visibleSize is used in #maxOffsetX/#maxOffsetY calculations.
+    // The formula requires shrinking by overflow status (not scrollbar visibility)
+    // because the +1 correction in the offset formulas compensates for this.
     this.#visibleSize = viewport.visibleRect.size.shrink(
       tooWide ? 1 : 0,
       tooTall ? 1 : 0,
     )
 
-    if (this.#showScrollbars && (tooWide || tooTall)) {
+    if (showVBar || showHBar) {
       const scrollBar: Style = new Style({
         foreground: this.theme.darkenColor,
         background: this.theme.darkenColor,
@@ -285,13 +496,13 @@ export class Scrollable extends Container {
       // scrollMaxHorizY: vertical scroll bar is drawn from 0 to scrollMaxHorizY
       const scrollMaxX = viewport.contentSize.width - 1,
         scrollMaxY = viewport.contentSize.height - 1,
-        scrollMaxHorizX = scrollMaxX - (tooTall ? 1 : 0),
-        scrollMaxVertY = scrollMaxY - (tooWide ? 1 : 0)
-      if (tooWide && tooTall) {
+        scrollMaxHorizX = scrollMaxX - (showVBar ? 1 : 0),
+        scrollMaxVertY = scrollMaxY - (showHBar ? 1 : 0)
+      if (showHBar && showVBar) {
         viewport.write('█', new Point(scrollMaxX, scrollMaxY), scrollBar)
       }
 
-      if (tooWide) {
+      if (showHBar) {
         viewport.registerMouse(
           'mouse.button.left',
           new Rect(new Point(0, scrollMaxY), new Size(scrollMaxHorizX + 1, 1)),
@@ -305,7 +516,7 @@ export class Scrollable extends Container {
               0,
               contentSize.width -
                 viewport.contentSize.width +
-                (tooTall ? 1 : 0),
+                (showVBar ? 1 : 0),
             ],
             [0, scrollMaxHorizX],
           ),
@@ -320,7 +531,7 @@ export class Scrollable extends Container {
         }
       }
 
-      if (tooTall) {
+      if (showVBar) {
         viewport.registerMouse(
           'mouse.button.left',
           new Rect(new Point(scrollMaxX, 0), new Size(1, scrollMaxVertY + 1)),
@@ -334,7 +545,7 @@ export class Scrollable extends Container {
               0,
               contentSize.height -
                 viewport.contentSize.height +
-                (tooWide ? 1 : 0),
+                (showHBar ? 1 : 0),
             ],
             [0, scrollMaxVertY],
           ),

@@ -61,18 +61,16 @@ function box(input: Input) {
 }
 
 demo(
-  new Scrollable({
-    child: Stack.down({
-      children: [
-        //
-        box(singleLine),
-        box(emptySingleLine),
-        box(wrapLine),
-        box(emptyMultiLine),
-        box(restrictedLine),
-        box(restrictedMultiLine),
-      ],
-    }),
+  Scrollable.down({
+    children: [
+      //
+      box(singleLine),
+      box(emptySingleLine),
+      box(wrapLine),
+      box(emptyMultiLine),
+      box(restrictedLine),
+      box(restrictedMultiLine),
+    ],
   }),
   false,
 )

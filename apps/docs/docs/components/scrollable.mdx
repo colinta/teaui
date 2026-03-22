@@ -5,23 +5,21 @@ title: Scrollable
 
 # Scrollable
 
-Wraps a single child view in a scrollable container with optional scrollbars. Supports mouse wheel and keyboard scrolling.
+A scrollable container with an internal Stack for laying out children. Supports mouse wheel scrolling, scrollbars, and pinned children.
 
 ## React Example
 
 ```tsx
 import React from 'react'
-import {Scrollable, Stack, Text, run} from '@teaui/react'
+import {Scrollable, Text, run} from '@teaui/react'
 
 function App() {
   return (
-    <Scrollable height={10}>
-      <Stack.down>
-        {Array.from({length: 50}, (_, i) => (
-          <Text key={i}>Line {i + 1}</Text>
-        ))}
-      </Stack.down>
-    </Scrollable>
+    <Scrollable.down height={10}>
+      {Array.from({length: 50}, (_, i) => (
+        <Text key={i}>Line {i + 1}</Text>
+      ))}
+    </Scrollable.down>
   )
 }
 
@@ -30,27 +28,31 @@ run(<App />)
 
 ## Props
 
-| Prop             | Type        | Default | Description                            |
-| ---------------- | ----------- | ------- | -------------------------------------- |
-| `showScrollbars` | `boolean`   | `true`  | Show/hide scrollbars                   |
-| `scrollHeight`   | `number`    | `1`     | Rows to scroll per mouse wheel tick    |
-| `scrollWidth`    | `number`    | `2`     | Columns to scroll per mouse wheel tick |
-| `children`       | `ReactNode` | —       | Single child to scroll                 |
+| Prop             | Type                                    | Default  | Description                              |
+| ---------------- | --------------------------------------- | -------- | ---------------------------------------- |
+| `direction`      | `'down' \| 'up' \| 'left' \| 'right'`   | `'down'` | Layout direction for children            |
+| `gap`            | `number`                                | `0`      | Gap between children                     |
+| `scrollable`     | `'both' \| 'horizontal' \| 'vertical'`  | `'both'` | Which directions to allow scrolling      |
+| `showScrollbars` | `boolean \| 'horizontal' \| 'vertical'` | `true`   | Show/hide scrollbars                     |
+| `scrollHeight`   | `number`                                | `1`      | Rows to scroll per mouse wheel tick      |
+| `scrollWidth`    | `number`                                | `2`      | Columns to scroll per mouse wheel tick   |
+| `keepAtBottom`   | `boolean`                               | `false`  | Auto-scroll to bottom when content grows |
+| `children`       | `ReactNode`                             | —        | Children laid out by the internal Stack  |
+
+### Static Constructors
+
+Use `Scrollable.down`, `Scrollable.up`, `Scrollable.left`, `Scrollable.right` to set the direction without the `direction` prop.
 
 <details>
 <summary>Core API</summary>
 
 ```js
-import {Scrollable, Stack, Text} from '@teaui/core'
+import {Scrollable, Text} from '@teaui/core'
 
-const content = Stack.down(
+Scrollable.down(
   Array.from({length: 50}, (_, i) => new Text({text: `Line ${i + 1}`})),
+  {height: 10},
 )
-
-new Scrollable({
-  height: 10,
-  children: [content],
-})
 ```
 
 </details>

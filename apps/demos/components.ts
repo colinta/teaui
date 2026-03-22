@@ -272,8 +272,7 @@ const digits2 = new Digits({
   text: 'How vexingly quick\ndaft zebras jump!\n123,456.7890\n(1)[2]{3}\n+-*/ %#:!\n2^⁴',
 })
 
-const scrollable = new Scrollable({
-  child: Stack.down([digits1, digits2]),
+const scrollable = Scrollable.down([digits1, digits2], {
   width: 40,
 })
 

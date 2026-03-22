@@ -196,7 +196,7 @@ describe('Progress', () => {
       const scrollable = new Scrollable({
         showScrollbars: false,
         contentSize: {width: 20},
-        children: [new Progress({value: 50})],
+        children: [new Progress({flex: 1, value: 50})],
       })
       const t = testRender(scrollable, {width: 10, height: 3})
       expect(t.terminal.textContent()).toMatchSnapshot()
@@ -206,7 +206,7 @@ describe('Progress', () => {
       const scrollable = new Scrollable({
         showScrollbars: false,
         contentSize: {height: 10},
-        children: [new Progress({value: 50, direction: 'vertical'})],
+        children: [new Progress({flex: 1, value: 50, direction: 'vertical'})],
       })
       const t = testRender(scrollable, {width: 3, height: 5})
       expect(t.terminal.textContent()).toMatchSnapshot()
@@ -217,7 +217,7 @@ describe('Progress', () => {
         showScrollbars: false,
         contentSize: {height: 10},
         offset: new Point(0, 5),
-        children: [new Progress({value: 50, direction: 'vertical'})],
+        children: [new Progress({flex: 1, value: 50, direction: 'vertical'})],
       })
       const t = testRender(scrollable, {width: 3, height: 5})
       expect(t.terminal.textContent()).toMatchSnapshot()

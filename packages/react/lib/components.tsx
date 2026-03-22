@@ -524,10 +524,57 @@ export const Geometry = forwardRef<WrGeometry, GeometryProps>(function Geometry(
     </tui-geometry>
   )
 })
-export const Scrollable = forwardRef<WrScrollable, ScrollableProps>(
+type ScrollableDirectionProps = Omit<ScrollableProps, 'direction'>
+type ScrollableDirectionComponent = React.ForwardRefExoticComponent<
+  ScrollableDirectionProps & React.RefAttributes<WrScrollable>
+>
+interface Scrollable {
+  (reactProps: ScrollableProps): JSX.Element
+  down: ScrollableDirectionComponent
+  up: ScrollableDirectionComponent
+  left: ScrollableDirectionComponent
+  right: ScrollableDirectionComponent
+}
+export const Scrollable: Scrollable = forwardRef<WrScrollable, ScrollableProps>(
   function Scrollable({children, ...props}, ref): JSX.Element {
     return (
       <tui-scrollable ref={ref} {...props}>
+        {children}
+      </tui-scrollable>
+    )
+  },
+) as unknown as Scrollable
+Scrollable.down = forwardRef<WrScrollable, ScrollableDirectionProps>(
+  function ScrollableDown({children, ...props}, ref) {
+    return (
+      <tui-scrollable ref={ref} direction="down" {...props}>
+        {children}
+      </tui-scrollable>
+    )
+  },
+)
+Scrollable.up = forwardRef<WrScrollable, ScrollableDirectionProps>(
+  function ScrollableUp({children, ...props}, ref) {
+    return (
+      <tui-scrollable ref={ref} direction="up" {...props}>
+        {children}
+      </tui-scrollable>
+    )
+  },
+)
+Scrollable.right = forwardRef<WrScrollable, ScrollableDirectionProps>(
+  function ScrollableRight({children, ...props}, ref) {
+    return (
+      <tui-scrollable ref={ref} direction="right" {...props}>
+        {children}
+      </tui-scrollable>
+    )
+  },
+)
+Scrollable.left = forwardRef<WrScrollable, ScrollableDirectionProps>(
+  function ScrollableLeft({children, ...props}, ref) {
+    return (
+      <tui-scrollable ref={ref} direction="left" {...props}>
         {children}
       </tui-scrollable>
     )

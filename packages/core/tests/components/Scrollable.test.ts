@@ -659,33 +659,25 @@ describe('Scrollable', () => {
       // but viewport is only 20.
       const scrollable = new Scrollable({
         flex: 1,
+        gap: 1,
         showScrollbars: false,
         children: [
-          Stack.down({
+          Stack.right({
             gap: 1,
             children: [
-              Stack.down({
-                children: [
-                  Stack.right({
-                    gap: 1,
-                    children: [
-                      new Slider({
-                        flex: 1,
-                        direction: 'horizontal',
-                        range: [0, 100],
-                        value: 42,
-                        buttons: true,
-                        step: 1,
-                        border: true,
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-              new CollapsibleText({
-                text: 'A'.repeat(40),
+              new Slider({
+                flex: 1,
+                direction: 'horizontal',
+                range: [0, 100],
+                value: 42,
+                buttons: true,
+                step: 1,
+                border: true,
               }),
             ],
+          }),
+          new CollapsibleText({
+            text: 'A'.repeat(40),
           }),
         ],
       })
@@ -696,18 +688,141 @@ describe('Scrollable', () => {
     it('progress bar fills scrollable content width', () => {
       const scrollable = new Scrollable({
         flex: 1,
+        gap: 1,
         showScrollbars: false,
-        children: [
-          Stack.down({
-            gap: 1,
-            children: [
-              new Progress({value: 50}),
-              new Text({text: 'A'.repeat(40)}),
-            ],
-          }),
-        ],
+        children: [new Progress({value: 50}), new Text({text: 'A'.repeat(40)})],
       })
       const t = testRender(scrollable, {width: 20, height: 3})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
+
+  describe('pin', () => {
+    it('horizontally pinned child uses visible width, not content width', () => {
+      // A wide Text makes content 30 cols, but viewport is 15.
+      // The Progress with pin='horizontal' should render at visible width (15),
+      // not the full content width (30).
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [
+          new Progress({pin: 'horizontal', value: 50}),
+          new Text({text: 'A'.repeat(30)}),
+        ],
+      })
+      const t = testRender(scrollable, {width: 15, height: 3})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('pinned child stays visible when scrolled horizontally', () => {
+      const wideText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [
+          new Progress({pin: 'horizontal', value: 50}),
+          new Text({text: wideText}),
+        ],
+      })
+      const t = testRender(scrollable, {width: 15, height: 3})
+      const before = t.terminal.textContent()
+
+      // Scroll right — the pinned Progress should not move
+      scrollable.scrollBy(5, 0)
+      t.render()
+
+      // The Progress line should be the same (pinned)
+      expect(t.terminal.textAtRow(0)).toBe(before!.split('\n')[0])
+      // But the text line should have scrolled
+      expect(t.terminal.textAtRow(1)).not.toBe(before!.split('\n')[1])
+    })
+
+    it('pinned slider fills visible width in wide scrollable', () => {
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [
+          new Slider({
+            pin: 'horizontal',
+            range: [0, 100],
+            value: 50,
+          }),
+          new Text({text: 'A'.repeat(30)}),
+        ],
+      })
+      const t = testRender(scrollable, {width: 15, height: 2})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('vertically pinned child in horizontal stack uses visible height', () => {
+      const scrollable = new Scrollable({
+        direction: 'right',
+        showScrollbars: false,
+        children: [
+          new Progress({
+            pin: 'vertical',
+            flex: 1,
+            value: 50,
+            direction: 'vertical',
+          }),
+          new Text({text: 'A\n'.repeat(20).trimEnd()}),
+        ],
+      })
+      const t = testRender(scrollable, {width: 5, height: 5})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('multiple pinned children all stay visible', () => {
+      const wideText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123'
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [
+          new Text({pin: 'horizontal', text: 'Header'}),
+          new Progress({pin: 'horizontal', value: 75}),
+          new Text({text: wideText}),
+        ],
+      })
+      const t = testRender(scrollable, {width: 10, height: 3})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+
+      scrollable.scrollBy(5, 0)
+      t.render()
+
+      // Header and Progress should still be fully visible (pinned)
+      expect(t.terminal.textAtRow(0)).toContain('Header')
+      // Text should have scrolled
+      expect(t.terminal.textAtRow(2)).toBe(wideText.slice(5, 15))
+    })
+
+    it('pin has no effect when content fits (no scrolling)', () => {
+      // When there's no overflow, pin should be a no-op
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [new Progress({pin: 'horizontal', value: 50})],
+      })
+      const t = testRender(scrollable, {width: 15, height: 1})
+      // Should render identically to a non-pinned Progress
+      const normal = new Scrollable({
+        showScrollbars: false,
+        children: [new Progress({value: 50})],
+      })
+      const t2 = testRender(normal, {width: 15, height: 1})
+      expect(t.terminal.textContent()).toBe(t2.terminal.textContent())
+    })
+
+    it('pinned child does not overlap vertical scrollbar', () => {
+      // 10 lines overflow 5-row viewport, producing a vertical scrollbar.
+      // The pinned Progress should fill width-1 (excluding the scrollbar column).
+      const lines = Array.from(
+        {length: 10},
+        () => new Text({text: 'X'.repeat(20)}),
+      )
+      const scrollable = new Scrollable({
+        children: [new Progress({pin: 'horizontal', value: 0}), ...lines],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+      // Progress at 0% renders track chars (╶─╴), not █.
+      // Last column of first row should be the scrollbar (█), not progress track.
+      expect(t.terminal.charAt(9, 0)).toBe('█')
+      // Column 8 (last column of the progress) should be track, not scrollbar
+      expect(t.terminal.charAt(8, 0)).toBe('╴')
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
