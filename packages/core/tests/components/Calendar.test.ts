@@ -7,8 +7,8 @@ function date(y: number, m: number, d: number): Date {
 }
 
 function openMonthPicker(t: ReturnType<typeof testRender>) {
-  t.sendMouse('mouse.button.down', {x: 3, y: 0})
-  t.sendMouse('mouse.button.up', {x: 3, y: 0})
+  t.sendMouse('mouse.button.down', {x: 4, y: 0})
+  t.sendMouse('mouse.button.up', {x: 4, y: 0})
 }
 
 function openYearPicker(t: ReturnType<typeof testRender>) {
@@ -24,7 +24,7 @@ describe('Calendar', () => {
           date: date(2026, 6, 15),
           visibleDate: date(2026, 6, 1),
         }),
-        {width: 22, height: 8},
+        {width: 22, height: 8, isFocused: false},
       )
       const text = t.terminal.textContent()
       expect(text).toContain('June')
@@ -44,11 +44,11 @@ describe('Calendar', () => {
           date: date(2021, 10, 15),
           visibleDate: date(2021, 10, 1),
         }),
-        {width: 22, height: 8},
+        {width: 22, height: 8, isFocused: false},
       )
 
       expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        "◃  October     2021  ▹
+        " ◃  October   2021  ▹
          Su Mo Tu We Th Fr Sa
          26 27 28 29 30  1  2
           3  4  5  6  7  8  9
@@ -59,17 +59,38 @@ describe('Calendar', () => {
       `)
     })
 
+    it('renders with focus', () => {
+      const t = testRender(
+        new Calendar({
+          date: date(2021, 10, 15),
+          visibleDate: date(2021, 10, 1),
+        }),
+        {width: 22, height: 8, isFocused: true},
+      )
+
+      expect(t.terminal.textContent()).toMatchInlineSnapshot(`
+        " ◃  October   2021  ▹
+        ╭Su─Mo─Tu─We─Th─Fr─Sa╮
+        │26 27 28 29 30  1  2│
+        │ 3  4  5  6  7  8  9│
+        │10 11 12 13 14 15 16│
+        │17 18 19 20 21 22 23│
+        │24 25 26 27 28 29 30│
+        ╰31─ 1─ 2─ 3─ 4─ 5─ 6╯"
+      `)
+    })
+
     it('matches the fixed grid for a february starting on monday', () => {
       const t = testRender(
         new Calendar({
           date: date(2021, 2, 15),
           visibleDate: date(2021, 2, 1),
         }),
-        {width: 22, height: 8},
+        {width: 22, height: 8, isFocused: false},
       )
 
       expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        "◃  February    2021  ▹
+        " ◃  February  2021  ▹
          Su Mo Tu We Th Fr Sa
          31  1  2  3  4  5  6
           7  8  9 10 11 12 13
@@ -87,11 +108,11 @@ describe('Calendar', () => {
           visibleDate: date(2021, 2, 1),
           firstDayOfWeek: 1,
         }),
-        {width: 22, height: 8},
+        {width: 22, height: 8, isFocused: false},
       )
 
       expect(t.terminal.textContent()).toMatchInlineSnapshot(`
-        "◃  February    2021  ▹
+        " ◃  February  2021  ▹
          Mo Tu We Th Fr Sa Su
           1  2  3  4  5  6  7
           8  9 10 11 12 13 14
@@ -261,7 +282,7 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
       t.sendKey('right')
-      expect(cal.date.getDate()).toBe(16)
+      expect(cal.cursorDate.getDate()).toBe(16)
     })
 
     it('moves selection left with arrow key', () => {
@@ -271,27 +292,27 @@ describe('Calendar', () => {
       })
       const t = testRender(cal, {width: 22, height: 8})
       t.sendKey('left')
-      expect(cal.date.getDate()).toBe(14)
+      expect(cal.cursorDate.getDate()).toBe(14)
     })
 
-    it('moves selection up (7 days back) with arrow key', () => {
+    it('moves cursor up (7 days back) with arrow key', () => {
       const cal = new Calendar({
         date: date(2026, 6, 15),
         visibleDate: date(2026, 6, 1),
       })
       const t = testRender(cal, {width: 22, height: 8})
       t.sendKey('up')
-      expect(cal.date.getDate()).toBe(8)
+      expect(cal.cursorDate.getDate()).toBe(8)
     })
 
-    it('moves selection down (7 days forward) with arrow key', () => {
+    it('moves cursor down (7 days forward) with arrow key', () => {
       const cal = new Calendar({
         date: date(2026, 6, 15),
         visibleDate: date(2026, 6, 1),
       })
       const t = testRender(cal, {width: 22, height: 8})
       t.sendKey('down')
-      expect(cal.date.getDate()).toBe(22)
+      expect(cal.cursorDate.getDate()).toBe(22)
     })
 
     it('navigates to previous month with PageUp', () => {
@@ -328,24 +349,24 @@ describe('Calendar', () => {
       expect(visibleDate!.getMonth()).toBe(6)
     })
 
-    it('moves to first day with Home', () => {
+    it('moves cursor to first day with Home', () => {
       const cal = new Calendar({
         date: date(2026, 6, 15),
         visibleDate: date(2026, 6, 1),
       })
       const t = testRender(cal, {width: 22, height: 8})
       t.sendKey('home')
-      expect(cal.date.getDate()).toBe(1)
+      expect(cal.cursorDate.getDate()).toBe(1)
     })
 
-    it('moves to last day with End', () => {
+    it('moves cursor to last day with End', () => {
       const cal = new Calendar({
         date: date(2026, 6, 15),
         visibleDate: date(2026, 6, 1),
       })
       const t = testRender(cal, {width: 22, height: 8})
       t.sendKey('end')
-      expect(cal.date.getDate()).toBe(30)
+      expect(cal.cursorDate.getDate()).toBe(30)
     })
 
     it('confirms selection with Enter', () => {
@@ -521,13 +542,13 @@ describe('Calendar', () => {
 
       expect(t.terminal.textContent()).toMatchInlineSnapshot(`
         "        Year        ×
-                   ↑
+                [ ↑ ]
                  2024
                  2025
                  2026
                  2027
                  2028
-                   ↓"
+                [ ↓ ]"
       `)
     })
 

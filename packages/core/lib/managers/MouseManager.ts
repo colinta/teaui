@@ -182,6 +182,7 @@ export class MouseManager {
       !this.#mouseDownEvent &&
       !this.hasMouseDownListener(systemEvent.x, systemEvent.y, systemEvent)
     ) {
+      // If there's no listener for the mouse down event, unfocus the current view.
       system.focusManager.unfocus()
       return
     }

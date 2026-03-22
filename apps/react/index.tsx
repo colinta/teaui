@@ -1,10 +1,9 @@
-import React, {useState, useMemo, useEffect, useRef, useCallback} from 'react'
+import React, {useState, useMemo, useEffect, useRef} from 'react'
 import {interceptConsoleLog, type Border} from '@teaui/core'
 import {
   Accordion,
   Box,
   Button,
-  Calendar,
   Checkbox,
   Collapsible,
   CollapsibleText,
@@ -36,6 +35,7 @@ import {
 } from '@teaui/react'
 import YAML from 'yaml'
 import {BreadcrumbTab} from './breadcrumb.js'
+import {CalendarTab} from './calendar.js'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -589,94 +589,6 @@ const BORDERS: {name: string; border: Border}[] = [
   {name: 'bold', border: 'bold'},
   {name: 'dotted', border: 'dotted'},
 ]
-
-// ── Tab: Calendar ───────────────────────────────────────────────────────────
-
-function CalendarTab() {
-  const [date, setDate] = useState(new Date())
-  const [visibleDate, setVisibleDate] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-  )
-  const [rangeStart, setRangeStart] = useState<Date | undefined>()
-  const [rangeEnd, setRangeEnd] = useState<Date | undefined>()
-  const [rangeVisible, setRangeVisible] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-  )
-
-  return (
-    <Scrollable flex={1}>
-      <Stack.down gap={1}>
-        <Text>
-          <Style bold foreground="cyan">
-            Calendar
-          </Style>{' '}
-          — Date picker with month/year navigation
-        </Text>
-
-        <Stack.right gap={4}>
-          <Stack.down>
-            <Text>
-              <Style bold>Single selection</Style>
-            </Text>
-            <Calendar
-              width={22}
-              date={date}
-              visibleDate={visibleDate}
-              onChangeVisible={setVisibleDate}
-              onChange={d1 => setDate(d1)}
-              theme="blue"
-            />
-            <Text>
-              Selected:{' '}
-              <Style foreground="green">{date.toLocaleDateString()}</Style>
-            </Text>
-          </Stack.down>
-
-          <Stack.down>
-            <Text>
-              <Style bold>Range selection</Style>
-            </Text>
-            <Calendar
-              width={22}
-              date={rangeStart ?? new Date()}
-              visibleDate={rangeVisible}
-              onChangeVisible={setRangeVisible}
-              selection="range"
-              onChange={(d1, d2) => {
-                setRangeStart(d1)
-                setRangeEnd(d2)
-              }}
-              theme="green"
-            />
-            <Text>
-              Range:{' '}
-              <Style foreground="green">
-                {rangeStart && rangeEnd
-                  ? `${rangeStart.toLocaleDateString()} – ${rangeEnd.toLocaleDateString()}`
-                  : 'none'}
-              </Style>
-            </Text>
-          </Stack.down>
-
-          <Stack.down>
-            <Text>
-              <Style bold>Monday start</Style>
-            </Text>
-            <Calendar
-              width={22}
-              date={date}
-              visibleDate={visibleDate}
-              onChangeVisible={setVisibleDate}
-              onChange={d1 => setDate(d1)}
-              firstDayOfWeek={1}
-              theme="orange"
-            />
-          </Stack.down>
-        </Stack.right>
-      </Stack.down>
-    </Scrollable>
-  )
-}
 
 function MoreTab() {
   const [debug, setDebug] = useState(false)

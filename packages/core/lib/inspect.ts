@@ -88,6 +88,8 @@ export function inspect(
     return colorize.format(value)
   } else if (typeof value === 'function') {
     return `function${value.name ? ` ${value.name}` : ''}() {${value}}`
+  } else if (value instanceof Date) {
+    return `Date(${colorize.string(value.toISOString())})`
   } else if (
     value instanceof Object &&
     value.constructor !== Object &&

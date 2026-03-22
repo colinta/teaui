@@ -32,23 +32,32 @@ import {MouseManager} from './managers/MouseManager.js'
 import {ModalManager} from './managers/ModalManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {UnboundSystem} from './System.js'
+import {Space} from './components/Space.js'
 
 class TestScreen {
   #view: View
   #buffer: Buffer
   #terminal: TestTerminal
   #size: Size
+  #focus: boolean
   #focusManager: FocusManager
   #mouseManager: MouseManager
   #modalManager: ModalManager
   #tickManager: TickManager
   #screenProxy: Screen | null = null
 
-  constructor(view: View, size: {width: number; height: number}) {
+  constructor(
+    view: View,
+    readonly options: {width: number; height: number; isFocused?: boolean},
+  ) {
     this.#view = view
-    this.#size = new Size(size.width, size.height)
+    this.#focus = options.isFocused !== false
+    this.#size = new Size(options.width, options.height)
     this.#buffer = new Buffer()
-    this.#terminal = new TestTerminal({cols: size.width, rows: size.height})
+    this.#terminal = new TestTerminal({
+      cols: options.width,
+      rows: options.height,
+    })
     this.#focusManager = new FocusManager()
     this.#mouseManager = new MouseManager()
     this.#modalManager = new ModalManager()
@@ -126,6 +135,11 @@ class TestScreen {
     this.#modalManager.reset()
     this.#focusManager.reset(true)
     this.#mouseManager.reset()
+
+    if (!this.#focus) {
+      this.#focusManager.unfocus()
+      this.#focusManager.requestFocus(new Space())
+    }
 
     const renderSize = this.#view.naturalSize(this.#size).min(this.#size)
     const viewport = new Viewport(this.asScreen(), this.#buffer, renderSize)
@@ -222,7 +236,7 @@ class TestScreen {
  */
 export function testRender(
   view: View,
-  size: {width: number; height: number},
+  size: {width: number; height: number; isFocused?: boolean},
 ): TestScreen {
   return new TestScreen(view, size)
 }

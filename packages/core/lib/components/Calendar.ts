@@ -1,4 +1,4 @@
-import type {Viewport} from '../Viewport.js'
+import {Viewport} from '../Viewport.js'
 import {type Props as ViewProps, View} from '../View.js'
 import {Point, Rect, Size} from '../geometry.js'
 import {
@@ -8,6 +8,7 @@ import {
 } from '../events/index.js'
 import {Style} from '../Style.js'
 import {System} from '../System.js'
+import {lineWidth} from '@teaui/term'
 
 type DisplayMode = 'days' | 'months' | 'years'
 type Selection = 'single' | 'range'
@@ -25,6 +26,7 @@ interface Props extends ViewProps {
   selection?: Selection
   /** 0=Sunday (default), 1=Monday */
   firstDayOfWeek?: 0 | 1
+  now?: Date
 }
 
 const MONTH_NAMES = [
@@ -59,17 +61,23 @@ const MONTH_SHORT = [
 
 const DAY_HEADERS_SUN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 const DAY_HEADERS_MON = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+const CLOSE = '×'
+const ARROW_UP = ' [ ↑ ] '
+const ARROW_DOWN = ' [ ↓ ] '
 
 // Width: " Su Mo Tu We Th Fr Sa " = 1 + 7*3 = 22
 const CALENDAR_WIDTH = 22
-const NAV_BUTTON_WIDTH = 2
+const NAV_BUTTON_WIDTH = 3
 const CLOSE_BUTTON_WIDTH = 3
 const MONTH_LABEL_X = 3
 // Height: header + weekday row + 6 week rows = 8
 const CALENDAR_HEIGHT = 8
 
 export class Calendar extends View {
+  // configurable so that tests can test 'today' rendering
+  #today: Date
   #date: Date
+  #cursorDate: Date
   #visibleDate: Date
   #onChangeVisible?: (date: Date) => void
   #onChange?: (date1: Date, date2: Date) => void
@@ -81,6 +89,7 @@ export class Calendar extends View {
   // Range selection state
   #rangeStart?: Date
   #rangeEnd?: Date
+  #rangeNextSelection: 'start' | 'end' = 'start'
 
   // Year picker state
   #yearScrollOffset = 0
@@ -90,17 +99,39 @@ export class Calendar extends View {
   #dragStartDate?: Date
 
   // Mouse hover tracking
-  #hoverPrevMonth = false
-  #hoverNextMonth = false
-  #hoverMonthLabel = false
-  #hoverYearLabel = false
+  #hoverClose = false
+  #hoverPrevButton = false
+  #hoverNextButton = false
+  #hoverMonthLabel: string | undefined
+  #hoverYearLabel: string | undefined
+  #hoverDate: Date | undefined
 
   constructor(props: Props = {}) {
     super(props)
-    const now = new Date()
-    this.#date = props.date ?? now
+    const now = props.now ?? new Date()
+    this.#today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0,
+    )
+    const date = props.date ?? this.#today
+    this.#date = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      0,
+      0,
+      0,
+      0,
+    )
+    this.#cursorDate = this.#date
     this.#visibleDate =
-      props.visibleDate ?? new Date(now.getFullYear(), now.getMonth(), 1)
+      props.visibleDate ??
+      new Date(this.#today.getFullYear(), this.#today.getMonth(), 1)
     this.#onChangeVisible = props.onChangeVisible
     this.#onChange = props.onChange
     this.#selection = props.selection ?? 'single'
@@ -108,7 +139,17 @@ export class Calendar extends View {
   }
 
   update(props: Props) {
-    if (props.date !== undefined) this.#date = props.date
+    if (props.date !== undefined) {
+      this.#date = new Date(
+        props.date.getFullYear(),
+        props.date.getMonth(),
+        props.date.getDate(),
+        0,
+        0,
+        0,
+        0,
+      )
+    }
     if (props.visibleDate !== undefined) this.#visibleDate = props.visibleDate
     if (props.onChangeVisible !== undefined)
       this.#onChangeVisible = props.onChangeVisible
@@ -124,6 +165,14 @@ export class Calendar extends View {
   }
   set date(value: Date) {
     this.#date = value
+    this.invalidateRender()
+  }
+
+  get cursorDate() {
+    return this.#cursorDate
+  }
+  set cursorDate(value: Date) {
+    this.#cursorDate = value
     this.invalidateRender()
   }
 
@@ -143,16 +192,73 @@ export class Calendar extends View {
     return new Size(CALENDAR_WIDTH, CALENDAR_HEIGHT)
   }
 
+  get #hoverStyle(): Style {
+    return new Style({
+      foreground: this.theme.text().foreground,
+      background: this.theme.darkenColor,
+    })
+  }
+
+  get #buttonHoverStyle(): Style {
+    return this.theme.ui({isHover: true})
+  }
+
+  get #rangeGapStyle(): Style {
+    return new Style({background: this.theme.darkenColor})
+  }
+
+  get #weekdayStyle(): Style {
+    return new Style({
+      bold: true,
+      foreground: this.theme.highlightColor,
+      background: this.theme.text().background,
+    })
+  }
+
+  get #rangeEndpointStyle(): Style {
+    return new Style({
+      bold: true,
+      foreground: this.theme.textColor,
+      background: this.theme.darkenColor,
+    })
+  }
+
+  get #inRangeStyle(): Style {
+    return new Style({
+      foreground: this.theme.highlightColor,
+      background: this.theme.darkenColor,
+    })
+  }
+
+  get #todayStyle(): Style {
+    return new Style({
+      bold: true,
+      foreground: this.theme.brightTextColor,
+      background: this.theme.text().background,
+    })
+  }
+
+  get #cursorStyle(): Style {
+    return new Style({
+      bold: true,
+      foreground: this.theme.text().foreground,
+      background: this.theme.darkenColor,
+    })
+  }
+
+  get #selectedStyle(): Style {
+    return new Style({
+      bold: true,
+      foreground: this.theme.textColor,
+      background: this.theme.highlightColor,
+    })
+  }
+
   #widgetRect(viewport: Viewport): Rect {
     return new Rect(Point.zero, [
       Math.min(CALENDAR_WIDTH, viewport.contentSize.width),
       Math.min(CALENDAR_HEIGHT, viewport.contentSize.height),
     ])
-  }
-
-  #today(): Date {
-    const now = new Date()
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate())
   }
 
   #isSameDay(a: Date, b: Date): boolean {
@@ -206,8 +312,10 @@ export class Calendar extends View {
 
   #startRangeSelection(date: Date, syncVisibleDate = true) {
     this.#rangeStart = date
-    this.#rangeEnd = undefined
+    this.#rangeEnd = date
+    this.#rangeNextSelection = 'end'
     this.#date = date
+    this.#cursorDate = date
     if (syncVisibleDate) {
       this.#syncVisibleDate(date)
     }
@@ -221,7 +329,9 @@ export class Calendar extends View {
     }
 
     this.#rangeEnd = date
+    this.#rangeNextSelection = 'start'
     this.#date = date
+    this.#cursorDate = date
     if (syncVisibleDate) {
       this.#syncVisibleDate(date)
     }
@@ -236,7 +346,7 @@ export class Calendar extends View {
 
   #selectDate(date: Date) {
     if (this.#selection === 'range') {
-      if (!this.#rangeStart || this.#rangeEnd) {
+      if (this.#rangeNextSelection === 'start') {
         this.#startRangeSelection(date)
       } else {
         this.#finishRangeSelection(date)
@@ -245,15 +355,50 @@ export class Calendar extends View {
     }
 
     this.#date = date
+    this.#cursorDate = date
     this.#onChange?.(date, date)
     this.#syncVisibleDate(date)
+    this.invalidateRender()
+  }
+
+  #selectCursorDate(date: Date) {
+    this.#cursorDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      0,
+      0,
+      0,
+      0,
+    )
+    this.#syncVisibleDate(date)
+    this.invalidateRender()
+  }
+
+  #moveCursorDateBy(days: number) {
+    const nextDate = new Date(this.#cursorDate)
+    nextDate.setDate(nextDate.getDate() + days)
+    this.#cursorDate = nextDate
+    console.log('=========== Calendar.ts at line 812 ===========')
+    console.log({d: nextDate})
+
+    // Navigate months if needed
+    if (
+      nextDate.getMonth() !== this.#visibleDate.getMonth() ||
+      nextDate.getFullYear() !== this.#visibleDate.getFullYear()
+    ) {
+      const vis = new Date(nextDate.getFullYear(), nextDate.getMonth(), 1)
+      this.#visibleDate = vis
+      this.#onChangeVisible?.(vis)
+    }
+
     this.invalidateRender()
   }
 
   #selectMonth(month: number) {
     const d = new Date(this.#visibleDate.getFullYear(), month, 1)
     this.#visibleDate = d
-    this.#displayMode = 'days'
+    this.#selectDisplayMode('days')
     this.#onChangeVisible?.(d)
     this.invalidateRender()
   }
@@ -261,9 +406,16 @@ export class Calendar extends View {
   #selectYear(year: number) {
     const d = new Date(year, this.#visibleDate.getMonth(), 1)
     this.#visibleDate = d
-    this.#displayMode = 'days'
+    this.#selectDisplayMode('days')
     this.#onChangeVisible?.(d)
     this.invalidateRender()
+  }
+
+  #selectDisplayMode(mode: DisplayMode) {
+    this.#displayMode = mode
+    this.#hoverClose = false
+    this.#hoverMonthLabel = undefined
+    this.#hoverYearLabel = undefined
   }
 
   #getDateAtPosition(x: number, y: number): Date | undefined {
@@ -309,6 +461,10 @@ export class Calendar extends View {
   receiveMouse(event: MouseEvent, system: System) {
     super.receiveMouse(event, system)
 
+    if (event.name === 'mouse.button.down') {
+      system.requestFocus()
+    }
+
     if (this.#displayMode === 'days') {
       this.#receiveMouseDays(event)
     } else if (this.#displayMode === 'months') {
@@ -318,40 +474,62 @@ export class Calendar extends View {
     }
   }
 
+  #formatMonthTitle(date: Date) {
+    const totalWidth = 10
+    const textWidth = lineWidth(MONTH_NAMES[date.getMonth()])
+    const pad = Math.max(0, totalWidth - textWidth)
+    return (
+      ' '.repeat(Math.floor(pad / 2)) +
+      MONTH_NAMES[date.getMonth()] +
+      ' '.repeat(Math.ceil(pad / 2))
+    )
+  }
+
+  #formatYearTitle(date: Date) {
+    return ` ${String(date.getFullYear())} `
+  }
+
+  #yearLabelX(yearStr: string): number {
+    return CALENDAR_WIDTH - NAV_BUTTON_WIDTH - lineWidth(yearStr)
+  }
+
   #receiveMouseDays(event: MouseEvent) {
     const x = event.position.x
     const y = event.position.y
 
     // Reset hover states
-    this.#hoverPrevMonth = false
-    this.#hoverNextMonth = false
-    this.#hoverMonthLabel = false
-    this.#hoverYearLabel = false
+    this.#hoverPrevButton = false
+    this.#hoverNextButton = false
+    this.#hoverMonthLabel = undefined
+    this.#hoverYearLabel = undefined
 
     if (y === 0) {
-      const monthName = MONTH_NAMES[this.#visibleDate.getMonth()]
-      const yearStr = String(this.#visibleDate.getFullYear())
-      const yearStart = CALENDAR_WIDTH - NAV_BUTTON_WIDTH - 1 - yearStr.length
+      const monthName = this.#formatMonthTitle(this.#visibleDate)
+      const yearStr = this.#formatYearTitle(this.#visibleDate)
+      const yearStart = this.#yearLabelX(yearStr)
 
       if (x < NAV_BUTTON_WIDTH) {
-        this.#hoverPrevMonth = true
+        this.#hoverPrevButton = true
         if (isMouseClicked(event)) {
           this.#navigateMonth(-1)
         }
       } else if (x >= CALENDAR_WIDTH - NAV_BUTTON_WIDTH) {
-        this.#hoverNextMonth = true
+        this.#hoverNextButton = true
         if (isMouseClicked(event)) {
           this.#navigateMonth(1)
         }
-      } else if (x >= MONTH_LABEL_X && x < MONTH_LABEL_X + monthName.length) {
-        this.#hoverMonthLabel = true
+      } else if (
+        x >= MONTH_LABEL_X &&
+        x < MONTH_LABEL_X + lineWidth(monthName)
+      ) {
+        this.#hoverMonthLabel = 'true'
         if (isMouseClicked(event)) {
-          this.#displayMode = 'months'
+          this.#selectDisplayMode('months')
         }
-      } else if (x >= yearStart && x < yearStart + yearStr.length) {
-        this.#hoverYearLabel = true
+      } else if (x >= yearStart && x < yearStart + lineWidth(yearStr)) {
+        this.#hoverYearLabel = 'true'
         if (isMouseClicked(event)) {
-          this.#displayMode = 'years'
+          this.#selectDisplayMode('years')
           this.#yearScrollOffset = 0
           this.#yearSearch = ''
         }
@@ -360,6 +538,7 @@ export class Calendar extends View {
     }
 
     const date = this.#getDateAtPosition(x, y)
+    this.#hoverDate = date
     if (!date) {
       if (
         event.name === 'mouse.button.cancel' ||
@@ -374,8 +553,8 @@ export class Calendar extends View {
       switch (event.name) {
         case 'mouse.button.down':
           if (
+            this.#rangeNextSelection === 'end' &&
             this.#rangeStart &&
-            !this.#rangeEnd &&
             !this.#isSameDay(this.#rangeStart, date)
           ) {
             this.#dragStartDate = undefined
@@ -391,6 +570,7 @@ export class Calendar extends View {
             this.#rangeStart = this.#dragStartDate
             this.#rangeEnd = date
             this.#date = date
+            this.#cursorDate = date
             this.invalidateRender()
           }
           break
@@ -421,53 +601,78 @@ export class Calendar extends View {
     const x = event.position.x
     const y = event.position.y
 
-    if (isMouseClicked(event)) {
-      if (y === 0 && x >= CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH) {
-        // Close button
-        this.#displayMode = 'days'
+    // Reset hover states
+    this.#hoverClose = false
+    this.#hoverMonthLabel = undefined
+
+    if (y === 0 && x >= CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH) {
+      this.#hoverClose = true
+      if (isMouseClicked(event)) {
+        this.#selectDisplayMode('days')
         this.invalidateRender()
         return
       }
+    }
 
-      // Month grid: 4 rows × 3 columns, starting at y=2
-      if (y >= 2 && y <= 5) {
-        const col = Math.floor(x / 7)
-        const row = y - 2
-        if (col >= 0 && col < 3 && row >= 0 && row < 4) {
-          const month = row * 3 + col
+    // Month grid: 4 rows × 3 columns, starting at y=2
+    if (y >= 2 && y <= 5) {
+      const col = Math.floor(x / 7)
+      const row = y - 2
+      if (col >= 0 && col < 3 && row >= 0 && row < 4) {
+        const month = row * 3 + col
+        this.#hoverMonthLabel = MONTH_SHORT[month]
+        if (isMouseClicked(event)) {
           this.#selectMonth(month)
         }
       }
     }
+
+    this.invalidateRender()
   }
 
   #receiveMouseYears(event: MouseEvent) {
     const x = event.position.x
     const y = event.position.y
 
-    if (isMouseClicked(event)) {
-      if (y === 0 && x >= CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH) {
-        // Close button
-        this.#displayMode = 'days'
+    // Reset hover states
+    this.#hoverClose = false
+    this.#hoverPrevButton = false
+    this.#hoverNextButton = false
+    this.#hoverYearLabel = undefined
+
+    if (y === 0 && x >= CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH) {
+      this.#hoverClose = true
+      if (isMouseClicked(event)) {
+        this.#selectDisplayMode('days')
         this.invalidateRender()
         return
       }
+    }
 
-      // Year rows at y=2..6 (5 visible years)
-      if (y >= 2 && y <= 6) {
-        const yearIndex = y - 2
-        const baseYear =
-          this.#visibleDate.getFullYear() - 2 + this.#yearScrollOffset
-        this.#selectYear(baseYear + yearIndex)
-      }
-
-      // Scroll arrows
-      if (y === 1) {
+    // Scroll arrows
+    if (y === 1) {
+      this.#hoverPrevButton = true
+      if (isMouseClicked(event)) {
         this.#yearScrollOffset -= 5
         this.invalidateRender()
-      } else if (y === 7) {
+      }
+    } else if (y === 7) {
+      this.#hoverNextButton = true
+      if (isMouseClicked(event)) {
         this.#yearScrollOffset += 5
         this.invalidateRender()
+      }
+    }
+
+    // Year rows at y=2..6 (5 visible years)
+    if (y >= 2 && y <= 6) {
+      const yearIndex = y - 2
+      const baseYear =
+        this.#visibleDate.getFullYear() - 2 + this.#yearScrollOffset
+      const year = baseYear + yearIndex
+      this.#hoverYearLabel = String(year)
+      if (isMouseClicked(event)) {
+        this.#selectYear(year)
       }
     }
 
@@ -479,6 +684,8 @@ export class Calendar extends View {
       this.#yearScrollOffset += 1
       this.invalidateRender()
     }
+
+    this.invalidateRender()
   }
 
   receiveKey(event: KeyEvent) {
@@ -493,20 +700,35 @@ export class Calendar extends View {
 
   #receiveKeyDays(event: KeyEvent) {
     switch (event.name) {
+      case 't':
+        this.#selectCursorDate(new Date())
+        break
       case 'left':
-        this.#moveDateBy(-1)
+        if (event.shift) {
+        } else {
+          this.#moveCursorDateBy(-1)
+        }
         break
       case 'right':
-        this.#moveDateBy(1)
+        if (event.shift) {
+        } else {
+          this.#moveCursorDateBy(1)
+        }
         break
       case 'up':
-        this.#moveDateBy(-7)
+        if (event.shift) {
+        } else {
+          this.#moveCursorDateBy(-7)
+        }
         break
       case 'down':
-        this.#moveDateBy(7)
+        if (event.shift) {
+        } else {
+          this.#moveCursorDateBy(7)
+        }
         break
       case 'return':
-        this.#selectDate(this.#date)
+        this.#selectDate(this.#cursorDate)
         break
       case 'escape':
         // Do nothing in day view
@@ -518,22 +740,22 @@ export class Calendar extends View {
         this.#navigateMonth(1)
         break
       case 'home': {
-        const d = new Date(
+        const nextDate = new Date(
           this.#visibleDate.getFullYear(),
           this.#visibleDate.getMonth(),
           1,
         )
-        this.#date = d
+        this.#cursorDate = nextDate
         this.invalidateRender()
         break
       }
       case 'end': {
-        const d = new Date(
+        const nextDate = new Date(
           this.#visibleDate.getFullYear(),
           this.#visibleDate.getMonth() + 1,
           0,
         )
-        this.#date = d
+        this.#cursorDate = nextDate
         this.invalidateRender()
         break
       }
@@ -543,7 +765,7 @@ export class Calendar extends View {
   #receiveKeyMonths(event: KeyEvent) {
     switch (event.name) {
       case 'escape':
-        this.#displayMode = 'days'
+        this.#selectDisplayMode('days')
         this.invalidateRender()
         break
       case 'return':
@@ -587,7 +809,7 @@ export class Calendar extends View {
   #receiveKeyYears(event: KeyEvent) {
     switch (event.name) {
       case 'escape':
-        this.#displayMode = 'days'
+        this.#selectDisplayMode('days')
         this.#yearSearch = ''
         this.invalidateRender()
         break
@@ -637,24 +859,6 @@ export class Calendar extends View {
     this.invalidateRender()
   }
 
-  #moveDateBy(days: number) {
-    const d = new Date(this.#date)
-    d.setDate(d.getDate() + days)
-    this.#date = d
-
-    // Navigate months if needed
-    if (
-      d.getMonth() !== this.#visibleDate.getMonth() ||
-      d.getFullYear() !== this.#visibleDate.getFullYear()
-    ) {
-      const vis = new Date(d.getFullYear(), d.getMonth(), 1)
-      this.#visibleDate = vis
-      this.#onChangeVisible?.(vis)
-    }
-
-    this.invalidateRender()
-  }
-
   render(viewport: Viewport) {
     const hasFocus = viewport.registerFocus()
     this.#hasFocus = hasFocus
@@ -680,65 +884,51 @@ export class Calendar extends View {
     }
   }
 
-  get #selectedStyle(): Style {
-    return new Style({
-      bold: true,
-      foreground: this.theme.textColor,
-      background: this.theme.highlightColor,
-    })
-  }
-
   #renderDays(viewport: Viewport) {
-    const today = this.#today()
-    const year = this.#visibleDate.getFullYear()
+    const today = this.#today
     const month = this.#visibleDate.getMonth()
-    const monthName = MONTH_NAMES[month]
-    const yearStr = String(year)
+    const monthName = this.#formatMonthTitle(this.#visibleDate)
+    const yearStr = this.#formatYearTitle(this.#visibleDate)
 
     const textStyle = this.theme.text()
     const dimStyle = this.theme.text({isPlaceholder: true})
+    const hoverStyle = this.#hoverStyle
     const headerStyle = this.theme.ui({isHover: false})
     const selectedStyle = this.#selectedStyle
-    const todayStyle = new Style({
-      bold: true,
-      foreground: this.theme.brightTextColor,
-      background: textStyle.background,
-    })
-    const rangeStyle = new Style({
-      foreground: this.theme.highlightColor,
-      background: textStyle.background,
-    })
+    const todayStyle = this.#todayStyle
+    const inRangeStyle = this.#inRangeStyle
+    const rangeEndpointStyle = this.#rangeEndpointStyle
 
     viewport.paint(textStyle, this.#widgetRect(viewport))
 
     // Header: "◃  June     2026  ▹"
-    const prevArrow = this.#hoverPrevMonth ? '◂ ' : '◃ '
-    const nextArrow = this.#hoverNextMonth ? ' ▸' : ' ▹'
+    const prevArrow = this.#hoverPrevButton ? ' ◂ ' : ' ◃ '
+    const nextArrow = this.#hoverNextButton ? ' ▸ ' : ' ▹ '
     const monthLabelStyle = this.#hoverMonthLabel
-      ? this.theme.ui({isHover: true})
+      ? this.#buttonHoverStyle
       : headerStyle
     const yearLabelStyle = this.#hoverYearLabel
-      ? this.theme.ui({isHover: true})
+      ? this.#buttonHoverStyle
       : headerStyle
-    const yearX = CALENDAR_WIDTH - NAV_BUTTON_WIDTH - 1 - yearStr.length
+    const yearStart = this.#yearLabelX(yearStr)
 
-    viewport.write(prevArrow, new Point(0, 0), headerStyle)
+    viewport.write(
+      prevArrow,
+      new Point(0, 0),
+      this.#hoverPrevButton ? this.#buttonHoverStyle : headerStyle,
+    )
     viewport.write(monthName, new Point(MONTH_LABEL_X, 0), monthLabelStyle)
-    viewport.write(yearStr, new Point(yearX, 0), yearLabelStyle)
+    viewport.write(yearStr, new Point(yearStart, 0), yearLabelStyle)
     viewport.write(
       nextArrow,
       new Point(CALENDAR_WIDTH - NAV_BUTTON_WIDTH, 0),
-      headerStyle,
+      this.#hoverNextButton ? this.#buttonHoverStyle : headerStyle,
     )
 
     // Weekday headers
     const dayHeaders =
       this.#firstDayOfWeek === 1 ? DAY_HEADERS_MON : DAY_HEADERS_SUN
-    const weekdayStyle = new Style({
-      bold: true,
-      foreground: this.theme.highlightColor,
-      background: textStyle.background,
-    })
+    const weekdayStyle = this.#weekdayStyle
     for (let i = 0; i < 7; i++) {
       viewport.write(dayHeaders[i], new Point(1 + i * 3, 1), weekdayStyle)
     }
@@ -748,26 +938,110 @@ export class Calendar extends View {
     for (let week = 0; week < 6; week++) {
       for (let day = 0; day < 7; day++) {
         const date = grid[week][day]
+        const isHover =
+          this.#hoverDate && this.#isSameDay(date, this.#hoverDate)
         const isCurrentMonth = date.getMonth() === month
         const isToday = this.#isSameDay(date, today)
         const isSelected = this.#isSameDay(date, this.#date)
+        const isCursor =
+          !this.#isSameDay(this.#cursorDate, this.#date) &&
+          this.#isSameDay(date, this.#cursorDate)
         const isInRange = this.#isInRange(date)
         const dayNum = String(date.getDate()).padStart(2, ' ')
 
+        const isRangeEndpoint =
+          this.#rangeStart &&
+          this.#rangeEnd &&
+          (this.#isSameDay(date, this.#rangeStart) ||
+            this.#isSameDay(date, this.#rangeEnd))
+
         let style: Style
-        if (isSelected) {
+        if (isRangeEndpoint) {
+          style = rangeEndpointStyle
+        } else if (isSelected) {
           style = selectedStyle
+        } else if (isCursor) {
+          style = this.#cursorStyle
         } else if (isInRange) {
-          style = rangeStyle
+          style = inRangeStyle
         } else if (isToday) {
           style = todayStyle
         } else if (!isCurrentMonth) {
           style = dimStyle
+        } else if (isHover) {
+          style = hoverStyle
         } else {
           style = textStyle
         }
 
         viewport.write(dayNum, new Point(1 + day * 3, 2 + week), style)
+
+        // Paint the gap between consecutive in-range days
+        if (day < 6) {
+          const nextDate = grid[week][day + 1]
+          const thisInRange = isSelected || isInRange
+          const nextInRange =
+            this.#isSameDay(nextDate, this.#date) || this.#isInRange(nextDate)
+          if (thisInRange && nextInRange) {
+            const gapStyle = this.#rangeGapStyle
+            viewport.write(' ', new Point(1 + day * 3 + 2, 2 + week), gapStyle)
+          }
+        }
+      }
+
+      if (
+        this.#selection === 'range' &&
+        this.#rangeStart &&
+        this.#rangeEnd &&
+        !this.#isSameDay(this.#rangeStart, this.#rangeEnd)
+      ) {
+        // Paint the leading gap before the first in-range day of each row
+        // (the space at position 0 on the row, before the first day column)
+        const firstDate = grid[week][0]
+        const firstInRange =
+          this.#isSameDay(firstDate, this.#date) || this.#isInRange(firstDate)
+        if (firstInRange) {
+          const gapStyle = this.#rangeGapStyle
+          viewport.write(' ', new Point(0, 2 + week), gapStyle)
+        }
+
+        // Paint the trailing gap after the last in-range day of each row
+        const lastDate = grid[week][6]
+        const lastInRange =
+          this.#isSameDay(lastDate, this.#date) || this.#isInRange(lastDate)
+        if (lastInRange) {
+          const gapStyle = this.#rangeGapStyle
+          viewport.write(' ', new Point(1 + 6 * 3 + 2, 2 + week), gapStyle)
+        }
+      }
+    }
+
+    // Focus border
+    if (this.#hasFocus) {
+      const borderStyle = weekdayStyle
+
+      // Top row (weekday header row): ╭...╮ with ─ between headers
+      viewport.write('╭', new Point(0, 1), borderStyle)
+      viewport.write('╮', new Point(CALENDAR_WIDTH - 1, 1), borderStyle)
+      for (let i = 0; i < 6; i++) {
+        viewport.write('─', new Point(3 + i * 3, 1), borderStyle)
+      }
+
+      // Middle rows: │...│
+      for (let week = 0; week < 5; week++) {
+        viewport.write('│', new Point(0, 2 + week), borderStyle)
+        viewport.write(
+          '│',
+          new Point(CALENDAR_WIDTH - 1, 2 + week),
+          borderStyle,
+        )
+      }
+
+      // Bottom row (last week row): ╰...╯ with ─ between days
+      viewport.write('╰', new Point(0, 7), borderStyle)
+      viewport.write('╯', new Point(CALENDAR_WIDTH - 1, 7), borderStyle)
+      for (let i = 0; i < 6; i++) {
+        viewport.write('─', new Point(3 + i * 3, 7), borderStyle)
       }
     }
   }
@@ -775,25 +1049,25 @@ export class Calendar extends View {
   #renderMonths(viewport: Viewport) {
     const textStyle = this.theme.text()
     const headerStyle = this.theme.ui({isHover: false})
-    const selectedStyle = this.#selectedStyle
     const currentMonth = this.#visibleDate.getMonth()
 
     viewport.paint(textStyle, this.#widgetRect(viewport))
 
     // Header
-    const monthName = MONTH_NAMES[currentMonth]
+    const monthName = this.#formatMonthTitle(this.#visibleDate)
     const headerText = monthName
     const headerX = Math.max(
       0,
       Math.floor(
-        (CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH - headerText.length) / 2,
+        (CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH - lineWidth(headerText)) / 2,
       ) + 1,
     )
     viewport.write(headerText, new Point(headerX, 0), headerStyle)
+    const closeStyle = this.#hoverClose ? this.#buttonHoverStyle : headerStyle
     viewport.write(
-      ' × ',
+      ` ${CLOSE} `,
       new Point(CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH, 0),
-      headerStyle,
+      closeStyle,
     )
 
     // Month grid: 4 rows × 3 columns
@@ -802,7 +1076,15 @@ export class Calendar extends View {
         const m = row * 3 + col
         const name = MONTH_SHORT[m]
         const isSelected = m === currentMonth
-        const style = isSelected ? selectedStyle : textStyle
+        const isHover = this.#hoverMonthLabel === name
+        let style: Style
+        if (isSelected) {
+          style = this.#selectedStyle
+        } else if (isHover) {
+          style = this.#hoverStyle
+        } else {
+          style = textStyle
+        }
         // Each column is ~7 chars wide (fits in 22 width: 7*3=21 + 1 padding)
         const x = 1 + col * 7
         const y = 2 + row
@@ -815,7 +1097,6 @@ export class Calendar extends View {
   #renderYears(viewport: Viewport) {
     const textStyle = this.theme.text()
     const headerStyle = this.theme.ui({isHover: false})
-    const selectedStyle = this.#selectedStyle
     const currentYear = this.#visibleDate.getFullYear()
 
     viewport.paint(textStyle, this.#widgetRect(viewport))
@@ -825,53 +1106,60 @@ export class Calendar extends View {
     const headerX = Math.max(
       0,
       Math.floor(
-        (CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH - headerText.length) / 2,
+        (CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH - lineWidth(headerText)) / 2,
       ) + 1,
     )
     viewport.write(headerText, new Point(headerX, 0), headerStyle)
+    const closeStyle = this.#hoverClose ? this.#buttonHoverStyle : headerStyle
     viewport.write(
-      ' × ',
+      ` ${CLOSE} `,
       new Point(CALENDAR_WIDTH - CLOSE_BUTTON_WIDTH, 0),
-      headerStyle,
+      closeStyle,
     )
 
     // Scroll indicator
+    const prevStyle = this.#hoverPrevButton
+      ? this.#buttonHoverStyle
+      : headerStyle
     viewport.write(
-      '↑',
-      new Point(Math.floor(CALENDAR_WIDTH / 2), 1),
-      headerStyle,
+      ARROW_UP,
+      new Point(Math.floor((CALENDAR_WIDTH - lineWidth(ARROW_UP)) / 2), 1),
+      prevStyle,
     )
 
     // 5 visible years
     const baseYear = currentYear - 2 + this.#yearScrollOffset
     for (let i = 0; i < 5; i++) {
       const year = baseYear + i
-      const isSelected = year === currentYear
-      const style = isSelected ? selectedStyle : textStyle
       const yearStr = String(year)
-      const x = Math.floor((CALENDAR_WIDTH - yearStr.length) / 2)
+      const isSelected = year === currentYear
+      const isHover = this.#hoverYearLabel === yearStr
+      let style: Style
+      if (isSelected) {
+        style = this.#selectedStyle
+      } else if (isHover) {
+        style = this.#hoverStyle
+      } else {
+        style = textStyle
+      }
+      const x = Math.floor((CALENDAR_WIDTH - lineWidth(yearStr)) / 2)
       viewport.write(yearStr, new Point(x, 2 + i), style)
     }
 
     // Down arrow
+    const nextStyle = this.#hoverNextButton
+      ? this.#buttonHoverStyle
+      : headerStyle
     viewport.write(
-      '↓',
-      new Point(Math.floor(CALENDAR_WIDTH / 2), 7),
-      headerStyle,
+      ARROW_DOWN,
+      new Point(Math.floor((CALENDAR_WIDTH - lineWidth(ARROW_DOWN)) / 2), 7),
+      nextStyle,
     )
 
     // Search line (if searching)
     if (this.#yearSearch) {
       const searchLabel = `Search: ${this.#yearSearch}`
-      viewport.write(
-        searchLabel,
-        new Point(0, 7),
-        new Style({
-          dim: true,
-          foreground: textStyle.foreground,
-          background: textStyle.background,
-        }),
-      )
+      viewport.write(searchLabel, new Point(0, 7), textStyle.merge({dim: true}))
     }
   }
 }
