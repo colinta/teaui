@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {forwardRef, useCallback, useMemo, useState} from 'react'
 import type {
   Accordion as WrAccordion,
   Box as WrBox,
@@ -57,6 +57,8 @@ type TUIContainer<
   ChildrenProps extends keyof NonNullable<ConstructorParameters<T>[0]> =
     Children,
 > = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: React.ReactNode}
+
+type WithRef<Props, T> = Props & {ref?: React.Ref<T>}
 
 type BreadcrumbProps = TUIView<typeof WrBreadcrumb>
 type CalendarProps = TUIView<typeof WrCalendar>
@@ -125,58 +127,64 @@ declare module 'react' {
     interface IntrinsicElements {
       // views
       'tui-br': {}
-      'tui-breadcrumb': BreadcrumbProps
-      'tui-calendar': CalendarProps
-      'tui-canvas': CanvasProps
-      'tui-checkbox': CheckboxProps
-      'tui-collapsible-text': CollapsibleTextProps
-      'tui-console': ConsoleProps
-      'tui-digits': DigitsProps
-      'tui-dropdown': DropdownProps
-      'tui-geometry': GeometryProps
-      'tui-hotkey': HotKeyProps
-      'tui-keyboard': KeyboardProps
-      'tui-mouse': MouseProps
-      'tui-h1': HeaderProps
-      'tui-h2': HeaderProps
-      'tui-h3': HeaderProps
-      'tui-h4': HeaderProps
-      'tui-h5': HeaderProps
-      'tui-h6': HeaderProps
-      'tui-input': InputProps
-      'tui-progress': ProgressProps
-      'tui-separator': SeparatorProps
-      'tui-slider': SliderProps
-      'tui-space': SpaceProps
-      'tui-spinner': SpinnerProps
-      'tui-logo': LogoProps
-      'tui-zstack': ZStackProps
+      'tui-breadcrumb': WithRef<BreadcrumbProps, WrBreadcrumb>
+      'tui-calendar': WithRef<CalendarProps, WrCalendar>
+      'tui-canvas': WithRef<CanvasProps, WrCanvas>
+      'tui-checkbox': WithRef<CheckboxProps, WrCheckbox>
+      'tui-collapsible-text': WithRef<CollapsibleTextProps, WrCollapsibleText>
+      'tui-console': WithRef<ConsoleProps, WrConsoleLog>
+      'tui-digits': WithRef<DigitsProps, WrDigits>
+      'tui-dropdown': WithRef<DropdownProps, WrDropdown<any, any>>
+      'tui-geometry': WithRef<GeometryProps, WrGeometry>
+      'tui-hotkey': WithRef<HotKeyProps, WrHotKey>
+      'tui-keyboard': WithRef<KeyboardProps, WrKeyboard>
+      'tui-mouse': WithRef<MouseProps, WrMouse>
+      'tui-h1': WithRef<HeaderProps, WrHeader>
+      'tui-h2': WithRef<HeaderProps, WrHeader>
+      'tui-h3': WithRef<HeaderProps, WrHeader>
+      'tui-h4': WithRef<HeaderProps, WrHeader>
+      'tui-h5': WithRef<HeaderProps, WrHeader>
+      'tui-h6': WithRef<HeaderProps, WrHeader>
+      'tui-input': WithRef<InputProps, WrInput>
       'tui-legend': WithRef<LegendProps, WrLegend>
+      'tui-progress': WithRef<ProgressProps, WrProgress>
+      'tui-separator': WithRef<SeparatorProps, WrSeparator>
+      'tui-slider': WithRef<SliderProps, WrSlider>
+      'tui-space': WithRef<SpaceProps, WrSpace>
+      'tui-spinner': WithRef<SpinnerProps, WrSpinner>
+      'tui-logo': WithRef<LogoProps, WrLogo>
+      'tui-zstack': WithRef<ZStackProps, WrZStack>
       'tui-table': any
-      'tui-toggle-group': ToggleGroupProps
+      'tui-toggle-group': WithRef<ToggleGroupProps, WrToggleGroup>
 
-      'tui-tree': ViewProps
+      'tui-tree': WithRef<ViewProps, WrTree<any>>
 
-      'tui-modal': ModalProps
-      'tui-pane': PaneProps
+      'tui-modal': WithRef<ModalProps, WrModal>
+      'tui-pane': WithRef<PaneProps, WrPane>
 
       // "simple" containers
-      'tui-box': BoxProps
-      'tui-button': ButtonProps
-      'tui-collapsible': CollapsibleProps
+      'tui-box': WithRef<BoxProps, WrBox>
+      'tui-button': WithRef<ButtonProps, WrButton>
+      'tui-collapsible': WithRef<CollapsibleProps, WrCollapsible>
 
-      'tui-scrollable': ScrollableProps
-      'tui-stack': StackProps
-      'tui-style': StyleProps
-      'tui-text': TextProps
+      'tui-scrollable': WithRef<ScrollableProps, WrScrollable>
+      'tui-stack': WithRef<StackProps, WrStack>
+      'tui-style': WithRef<StyleProps, TextStyle>
+      'tui-text': WithRef<TextProps, TextProvider>
 
       // "complex" containers
-      'tui-accordion': AccordionProps
-      'tui-accordion-section': AccordionSectionProps
-      'tui-drawer': DrawerProps
+      'tui-accordion': WithRef<AccordionProps, WrAccordion>
+      'tui-accordion-section': WithRef<
+        AccordionSectionProps,
+        InstanceType<typeof WrAccordion.Section>
+      >
+      'tui-drawer': WithRef<DrawerProps, WrDrawer>
 
-      'tui-tabs': TabsProps
-      'tui-tabs-section': TabsSectionProps
+      'tui-tabs': WithRef<TabsProps, WrTabs>
+      'tui-tabs-section': WithRef<
+        TabsSectionProps,
+        InstanceType<typeof WrTabs.Section>
+      >
     }
   }
 }
@@ -189,129 +197,198 @@ export function Br(): JSX.Element {
   return <tui-br />
 }
 
-export function Breadcrumb(reactProps: BreadcrumbProps): JSX.Element {
-  return <tui-breadcrumb {...reactProps} />
-}
+export const Breadcrumb = forwardRef<WrBreadcrumb, BreadcrumbProps>(
+  function Breadcrumb(reactProps, ref): JSX.Element {
+    return <tui-breadcrumb ref={ref} {...reactProps} />
+  },
+)
 
-export function Calendar(reactProps: CalendarProps): JSX.Element {
-  return <tui-calendar {...reactProps} />
-}
+export const Calendar = forwardRef<WrCalendar, CalendarProps>(
+  function Calendar(reactProps, ref): JSX.Element {
+    return <tui-calendar ref={ref} {...reactProps} />
+  },
+)
 
-export function Canvas(reactProps: CanvasProps): JSX.Element {
-  return <tui-canvas {...reactProps} />
-}
+export const Canvas = forwardRef<WrCanvas, CanvasProps>(
+  function Canvas(reactProps, ref): JSX.Element {
+    return <tui-canvas ref={ref} {...reactProps} />
+  },
+)
 
-export function Checkbox(reactProps: CheckboxProps): JSX.Element {
-  return <tui-checkbox {...reactProps} />
-}
-export function CollapsibleText(reactProps: CollapsibleTextProps): JSX.Element {
-  return <tui-collapsible-text {...reactProps} />
-}
-export function ConsoleLog(reactProps: ConsoleProps): JSX.Element {
-  return <tui-console {...reactProps} />
-}
-export function Digits(reactProps: DigitsProps): JSX.Element {
-  return <tui-digits {...reactProps} />
-}
-export function Dropdown(reactProps: DropdownProps): JSX.Element {
-  return <tui-dropdown {...reactProps} />
-}
-export function HotKey(reactProps: HotKeyProps): JSX.Element {
-  return <tui-hotkey {...reactProps} />
-}
-export function Keyboard({children, ...props}: KeyboardProps): JSX.Element {
-  return <tui-keyboard {...props}>{children}</tui-keyboard>
-}
-export function Mouse({children, ...props}: MouseProps): JSX.Element {
-  return <tui-mouse {...props}>{children}</tui-mouse>
-}
-export function H1(reactProps: HeaderProps): JSX.Element {
-  return <tui-h1 {...reactProps} />
-}
-export function H2(reactProps: HeaderProps): JSX.Element {
-  return <tui-h2 {...reactProps} />
-}
-export function H3(reactProps: HeaderProps): JSX.Element {
-  return <tui-h3 {...reactProps} />
-}
-export function H4(reactProps: HeaderProps): JSX.Element {
-  return <tui-h4 {...reactProps} />
-}
-export function H5(reactProps: HeaderProps): JSX.Element {
-  return <tui-h5 {...reactProps} />
-}
-export function H6(reactProps: HeaderProps): JSX.Element {
-  return <tui-h6 {...reactProps} />
-}
-export function Input(reactProps: InputProps): JSX.Element {
-  return <tui-input {...reactProps} />
-}
-export function Progress(reactProps: ProgressProps): JSX.Element {
-  return <tui-progress {...reactProps} />
-}
+export const Checkbox = forwardRef<WrCheckbox, CheckboxProps>(
+  function Checkbox(reactProps, ref): JSX.Element {
+    return <tui-checkbox ref={ref} {...reactProps} />
+  },
+)
+export const CollapsibleText = forwardRef<
+  WrCollapsibleText,
+  CollapsibleTextProps
+>(function CollapsibleText(reactProps, ref): JSX.Element {
+  return <tui-collapsible-text ref={ref} {...reactProps} />
+})
+export const ConsoleLog = forwardRef<WrConsoleLog, ConsoleProps>(
+  function ConsoleLog(reactProps, ref): JSX.Element {
+    return <tui-console ref={ref} {...reactProps} />
+  },
+)
+export const Digits = forwardRef<WrDigits, DigitsProps>(
+  function Digits(reactProps, ref): JSX.Element {
+    return <tui-digits ref={ref} {...reactProps} />
+  },
+)
+export const Dropdown = forwardRef<WrDropdown<any, any>, DropdownProps>(
+  function Dropdown(reactProps, ref): JSX.Element {
+    return <tui-dropdown ref={ref} {...reactProps} />
+  },
+)
+export const HotKey = forwardRef<WrHotKey, HotKeyProps>(
+  function HotKey(reactProps, ref): JSX.Element {
+    return <tui-hotkey ref={ref} {...reactProps} />
+  },
+)
+export const Keyboard = forwardRef<WrKeyboard, KeyboardProps>(function Keyboard(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-keyboard ref={ref} {...props}>
+      {children}
+    </tui-keyboard>
+  )
+})
+export const Mouse = forwardRef<WrMouse, MouseProps>(function Mouse(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-mouse ref={ref} {...props}>
+      {children}
+    </tui-mouse>
+  )
+})
+export const H1 = forwardRef<WrHeader, HeaderProps>(
+  function H1(reactProps, ref): JSX.Element {
+    return <tui-h1 ref={ref} {...reactProps} />
+  },
+)
+export const H2 = forwardRef<WrHeader, HeaderProps>(
+  function H2(reactProps, ref): JSX.Element {
+    return <tui-h2 ref={ref} {...reactProps} />
+  },
+)
+export const H3 = forwardRef<WrHeader, HeaderProps>(
+  function H3(reactProps, ref): JSX.Element {
+    return <tui-h3 ref={ref} {...reactProps} />
+  },
+)
+export const H4 = forwardRef<WrHeader, HeaderProps>(
+  function H4(reactProps, ref): JSX.Element {
+    return <tui-h4 ref={ref} {...reactProps} />
+  },
+)
+export const H5 = forwardRef<WrHeader, HeaderProps>(
+  function H5(reactProps, ref): JSX.Element {
+    return <tui-h5 ref={ref} {...reactProps} />
+  },
+)
+export const H6 = forwardRef<WrHeader, HeaderProps>(
+  function H6(reactProps, ref): JSX.Element {
+    return <tui-h6 ref={ref} {...reactProps} />
+  },
+)
+export const Input = forwardRef<WrInput, InputProps>(
+  function Input(reactProps, ref): JSX.Element {
+    return <tui-input ref={ref} {...reactProps} />
+  },
+)
 export const Legend = forwardRef<WrLegend, LegendProps>(
   function Legend(reactProps, ref): JSX.Element {
     return <tui-legend ref={ref} {...reactProps} />
   },
 )
+export const Progress = forwardRef<WrProgress, ProgressProps>(
+  function Progress(reactProps, ref): JSX.Element {
+    return <tui-progress ref={ref} {...reactProps} />
+  },
+)
 
+type SeparatorDirectionProps = Omit<SeparatorProps, 'direction'>
 interface Separator {
   (reactProps: SeparatorProps): JSX.Element
-  horizontal(reactProps: Omit<SeparatorProps, 'direction'>): JSX.Element
-  vertical(reactProps: Omit<SeparatorProps, 'direction'>): JSX.Element
+  horizontal: React.ForwardRefExoticComponent<
+    SeparatorDirectionProps & React.RefAttributes<WrSeparator>
+  >
+  vertical: React.ForwardRefExoticComponent<
+    SeparatorDirectionProps & React.RefAttributes<WrSeparator>
+  >
 }
-export const Separator: Separator = function Separator(
-  reactProps: SeparatorProps,
-): JSX.Element {
-  return <tui-separator {...reactProps} />
-}
-Separator.horizontal = function SeparatorHorizontal(
-  reactProps: Omit<SeparatorProps, 'direction'>,
-) {
-  return <tui-separator direction="horizontal" {...reactProps} />
-}
-Separator.vertical = function SeparatorHorizontal(
-  reactProps: Omit<SeparatorProps, 'direction'>,
-) {
-  return <tui-separator direction="vertical" {...reactProps} />
-}
+export const Separator: Separator = forwardRef<WrSeparator, SeparatorProps>(
+  function Separator(reactProps, ref): JSX.Element {
+    return <tui-separator ref={ref} {...reactProps} />
+  },
+) as unknown as Separator
+Separator.horizontal = forwardRef<WrSeparator, SeparatorDirectionProps>(
+  function SeparatorHorizontal(reactProps, ref) {
+    return <tui-separator ref={ref} direction="horizontal" {...reactProps} />
+  },
+)
+Separator.vertical = forwardRef<WrSeparator, SeparatorDirectionProps>(
+  function SeparatorVertical(reactProps, ref) {
+    return <tui-separator ref={ref} direction="vertical" {...reactProps} />
+  },
+)
 
+type SliderDirectionProps = Omit<SliderProps, 'direction'>
 interface Slider {
   (reactProps: SliderProps): JSX.Element
-  horizontal(reactProps: Omit<SliderProps, 'direction'>): JSX.Element
-  vertical(reactProps: Omit<SliderProps, 'direction'>): JSX.Element
+  horizontal: React.ForwardRefExoticComponent<
+    SliderDirectionProps & React.RefAttributes<WrSlider>
+  >
+  vertical: React.ForwardRefExoticComponent<
+    SliderDirectionProps & React.RefAttributes<WrSlider>
+  >
 }
-export const Slider: Slider = function Slider(
-  reactProps: SliderProps,
-): JSX.Element {
-  return <tui-slider {...reactProps} />
-}
-Slider.horizontal = function SliderHorizontal(
-  reactProps: Omit<SliderProps, 'direction'>,
-) {
-  return <tui-slider direction="horizontal" {...reactProps} />
-}
-Slider.vertical = function SliderHorizontal(
-  reactProps: Omit<SliderProps, 'direction'>,
-) {
-  return <tui-slider direction="vertical" {...reactProps} />
-}
+export const Slider: Slider = forwardRef<WrSlider, SliderProps>(
+  function Slider(reactProps, ref): JSX.Element {
+    return <tui-slider ref={ref} {...reactProps} />
+  },
+) as unknown as Slider
+Slider.horizontal = forwardRef<WrSlider, SliderDirectionProps>(
+  function SliderHorizontal(reactProps, ref) {
+    return <tui-slider ref={ref} direction="horizontal" {...reactProps} />
+  },
+)
+Slider.vertical = forwardRef<WrSlider, SliderDirectionProps>(
+  function SliderVertical(reactProps, ref) {
+    return <tui-slider ref={ref} direction="vertical" {...reactProps} />
+  },
+)
 
-export function Space(reactProps: SpaceProps): JSX.Element {
-  return <tui-space {...reactProps} />
-}
-export function Spinner(reactProps: SpinnerProps): JSX.Element {
-  return <tui-spinner {...reactProps} />
-}
-export function Logo(reactProps: LogoProps): JSX.Element {
-  return <tui-logo {...reactProps} />
-}
-export function ZStack(reactProps: ZStackProps): JSX.Element {
-  return <tui-zstack {...reactProps} />
-}
-export function ToggleGroup(reactProps: ToggleGroupProps): JSX.Element {
-  return <tui-toggle-group {...reactProps} />
-}
+export const Space = forwardRef<WrSpace, SpaceProps>(
+  function Space(reactProps, ref): JSX.Element {
+    return <tui-space ref={ref} {...reactProps} />
+  },
+)
+export const Spinner = forwardRef<WrSpinner, SpinnerProps>(
+  function Spinner(reactProps, ref): JSX.Element {
+    return <tui-spinner ref={ref} {...reactProps} />
+  },
+)
+export const Logo = forwardRef<WrLogo, LogoProps>(
+  function Logo(reactProps, ref): JSX.Element {
+    return <tui-logo ref={ref} {...reactProps} />
+  },
+)
+export const ZStack = forwardRef<WrZStack, ZStackProps>(
+  function ZStack(reactProps, ref): JSX.Element {
+    return <tui-zstack ref={ref} {...reactProps} />
+  },
+)
+export const ToggleGroup = forwardRef<WrToggleGroup, ToggleGroupProps>(
+  function ToggleGroup(reactProps, ref): JSX.Element {
+    return <tui-toggle-group ref={ref} {...reactProps} />
+  },
+)
 
 interface TreeProps<T> extends ViewProps {
   data: T[]
@@ -330,98 +407,152 @@ export function Tree<T>(reactProps: TreeProps<T>): JSX.Element {
   return <tui-tree {...props}>{titleView}</tui-tree>
 }
 
-export function Modal({children, ...props}: ModalProps): JSX.Element {
-  return <tui-modal {...props}>{children}</tui-modal>
-}
+export const Modal = forwardRef<WrModal, ModalProps>(function Modal(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-modal ref={ref} {...props}>
+      {children}
+    </tui-modal>
+  )
+})
 
 ////
 /// "Simple" containers
 //
 
-export function Box(reactProps: BoxProps): JSX.Element {
-  const {children, ...props} = reactProps
-  return <tui-box {...props}>{children}</tui-box>
-}
-export function Button(reactProps: ButtonProps): JSX.Element {
-  const {children, ...props} = reactProps
-  return <tui-button {...props}>{children}</tui-button>
-}
-export function Collapsible(reactProps: CollapsibleProps): JSX.Element {
-  const {collapsed, expanded, ...props} = reactProps
+export const Box = forwardRef<WrBox, BoxProps>(function Box(
+  {children, ...props},
+  ref,
+): JSX.Element {
   return (
-    <tui-collapsible {...props}>
-      {collapsed}
-      {expanded}
-    </tui-collapsible>
+    <tui-box ref={ref} {...props}>
+      {children}
+    </tui-box>
   )
-}
+})
+export const Button = forwardRef<WrButton, ButtonProps>(function Button(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-button ref={ref} {...props}>
+      {children}
+    </tui-button>
+  )
+})
+export const Collapsible = forwardRef<WrCollapsible, CollapsibleProps>(
+  function Collapsible({collapsed, expanded, ...props}, ref): JSX.Element {
+    return (
+      <tui-collapsible ref={ref} {...props}>
+        {collapsed}
+        {expanded}
+      </tui-collapsible>
+    )
+  },
+)
 
+type StackDirectionProps = Omit<StackProps, 'direction'>
+type StackDirectionComponent = React.ForwardRefExoticComponent<
+  StackDirectionProps & React.RefAttributes<WrStack>
+>
 interface Stack {
   (reactProps: StackProps): JSX.Element
-  down(reactProps: Omit<StackProps, 'direction'>): JSX.Element
-  up(reactProps: Omit<StackProps, 'direction'>): JSX.Element
-  left(reactProps: Omit<StackProps, 'direction'>): JSX.Element
-  right(reactProps: Omit<StackProps, 'direction'>): JSX.Element
+  down: StackDirectionComponent
+  up: StackDirectionComponent
+  left: StackDirectionComponent
+  right: StackDirectionComponent
 }
-export const Stack: Stack = function Stack(reactProps: StackProps) {
-  const {children, ...props} = reactProps
-  return <tui-stack {...props}>{children}</tui-stack>
-}
-Stack.down = function StackLeft(reactProps: Omit<StackProps, 'direction'>) {
-  const {children, ...props} = reactProps
+export const Stack: Stack = forwardRef<WrStack, StackProps>(function Stack(
+  {children, ...props},
+  ref,
+) {
   return (
-    <tui-stack direction="down" {...props}>
+    <tui-stack ref={ref} {...props}>
       {children}
     </tui-stack>
   )
-}
-Stack.up = function StackLeft(reactProps: Omit<StackProps, 'direction'>) {
-  const {children, ...props} = reactProps
+}) as unknown as Stack
+Stack.down = forwardRef<WrStack, StackDirectionProps>(function StackDown(
+  {children, ...props},
+  ref,
+) {
   return (
-    <tui-stack direction="up" {...props}>
+    <tui-stack ref={ref} direction="down" {...props}>
       {children}
     </tui-stack>
   )
-}
-Stack.right = function StackLeft(reactProps: Omit<StackProps, 'direction'>) {
-  const {children, ...props} = reactProps
+})
+Stack.up = forwardRef<WrStack, StackDirectionProps>(function StackUp(
+  {children, ...props},
+  ref,
+) {
   return (
-    <tui-stack direction="right" {...props}>
+    <tui-stack ref={ref} direction="up" {...props}>
       {children}
     </tui-stack>
   )
-}
-Stack.left = function StackLeft(reactProps: Omit<StackProps, 'direction'>) {
-  const {children, ...props} = reactProps
+})
+Stack.right = forwardRef<WrStack, StackDirectionProps>(function StackRight(
+  {children, ...props},
+  ref,
+) {
   return (
-    <tui-stack direction="left" {...props}>
+    <tui-stack ref={ref} direction="right" {...props}>
       {children}
     </tui-stack>
   )
-}
-export function Geometry({children, ...props}: GeometryProps): JSX.Element {
-  return <tui-geometry {...props}>{children}</tui-geometry>
-}
-export function Scrollable(reactProps: ScrollableProps): JSX.Element {
-  const {children, ...props} = reactProps
-  return <tui-scrollable {...props}>{children}</tui-scrollable>
-}
+})
+Stack.left = forwardRef<WrStack, StackDirectionProps>(function StackLeft(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-stack ref={ref} direction="left" {...props}>
+      {children}
+    </tui-stack>
+  )
+})
+export const Geometry = forwardRef<WrGeometry, GeometryProps>(function Geometry(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-geometry ref={ref} {...props}>
+      {children}
+    </tui-geometry>
+  )
+})
+export const Scrollable = forwardRef<WrScrollable, ScrollableProps>(
+  function Scrollable({children, ...props}, ref): JSX.Element {
+    return (
+      <tui-scrollable ref={ref} {...props}>
+        {children}
+      </tui-scrollable>
+    )
+  },
+)
 /**
  * <Style /> is similar to <Text/> but only allows inline styles (bold, etc).
  * Does not support align or wrap (block styles). Does not support 'font', because
  * font is not encodable via SGR codes (and that's how I'm styling and
  * concatenating the text nodes).
  */
-export function Style(reactProps: StyleProps): JSX.Element {
-  return <tui-style {...reactProps} />
-}
+export const Style = forwardRef<TextStyle, StyleProps>(
+  function Style(reactProps, ref): JSX.Element {
+    return <tui-style ref={ref} {...reactProps} />
+  },
+)
 /**
  * <Text /> is a container that sets the text properties of child TextLiterals
  * (font, style) and TextContainers (wrap, alignment)
  */
-export function Text(reactProps: TextProps): JSX.Element {
-  return <tui-text {...reactProps} />
-}
+export const Text = forwardRef<TextProvider, TextProps>(
+  function Text(reactProps, ref): JSX.Element {
+    return <tui-text ref={ref} {...reactProps} />
+  },
+)
 
 ////
 /// Virtualized components
@@ -525,98 +656,138 @@ export function Table<TData>(reactProps: ReactTableProps<TData>): JSX.Element {
 
 interface Accordion {
   (reactProps: AccordionProps): JSX.Element
-  Section(reactProps: Omit<AccordionSectionProps, 'direction'>): JSX.Element
+  Section: React.ForwardRefExoticComponent<
+    Omit<AccordionSectionProps, 'direction'> &
+      React.RefAttributes<InstanceType<typeof WrAccordion.Section>>
+  >
 }
-export const Accordion: Accordion = function Accordion(
-  reactProps: AccordionProps,
+export const Accordion: Accordion = forwardRef<WrAccordion, AccordionProps>(
+  function Accordion({children, ...props}, ref): JSX.Element {
+    return (
+      <tui-accordion ref={ref} {...props}>
+        {children}
+      </tui-accordion>
+    )
+  },
+) as unknown as Accordion
+Accordion.Section = forwardRef<
+  InstanceType<typeof WrAccordion.Section>,
+  Omit<AccordionSectionProps, 'direction'>
+>(function AccordionSection({children, ...props}, ref) {
+  return (
+    <tui-accordion-section ref={ref} {...props}>
+      {children}
+    </tui-accordion-section>
+  )
+})
+
+export const Pane = forwardRef<WrPane, PaneProps>(function Pane(
+  {children, ...props},
+  ref,
 ): JSX.Element {
-  const {children, ...props} = reactProps
-  return <tui-accordion {...props}>{children}</tui-accordion>
-}
-Accordion.Section = function SliderHorizontal(
-  reactProps: Omit<AccordionSectionProps, 'direction'>,
-) {
-  const {children, ...props} = reactProps
-  return <tui-accordion-section {...props}>{children}</tui-accordion-section>
-}
+  return (
+    <tui-pane ref={ref} {...props}>
+      {children}
+    </tui-pane>
+  )
+})
 
-export function Pane({children, ...props}: PaneProps): JSX.Element {
-  return <tui-pane {...props}>{children}</tui-pane>
-}
-
+type DrawerLocationProps = Omit<DrawerProps, 'location'>
+type DrawerLocationComponent = React.ForwardRefExoticComponent<
+  DrawerLocationProps & React.RefAttributes<WrDrawer>
+>
 interface Drawer {
   (reactProps: DrawerProps): JSX.Element
-  top(reactProps: Omit<DrawerProps, 'location'>): JSX.Element
-  right(reactProps: Omit<DrawerProps, 'location'>): JSX.Element
-  bottom(reactProps: Omit<DrawerProps, 'location'>): JSX.Element
-  left(reactProps: Omit<DrawerProps, 'location'>): JSX.Element
+  top: DrawerLocationComponent
+  right: DrawerLocationComponent
+  bottom: DrawerLocationComponent
+  left: DrawerLocationComponent
 }
-export const Drawer: Drawer = function Drawer(
-  reactProps: DrawerProps,
+export const Drawer: Drawer = forwardRef<WrDrawer, DrawerProps>(function Drawer(
+  {children, content, drawer, ...props},
+  ref,
 ): JSX.Element {
-  const {children, content, drawer, ...props} = reactProps
   return (
-    <tui-drawer {...props}>
+    <tui-drawer ref={ref} {...props}>
       {content}
       {drawer}
       {children}
     </tui-drawer>
   )
-}
-Drawer.top = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, content, drawer, ...props} = reactProps
-  return (
-    <tui-drawer location="top" {...props}>
-      {content}
-      {drawer}
-      {children}
-    </tui-drawer>
-  )
-}
-Drawer.right = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, content, drawer, ...props} = reactProps
-  return (
-    <tui-drawer location="right" {...props}>
-      {content}
-      {drawer}
-      {children}
-    </tui-drawer>
-  )
-}
-Drawer.bottom = function DrawerBottom(
-  reactProps: Omit<DrawerProps, 'location'>,
+}) as unknown as Drawer
+Drawer.top = forwardRef<WrDrawer, DrawerLocationProps>(function DrawerTop(
+  {children, content, drawer, ...props},
+  ref,
 ) {
-  const {children, content, drawer, ...props} = reactProps
   return (
-    <tui-drawer location="bottom" {...props}>
+    <tui-drawer ref={ref} location="top" {...props}>
       {content}
       {drawer}
       {children}
     </tui-drawer>
   )
-}
-Drawer.left = function DrawerLeft(reactProps: Omit<DrawerProps, 'location'>) {
-  const {children, content, drawer, ...props} = reactProps
+})
+Drawer.right = forwardRef<WrDrawer, DrawerLocationProps>(function DrawerRight(
+  {children, content, drawer, ...props},
+  ref,
+) {
   return (
-    <tui-drawer location="left" {...props}>
+    <tui-drawer ref={ref} location="right" {...props}>
       {content}
       {drawer}
       {children}
     </tui-drawer>
   )
-}
+})
+Drawer.bottom = forwardRef<WrDrawer, DrawerLocationProps>(function DrawerBottom(
+  {children, content, drawer, ...props},
+  ref,
+) {
+  return (
+    <tui-drawer ref={ref} location="bottom" {...props}>
+      {content}
+      {drawer}
+      {children}
+    </tui-drawer>
+  )
+})
+Drawer.left = forwardRef<WrDrawer, DrawerLocationProps>(function DrawerLeft(
+  {children, content, drawer, ...props},
+  ref,
+) {
+  return (
+    <tui-drawer ref={ref} location="left" {...props}>
+      {content}
+      {drawer}
+      {children}
+    </tui-drawer>
+  )
+})
 
 interface Tabs {
   (reactProps: TabsProps): JSX.Element
-  Section(reactProps: Omit<TabsSectionProps, 'direction'>): JSX.Element
+  Section: React.ForwardRefExoticComponent<
+    Omit<TabsSectionProps, 'direction'> &
+      React.RefAttributes<InstanceType<typeof WrTabs.Section>>
+  >
 }
-export const Tabs: Tabs = function Tabs(reactProps: TabsProps): JSX.Element {
-  const {children, ...props} = reactProps
-  return <tui-tabs {...props}>{children}</tui-tabs>
-}
-Tabs.Section = function SliderHorizontal(
-  reactProps: Omit<TabsSectionProps, 'direction'>,
-) {
-  const {children, ...props} = reactProps
-  return <tui-tabs-section {...props}>{children}</tui-tabs-section>
-}
+export const Tabs: Tabs = forwardRef<WrTabs, TabsProps>(function Tabs(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-tabs ref={ref} {...props}>
+      {children}
+    </tui-tabs>
+  )
+}) as unknown as Tabs
+Tabs.Section = forwardRef<
+  InstanceType<typeof WrTabs.Section>,
+  Omit<TabsSectionProps, 'direction'>
+>(function TabsSection({children, ...props}, ref) {
+  return (
+    <tui-tabs-section ref={ref} {...props}>
+      {children}
+    </tui-tabs-section>
+  )
+})
