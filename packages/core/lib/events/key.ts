@@ -38,8 +38,38 @@ export function toHotKeyDef(hotKey: HotKey) {
   const ctrl = hotKey.includes('C-')
   const meta = hotKey.includes('M-')
   const shift = hotKey.includes('S-')
-  const char = hotKey.replace(/^([CMS]-)*/, '').toLowerCase()
+  const char = mapKey(hotKey.replace(/^([CMS]-)*/, '').toLowerCase())
   return {char, ctrl, meta, shift}
+}
+
+/**
+ * Maps a key name to its sigil representation.
+ */
+const KEY_SIGILS: Record<string, string> = {
+  enter: '⤦',
+  return: '⤦',
+  up: '↑',
+  down: '↓',
+  left: '←',
+  right: '→',
+  cmd: '⌘',
+  command: '⌘',
+  ctrl: '⌃',
+  control: '⌃',
+  alt: '⌥',
+  option: '⌥',
+  opt: '⌥',
+  shift: '⇧',
+  escape: '␛',
+  esc: '␛',
+  tab: '⇥',
+  space: '␣',
+  backspace: '⌫',
+  delete: '⌦',
+}
+
+export function mapKey(key: string): string {
+  return KEY_SIGILS[key.toLowerCase()] ?? key
 }
 
 export function isKeyPrintable(event: KeyEvent) {
@@ -103,7 +133,7 @@ export const match = (key: HotKeyDef, event: KeyEvent) => {
   return key.char === event.name
 }
 
-export const styleTextForHotKey = (text: string, key_: HotKey) => {
+export function styleTextForHotKey(text: string, key_: HotKey) {
   const key = toHotKeyDef(key_)
   const alt = '⌥'
   const shift = '⇧'
@@ -122,7 +152,7 @@ export const styleTextForHotKey = (text: string, key_: HotKey) => {
     mod += shift
   }
 
-  if (!mod) {
+  if (!mod && text) {
     return text
   }
 

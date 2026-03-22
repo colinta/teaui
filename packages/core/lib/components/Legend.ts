@@ -5,6 +5,7 @@ import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
 import {Point, Size} from '../geometry.js'
 import {Style} from '../Style.js'
+import {mapKey} from '../events/key.js'
 
 export interface LegendItem {
   key: string | string[]
@@ -14,36 +15,6 @@ export interface LegendItem {
 interface Props extends ViewProps {
   items: LegendItem[]
   separator?: string
-}
-
-/**
- * Maps a key name to its sigil representation.
- */
-const KEY_SIGILS: Record<string, string> = {
-  enter: '⤦',
-  return: '⤦',
-  up: '↑',
-  down: '↓',
-  left: '←',
-  right: '→',
-  cmd: '⌘',
-  command: '⌘',
-  ctrl: '⌃',
-  control: '⌃',
-  alt: '⌥',
-  option: '⌥',
-  opt: '⌥',
-  shift: '⇧',
-  escape: '␛',
-  esc: '␛',
-  tab: '⇥',
-  space: '␣',
-  backspace: '⌫',
-  delete: '⌦',
-}
-
-function mapKey(key: string): string {
-  return KEY_SIGILS[key.toLowerCase()] ?? key
 }
 
 function formatKeys(key: string | string[]): string {

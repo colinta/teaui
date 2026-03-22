@@ -58,6 +58,10 @@ export class Button extends Container {
     )
   }
 
+  #hasCustomChildren() {
+    return this.children.length !== 1 || this.children.at(0) !== this.#textView
+  }
+
   #update({title, border, align, hotKey, onClick}: Props) {
     const styledText = hotKey ? styleTextForHotKey(title ?? '', hotKey) : title
     this.#textView.text = styledText ?? ''
@@ -139,7 +143,16 @@ export class Button extends Container {
       }
     })
 
-    const [leftWidth, rightWidth] = this.#borderSize(hasFocus)
+    const borders = hasFocus ? BORDERS_FOCUS : BORDERS
+    let [left, right] = borders[this.#border]
+    let [leftWidth, rightWidth] = this.#borderSize(hasFocus)
+
+    if (this.#hasCustomChildren() && this.#hotKey) {
+      const hotKey = styleTextForHotKey('', this.#hotKey) + ' '
+      left += hotKey
+      leftWidth += unicode.lineWidth(hotKey)
+    }
+
     const naturalSize = super.naturalSize(
       viewport.contentSize.shrink(leftWidth + rightWidth, 0),
     )
@@ -154,11 +167,8 @@ export class Button extends Container {
         Math.round((viewport.contentSize.height - naturalSize.height) / 2),
       )
 
-    const borders = hasFocus ? BORDERS_FOCUS : BORDERS
-    const [left, right] = borders[this.#border],
-      leftX = offset.x - leftWidth,
+    let leftX = offset.x - leftWidth,
       rightX = offset.x + naturalSize.width
-
     for (let y = 0; y < naturalSize.height; y++) {
       viewport.write(left, new Point(leftX, offset.y + y), textStyle)
       viewport.write(right, new Point(rightX, offset.y + y), textStyle)
@@ -166,6 +176,13 @@ export class Button extends Container {
     viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
       super.render(inside)
     })
+  }
+
+  add(child: View, at?: number) {
+    super.add(child, at)
+    if (this.#hasCustomChildren()) {
+      this.#textView.removeFromParent()
+    }
   }
 }
 
