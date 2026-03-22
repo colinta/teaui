@@ -4,17 +4,14 @@ import type {Viewport} from '../Viewport.js'
 import {type Props as ViewProps, View} from '../View.js'
 import {Container} from '../Container.js'
 import {Point, Size, Rect} from '../geometry.js'
-import {
-  type BorderChars as BoxBorderChars,
-  Box,
-  Button,
-  Checkbox,
-  Modal,
-  Stack,
-  ScrollableList,
-  Separator,
-  Text,
-} from '../components/index.js'
+import {type BorderChars as BoxBorderChars, Box} from './Box.js'
+import {Button} from './Button.js'
+import {Checkbox} from './Checkbox.js'
+import {Modal} from './Modal.js'
+import {Stack} from './Stack.js'
+import {ScrollableList} from './ScrollableList.js'
+import {Separator} from './Separator.js'
+import {Text} from './Text.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
 import {System} from '../System.js'
 
@@ -365,15 +362,10 @@ class DropdownSelector<T> extends Container {
     const lines: string[] = this.#choices[row][0]
     const isSelected = [...this.#selected].some(index => index === row)
 
-    return new Button({
+    const button = new Button({
       theme: isSelected ? 'selected' : undefined,
       border: 'none',
       align: 'left',
-      child: new Text({
-        lines: lines.map((line, index) => {
-          return dropdownPrefix(this.#multiple, index, isSelected) + line
-        }),
-      }),
       onClick: () => {
         this.#selected.forEach(selected => {
           const item = this.#choices[selected][1]
@@ -397,6 +389,16 @@ class DropdownSelector<T> extends Container {
         this.#onSelect()
       },
     })
+
+    button.add(
+      new Text({
+        lines: lines.map((line, index) => {
+          return dropdownPrefix(this.#multiple, index, isSelected) + line
+        }),
+      }),
+    )
+
+    return button
   }
 
   render(viewport: Viewport) {
@@ -404,9 +406,7 @@ class DropdownSelector<T> extends Container {
       return super.render(viewport)
     }
 
-    const naturalSize = this.naturalSize(viewport.contentSize).max(
-      viewport.contentSize,
-    )
+    const naturalSize = this.naturalSize(viewport.contentSize)
     const fitsBelow =
       viewport.parentRect.maxY() + naturalSize.height <
       viewport.contentSize.height
@@ -502,8 +502,8 @@ const ARROWS = {hover: '▼', default: '▽', open: '◇'}
 const BORDERS: BorderChars = {
   control: ['─', '│', '╭', '╮', '╰', '╯'],
   hover: ['─', '│', '╭', '╮', '╰', '╯', '─', '│'],
-  below: ['─', '│', '╭', '╮', '╰', '╯', '─', '│'],
-  above: ['─', '│', '╭', '╮', '╰', '╯', '─', '│'],
+  below: ['─', '│', '╭', '┬─╮', '╰', '┴─╯', '─', '│'],
+  above: ['─', '│', '╭', '┬─╮', '╰', '┴─╯', '─', '│'],
 }
 
 const BOX: Record<

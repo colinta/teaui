@@ -90,7 +90,7 @@ export class ScrollableList<T> extends Container {
       row += 1
     }
 
-    return new Size(this.#maxWidth + scrollWidth, available.height)
+    return new Size(this.#maxWidth + scrollWidth, Math.min(y, available.height))
   }
 
   /**

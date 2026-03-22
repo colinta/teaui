@@ -145,16 +145,22 @@ class TestScreen {
     const viewport = new Viewport(this.asScreen(), this.#buffer, renderSize)
     this.#view.render(viewport)
 
+    // Modals need the full screen size to position overlays (e.g. dropdowns),
+    // matching Screen.render() which uses naturalSize.max(screenSize).
+    const modalViewport = new Viewport(
+      this.asScreen(),
+      this.#buffer,
+      this.#size,
+    )
     const rerenderView = this.#modalManager.renderModals(
       this.asScreen(),
-      viewport,
+      modalViewport,
     )
     const focusNeedsRender = this.#focusManager.commit()
     if (focusNeedsRender) {
-      this.#focusManager.reset(true)
-      this.#mouseManager.reset()
-      const viewport2 = new Viewport(this.asScreen(), this.#buffer, renderSize)
-      rerenderView.render(viewport2)
+      // Match Screen.render(): re-render with the same viewport, no
+      // mouse manager reset (so modal button registrations are preserved).
+      rerenderView.render(modalViewport)
       this.#focusManager.commit()
     }
 
