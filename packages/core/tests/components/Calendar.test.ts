@@ -397,9 +397,96 @@ describe('Calendar', () => {
       t.sendKey('escape')
       expect(cal.displayMode).toBe('days')
     })
+
+    it('arrow keys do not change selected date', () => {
+      const cal = new Calendar({
+        date: date(2026, 6, 15),
+        visibleDate: date(2026, 6, 1),
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+      t.sendKey('right')
+      t.sendKey('right')
+      t.sendKey('down')
+      expect(cal.cursorDate.getDate()).toBe(24)
+      expect(cal.date.getDate()).toBe(15)
+    })
+
+    it('enter after cursor move selects the cursor date', () => {
+      let selectedDate: Date | undefined
+      const cal = new Calendar({
+        date: date(2026, 6, 15),
+        visibleDate: date(2026, 6, 1),
+        onChange(d1) {
+          selectedDate = d1
+        },
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+      t.sendKey('right')
+      t.sendKey('right')
+      t.sendKey('right')
+      expect(cal.date.getDate()).toBe(15)
+      t.sendKey('return')
+      expect(cal.date.getDate()).toBe(18)
+      expect(selectedDate).toBeDefined()
+      expect(selectedDate!.getDate()).toBe(18)
+    })
   })
 
   describe('range selection', () => {
+    it('selects same date as start and end with two clicks', () => {
+      let rangeStart: Date | undefined
+      let rangeEnd: Date | undefined
+      const cal = new Calendar({
+        date: date(2026, 6, 10),
+        visibleDate: date(2026, 6, 1),
+        selection: 'range',
+        onChange(d1, d2) {
+          rangeStart = d1
+          rangeEnd = d2
+        },
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+
+      // First click: start range on June 1
+      t.sendMouse('mouse.button.down', {x: 4, y: 2})
+      t.sendMouse('mouse.button.up', {x: 4, y: 2})
+      expect(rangeStart).toBeUndefined()
+
+      // Second click on same date: should complete the range
+      t.sendMouse('mouse.button.down', {x: 4, y: 2})
+      t.sendMouse('mouse.button.up', {x: 4, y: 2})
+      expect(rangeStart).toBeDefined()
+      expect(rangeEnd).toBeDefined()
+      expect(rangeStart!.getDate()).toBe(1)
+      expect(rangeEnd!.getDate()).toBe(1)
+    })
+
+    it('selects same date as start and end with two Enter presses', () => {
+      let rangeStart: Date | undefined
+      let rangeEnd: Date | undefined
+      const cal = new Calendar({
+        date: date(2026, 6, 10),
+        visibleDate: date(2026, 6, 1),
+        selection: 'range',
+        onChange(d1, d2) {
+          rangeStart = d1
+          rangeEnd = d2
+        },
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+
+      // First Enter: start range on June 10
+      t.sendKey('return')
+      expect(rangeStart).toBeUndefined()
+
+      // Second Enter on same date: should complete the range
+      t.sendKey('return')
+      expect(rangeStart).toBeDefined()
+      expect(rangeEnd).toBeDefined()
+      expect(rangeStart!.getDate()).toBe(10)
+      expect(rangeEnd!.getDate()).toBe(10)
+    })
+
     it('selects a range with two Enter presses', () => {
       let rangeStart: Date | undefined
       let rangeEnd: Date | undefined
@@ -489,6 +576,96 @@ describe('Calendar', () => {
       expect(rangeEnd).toBeDefined()
       expect(rangeStart!.getDate()).toBe(1)
       expect(rangeEnd!.getDate()).toBe(4)
+    })
+
+    it('shift+right starts and extends range', () => {
+      let rangeStart: Date | undefined
+      let rangeEnd: Date | undefined
+      const cal = new Calendar({
+        date: date(2026, 6, 10),
+        visibleDate: date(2026, 6, 1),
+        selection: 'range',
+        onChange(d1, d2) {
+          rangeStart = d1
+          rangeEnd = d2
+        },
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+
+      // First shift+right: anchors start at 10, moves cursor to 11
+      t.sendKey('right', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(11)
+
+      // Continue shift+right: extends range
+      t.sendKey('right', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(12)
+
+      t.sendKey('right', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(13)
+    })
+
+    it('shift+left starts and extends range backwards', () => {
+      let rangeStart: Date | undefined
+      let rangeEnd: Date | undefined
+      const cal = new Calendar({
+        date: date(2026, 6, 10),
+        visibleDate: date(2026, 6, 1),
+        selection: 'range',
+        onChange(d1, d2) {
+          rangeStart = d1
+          rangeEnd = d2
+        },
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+
+      t.sendKey('left', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(9)
+
+      t.sendKey('left', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(8)
+    })
+
+    it('shift+down extends range by a week', () => {
+      const cal = new Calendar({
+        date: date(2026, 6, 10),
+        visibleDate: date(2026, 6, 1),
+        selection: 'range',
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+
+      t.sendKey('down', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(17)
+
+      t.sendKey('down', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(24)
+    })
+
+    it('non-shift arrow after shift-select clears shift-select', () => {
+      let rangeStart: Date | undefined
+      let rangeEnd: Date | undefined
+      const cal = new Calendar({
+        date: date(2026, 6, 10),
+        visibleDate: date(2026, 6, 1),
+        selection: 'range',
+        onChange(d1, d2) {
+          rangeStart = d1
+          rangeEnd = d2
+        },
+      })
+      const t = testRender(cal, {width: 22, height: 8})
+
+      // Shift-select a range
+      t.sendKey('right', {shift: true})
+      t.sendKey('right', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(12)
+
+      // Non-shift arrow: should move cursor without extending range
+      t.sendKey('right')
+      expect(cal.cursorDate.getDate()).toBe(13)
+
+      // A new shift+right should start a fresh range from 13
+      t.sendKey('right', {shift: true})
+      expect(cal.cursorDate.getDate()).toBe(14)
     })
   })
 

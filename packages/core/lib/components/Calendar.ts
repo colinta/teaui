@@ -90,6 +90,7 @@ export class Calendar extends View {
   #rangeStart?: Date
   #rangeEnd?: Date
   #rangeNextSelection: 'start' | 'end' = 'start'
+  #shiftSelecting = false
 
   // Year picker state
   #yearScrollOffset = 0
@@ -376,11 +377,11 @@ export class Calendar extends View {
   }
 
   #moveCursorDateBy(days: number) {
+    this.#shiftSelecting = false
+
     const nextDate = new Date(this.#cursorDate)
     nextDate.setDate(nextDate.getDate() + days)
     this.#cursorDate = nextDate
-    console.log('=========== Calendar.ts at line 812 ===========')
-    console.log({d: nextDate})
 
     // Navigate months if needed
     if (
@@ -393,6 +394,17 @@ export class Calendar extends View {
     }
 
     this.invalidateRender()
+  }
+
+  #shiftSelectBy(days: number) {
+    if (!this.#shiftSelecting) {
+      this.#rangeStart = new Date(this.#cursorDate)
+    }
+
+    this.#moveCursorDateBy(days)
+    this.#shiftSelecting = true
+    this.#rangeEnd = new Date(this.#cursorDate)
+    this.#rangeNextSelection = 'start'
   }
 
   #selectMonth(month: number) {
@@ -552,11 +564,7 @@ export class Calendar extends View {
     if (this.#selection === 'range') {
       switch (event.name) {
         case 'mouse.button.down':
-          if (
-            this.#rangeNextSelection === 'end' &&
-            this.#rangeStart &&
-            !this.#isSameDay(this.#rangeStart, date)
-          ) {
+          if (this.#rangeNextSelection === 'end' && this.#rangeStart) {
             this.#dragStartDate = undefined
             this.#finishRangeSelection(date)
           } else {
@@ -705,24 +713,28 @@ export class Calendar extends View {
         break
       case 'left':
         if (event.shift) {
+          this.#shiftSelectBy(-1)
         } else {
           this.#moveCursorDateBy(-1)
         }
         break
       case 'right':
         if (event.shift) {
+          this.#shiftSelectBy(1)
         } else {
           this.#moveCursorDateBy(1)
         }
         break
       case 'up':
         if (event.shift) {
+          this.#shiftSelectBy(-7)
         } else {
           this.#moveCursorDateBy(-7)
         }
         break
       case 'down':
         if (event.shift) {
+          this.#shiftSelectBy(7)
         } else {
           this.#moveCursorDateBy(7)
         }
@@ -942,7 +954,8 @@ export class Calendar extends View {
           this.#hoverDate && this.#isSameDay(date, this.#hoverDate)
         const isCurrentMonth = date.getMonth() === month
         const isToday = this.#isSameDay(date, today)
-        const isSelected = this.#isSameDay(date, this.#date)
+        const isSelected =
+          this.#isSameDay(date, this.#date) && this.#selection === 'single'
         const isCursor =
           !this.#isSameDay(this.#cursorDate, this.#date) &&
           this.#isSameDay(date, this.#cursorDate)
