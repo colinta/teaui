@@ -1,9 +1,3 @@
-# TeaUI — Agent Guide
-
-TeaUI is a terminal UI framework powered by React. It renders
-full-screen interactive applications in the terminal using a custom React
-reconciler that maps JSX elements to core view components.
-
 ### Code Formatting
 
 **Important: Always run `pnpm run format` before committing changes.**
@@ -57,19 +51,6 @@ architecture document covering:
 - Update propagation and `invalidateText()` / `invalidateNodes()` lifecycle
 - Prop comparison via `isSame()` (deep structural equality)
 
-### Text System (Critical)
-
-The text system is the most complex part of the reconciler. In brief:
-
-- JSX string children → `TextLiteral` (data-only, no rendering)
-- Adjacent text nodes are grouped into auto-created `TextContainer` nodes
-- `TextContainer` flattens its nodes, calls `styledText()` on each
-  `TextLiteral` (which reads styles from ancestor `TextStyle` nodes), and
-  generates core `Text` views for layout
-- When styles change (`<Style bold={true}>` → `<Style bold={false}>`),
-  `TextStyle.update()` must notify the ancestor `TextContainer` via
-  `invalidateText()` to regenerate the styled text
-
 ## Build & Test
 
 ```bash
@@ -79,14 +60,6 @@ pnpm vitest run             # Run all tests
 pnpm react                  # Run the React demo app
 ```
 
-Build order matters: `term` → `core` → `react` → apps.
-
-Many test suites fail because Vite cannot resolve `@teaui/term` through its
-`exports` field at test time. This is a vitest/Vite configuration issue, not
-a code bug — all packages build and run correctly. Fixing the vitest config
-to resolve workspace packages from source (rather than through `exports`) is
-a TODO.
-
 ## Testing
 
 - Core component tests: `packages/core/tests/`
@@ -94,6 +67,8 @@ a TODO.
 - Use `testRender(view, {width, height})` from `@teaui/core` for headless
   rendering. It returns a test harness with `t.terminal.textContent()`,
   `t.terminal.styleOf()`, `t.sendMouse()`, `t.sendKey()`, `t.render()`.
+- prefer `.toMatchSnapshot()` to test component output. There should be a
+  snapshot test to cover all the important permutations of a component's props.
 
 ## Common Patterns
 
