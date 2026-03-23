@@ -2,6 +2,7 @@ import {Viewport} from '../Viewport.js'
 import {type Props as ViewProps, View} from '../View.js'
 import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {
+  type KeyEvent,
   type MouseEvent,
   isMouseDragging,
   isMouseExit,
@@ -74,6 +75,9 @@ export class Slider extends View {
   #range: [number, number] = [0, 0]
   #value: number = 0
   #step: number = 1
+
+  // focus
+  #hasFocus: boolean = false
 
   // mouse information
   #contentSize?: Size = Size.zero
@@ -168,6 +172,30 @@ export class Slider extends View {
         // ╷   ╷
         return new Size(1, minHeight)
       }
+    }
+  }
+
+  receiveKey(event: KeyEvent) {
+    const prev = this.#value
+    switch (event.name) {
+      case 'right':
+      case 'down':
+        this.#value = Math.min(this.#range[1], this.#value + this.#step)
+        break
+      case 'left':
+      case 'up':
+        this.#value = Math.max(this.#range[0], this.#value - this.#step)
+        break
+      case 'home':
+        this.#value = this.#range[0]
+        break
+      case 'end':
+        this.#value = this.#range[1]
+        break
+    }
+
+    if (this.#value !== prev) {
+      this.#onChange?.(this.#value)
     }
   }
 
@@ -297,12 +325,26 @@ export class Slider extends View {
     }
   }
 
+  #borderChars(hasFocus: boolean): typeof BORDER_DEFAULT {
+    return hasFocus ? BORDER_FOCUS : BORDER_DEFAULT
+  }
+
+  #arrowChars(): typeof ARROWS_DEFAULT {
+    return {
+      up: this.#isHoverDecrease ? ARROWS_HOVER.up : ARROWS_DEFAULT.up,
+      down: this.#isHoverIncrease ? ARROWS_HOVER.down : ARROWS_DEFAULT.down,
+      left: this.#isHoverDecrease ? ARROWS_HOVER.left : ARROWS_DEFAULT.left,
+      right: this.#isHoverIncrease ? ARROWS_HOVER.right : ARROWS_DEFAULT.right,
+    }
+  }
+
   #renderHorizontal(
     viewport: Viewport,
     sliderStyle: Style,
     decreaseButtonStyle: Style,
     increaseButtonStyle: Style,
   ) {
+    const hasFocus = this.#hasFocus
     const hasBorder = this.#border && viewport.contentSize.height >= 3
     const height = hasBorder ? 3 : 1
     const marginX = this.#buttons ? 3 : hasBorder ? 1 : 0
@@ -313,41 +355,70 @@ export class Slider extends View {
     )
     viewport.registerMouse(['mouse.move', 'mouse.button.left'], outerRect)
 
+    const border = this.#borderChars(hasFocus)
+
     if (this.#buttons) {
-      const left = this.#isHoverDecrease ? '◂' : '◃'
-      const right = this.#isHoverIncrease ? '▸' : '▹'
-      ;(hasBorder ? ['╭─┬', `│${left}│`, '╰─┴'] : [`[${left}]`]).forEach(
-        (line, offsetY) => {
-          viewport.write(
-            line,
-            Point.zero.offset(0, offsetY),
-            decreaseButtonStyle,
-          )
-        },
-      )
-      ;(hasBorder ? ['┬─╮', `│${right}│`, '┴─╯'] : [`[${right}]`]).forEach(
-        (line, offsetY) => {
-          viewport.write(
-            line,
-            Point.zero.offset(
-              viewport.contentSize.width - line.length,
-              offsetY,
-            ),
-            increaseButtonStyle,
-          )
-        },
-      )
-    } else if (hasBorder) {
-      ;['╭', '│', '╰'].forEach((char, offsetY) => {
-        viewport.write(char, Point.zero.offset(0, offsetY), sliderStyle)
-      })
-      ;['╮', '│', '╯'].forEach((char, offsetY) => {
+      const arrows = this.#arrowChars()
+
+      if (hasBorder) {
         viewport.write(
-          char,
-          Point.zero.offset(viewport.contentSize.width - 1, offsetY),
-          sliderStyle,
+          `${border.topLeft}${border.horiz}${border.horizSepTop}`,
+          Point.zero,
+          decreaseButtonStyle,
         )
-      })
+        viewport.write(
+          `${border.vert}${arrows.left}${border.vert}`,
+          Point.zero.offset(0, 1),
+          decreaseButtonStyle,
+        )
+        viewport.write(
+          `${border.bottomLeft}${border.horiz}${border.horizSepBottom}`,
+          Point.zero.offset(0, 2),
+          decreaseButtonStyle,
+        )
+
+        const rx = viewport.contentSize.width - 3
+        viewport.write(
+          `${border.horizSepTop}${border.horiz}${border.topRight}`,
+          Point.zero.offset(rx, 0),
+          increaseButtonStyle,
+        )
+        viewport.write(
+          `${border.vert}${arrows.right}${border.vert}`,
+          Point.zero.offset(rx, 1),
+          increaseButtonStyle,
+        )
+        viewport.write(
+          `${border.horizSepBottom}${border.horiz}${border.bottomRight}`,
+          Point.zero.offset(rx, 2),
+          increaseButtonStyle,
+        )
+      } else {
+        const [bl, br] = hasFocus ? BRACKETS_FOCUS : BRACKETS_DEFAULT
+        viewport.write(`${bl}${arrows.left}${br}`, Point.zero, decreaseButtonStyle)
+        viewport.write(
+          `${bl}${arrows.right}${br}`,
+          Point.zero.offset(viewport.contentSize.width - 3, 0),
+          increaseButtonStyle,
+        )
+      }
+    } else if (hasBorder) {
+      viewport.write(border.topLeft, Point.zero.offset(0, 0), sliderStyle)
+      viewport.write(border.vert, Point.zero.offset(0, 1), sliderStyle)
+      viewport.write(border.bottomLeft, Point.zero.offset(0, 2), sliderStyle)
+
+      const rx = viewport.contentSize.width - 1
+      viewport.write(border.topRight, Point.zero.offset(rx, 0), sliderStyle)
+      viewport.write(border.vert, Point.zero.offset(rx, 1), sliderStyle)
+      viewport.write(border.bottomRight, Point.zero.offset(rx, 2), sliderStyle)
+    }
+
+    if (hasBorder) {
+      // Draw the top and bottom border rails
+      for (let x = innerRect.minX(); x < innerRect.maxX(); x++) {
+        viewport.write(border.horiz, Point.zero.offset(x, 0), sliderStyle)
+        viewport.write(border.horiz, Point.zero.offset(x, 2), sliderStyle)
+      }
     }
 
     const min = innerRect.minX(),
@@ -360,16 +431,17 @@ export class Slider extends View {
       let char: string
       if (height === 1 || pt.y === 1) {
         if (pt.x === position) {
-          char = '█'
+          char = BAR.fill
         } else if (pt.x === position + 1) {
-          char = '╶'
+          char = BAR.right
         } else if (pt.x === position - 1) {
-          char = '╴'
+          char = BAR.left
         } else {
-          char = '─'
+          char = BAR.horiz
         }
       } else {
-        char = '─'
+        // top/bottom border rows already drawn above
+        return
       }
 
       viewport.write(char, pt, sliderStyle)
@@ -382,6 +454,7 @@ export class Slider extends View {
     decreaseButtonStyle: Style,
     increaseButtonStyle: Style,
   ) {
+    const hasFocus = this.#hasFocus
     const hasBorder = this.#border && viewport.contentSize.width >= 3
     const width = hasBorder ? 3 : 1
     const marginY =
@@ -393,34 +466,71 @@ export class Slider extends View {
     )
     viewport.registerMouse(['mouse.move', 'mouse.button.left'], outerRect)
 
+    const border = this.#borderChars(hasFocus)
+
     if (this.#buttons) {
-      const up = this.#isHoverDecrease ? '▴' : '▵'
-      const down = this.#isHoverIncrease ? '▾' : '▿'
-      ;(hasBorder ? ['╭─╮', `│${up}│`, '├─┤'] : [up]).forEach(
-        (line, offsetY) => {
-          viewport.write(
-            line,
-            Point.zero.offset(0, offsetY),
-            decreaseButtonStyle,
-          )
-        },
-      )
-      ;(hasBorder ? ['╰─╯', `│${down}│`, '├─┤'] : [down]).forEach(
-        (line, offsetY) => {
-          viewport.write(
-            line,
-            Point.zero.offset(0, viewport.contentSize.height - offsetY - 1),
-            increaseButtonStyle,
-          )
-        },
-      )
+      const arrows = this.#arrowChars()
+
+      if (hasBorder) {
+        viewport.write(
+          `${border.topLeft}${border.horiz}${border.topRight}`,
+          Point.zero,
+          decreaseButtonStyle,
+        )
+        viewport.write(
+          `${border.vert}${arrows.up}${border.vert}`,
+          Point.zero.offset(0, 1),
+          decreaseButtonStyle,
+        )
+        viewport.write(
+          `${border.vertSepLeft}${border.horiz}${border.vertSepRight}`,
+          Point.zero.offset(0, 2),
+          decreaseButtonStyle,
+        )
+
+        const by = viewport.contentSize.height - 1
+        viewport.write(
+          `${border.bottomLeft}${border.horiz}${border.bottomRight}`,
+          Point.zero.offset(0, by),
+          increaseButtonStyle,
+        )
+        viewport.write(
+          `${border.vert}${arrows.down}${border.vert}`,
+          Point.zero.offset(0, by - 1),
+          increaseButtonStyle,
+        )
+        viewport.write(
+          `${border.vertSepLeft}${border.horiz}${border.vertSepRight}`,
+          Point.zero.offset(0, by - 2),
+          increaseButtonStyle,
+        )
+      } else {
+        viewport.write(arrows.up, Point.zero, decreaseButtonStyle)
+        viewport.write(
+          arrows.down,
+          Point.zero.offset(0, viewport.contentSize.height - 1),
+          increaseButtonStyle,
+        )
+      }
     } else if (hasBorder) {
-      viewport.write('╭─╮', Point.zero.offset(0, 0), sliderStyle)
       viewport.write(
-        '╰─╯',
+        `${border.topLeft}${border.horiz}${border.topRight}`,
+        Point.zero,
+        sliderStyle,
+      )
+      viewport.write(
+        `${border.bottomLeft}${border.horiz}${border.bottomRight}`,
         Point.zero.offset(0, viewport.contentSize.height - 1),
         sliderStyle,
       )
+    }
+
+    if (hasBorder) {
+      // Draw the left and right border rails
+      for (let y = innerRect.minY(); y < innerRect.maxY(); y++) {
+        viewport.write(border.vert, Point.zero.offset(0, y), sliderStyle)
+        viewport.write(border.vert, Point.zero.offset(2, y), sliderStyle)
+      }
     }
 
     const min = innerRect.minY(),
@@ -433,21 +543,17 @@ export class Slider extends View {
       let char: string
       if (width === 1 || pt.x === 1) {
         if (pt.y === position) {
-          char = '█'
-          // } else if (
-          //   (pt.y === min && position === min + 1) ||
-          //   (pt.y === max && position === max - 1)
-          // ) {
-          //   char = '∙'
+          char = BAR.fill
         } else if (pt.y === position + 1) {
-          char = '╷'
+          char = BAR.vertBelow
         } else if (pt.y === position - 1) {
-          char = '╵'
+          char = BAR.vertAbove
         } else {
-          char = '│'
+          char = BAR.vert
         }
       } else {
-        char = '│'
+        // left/right border rails already drawn above
+        return
       }
 
       viewport.write(char, pt, sliderStyle)
@@ -459,10 +565,13 @@ export class Slider extends View {
       return
     }
 
+    const hasFocus = viewport.registerFocus({isDefault: false})
+    this.#hasFocus = hasFocus
     this.#contentSize = viewport.contentSize
 
-    const pt = Point.zero.mutableCopy()
-    const sliderStyle = this.theme.ui({isHover: this.#isHoverSlider})
+    const sliderStyle = this.theme.ui({
+      isHover: this.#isHoverSlider || hasFocus,
+    })
     const decreaseButtonStyle = this.theme.ui({
       isPressed: this.#isPressingDecrease,
       isHover: this.#isHoverDecrease,
@@ -488,4 +597,68 @@ export class Slider extends View {
       )
     }
   }
+}
+
+interface Arrows {
+  up: string
+  down: string
+  left: string
+  right: string
+}
+
+interface Border {
+  topLeft: string
+  topRight: string
+  bottomLeft: string
+  bottomRight: string
+  horiz: string
+  vert: string
+  vertSepLeft: string
+  vertSepRight: string
+  horizSepTop: string
+  horizSepBottom: string
+}
+
+const BRACKETS_DEFAULT = ['[', ']'] as const
+const BRACKETS_FOCUS = ['⟦', '⟧'] as const
+
+// true => hover, false => default
+const ARROWS_DEFAULT: Arrows = {up: '▵', down: '▿', left: '◃', right: '▹'}
+const ARROWS_HOVER: Arrows = {up: '▴', down: '▾', left: '◂', right: '▸'}
+
+const BAR = {
+  left: '╴',
+  right: '╶',
+  horiz: '─',
+  fill: '█',
+  vert: '│',
+  vertAbove: '╵',
+  vertBelow: '╷',
+} as const
+
+// true => focus, false => default
+const BORDER_DEFAULT: Border = {
+  topLeft: '╭',
+  topRight: '╮',
+  bottomLeft: '╰',
+  bottomRight: '╯',
+  horiz: '─',
+  vert: '│',
+  vertSepLeft: '├',
+  vertSepRight: '┤',
+  horizSepTop: '┬',
+  horizSepBottom: '┴',
+}
+
+const BORDER_FOCUS: Border = {
+  topLeft: '╔',
+  topRight: '╗',
+  bottomLeft: '╚',
+  bottomRight: '╝',
+  horiz: '═',
+  vert: '║',
+  vertSepLeft: '╠',
+  vertSepRight: '╣',
+  horizSepTop: '╦',
+  horizSepBottom: '╩',
 }

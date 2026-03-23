@@ -1,5 +1,97 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Slider > focus > renders borderless buttons with focus brackets > focused 1`] = `"⟦◃⟧──────╴█╶─────⟦▹⟧"`;
+
+exports[`Slider > focus > renders borderless buttons with focus brackets > unfocused 1`] = `"[◃]──────╴█╶─────[▹]"`;
+
+exports[`Slider > focus > renders horizontal with buttons and focus border > focused 1`] = `
+"╔═╦══════════════╦═╗
+║◃║──────╴█╶─────║▹║
+╚═╩══════════════╩═╝"
+`;
+
+exports[`Slider > focus > renders horizontal with buttons and focus border > unfocused 1`] = `
+"╭─┬──────────────┬─╮
+│◃│──────╴█╶─────│▹│
+╰─┴──────────────┴─╯"
+`;
+
+exports[`Slider > focus > renders vertical with buttons and focus border > focused 1`] = `
+"╔═╗
+║▵║
+╠═╣
+║│║
+║│║
+║│║
+║│║
+║╵║
+║█║
+║╷║
+║│║
+║│║
+║│║
+╠═╣
+║▿║
+╚═╝"
+`;
+
+exports[`Slider > focus > renders vertical with buttons and focus border > unfocused 1`] = `
+"╭─╮
+│▵│
+├─┤
+│││
+│││
+│││
+│││
+│╵│
+│█│
+│╷│
+│││
+│││
+│││
+├─┤
+│▿│
+╰─╯"
+`;
+
+exports[`Slider > focus > renders vertical with focus border when focused > focused 1`] = `
+"╔═╗
+║│║
+║│║
+║│║
+║╵║
+║█║
+║╷║
+║│║
+║│║
+╚═╝"
+`;
+
+exports[`Slider > focus > renders vertical with focus border when focused > unfocused 1`] = `
+"╭─╮
+│││
+│││
+│││
+│╵│
+│█│
+│╷│
+│││
+│││
+╰─╯"
+`;
+
+exports[`Slider > focus > renders with focus border when focused > focused 1`] = `
+"╔══════════════════╗
+║────────╴█╶───────║
+╚══════════════════╝"
+`;
+
+exports[`Slider > focus > renders with focus border when focused > unfocused 1`] = `
+"╭──────────────────╮
+│────────╴█╶───────│
+╰──────────────────╯"
+`;
+
 exports[`Slider > inside scrollable viewport > renders horizontal slider at offset 0 1`] = `"─────────╴"`;
 
 exports[`Slider > inside scrollable viewport > renders horizontal slider scrolled right 1`] = `"█╶────────"`;
