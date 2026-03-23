@@ -547,7 +547,7 @@ export class Table<TData> extends Container {
       return super.render(viewport)
     }
 
-    viewport.registerFocus()
+    viewport.registerFocus({isDefault: true})
     viewport.registerMouse(['mouse.button.left', 'mouse.wheel'])
 
     const width = viewport.contentSize.width

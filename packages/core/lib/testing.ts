@@ -104,8 +104,8 @@ class TestScreen {
         registerKeyboard: (view: View) => {
           this.#focusManager.registerKeyboard(view)
         },
-        registerFocus: (view: View) => {
-          return this.#focusManager.registerFocus(view)
+        registerFocus: (view: View, isDefault: boolean) => {
+          return this.#focusManager.registerFocus(view, isDefault)
         },
         registerMouse: (
           view: View,

@@ -117,12 +117,15 @@ export class Viewport {
   /**
    * @return boolean Whether the current render target is the focus view
    */
-  registerFocus(): boolean {
+  registerFocus(opts?: {isDefault?: boolean}): boolean {
     if (!this.#currentRender) {
       return false
     }
 
-    return this.#screen.registerFocus(this.#currentRender)
+    return this.#screen.registerFocus(
+      this.#currentRender,
+      opts?.isDefault ?? true,
+    )
   }
 
   /**

@@ -26,7 +26,7 @@ class Keys extends View {
   }
 
   render(viewport: Viewport) {
-    viewport.registerFocus()
+    viewport.registerFocus({isDefault: true})
   }
 }
 

@@ -21,7 +21,7 @@ exports[`Dropdown > multiple selection > renders closed with multiple selections
 exports[`Dropdown > multiple selection > shows choices with checkboxes on click 1`] = `
 " Apple                     ▏◇
 ╭──────────────────────────┬─╮
-│🞕 Select all                │
+│◼︎ Select all
 │ ☑ Apple                  │█│
 │ ☐ Banana                 │█│
 │ ☐ Cherry                 │█│
@@ -31,7 +31,7 @@ exports[`Dropdown > multiple selection > shows choices with checkboxes on click 
 exports[`Dropdown > multiple selection > toggles selection without closing > after open 1`] = `
 " Apple                     ▏◇
 ╭──────────────────────────┬─╮
-│🞕 Select all                │
+│◼︎ Select all
 │ ☑ Apple                  │█│
 │ ☐ Banana                 │█│
 │ ☐ Cherry                 │█│
@@ -41,7 +41,7 @@ exports[`Dropdown > multiple selection > toggles selection without closing > aft
 exports[`Dropdown > multiple selection > toggles selection without closing > after toggle banana 1`] = `
 " Apple, Banana             ▏◇
 ╭──────────────────────────┬─╮
-│🞐 Select all                │
+│☐ Select all                │
 │ ☑ Apple                  │█│
 │ ☑ Banana                 │█│
 │ ☐ Cherry                 │█│

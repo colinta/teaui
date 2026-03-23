@@ -352,7 +352,7 @@ export class Input extends View {
     // focus ring even when clipped to zero size (e.g. inside a Scrollable that
     // hasn't scrolled to it). Skipping registration would silently drop it from
     // the ring, causing focus to jump unexpectedly when the user tabs through.
-    const hasFocus = viewport.registerFocus()
+    const hasFocus = viewport.registerFocus({isDefault: true})
     if (viewport.isEmpty) {
       return
     }

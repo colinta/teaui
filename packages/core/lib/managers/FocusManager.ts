@@ -63,12 +63,18 @@ export class FocusManager {
   /**
    * Returns whether the current view has focus.
    */
-  registerFocus(view: View) {
+  registerFocus(view: View, isDefault: boolean) {
     if (!this.#didCommit) {
       this.#focusRing.push(view)
     }
 
-    if (!this.#currentFocus && (!this.#prevFocus || this.#prevFocus === view)) {
+    if (!this.#currentFocus && this.#prevFocus === view) {
+      // The previously-focused view is re-registering — restore its focus
+      // regardless of isDefault (it was explicitly focused via tab/click).
+      this.#currentFocus = view
+      return true
+    } else if (!this.#currentFocus && !this.#prevFocus && isDefault) {
+      // First render: only isDefault views can claim initial focus.
       this.#currentFocus = view
       return true
     } else if (this.#currentFocus === view) {
@@ -120,7 +126,17 @@ export class FocusManager {
       this.#prevFocus &&
       !this.#currentFocus
     ) {
+      // The previously-focused view didn't re-register — fall back to the
+      // first view in the ring so focus doesn't disappear.
       this.#currentFocus = this.#focusRing[0]
+    } else if (
+      this.#focusRing.length > 0 &&
+      !this.#prevFocus &&
+      !this.#currentFocus
+    ) {
+      // First render with focusable views but no default view claimed focus —
+      // enter the unfocused state so that tab can move into the focus ring.
+      this.#currentFocus = UNFOCUS
     }
 
     // Detect focus changes and fire lifecycle events
@@ -154,12 +170,20 @@ export class FocusManager {
   }
 
   prevFocus() {
-    if (this.#currentFocus === UNFOCUS) {
+    if (!this.#currentFocus || this.#currentFocus === UNFOCUS) {
       this.#currentFocus = this.#focusRing.at(-1)
       return
     }
 
     if (this.#focusRing.length <= 1) {
+      this.#currentFocus = UNFOCUS
+      return
+    }
+
+    // If focused on the first item, unfocus instead of wrapping.
+    const index = this.#focusRing.indexOf(this.#currentFocus)
+    if (index === 0) {
+      this.#currentFocus = UNFOCUS
       return
     }
 
@@ -173,12 +197,20 @@ export class FocusManager {
   }
 
   nextFocus() {
-    if (this.#currentFocus === UNFOCUS) {
+    if (!this.#currentFocus || this.#currentFocus === UNFOCUS) {
       this.#currentFocus = this.#focusRing[0]
       return
     }
 
     if (this.#focusRing.length <= 1) {
+      this.#currentFocus = UNFOCUS
+      return
+    }
+
+    // If focused on the last item, unfocus instead of wrapping.
+    const index = this.#focusRing.indexOf(this.#currentFocus)
+    if (index === this.#focusRing.length - 1) {
+      this.#currentFocus = UNFOCUS
       return
     }
 

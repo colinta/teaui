@@ -66,7 +66,7 @@ exports[`Alert > presentFrom > presents alert with multiple children 1`] = `
  │Confirm                             │
  │────────────────────────────────────│
  │Are you sure?                       │
- │⟦ Yes ⟧ [ No ]                      │
+ │[ Yes ] [ No ]                      │
  ╰────────────────────────────────────╯"
 `;
 
@@ -105,12 +105,12 @@ exports[`Alert > presentFrom > presents alert without title 1`] = `
 
 exports[`Alert > presentFrom with existing content > presents over existing views 1`] = `
 "Background content
-              ⟦ Click me ⟧"
+              [ Click me ]"
 `;
 
 exports[`Alert > presentFrom with existing content > presents over existing views 2`] = `
 "Background content
-              ⟦ Click me ⟧
+              [ Click me ]
 
  ╭────────────────────────────────────╮
  │Alert!                              │

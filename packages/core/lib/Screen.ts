@@ -355,8 +355,8 @@ export class Screen {
   /**
    * @return boolean Whether the current view has focus
    */
-  registerFocus(view: View): boolean {
-    return this.#focusManager.registerFocus(view)
+  registerFocus(view: View, isDefault: boolean): boolean {
+    return this.#focusManager.registerFocus(view, isDefault)
   }
 
   registerHotKey(view: View, key: HotKeyDef) {

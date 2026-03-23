@@ -9,6 +9,7 @@ describe('Checkbox', () => {
         width: 20,
         height: 1,
       })
+      t.sendKey('tab')
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
@@ -17,6 +18,7 @@ describe('Checkbox', () => {
         width: 20,
         height: 1,
       })
+      t.sendKey('tab')
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
@@ -25,6 +27,7 @@ describe('Checkbox', () => {
         width: 10,
         height: 1,
       })
+      t.sendKey('tab')
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
@@ -72,6 +75,7 @@ describe('Checkbox', () => {
         },
       })
       const t = testRender(cb, {width: 20, height: 1})
+      t.sendKey('tab')
       t.sendKey('return')
       expect(checked).toBe(true)
     })

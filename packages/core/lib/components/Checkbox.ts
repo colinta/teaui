@@ -103,7 +103,7 @@ export class Checkbox extends Container {
   }
 
   render(viewport: Viewport) {
-    const hasFocus = viewport.registerFocus()
+    const hasFocus = viewport.registerFocus({isDefault: false})
     this.#hasFocus = hasFocus
     if (viewport.isEmpty) {
       return super.render(viewport)
