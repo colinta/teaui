@@ -32,6 +32,12 @@ export type Pin = 'horizontal' | 'vertical'
 
 export interface Props {
   theme?: Theme | Purpose
+  /**
+   * A heading for this view. Container views (Box, Page, Alert, Drawer, etc.)
+   * can read this from their children to display a section heading without
+   * requiring a wrapper component.
+   */
+  heading?: string
   // size and positioning
   x?: number
   y?: number
@@ -78,6 +84,7 @@ export abstract class View {
   #renderedContentSize: Size = Size.zero
   #invalidateParent = true
 
+  #heading: string | undefined
   #x: Props['x']
   #y: Props['y']
   #width: Props['width']
@@ -128,6 +135,7 @@ export abstract class View {
 
   #update({
     theme,
+    heading,
     x,
     y,
     width,
@@ -143,6 +151,7 @@ export abstract class View {
     debug,
   }: Props) {
     this.#theme = typeof theme === 'string' ? Theme[theme] : theme
+    this.#heading = heading
     this.#x = x
     this.#y = y
     this.#width = width
@@ -182,6 +191,15 @@ export abstract class View {
 
   childTheme(_view: View) {
     return this.theme
+  }
+
+  get heading(): string | undefined {
+    return this.#heading
+  }
+
+  set heading(value: string | undefined) {
+    this.#heading = value
+    this.invalidateSize()
   }
 
   get isVisible(): boolean {

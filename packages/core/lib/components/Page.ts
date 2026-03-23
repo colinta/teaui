@@ -79,8 +79,10 @@ export class Page extends Container {
     this.#onChange = onChange
   }
 
-  get sections() {
-    return this.children.filter(view => view instanceof Section)
+  get sections(): SectionLike[] {
+    return this.children.map(view =>
+      view instanceof Section ? view : new ImplicitSection(view),
+    )
   }
 
   get activeIndex() {
@@ -326,7 +328,11 @@ export class Page extends Container {
     this.#renderIndicator(viewport, sections, contentHeight)
   }
 
-  #renderIndicator(viewport: Viewport, sections: Section[], contentY: number) {
+  #renderIndicator(
+    viewport: Viewport,
+    sections: SectionLike[],
+    contentY: number,
+  ) {
     const textStyle = this.theme.text()
     const totalDotsWidth = sections.length * DOT_WIDTH
     const startX = Math.max(
@@ -419,8 +425,12 @@ class Section extends Container {
     define(this, 'title', {enumerable: true})
   }
 
+  /**
+   * Returns the explicit title if set, otherwise falls back to the first
+   * child's `heading` property.
+   */
   get title() {
-    return this.#title
+    return this.#title ?? this.children[0]?.heading ?? ''
   }
   set title(value: string) {
     this.#title = value
@@ -434,6 +444,32 @@ class Section extends Container {
     super.update(props)
   }
 }
+
+/**
+ * Lightweight wrapper so non-Section children can be treated uniformly.
+ * Delegates rendering and sizing to the underlying view.
+ */
+class ImplicitSection {
+  readonly #view: View
+
+  constructor(view: View) {
+    this.#view = view
+  }
+
+  get title(): string {
+    return this.#view.heading ?? ''
+  }
+
+  naturalSize(available: Size): Size {
+    return this.#view.naturalSize(available)
+  }
+
+  render(viewport: Viewport): void {
+    this.#view.render(viewport)
+  }
+}
+
+type SectionLike = Section | ImplicitSection
 
 Page.Section = Section
 
