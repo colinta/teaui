@@ -519,7 +519,7 @@ export class Table<TData> extends Container {
           continue
         }
         if (w + cw > width - 1) {
-          result += '…'
+          result += ELLIPSIS
           break
         }
         result += char
@@ -585,30 +585,30 @@ export class Table<TData> extends Container {
       const checkedCount = this.#selectedItems.size
       const headerCheck =
         checkedCount === 0
-          ? '[ ]'
+          ? CHECKBOX_UNCHECKED
           : checkedCount === this.#data.length
-            ? '[⨉]'
-            : '[·]'
+            ? CHECKBOX_CHECKED
+            : CHECKBOX_PARTIAL
       viewport.write(headerCheck, new Point(headerX, 0), headerStyle)
       headerX += 3
-      viewport.write(' │ ', new Point(headerX, 0), dimStyle)
+      viewport.write(COLUMN_SEPARATOR, new Point(headerX, 0), dimStyle)
       headerX += 3
     }
 
     // Row number column header
     if (this.#showRowNumbers) {
       const numColWidth = rowNumWidth - 3 // subtract separator
-      const aligned = this.#alignText('#', numColWidth, 'right')
+      const aligned = this.#alignText(ROW_NUMBER_HEADER, numColWidth, 'right')
       viewport.write(aligned, new Point(headerX, 0), headerStyle)
 
       // Show sort arrow when sorting by original order (sortKey is undefined)
       if (!this.#sortKey) {
-        const arrow = this.#sortDirection === 'asc' ? '▲' : '▼'
+        const arrow = this.#sortDirection === 'asc' ? SORT_ASC : SORT_DESC
         viewport.write(arrow, new Point(headerX, 0), headerStyle)
       }
 
       headerX += numColWidth
-      viewport.write(' │ ', new Point(headerX, 0), dimStyle)
+      viewport.write(COLUMN_SEPARATOR, new Point(headerX, 0), dimStyle)
       headerX += 3
     }
 
@@ -619,7 +619,7 @@ export class Table<TData> extends Container {
 
       // Write sort arrow on top, positioned after the title text, clamped to column width
       if (this.#sortKey === col.key) {
-        const arrow = this.#sortDirection === 'asc' ? '▲' : '▼'
+        const arrow = this.#sortDirection === 'asc' ? SORT_ASC : SORT_DESC
         const titleWidth = unicode.lineWidth(col.title)
         const align = col.align ?? 'left'
         const titleStart =
@@ -634,14 +634,14 @@ export class Table<TData> extends Container {
 
       headerX += widths[i]
       if (i < this.#columns.length - 1) {
-        viewport.write(' │ ', new Point(headerX, 0), dimStyle)
+        viewport.write(COLUMN_SEPARATOR, new Point(headerX, 0), dimStyle)
         headerX += 3
       }
     }
 
     // Separator
     if (height > 1) {
-      const sep = '─'.repeat(width)
+      const sep = HORIZONTAL_LINE.repeat(width)
       viewport.write(sep, new Point(0, 1), dimStyle)
     }
 
@@ -678,10 +678,10 @@ export class Table<TData> extends Container {
       let scrollIndicator: string | undefined
       if (i === 0 && rowsAbove > 0) {
         const hiddenCount = rowsAbove + 1 // +1 for the row occluded by indicator
-        scrollIndicator = ` [ ↑ ${hiddenCount} more rows ] `
+        scrollIndicator = ` [ ${ARROW_UP} ${hiddenCount} more rows ] `
       } else if (i === this.#bodyHeight - 1 && rowsBelow > 0) {
         const hiddenCount = rowsBelow + 1 // +1 for the row occluded by indicator
-        scrollIndicator = ` [ ↓ ${hiddenCount} more rows ] `
+        scrollIndicator = ` [ ${ARROW_DOWN} ${hiddenCount} more rows ] `
       }
 
       // Styles for rows occluded by scroll indicators (easily customisable)
@@ -718,7 +718,7 @@ export class Table<TData> extends Container {
       }
       if (isSelected && !scrollIndicator) {
         viewport.write(
-          '▶',
+          SELECTION_MARKER,
           new Point(0, y),
           isChecked ? cursorCheckedStyle : cursorStyle,
         )
@@ -729,10 +729,10 @@ export class Table<TData> extends Container {
 
       // Checkbox column
       if (this.#isShowSelected) {
-        const checkText = isChecked ? '[⨉]' : '[ ]'
+        const checkText = isChecked ? CHECKBOX_CHECKED : CHECKBOX_UNCHECKED
         viewport.write(checkText, new Point(cellX, y), effectiveRowStyle)
         cellX += 3
-        viewport.write(' │ ', new Point(cellX, y), effectiveSepStyle)
+        viewport.write(COLUMN_SEPARATOR, new Point(cellX, y), effectiveSepStyle)
         cellX += 3
       }
 
@@ -743,7 +743,7 @@ export class Table<TData> extends Container {
         const aligned = this.#alignText(numText, numColWidth, 'right')
         viewport.write(aligned, new Point(cellX, y), effectiveRowStyle)
         cellX += numColWidth
-        viewport.write(' │ ', new Point(cellX, y), effectiveSepStyle)
+        viewport.write(COLUMN_SEPARATOR, new Point(cellX, y), effectiveSepStyle)
         cellX += 3
       }
 
@@ -756,7 +756,11 @@ export class Table<TData> extends Container {
 
         cellX += widths[j]
         if (j < this.#columns.length - 1) {
-          viewport.write(' │ ', new Point(cellX, y), effectiveSepStyle)
+          viewport.write(
+            COLUMN_SEPARATOR,
+            new Point(cellX, y),
+            effectiveSepStyle,
+          )
           cellX += 3
         }
       }
@@ -774,3 +778,16 @@ export class Table<TData> extends Container {
     }
   }
 }
+
+const SELECTION_MARKER = '▶'
+const COLUMN_SEPARATOR = ' │ '
+const HORIZONTAL_LINE = '─'
+const SORT_ASC = '▲'
+const SORT_DESC = '▼'
+const ARROW_UP = '↑'
+const ARROW_DOWN = '↓'
+const ELLIPSIS = '…'
+const CHECKBOX_CHECKED = '[✕]'
+const CHECKBOX_UNCHECKED = '[ ]'
+const CHECKBOX_PARTIAL = '[·]'
+const ROW_NUMBER_HEADER = '#'
