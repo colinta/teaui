@@ -53,6 +53,7 @@ describe('translateTermKeyEvent', () => {
       name: 'a',
       char: 'a',
       ctrl: false,
+      alt: false,
       meta: false,
       shift: false,
       full: 'a',
@@ -72,15 +73,17 @@ describe('translateTermKeyEvent', () => {
     expect(result.full).toBe('C-c')
   })
 
-  test('alt maps to meta', () => {
+  test('alt maps to alt', () => {
     const result = translateTermKeyEvent(termKey('x', {alt: true}))
-    expect(result.meta).toBe(true)
-    expect(result.full).toBe('M-x')
+    expect(result.alt).toBe(true)
+    expect(result.meta).toBe(false)
+    expect(result.full).toBe('A-x')
   })
 
   test('meta maps to meta', () => {
     const result = translateTermKeyEvent(termKey('x', {meta: true}))
     expect(result.meta).toBe(true)
+    expect(result.alt).toBe(false)
     expect(result.full).toBe('M-x')
   })
 
@@ -94,9 +97,10 @@ describe('translateTermKeyEvent', () => {
     const result = translateTermKeyEvent(
       termKey('a', {ctrl: true, alt: true, shift: true}),
     )
-    expect(result.full).toBe('C-M-S-a')
+    expect(result.full).toBe('C-A-S-a')
     expect(result.ctrl).toBe(true)
-    expect(result.meta).toBe(true)
+    expect(result.alt).toBe(true)
+    expect(result.meta).toBe(false)
     expect(result.shift).toBe(true)
   })
 })
@@ -156,7 +160,8 @@ describe('translateTermMouseEvent', () => {
       termMouse('press', 'left', {ctrl: true, alt: true, shift: true}),
     )
     expect(result!.ctrl).toBe(true)
-    expect(result!.meta).toBe(true)
+    expect(result!.alt).toBe(true)
+    expect(result!.meta).toBe(false)
     expect(result!.shift).toBe(true)
   })
 

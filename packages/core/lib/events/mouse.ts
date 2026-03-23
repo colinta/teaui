@@ -39,6 +39,7 @@ export type MouseEvent = {
   type: 'mouse'
   name: MouseEventName
   ctrl: boolean
+  alt: boolean
   meta: boolean
   shift: boolean
   button: MouseButton

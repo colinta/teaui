@@ -14,6 +14,7 @@
  *   // Re-renders automatically after events, query again:
  *   expect(t.terminal.charAt(0, 0)).toBe('a')
  */
+import {type KeyName} from '@teaui/term'
 import {Buffer} from './Buffer.js'
 import {Viewport} from './Viewport.js'
 import {Size, Point, Rect} from './geometry.js'
@@ -172,15 +173,17 @@ class TestScreen {
   }
 
   sendKey(
-    key: string,
-    mods: {ctrl?: boolean; meta?: boolean; shift?: boolean} = {},
+    key: KeyName,
+    mods: {ctrl?: boolean; alt?: boolean; meta?: boolean; shift?: boolean} = {},
   ) {
     const ctrl = mods.ctrl ?? false
+    const alt = mods.alt ?? false
     const meta = mods.meta ?? false
     const shift = mods.shift ?? false
 
     let full = ''
     if (ctrl) full += 'C-'
+    if (alt) full += 'A-'
     if (meta) full += 'M-'
     if (shift) full += 'S-'
     full += key
@@ -191,8 +194,9 @@ class TestScreen {
       type: 'key',
       name: key,
       char,
-      full,
+      full: full as import('./events/index.js').FullKeyName,
       ctrl,
+      alt,
       meta,
       shift,
     }
@@ -204,7 +208,7 @@ class TestScreen {
   sendMouse(
     name: SystemMouseEvent['name'],
     pos: {x: number; y: number},
-    mods: {ctrl?: boolean; meta?: boolean; shift?: boolean} = {},
+    mods: {ctrl?: boolean; alt?: boolean; meta?: boolean; shift?: boolean} = {},
   ) {
     const button = name.startsWith('mouse.wheel')
       ? ('wheel' as const)
@@ -218,6 +222,7 @@ class TestScreen {
       x: pos.x,
       y: pos.y,
       ctrl: mods.ctrl ?? false,
+      alt: mods.alt ?? false,
       meta: mods.meta ?? false,
       shift: mods.shift ?? false,
       button,

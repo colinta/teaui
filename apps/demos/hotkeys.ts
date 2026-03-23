@@ -1,4 +1,12 @@
-import {Box, Button, HotKey, Keyboard, Mouse, Stack, Text} from '@teaui/core'
+import {
+  Box,
+  HotKey,
+  Keyboard,
+  Mouse,
+  Stack,
+  Text,
+  type FullKeyName,
+} from '@teaui/core'
 import type {KeyEvent, MouseEvent} from '@teaui/core'
 
 import {demo} from './demo.js'
@@ -47,7 +55,7 @@ function formatMouseEvent(event: MouseEvent): string {
 
 interface HotKeyEntry {
   label: string
-  hotKey: string
+  hotKey: FullKeyName
 }
 
 const entries: HotKeyEntry[] = [
@@ -55,17 +63,17 @@ const entries: HotKeyEntry[] = [
   {label: '2', hotKey: '2'},
   {label: '3', hotKey: '3'},
   {label: 'enter', hotKey: 'return'},
-  {label: 'M-enter', hotKey: 'M-return'},
+  {label: 'A-enter', hotKey: 'A-return'},
   {label: 'S-enter', hotKey: 'S-return'},
   {label: 'C-a', hotKey: 'C-a'},
   {label: 'C-b', hotKey: 'C-b'},
-  {label: 'C-e', hotKey: 'C-e'},
-  {label: 'M-x', hotKey: 'M-x'},
-  {label: 'M-z', hotKey: 'M-z'},
-  {label: 'M-j', hotKey: 'M-j'},
-  {label: 'C-M-d', hotKey: 'C-M-d'},
-  {label: 'C-M-l', hotKey: 'C-M-l'},
-  {label: 'C-M-n', hotKey: 'C-M-n'},
+  {label: 'A-x', hotKey: 'A-x'},
+  {label: 'A-z', hotKey: 'A-z'},
+  {label: 'C-A-d', hotKey: 'C-A-d'},
+  {label: 'C-A-l', hotKey: 'C-A-l'},
+  {label: 'C-A-return', hotKey: 'C-A-return'},
+  {label: 'C-S-backspace', hotKey: 'C-S-backspace'},
+  {label: 'M-y', hotKey: 'M-y'},
   {label: 'r', hotKey: 'r'},
 ]
 

@@ -1,4 +1,34 @@
 import {underline} from '../ansi.js'
+import type {KeyName, NamedKey, Printable} from '@teaui/term'
+
+/**
+ * Modifier prefix combinations, always in the order C- A- M- S-.
+ */
+type ModifierPrefix =
+  | ''
+  | 'C-'
+  | 'A-'
+  | 'M-'
+  | 'S-'
+  | 'C-A-'
+  | 'C-M-'
+  | 'C-S-'
+  | 'A-M-'
+  | 'A-S-'
+  | 'M-S-'
+  | 'C-A-M-'
+  | 'C-A-S-'
+  | 'C-M-S-'
+  | 'A-M-S-'
+  | 'C-A-M-S-'
+
+/**
+ * A key name with optional modifier prefixes, e.g. "C-a", "M-backspace", "C-M-S-up".
+ * Provides autocomplete for known key+modifier combos while accepting any string.
+ */
+export type FullKeyName =
+  | `${ModifierPrefix}${NamedKey | Printable}`
+  | (string & {})
 
 export interface KeyEvent {
   type: 'key'
@@ -9,22 +39,24 @@ export interface KeyEvent {
   /**
    * Named key, like "enter", "a", "escape", etc, or the printable character
    */
-  name: string
+  name: KeyName
   ctrl: boolean
+  alt: boolean
   meta: boolean
   shift: boolean
   /**
    * The letter that was pressed, *plus* the modifiers (C-M-S- for control- meta- shift, always in that order)
    */
-  full: string
+  full: FullKeyName
 }
 export type HotKeyDef = {
   char: string
   ctrl?: boolean
+  alt?: boolean
   meta?: boolean
   shift?: boolean
 }
-export type HotKey = string | HotKeyDef
+export type HotKey = FullKeyName | HotKeyDef
 
 export function toHotKeyDef(hotKey: HotKey) {
   if (typeof hotKey !== 'string') {
@@ -33,13 +65,15 @@ export function toHotKeyDef(hotKey: HotKey) {
 
   // hotkey string supports:
   // C- control
+  // A- alt
   // M- meta
   // S- shift
   const ctrl = hotKey.includes('C-')
+  const alt = hotKey.includes('A-')
   const meta = hotKey.includes('M-')
   const shift = hotKey.includes('S-')
-  const char = mapKey(hotKey.replace(/^([CMS]-)*/, '').toLowerCase())
-  return {char, ctrl, meta, shift}
+  const char = mapKey(hotKey.replace(/^([CAMS]-)*/, '').toLowerCase())
+  return {char, ctrl, alt, meta, shift}
 }
 
 /**
@@ -123,6 +157,9 @@ export const match = (key: HotKeyDef, event: KeyEvent) => {
   if ((key.ctrl ?? false) !== event.ctrl) {
     return false
   }
+  if ((key.alt ?? false) !== event.alt) {
+    return false
+  }
   if ((key.meta ?? false) !== event.meta) {
     return false
   }
@@ -144,8 +181,12 @@ export function styleTextForHotKey(text: string, key_: HotKey) {
     mod += ctrl
   }
 
-  if (key.meta) {
+  if (key.alt) {
     mod += alt
+  }
+
+  if (key.meta) {
+    mod += '⌘'
   }
 
   if (key.shift) {

@@ -4,6 +4,7 @@ import type {
 } from '@teaui/term'
 
 import type {
+  FullKeyName,
   KeyEvent,
   MouseButton,
   SystemMouseEvent,
@@ -13,7 +14,8 @@ import type {
 export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
   const name = event.key
   const ctrl = event.ctrl
-  const meta = event.alt || event.meta
+  const alt = event.alt
+  const meta = event.meta
   const shift = event.shift
   // Named keys (return, backspace, escape, etc.) have length > 1 and are all ASCII.
   // Single characters may have length > 1 due to surrogate pairs (emoji) or
@@ -23,14 +25,24 @@ export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
     String.fromCodePoint(event.key.codePointAt(0)!).length === event.key.length
   const char = event.key === 'space' ? ' ' : isSingleCodePoint ? event.key : ''
 
-  // Build "full" string like blessed: "C-M-S-x"
+  // Build "full" string: "C-A-M-S-x"
   let full = ''
   if (ctrl) full += 'C-'
+  if (alt) full += 'A-'
   if (meta) full += 'M-'
   if (shift) full += 'S-'
   full += name
 
-  return {type: 'key', char, name, ctrl, meta, shift, full}
+  return {
+    type: 'key',
+    char,
+    name,
+    ctrl,
+    alt,
+    meta,
+    shift,
+    full: full as FullKeyName,
+  }
 }
 
 export function translateTermMouseEvent(
@@ -95,7 +107,8 @@ export function translateTermMouseEvent(
     x: event.x,
     y: event.y,
     ctrl: event.ctrl,
-    meta: event.alt || false,
+    alt: event.alt,
+    meta: false,
     shift: event.shift,
     button,
   }

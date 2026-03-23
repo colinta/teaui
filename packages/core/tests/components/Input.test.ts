@@ -135,7 +135,7 @@ describe('Input', () => {
         },
       })
       const t = testRender(input, {width: 20, height: 1})
-      t.sendKey('backspace', {meta: true})
+      t.sendKey('backspace', {alt: true})
       expect(value).toBe('hello ')
     })
   })

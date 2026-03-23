@@ -290,7 +290,7 @@ export class Input extends View {
       this.#receiveKeyBackspace()
     } else if (event.name === 'delete') {
       this.#receiveKeyDelete()
-    } else if (event.full === 'M-backspace' || event.full === 'C-w') {
+    } else if (event.full === 'A-backspace' || event.full === 'C-w') {
       this.#receiveKeyDeleteWord()
     } else if (isKeyAccent(event)) {
       this.#receiveKeyAccent(event)
@@ -995,8 +995,8 @@ export class Input extends View {
     return nextWordOffset
   }
 
-  #receiveKeyLeftArrow({shift, meta}: KeyEvent) {
-    if (meta) {
+  #receiveKeyLeftArrow({shift, alt}: KeyEvent) {
+    if (alt) {
       const prevWordOffset = this.#prevWordOffset(shift)
       if (shift) {
         this.#cursor.end = prevWordOffset
@@ -1015,8 +1015,8 @@ export class Input extends View {
     }
   }
 
-  #receiveKeyRightArrow({shift, meta}: KeyEvent) {
-    if (meta) {
+  #receiveKeyRightArrow({shift, alt}: KeyEvent) {
+    if (alt) {
       const nextWordOffset = this.#nextWordOffset(shift)
       if (shift) {
         this.#cursor.end = nextWordOffset
@@ -1274,21 +1274,21 @@ const ACCENTS: {[T in string]?: {[U in string]?: string}} = {
   },
 }
 const ACCENT_KEYS: {[T in string]: string} = {
-  'M-a': '‵',
-  'M-c': '¸',
-  'M-e': '´',
-  'M-i': 'ˆ',
-  'M-n': '˜',
-  'M-o': '¯',
-  'M-s': '¸',
-  'M-u': '¨',
+  'A-a': '‵',
+  'A-c': '¸',
+  'A-e': '´',
+  'A-i': 'ˆ',
+  'A-n': '˜',
+  'A-o': '¯',
+  'A-s': '¸',
+  'A-u': '¨',
 }
 function accentChar(accent: string, char: string) {
   return ACCENTS[accent]?.[char] ?? char
 }
 
 function isKeyAccent(event: KeyEvent) {
-  if (!event.meta || event.ctrl) {
+  if (!event.alt || event.ctrl) {
     return false
   }
 

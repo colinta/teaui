@@ -68,6 +68,7 @@ export class MouseManager {
           name: 'mouse.move.in',
           button: 'unknown',
           ctrl: false,
+          alt: false,
           meta: false,
           shift: false,
           ...this.#mousePosition,

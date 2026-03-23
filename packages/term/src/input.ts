@@ -24,6 +24,10 @@ function keyEvent(
   }
 }
 
+function isUpperAlpha(codePoint: number): boolean {
+  return codePoint >= 0x41 && codePoint <= 0x5a
+}
+
 // Modifier decoding for CSI sequences: parameter = 1 + bitmask
 // bit 0 = shift, bit 1 = alt, bit 2 = ctrl, bit 3 = meta
 function decodeMods(param: number): {
@@ -55,6 +59,10 @@ const tildeKeyMap: Record<number, string> = {
   3: 'delete',
   5: 'pageup',
   6: 'pagedown',
+  11: 'f1',
+  12: 'f2',
+  13: 'f3',
+  14: 'f4',
   15: 'f5',
   17: 'f6',
   18: 'f7',
@@ -74,7 +82,18 @@ const letterKeyMap: Record<string, string> = {
   F: 'end',
 }
 
-const ssFunctionKeys: Record<string, string> = {
+const ss3KeyMap: Record<string, string> = {
+  P: 'f1',
+  Q: 'f2',
+  R: 'f3',
+  S: 'f4',
+  H: 'home',
+  F: 'end',
+}
+
+// Only F1-F4 for CSI modified function key sequences (CSI 1;mod P/Q/R/S).
+// Home/End use letterKeyMap via the CSI letter-key path instead.
+const csiFunctionKeys: Record<string, string> = {
   P: 'f1',
   Q: 'f2',
   R: 'f3',
@@ -216,10 +235,10 @@ export function parseInput(data: Buffer): InputEvent[] {
           }
 
           // Modified function keys: CSI 1;mod P/Q/R/S (Shift/Ctrl/Alt + F1-F4)
-          if (ssFunctionKeys[final] && params && params.includes(';')) {
+          if (csiFunctionKeys[final] && params && params.includes(';')) {
             const modParts = params.split(';')
             const mod = parseInt(modParts[1], 10)
-            events.push(keyEvent(ssFunctionKeys[final], decodeMods(mod)))
+            events.push(keyEvent(csiFunctionKeys[final], decodeMods(mod)))
             continue
           }
 
@@ -263,8 +282,8 @@ export function parseInput(data: Buffer): InputEvent[] {
 
       // SS3 (ESC O) — F1-F4
       if (i + 1 < str.length && str[i + 1] === 'O') {
-        if (i + 2 < str.length && ssFunctionKeys[str[i + 2]]) {
-          events.push(keyEvent(ssFunctionKeys[str[i + 2]]))
+        if (i + 2 < str.length && ss3KeyMap[str[i + 2]]) {
+          events.push(keyEvent(ss3KeyMap[str[i + 2]]))
           i += 3
           continue
         }
@@ -292,7 +311,12 @@ export function parseInput(data: Buffer): InputEvent[] {
       if (i + 1 < str.length && str.charCodeAt(i + 1) >= 0x20) {
         const altCodePoint = str.codePointAt(i + 1)!
         const altChar = String.fromCodePoint(altCodePoint)
-        events.push(keyEvent(altChar, {alt: true}))
+        events.push(
+          keyEvent(altChar, {
+            alt: true,
+            shift: isUpperAlpha(altCodePoint),
+          }),
+        )
         i += 1 + altChar.length
         continue
       }
@@ -339,7 +363,7 @@ export function parseInput(data: Buffer): InputEvent[] {
     // Regular printable character (may be multi-code-unit, e.g. emoji)
     const codePoint = str.codePointAt(i)!
     const char = String.fromCodePoint(codePoint)
-    events.push(keyEvent(char))
+    events.push(keyEvent(char, isUpperAlpha(codePoint) ? {shift: true} : {}))
     i += char.length
   }
 

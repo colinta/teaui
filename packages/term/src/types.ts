@@ -87,9 +87,102 @@ export interface FullscreenOptions {
 
 // --- Input Events ---
 
+export type NamedKey =
+  | 'backspace'
+  | 'delete'
+  | 'down'
+  | 'end'
+  | 'escape'
+  | 'f1'
+  | 'f2'
+  | 'f3'
+  | 'f4'
+  | 'f5'
+  | 'f6'
+  | 'f7'
+  | 'f8'
+  | 'f9'
+  | 'f10'
+  | 'f11'
+  | 'f12'
+  | 'home'
+  | 'insert'
+  | 'left'
+  | 'pagedown'
+  | 'pageup'
+  | 'return'
+  | 'right'
+  | 'space'
+  | 'tab'
+  | 'up'
+
+export type Letter =
+  | 'a'
+  | 'b'
+  | 'c'
+  | 'd'
+  | 'e'
+  | 'f'
+  | 'g'
+  | 'h'
+  | 'i'
+  | 'j'
+  | 'k'
+  | 'l'
+  | 'm'
+  | 'n'
+  | 'o'
+  | 'p'
+  | 'q'
+  | 'r'
+  | 's'
+  | 't'
+  | 'u'
+  | 'v'
+  | 'w'
+  | 'x'
+  | 'y'
+  | 'z'
+  | 'A'
+  | 'B'
+  | 'C'
+  | 'D'
+  | 'E'
+  | 'F'
+  | 'G'
+  | 'H'
+  | 'I'
+  | 'J'
+  | 'K'
+  | 'L'
+  | 'M'
+  | 'N'
+  | 'O'
+  | 'P'
+  | 'Q'
+  | 'R'
+  | 'S'
+  | 'T'
+  | 'U'
+  | 'V'
+  | 'W'
+  | 'X'
+  | 'Y'
+  | 'Z'
+
+export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+
+export type Printable = Letter | Digit
+
+/**
+ * Key name: a named special key, a printable character, or any other Unicode
+ * character (emoji, symbols, etc.) as a string fallback.
+ */
+export type KeyName = NamedKey | Printable | (string & {})
+
 export interface KeyEvent {
   type: 'key'
-  key: string
+  key: KeyName
   ctrl: boolean
   alt: boolean
   shift: boolean

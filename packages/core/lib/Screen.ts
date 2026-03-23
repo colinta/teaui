@@ -469,24 +469,26 @@ function matchKeyPattern(pattern: string, event: KeyEvent): boolean {
  * these configured in some .rc file.
  */
 function translateKeyEvent(event: KeyEvent): KeyEvent {
-  if (event.full === 'M-b') {
+  if (event.full === 'A-b') {
     return {
       type: 'key',
-      full: 'M-left',
+      full: 'A-left',
       name: 'left',
       ctrl: false,
-      meta: true,
+      alt: true,
+      meta: false,
       shift: false,
       char: '1;9D',
     }
   }
-  if (event.full === 'M-f') {
+  if (event.full === 'A-f') {
     return {
       type: 'key',
-      full: 'M-right',
+      full: 'A-right',
       name: 'right',
       ctrl: false,
-      meta: true,
+      alt: true,
+      meta: false,
       shift: false,
       char: '1;9C',
     }

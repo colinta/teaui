@@ -18,6 +18,7 @@ export * from './ansi.js'
 export * from './events/mouse.js'
 export {
   type KeyEvent,
+  type FullKeyName,
   type HotKeyDef,
   type HotKey as HotKeyProp,
   toHotKeyDef,
