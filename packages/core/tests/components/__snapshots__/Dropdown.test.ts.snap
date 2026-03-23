@@ -2,7 +2,7 @@
 
 exports[`Dropdown > many choices > renders a long list of choices 1`] = `
 " <select>                  ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │ ◯ Option 1               │█│
 │ ◯ Option 2               │█│
 │ ◯ Option 3               │█│
@@ -13,66 +13,66 @@ exports[`Dropdown > many choices > renders a long list of choices 1`] = `
 │ ◯ Option 8               │█│
 │ ◯ Option 9               │█│
 │ ◯ Option 10              │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > multiple selection > renders closed with multiple selections 1`] = `" Apple, Cherry             ▏▽"`;
 
 exports[`Dropdown > multiple selection > shows choices with checkboxes on click 1`] = `
 " Apple                     ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │🞕 Select all                │
 │ ☑ Apple                  │█│
 │ ☐ Banana                 │█│
 │ ☐ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > multiple selection > toggles selection without closing > after open 1`] = `
 " Apple                     ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │🞕 Select all                │
 │ ☑ Apple                  │█│
 │ ☐ Banana                 │█│
 │ ☐ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > multiple selection > toggles selection without closing > after toggle banana 1`] = `
 " Apple, Banana             ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │🞐 Select all                │
 │ ☑ Apple                  │█│
 │ ☑ Banana                 │█│
 │ ☐ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > opening dropdown > shows choices on click 1`] = `
 " <select>                  ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │ ◯ Apple                  │█│
 │ ◯ Banana                 │█│
 │ ◯ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > opening dropdown > shows choices with selected item highlighted 1`] = `
 " Cherry                    ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │ ◯ Apple                  │█│
 │ ◯ Banana                 │█│
 │ ⦿ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > opening dropdown > shows choices with title 1`] = `
 " Fruit                     ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │ ◯ Apple                  │█│
 │ ◯ Banana                 │█│
 │ ◯ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > rendering > renders closed with a selected value 1`] = `" Banana                    ▏▽"`;
@@ -85,11 +85,11 @@ exports[`Dropdown > rendering > renders closed with title when nothing selected 
 
 exports[`Dropdown > selection > selects an item on click and closes > after open 1`] = `
 " <select>                  ▏◇
-╭────────────────────────────╮
+╭──────────────────────────┬─╮
 │ ◯ Apple                  │█│
 │ ◯ Banana                 │█│
 │ ◯ Cherry                 │█│
-╰────────────────────────────╯"
+╰──────────────────────────┴─╯"
 `;
 
 exports[`Dropdown > selection > selects an item on click and closes > after select 1`] = `" Banana                    ▏▽"`;
