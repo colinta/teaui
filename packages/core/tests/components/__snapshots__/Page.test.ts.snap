@@ -56,7 +56,14 @@ exports[`Page > does not navigate past last page 1`] = `
            ○  ○  ●"
 `;
 
-exports[`Page > mouse scroll accumulates to threshold of 5 1`] = `
+exports[`Page > heading-based pages without headings omit title row 1`] = `
+"Page one
+
+
+        ●  ○"
+`;
+
+exports[`Page > mouse scroll accumulates to threshold of 2 1`] = `
 "Welcome page content
 
 
@@ -64,7 +71,23 @@ exports[`Page > mouse scroll accumulates to threshold of 5 1`] = `
            ●  ○  ○"
 `;
 
-exports[`Page > mouse scroll accumulates to threshold of 5 2`] = `
+exports[`Page > mouse scroll accumulates to threshold of 2 2`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > mouse scroll resets after timeout 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > mouse scroll up navigates backward 1`] = `
 "Settings panel
 
 
@@ -72,12 +95,12 @@ exports[`Page > mouse scroll accumulates to threshold of 5 2`] = `
            ○  ●  ○"
 `;
 
-exports[`Page > mouse scroll up navigates backward 1`] = `
-"Welcome page content
+exports[`Page > navigates heading-based pages via PageDown 1`] = `
+"Settings panel
 
 
-           Welcome
-           ●  ○  ○"
+           Settings
+           ○  ●  ○"
 `;
 
 exports[`Page > navigates to first page via Home 1`] = `
@@ -126,6 +149,14 @@ exports[`Page > navigates to previous page via PageUp 2`] = `
 
            Settings
            ○  ●  ○"
+`;
+
+exports[`Page > renders child views with heading prop (no Section wrapper) 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
 `;
 
 exports[`Page > renders first page with dot indicators and title 1`] = `

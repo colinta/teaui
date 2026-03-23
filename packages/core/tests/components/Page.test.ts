@@ -19,6 +19,14 @@ function makePagesNoTitles() {
   ])
 }
 
+function makePagesWithHeadings() {
+  const page = new Page()
+  page.add(new Text({text: 'Welcome page content', heading: 'Welcome'}))
+  page.add(new Text({text: 'Settings panel', heading: 'Settings'}))
+  page.add(new Text({text: 'Help documentation', heading: 'Help'}))
+  return page
+}
+
 describe('Page', () => {
   it('renders first page with dot indicators and title', () => {
     const page = makePages()
@@ -106,18 +114,30 @@ describe('Page', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
-  it('mouse scroll accumulates to threshold of 5', () => {
+  it('mouse scroll accumulates to threshold of 2', () => {
     const page = makePages()
     const t = testRender(page, {width: 30, height: 5})
 
-    // 4 scrolls should not change page
-    for (let i = 0; i < 4; i++) {
-      t.sendMouse('mouse.wheel.down', {x: 15, y: 2})
-    }
+    // 1 scroll should not change page
+    t.sendMouse('mouse.wheel.down', {x: 15, y: 2})
     t.tick(5000)
     expect(t.terminal.textContent()).toMatchSnapshot()
 
-    // 5th scroll should trigger navigation
+    // 2nd scroll should trigger navigation
+    t.sendMouse('mouse.wheel.down', {x: 15, y: 2})
+    t.tick(5000)
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
+  it('mouse scroll resets after timeout', () => {
+    const page = makePages()
+    const t = testRender(page, {width: 30, height: 5})
+
+    // 1 scroll, then wait for timeout to expire
+    t.sendMouse('mouse.wheel.down', {x: 15, y: 2})
+    t.tick(500) // exceeds SCROLL_TIMEOUT (300ms)
+
+    // 1 more scroll should not trigger (accumulator was reset)
     t.sendMouse('mouse.wheel.down', {x: 15, y: 2})
     t.tick(5000)
     expect(t.terminal.textContent()).toMatchSnapshot()
@@ -129,7 +149,7 @@ describe('Page', () => {
     const t = testRender(page, {width: 30, height: 5})
     t.tick(5000)
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 2; i++) {
       t.sendMouse('mouse.wheel.up', {x: 15, y: 2})
     }
     t.tick(5000)
@@ -157,6 +177,29 @@ describe('Page', () => {
 
   it('single section renders without dots navigation issues', () => {
     const page = Page.create([['Only Page', new Text({text: 'Solo content'})]])
+    const t = testRender(page, {width: 20, height: 4})
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
+  it('renders child views with heading prop (no Section wrapper)', () => {
+    const page = makePagesWithHeadings()
+    const t = testRender(page, {width: 30, height: 5})
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
+  it('navigates heading-based pages via PageDown', () => {
+    const page = makePagesWithHeadings()
+    const t = testRender(page, {width: 30, height: 5})
+
+    t.sendKey('pagedown')
+    t.tick(5000)
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
+  it('heading-based pages without headings omit title row', () => {
+    const page = new Page()
+    page.add(new Text({text: 'Page one'}))
+    page.add(new Text({text: 'Page two'}))
     const t = testRender(page, {width: 20, height: 4})
     expect(t.terminal.textContent()).toMatchSnapshot()
   })

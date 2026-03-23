@@ -36,8 +36,10 @@ export class Page extends Container {
   #outgoingIndex = -1 // section index of the outgoing page
   #incomingIndex = -1 // section index of the incoming page
 
-  // Mouse scroll accumulator
-  #scrollAccumulator = 0
+  // Mouse scroll state
+  #scrollDx = 0
+  #scrollTimeout = 0
+  #disableScrollTimeout = 0
 
   // Dot layout (computed during render, used for mouse hit-testing)
   #dotRects: Rect[] = []
@@ -167,24 +169,33 @@ export class Page extends Container {
     super.receiveMouse(event, system)
 
     if (isMouseWheel(event)) {
+      if (this.#disableScrollTimeout > 0) return
+
       if (
         event.name === 'mouse.wheel.up' ||
         event.name === 'mouse.wheel.left'
       ) {
-        this.#scrollAccumulator -= 1
+        this.#scrollDx -= 1
       } else if (
         event.name === 'mouse.wheel.down' ||
         event.name === 'mouse.wheel.right'
       ) {
-        this.#scrollAccumulator += 1
+        this.#scrollDx += 1
       }
 
-      if (this.#scrollAccumulator <= -SCROLL_THRESHOLD) {
-        this.#scrollAccumulator = 0
+      if (this.#scrollDx <= -SCROLL_THRESHOLD) {
+        this.#scrollDx = 0
+        this.#scrollTimeout = 0
+        this.#disableScrollTimeout = DISABLE_TIMEOUT
         this.#navigateTo(this.#activeIndex - 1)
-      } else if (this.#scrollAccumulator >= SCROLL_THRESHOLD) {
-        this.#scrollAccumulator = 0
+      } else if (this.#scrollDx >= SCROLL_THRESHOLD) {
+        this.#scrollDx = 0
+        this.#scrollTimeout = 0
+        this.#disableScrollTimeout = DISABLE_TIMEOUT
         this.#navigateTo(this.#activeIndex + 1)
+      } else {
+        this.#scrollTimeout = SCROLL_TIMEOUT
+        this.invalidateSize()
       }
       return
     }
@@ -214,7 +225,28 @@ export class Page extends Container {
   }
 
   receiveTick(dt: number): boolean {
-    if (!this.#animating) return false
+    let needsTick = false
+
+    if (this.#disableScrollTimeout > 0) {
+      this.#disableScrollTimeout -= dt
+      if (this.#disableScrollTimeout <= 0) {
+        this.#disableScrollTimeout = 0
+      } else {
+        needsTick = true
+      }
+    }
+
+    if (this.#scrollDx !== 0) {
+      this.#scrollTimeout -= dt
+      if (this.#scrollTimeout <= 0) {
+        this.#scrollDx = 0
+        this.#scrollTimeout = 0
+      } else {
+        needsTick = true
+      }
+    }
+
+    if (!this.#animating) return needsTick
 
     this.#animationElapsed += dt
 
@@ -238,7 +270,11 @@ export class Page extends Container {
     viewport.registerFocus()
     viewport.registerMouse(['mouse.button.left', 'mouse.move', 'mouse.wheel'])
 
-    if (this.#animating) {
+    if (
+      this.#animating ||
+      this.#scrollDx !== 0 ||
+      this.#disableScrollTimeout > 0
+    ) {
       viewport.registerTick()
     }
 
@@ -342,6 +378,9 @@ export class Page extends Container {
       const isHover = this.#hoveredDot === i
       const style = this.#dotStyle(i === this.#activeIndex, isHover)
 
+      if (isHover) {
+        viewport.paint(style, dotRect)
+      }
       viewport.write(dotChar, new Point(dotX + 1, dotsY), style)
     }
   }
@@ -351,11 +390,12 @@ export class Page extends Container {
   }
 
   #dotStyle(isActive: boolean, isHover: boolean): Style {
+    if (isHover) {
+      const {foreground, background} = this.theme.ui({isHover: true})
+      return new Style({bold: true, foreground, background})
+    }
     const background = this.theme.ui().background
     if (isActive) {
-      return new Style({bold: true, background})
-    }
-    if (isHover) {
       return new Style({bold: true, background})
     }
     return new Style({dim: true, background})
@@ -363,7 +403,7 @@ export class Page extends Container {
 }
 
 class Section extends Container {
-  #title: string
+  #title: string | undefined
 
   static create(
     title: string,
@@ -375,7 +415,7 @@ class Section extends Container {
 
   constructor({title, ...props}: SectionProps) {
     super(props)
-    this.#title = title ?? ''
+    this.#title = title
     define(this, 'title', {enumerable: true})
   }
 
@@ -400,7 +440,9 @@ Page.Section = Section
 const DOT_ACTIVE = '●'
 const DOT_INACTIVE = '○'
 const DOT_WIDTH = 3
-const SCROLL_THRESHOLD = 5
+const SCROLL_THRESHOLD = 3
+const SCROLL_TIMEOUT = 3000 // ms to accrue scroll events before resetting
+const DISABLE_TIMEOUT = 300 // ms to ignore scroll events after a page change
 const ANIMATION_DURATION = 400 // ms
 
 function easeInOut(t: number): number {
