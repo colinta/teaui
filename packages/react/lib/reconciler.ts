@@ -42,6 +42,7 @@ import {
   Space,
   Spinner,
   Logo,
+  Page,
   ZStack,
   Stack,
   Table,
@@ -231,6 +232,12 @@ function createInstance(type: string, props: Props): any {
     case 'tabs-section':
     case 'tui-tabs-section':
       return new Tabs.Section(props as any)
+    case 'page':
+    case 'tui-page':
+      return new Page(props as any)
+    case 'page-section':
+    case 'tui-page-section':
+      return new Page.Section(props as any)
 
     default:
       throw new Error(`unknown component "${type}"`)

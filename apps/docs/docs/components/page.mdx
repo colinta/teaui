@@ -1,0 +1,46 @@
+---
+sidebar_position: 5
+title: Page
+---
+
+import Example from '@site/src/components/Example'
+
+# Page
+
+A paginated container that shows one section at a time with dot indicators at the bottom. Navigating between pages triggers an animated slide transition.
+
+Sections can have optional titles — when any section has a title, it is displayed above the dot indicators and updates on hover.
+
+<Example name="page" title="Page" />
+
+## Props
+
+### Page
+
+| Prop          | Type                      | Default | Description                         |
+| ------------- | ------------------------- | ------- | ----------------------------------- |
+| `activeIndex` | `number`                  | `0`     | Currently active page index         |
+| `onChange`    | `(index: number) => void` | —       | Called when the active page changes |
+| `children`    | `Page.Section[]`          | —       | Section children                    |
+
+### Page.Section
+
+| Prop       | Type        | Default | Description                                        |
+| ---------- | ----------- | ------- | -------------------------------------------------- |
+| `title`    | `string`    | `''`    | Section title shown above dots when active/hovered |
+| `children` | `ReactNode` | —       | Section content                                    |
+
+## Keyboard
+
+| Key        | Action        |
+| ---------- | ------------- |
+| `PageDown` | Next page     |
+| `PageUp`   | Previous page |
+| `Home`     | First page    |
+| `End`      | Last page     |
+
+## Mouse
+
+- **Click dots** to jump to a page (each dot has a 3-character hit area)
+- **Scroll wheel** to navigate between pages (threshold: 5 scroll ticks)
+- **Hover dots** to preview a section's title

@@ -1,0 +1,151 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Page > animates page transition 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > animates page transition 2`] = `
+"Welcome page content
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > animates page transition 3`] = `
+"ome page content          Sett
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > animates page transition 4`] = `
+"Settings panel
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > clicking dot navigates to that page 1`] = `
+"Settings panel
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > does not navigate past first page 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > does not navigate past last page 1`] = `
+"Help documentation
+
+
+             Help
+           ○  ○  ●"
+`;
+
+exports[`Page > mouse scroll accumulates to threshold of 5 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > mouse scroll accumulates to threshold of 5 2`] = `
+"Settings panel
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > mouse scroll up navigates backward 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > navigates to first page via Home 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > navigates to last page via End 1`] = `
+"Help documentation
+
+
+             Help
+           ○  ○  ●"
+`;
+
+exports[`Page > navigates to next page via PageDown 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > navigates to next page via PageDown 2`] = `
+"Settings panel
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > navigates to previous page via PageUp 1`] = `
+"Help documentation
+
+
+             Help
+           ○  ○  ●"
+`;
+
+exports[`Page > navigates to previous page via PageUp 2`] = `
+"Settings panel
+
+
+           Settings
+           ○  ●  ○"
+`;
+
+exports[`Page > renders first page with dot indicators and title 1`] = `
+"Welcome page content
+
+
+           Welcome
+           ●  ○  ○"
+`;
+
+exports[`Page > renders without titles 1`] = `
+"Page one
+
+
+      ●  ○  ○"
+`;
+
+exports[`Page > single section renders without dots navigation issues 1`] = `
+"Solo content
+
+     Only Page
+         ●"
+`;

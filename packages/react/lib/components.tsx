@@ -35,6 +35,7 @@ import type {
   Spinner as WrSpinner,
   Table as WrTable,
   Tree as WrTree,
+  Page as WrPage,
   Tabs as WrTabs,
   ToggleGroup as WrToggleGroup,
   Logo as WrLogo,
@@ -123,6 +124,8 @@ type DrawerProps = TUIContainer<
   typeof WrDrawer,
   'content' | 'drawer' | 'children'
 >
+type PageProps = TUIContainer<typeof WrPage>
+type PageSectionProps = TUIContainer<typeof WrPage.Section>
 type TabsProps = TUIContainer<typeof WrTabs>
 type TabsSectionProps = TUIContainer<typeof WrTabs.Section>
 
@@ -186,6 +189,11 @@ declare module 'react' {
       >
       'tui-drawer': WithRef<DrawerProps, WrDrawer>
 
+      'tui-page': WithRef<PageProps, WrPage>
+      'tui-page-section': WithRef<
+        PageSectionProps,
+        InstanceType<typeof WrPage.Section>
+      >
       'tui-tabs': WithRef<TabsProps, WrTabs>
       'tui-tabs-section': WithRef<
         TabsSectionProps,
@@ -848,6 +856,33 @@ Accordion.Section = forwardRef<
     <tui-accordion-section ref={ref} {...props}>
       {children}
     </tui-accordion-section>
+  )
+})
+
+interface Page {
+  (reactProps: PageProps): JSX.Element
+  Section: React.ForwardRefExoticComponent<
+    PageSectionProps & React.RefAttributes<InstanceType<typeof WrPage.Section>>
+  >
+}
+export const Page: Page = forwardRef<WrPage, PageProps>(function Page(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-page ref={ref} {...props}>
+      {children}
+    </tui-page>
+  )
+}) as unknown as Page
+Page.Section = forwardRef<
+  InstanceType<typeof WrPage.Section>,
+  PageSectionProps
+>(function PageSection({children, ...props}, ref) {
+  return (
+    <tui-page-section ref={ref} {...props}>
+      {children}
+    </tui-page-section>
   )
 })
 
