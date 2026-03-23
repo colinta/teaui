@@ -428,35 +428,11 @@ export const Modal = forwardRef<WrModal, ModalProps>(function Modal(
 /// "Simple" containers
 //
 
-interface AlertReactProps extends AlertProps {
-  visible?: boolean
-  onDismiss?: () => void
-  dim?: boolean
-  dismissOnEsc?: boolean
-  dismissOnClick?: boolean
-}
-
 export function Alert({
-  visible,
-  onDismiss,
-  dim = true,
-  dismissOnEsc = true,
-  dismissOnClick = true,
   children,
   ...props
-}: AlertReactProps): JSX.Element | null {
-  if (!visible) return null
-
-  return (
-    <Modal
-      dim={dim}
-      dismissOnEsc={dismissOnEsc}
-      dismissOnClick={dismissOnClick}
-      onDismiss={onDismiss}
-    >
-      <tui-alert {...props}>{children}</tui-alert>
-    </Modal>
-  )
+}: AlertProps & {children?: React.ReactNode}): JSX.Element {
+  return <tui-alert {...props}>{children}</tui-alert>
 }
 
 export const Callout = forwardRef<WrCallout, CalloutProps>(function Callout(

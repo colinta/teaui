@@ -103,6 +103,31 @@ export class Buffer implements Terminal {
   }
 
   /**
+   * Replaces the style of an existing cell without changing its character.
+   * If no cell exists at (x, y), writes a space with the given style.
+   */
+  restyleChar(x: number, y: number, style: Style) {
+    x = ~~x
+    y = ~~y
+    if (x < 0 || x >= this.size.width || y < 0 || y >= this.size.height) {
+      return
+    }
+
+    let line = this.#canvas.get(y)
+    if (!line) {
+      line = new Map()
+      this.#canvas.set(y, line)
+    }
+
+    const existing = line.get(x)
+    if (existing) {
+      line.set(x, {...existing, style})
+    } else {
+      line.set(x, {char: ' ', width: 1, style})
+    }
+  }
+
+  /**
    * For ANSI sequences that aren't related to any specific character.
    */
   writeMeta(str: string) {

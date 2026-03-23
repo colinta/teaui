@@ -152,7 +152,7 @@ export class Modal extends Container {
           foreground: this.theme.dimTextColor,
           background: this.theme.dimBackgroundColor,
         })
-      viewport.paint(style)
+      viewport.restyle(style)
     }
 
     if (this.#dismissOnClick) {

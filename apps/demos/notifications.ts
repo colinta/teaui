@@ -2,7 +2,7 @@ import {
   Alert,
   Button,
   Callout,
-  Rect,
+  Scrollable,
   Space,
   Stack,
   Style,
@@ -49,98 +49,100 @@ const callouts = Stack.down({
   ],
 })
 
-const showAlertButton = new Button({
-  title: 'Show Alert',
-  theme: 'cancel',
-  height: 3,
-  onClick() {
-    const {modal} = Alert.modal({
-      title: 'Confirm Delete',
-      purpose: 'cancel',
-      dismissOnEsc: true,
-      onDismiss() {
-        console.log('Alert dismissed')
-      },
-      children: [
-        new Text({
-          text: 'Are you sure you want to delete this item?',
-          wrap: true,
-        }),
-        new Space({height: 1}),
-        Stack.right({
-          gap: 1,
-          children: [
-            new Button({
-              title: 'Delete',
-              theme: 'cancel',
-              onClick() {
-                console.log('Deleted!')
-              },
-            }),
-            new Button({
-              title: 'Cancel',
-              theme: 'plain',
-              onClick() {
-                console.log('Cancelled')
-              },
-            }),
-          ],
-        }),
-      ],
-    })
-    showAlertButton.screen?.requestModal(modal, Rect.zero)
+const deleteAlert = new Alert({
+  title: 'Confirm Delete',
+  purpose: 'cancel',
+  dismissOnEsc: true,
+  onDismiss() {
+    console.log('Alert dismissed')
   },
-})
-
-const showInfoButton = new Button({
-  title: 'Show Info Alert',
-  theme: 'primary',
-  height: 3,
-  onClick() {
-    const {modal} = Alert.modal({
-      title: 'Information',
-      purpose: 'primary',
-      dismissOnEsc: true,
-      onDismiss() {
-        console.log('Info dismissed')
-      },
+  children: [
+    new Text({
+      text: 'Are you sure you want to delete this item?',
+      wrap: true,
+    }),
+    new Space({height: 1}),
+    Stack.right({
+      gap: 1,
       children: [
-        new Text({
-          text: 'The operation completed successfully.',
-          wrap: true,
-        }),
-        new Space({height: 1}),
         new Button({
-          title: 'OK',
-          theme: 'primary',
+          title: 'Delete',
+          theme: 'cancel',
           onClick() {
-            console.log('OK clicked')
+            console.log('Deleted!')
+            deleteAlert.dismiss()
+          },
+        }),
+        new Button({
+          title: 'Cancel',
+          theme: 'plain',
+          onClick() {
+            deleteAlert.dismiss()
           },
         }),
       ],
-    })
-    showInfoButton.screen?.requestModal(modal, Rect.zero)
-  },
+    }),
+  ],
 })
 
-demo(
-  Stack.down({
-    gap: 1,
-    children: [
-      new Text({
-        text: 'Callout Examples',
-        style: new Style({bold: true}),
-      }),
-      callouts,
-      ['flex1', new Space()],
-      new Text({
-        text: 'Alert Examples (click to show modal)',
-        style: new Style({bold: true}),
-      }),
-      Stack.right({
-        gap: 1,
-        children: [showAlertButton, showInfoButton],
-      }),
-    ],
-  }),
-)
+const infoAlert = new Alert({
+  title: 'Information',
+  purpose: 'primary',
+  dismissOnEsc: true,
+  onDismiss() {
+    console.log('Info dismissed')
+  },
+  children: [
+    new Text({
+      text: 'The operation completed successfully.',
+      wrap: true,
+    }),
+    new Space({height: 1}),
+    new Button({
+      title: 'OK',
+      theme: 'primary',
+      onClick() {
+        infoAlert.dismiss()
+      },
+    }),
+  ],
+})
+
+const layout = new Scrollable({
+  gap: 1,
+  children: [
+    new Text({
+      text: 'Alert Examples (click to show modal)',
+      style: new Style({bold: true}),
+    }),
+    Stack.right({
+      gap: 1,
+      children: [
+        new Button({
+          title: 'Show Alert',
+          theme: 'cancel',
+          height: 3,
+          onClick() {
+            deleteAlert.presentFrom(layout)
+          },
+        }),
+        new Button({
+          title: 'Show Info Alert',
+          theme: 'primary',
+          height: 3,
+          onClick() {
+            infoAlert.presentFrom(layout)
+          },
+        }),
+      ],
+    }),
+    new Text({
+      text: 'Callout Examples',
+      style: new Style({bold: true}),
+    }),
+    callouts,
+    new Space({flex: 1}),
+  ],
+})
+
+demo(layout)

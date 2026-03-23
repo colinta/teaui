@@ -1,46 +1,120 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Alert > renders with direction right 1`] = `
+exports[`Alert > dismiss > auto-dismisses when owner is removed from tree 1`] = `
 "
- ╭────────────────╮
- │LeftRight       │
- ╰────────────────╯"
+
+
+ ╭────────────────────────────────────╮
+ │Test                                │
+ │────────────────────────────────────│
+ │Content                             │
+ ╰────────────────────────────────────╯"
 `;
 
-exports[`Alert > renders with multiple children 1`] = `
+exports[`Alert > dismiss > auto-dismisses when owner is removed from tree 2`] = `""`;
+
+exports[`Alert > dismiss > removes alert from owner on dismiss 1`] = `
 "
- ╭──────────────────────────╮
- │Confirm                   │
- │──────────────────────────│
- │Are you sure?             │
- │                          │
- │                          │
- ╰──────────────────────────╯"
+
+
+ ╭────────────────────────────────────╮
+ │Test                                │
+ │────────────────────────────────────│
+ │Content                             │
+ ╰────────────────────────────────────╯"
 `;
 
-exports[`Alert > renders with purpose 1`] = `
+exports[`Alert > dismiss > removes alert from owner on dismiss 2`] = `""`;
+
+exports[`Alert > modal props > can re-present after dismiss 1`] = `
 "
- ╭──────────────────────────╮
- │Error                     │
- │──────────────────────────│
- │Something went wrong      │
- │                          │
- ╰──────────────────────────╯"
+
+
+ ╭────────────────────────────────────╮
+ │Reusable                            │
+ │────────────────────────────────────│
+ │Hello again                         │
+ ╰────────────────────────────────────╯"
 `;
 
-exports[`Alert > renders with title 1`] = `
+exports[`Alert > modal props > can re-present after dismiss 2`] = `""`;
+
+exports[`Alert > modal props > can re-present after dismiss 3`] = `
 "
- ╭──────────────────────────╮
- │Warning                   │
- │──────────────────────────│
- │Something happened        │
- │                          │
- ╰──────────────────────────╯"
+
+
+ ╭────────────────────────────────────╮
+ │Reusable                            │
+ │────────────────────────────────────│
+ │Hello again                         │
+ ╰────────────────────────────────────╯"
 `;
 
-exports[`Alert > renders without title 1`] = `
+exports[`Alert > presentFrom > presents alert with direction right 1`] = `
 "
- ╭────────────────────────╮
- │A simple message        │
- ╰────────────────────────╯"
+
+         ╭─────────╮
+         │LeftRight│
+         ╰─────────╯"
+`;
+
+exports[`Alert > presentFrom > presents alert with multiple children 1`] = `
+"
+
+
+ ╭────────────────────────────────────╮
+ │Confirm                             │
+ │────────────────────────────────────│
+ │Are you sure?                       │
+ │⟦ Yes ⟧ [ No ]                      │
+ ╰────────────────────────────────────╯"
+`;
+
+exports[`Alert > presentFrom > presents alert with purpose 1`] = `
+"
+
+
+ ╭────────────────────────────────────╮
+ │Error                               │
+ │────────────────────────────────────│
+ │Something went wrong                │
+ ╰────────────────────────────────────╯"
+`;
+
+exports[`Alert > presentFrom > presents alert with title in a modal 1`] = `""`;
+
+exports[`Alert > presentFrom > presents alert with title in a modal 2`] = `
+"
+
+
+ ╭────────────────────────────────────╮
+ │Warning                             │
+ │────────────────────────────────────│
+ │Something happened                  │
+ ╰────────────────────────────────────╯"
+`;
+
+exports[`Alert > presentFrom > presents alert without title 1`] = `
+"
+
+
+           ╭────────────────╮
+           │A simple message│
+           ╰────────────────╯"
+`;
+
+exports[`Alert > presentFrom with existing content > presents over existing views 1`] = `
+"Background content
+              ⟦ Click me ⟧"
+`;
+
+exports[`Alert > presentFrom with existing content > presents over existing views 2`] = `
+"Background content
+              ⟦ Click me ⟧
+
+ ╭────────────────────────────────────╮
+ │Alert!                              │
+ │────────────────────────────────────│
+ │Important message                   │
+ ╰────────────────────────────────────╯"
 `;

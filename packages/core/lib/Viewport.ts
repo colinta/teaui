@@ -177,6 +177,28 @@ export class Viewport {
   }
 
   /**
+   * Replaces the style of existing cells without changing their text content.
+   * Useful for dimming background content (e.g. modal overlays).
+   * If no region is provided, the entire visibleRect is restyled.
+   */
+  restyle(style: Style, region?: Rect) {
+    region ??= this.visibleRect
+    const minX = Math.max(region.minX(), this.#visibleRect.minX())
+    const maxX = Math.min(region.maxX(), this.#visibleRect.maxX())
+    const minY = Math.max(region.minY(), this.#visibleRect.minY())
+    const maxY = Math.min(region.maxY(), this.#visibleRect.maxY())
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
+        this.#terminal.restyleChar(
+          x + this.#offset.x,
+          y + this.#offset.y,
+          style,
+        )
+      }
+    }
+  }
+
+  /**
    * Does not support newlines (no default wrapping behavior),
    * always prints left-to-right.
    */

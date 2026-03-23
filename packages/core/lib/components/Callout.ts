@@ -7,15 +7,10 @@ import {type Props as NotificationProps, Notification} from './Notification.js'
 export interface Props extends NotificationProps {}
 
 export class Callout extends Notification {
-  #backgroundStyle: Style
-  #barStyle: Style
-
   constructor(props: Props = {}) {
     super(props)
 
-    this.#backgroundStyle = this.#makeBackgroundStyle()
-    this.#barStyle = this.#makeBarStyle()
-    this.contentStack.theme = this.#makeChildTheme()
+    this.contentStack.theme = this.#childTheme()
 
     this.addDirect(this.contentStack)
   }
@@ -23,19 +18,27 @@ export class Callout extends Notification {
   update(props: Props) {
     super.update(props)
     this.#updateStyles()
+    this.invalidateRender()
   }
 
-  #makeBackgroundStyle(): Style {
+  #backgroundStyle(): Style {
     return new Style({
       foreground: this.theme.textColor,
       background: this.theme.darkenColor,
     })
   }
 
-  #makeBarStyle(): Style {
+  #barStyle(): Style {
     return new Style({
       foreground: this.theme.highlightColor,
       background: this.theme.darkenColor,
+    })
+  }
+
+  #topBottomBarStyle(): Style {
+    return new Style({
+      foreground: this.theme.highlightColor,
+      background: 'default',
     })
   }
 
@@ -44,7 +47,7 @@ export class Callout extends Notification {
    * match the callout's background, so Separator, Text, etc. render with
    * a consistent background color.
    */
-  #makeChildTheme(): Theme {
+  #childTheme(): Theme {
     const t = this.theme
     return new Theme({
       text: t.textColor,
@@ -59,15 +62,13 @@ export class Callout extends Notification {
   }
 
   #updateStyles() {
-    this.#backgroundStyle = this.#makeBackgroundStyle()
-    this.#barStyle = this.#makeBarStyle()
-    this.contentStack.theme = this.#makeChildTheme()
+    this.contentStack.theme = this.#childTheme()
   }
 
   naturalSize(available: Size): Size {
     const innerAvailable = available.shrink(2, 0)
     const innerSize = super.naturalSize(innerAvailable)
-    return innerSize.grow(2, 0)
+    return innerSize.grow(2, 2)
   }
 
   render(viewport: Viewport) {
@@ -76,19 +77,32 @@ export class Callout extends Notification {
     }
 
     // Paint dim background with bright foreground
-    viewport.paint(this.#backgroundStyle)
+    viewport.paint(this.#backgroundStyle())
 
     // Draw left accent bar
     for (let y = 0; y < viewport.contentSize.height; y++) {
-      viewport.write(LEFT_HIGHLIGHT, new Point(0, y), this.#barStyle)
+      viewport.write(LEFT_HIGHLIGHT, new Point(0, y), this.#barStyle())
     }
+    const repeatCount = viewport.contentSize.width
+    viewport.write(
+      TOP_HIGHLIGHT.repeat(repeatCount),
+      new Point(0, 0),
+      this.#topBottomBarStyle(),
+    )
+    viewport.write(
+      BOTTOM_HIGHLIGHT.repeat(repeatCount),
+      new Point(0, viewport.contentSize.height - 1),
+      this.#topBottomBarStyle(),
+    )
 
     // Render children offset by 2 columns (bar + space)
     viewport.clipped(
-      new Rect(new Point(2, 0), viewport.contentSize.shrink(2, 0)),
+      new Rect(new Point(2, 1), viewport.contentSize.shrink(2, 2)),
       inside => super.render(inside),
     )
   }
 }
 
-const LEFT_HIGHLIGHT = '▎'
+const TOP_HIGHLIGHT = '▄'
+const BOTTOM_HIGHLIGHT = '▀'
+const LEFT_HIGHLIGHT = '▌'
