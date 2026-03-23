@@ -101,8 +101,12 @@ export class Button extends Container {
     }
   }
 
-  receiveKey(_: KeyEvent) {
-    this.#onClick?.()
+  receiveKey(event: KeyEvent) {
+    switch (event.name) {
+      case 'return':
+        this.#onClick?.()
+        break
+    }
   }
 
   render(viewport: Viewport) {
@@ -131,13 +135,13 @@ export class Button extends Container {
     const useEmoji = this.theme.emoji
     viewport.visibleRect.forEachPoint(pt => {
       if (useEmoji && pt.y === 0 && viewport.contentSize.height > 2) {
-        viewport.write('▔', pt, topsStyle)
+        viewport.write(BUTTON_TOP, pt, topsStyle)
       } else if (
         useEmoji &&
         pt.y === viewport.contentSize.height - 1 &&
         viewport.contentSize.height > 2
       ) {
-        viewport.write('▁', pt, topsStyle)
+        viewport.write(BUTTON_BOTTOM, pt, topsStyle)
       } else {
         viewport.write(' ', pt, textStyle)
       }
@@ -185,6 +189,9 @@ export class Button extends Container {
     }
   }
 }
+
+const BUTTON_TOP = '▔'
+const BUTTON_BOTTOM = '▁'
 
 const BORDERS: Record<Border, BorderChars> = {
   default: ['[ ', ' ]'],
