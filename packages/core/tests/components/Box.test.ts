@@ -73,4 +73,98 @@ describe('Box', () => {
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
+
+  describe('heading', () => {
+    it('renders heading on single border', () => {
+      const t = testRender(
+        new Box({
+          border: 'single',
+          children: [new Text({text: 'Content', heading: 'Title'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders heading on rounded border', () => {
+      const t = testRender(
+        new Box({
+          border: 'rounded',
+          children: [new Text({text: 'Details', heading: 'Info'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders heading on double border', () => {
+      const t = testRender(
+        new Box({
+          border: 'double',
+          children: [new Text({text: 'Values', heading: 'Config'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders heading with no border (blank top line)', () => {
+      const t = testRender(
+        new Box({
+          border: 'none',
+          children: [new Text({text: 'Body text', heading: 'Section'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('truncates long heading to fit', () => {
+      const t = testRender(
+        new Box({
+          border: 'single',
+          children: [
+            new Text({text: 'Hi', heading: 'This Is A Very Long Title'}),
+          ],
+        }),
+        {width: 15, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders without heading when not set', () => {
+      const t = testRender(
+        new Box({
+          border: 'single',
+          children: [new Text({text: 'No heading'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('title prop overrides child heading', () => {
+      const t = testRender(
+        new Box({
+          border: 'single',
+          title: 'Box Title',
+          children: [new Text({text: 'Content', heading: 'Ignored'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('empty title suppresses child heading', () => {
+      const t = testRender(
+        new Box({
+          border: 'single',
+          title: '',
+          children: [new Text({text: 'Content', heading: 'Ignored'})],
+        }),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
 })

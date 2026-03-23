@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Drawer > heading > does not render heading when drawer is closed 1`] = `
+"─╮Main
+›│
+›│
+›│
+─╯"
+`;
+
+exports[`Drawer > heading > does not render heading when not set 1`] = `
+"────────╮
+Sidebar‹│
+       ‹│
+       ‹│
+────────╯"
+`;
+
+exports[`Drawer > heading > renders heading on bottom drawer 1`] = `
+"Main
+
+
+
+
+╭────────────────────────────╮
+│∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ │
+│  Info                      │"
+`;
+
+exports[`Drawer > heading > renders heading on left drawer top border 1`] = `
+"──Menu──╮
+Sidebar‹│
+       ‹│
+       ‹│
+────────╯"
+`;
+
+exports[`Drawer > heading > renders heading on right drawer top border 1`] = `
+"Main                   ╭───De─
+                       │›Panel
+                       │›
+                       │›
+                       ╰──────"
+`;
+
+exports[`Drawer > heading > renders heading on top drawer 1`] = `
+"│  Tools                     │
+╮∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ╭
+│────────────────────────────│"
+`;

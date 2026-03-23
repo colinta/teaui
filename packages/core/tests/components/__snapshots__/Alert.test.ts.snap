@@ -26,6 +26,28 @@ exports[`Alert > dismiss > removes alert from owner on dismiss 1`] = `
 
 exports[`Alert > dismiss > removes alert from owner on dismiss 2`] = `""`;
 
+exports[`Alert > heading > title takes precedence over child heading 1`] = `
+"
+
+
+ ╭────────────────────────────────────╮
+ │Explicit Title                      │
+ │────────────────────────────────────│
+ │Content                             │
+ ╰────────────────────────────────────╯"
+`;
+
+exports[`Alert > heading > uses child heading as title when title is not set 1`] = `
+"
+
+
+ ╭────────────────────────────────────╮
+ │Heads Up                            │
+ │────────────────────────────────────│
+ │Something happened                  │
+ ╰────────────────────────────────────╯"
+`;
+
 exports[`Alert > modal props > can re-present after dismiss 1`] = `
 "
 

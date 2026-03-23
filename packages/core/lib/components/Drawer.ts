@@ -13,7 +13,7 @@ import {
   isMouseExit,
   toHotKeyDef,
 } from '../events/index.js'
-import type {Style} from '../Style.js'
+import {Style} from '../Style.js'
 import {Theme} from '../Theme.js'
 import {define} from '../util.js'
 import {System} from '../System.js'
@@ -23,6 +23,7 @@ interface Props extends ContainerProps {
   isOpen?: boolean
   onToggle?: (isOpen: boolean) => void
   hotKey?: HotKey
+  title?: string
 }
 
 interface ConstructorProps extends Props {
@@ -44,6 +45,7 @@ export class Drawer extends Container {
   #isOpen = false
   #currentDx = 0
   #location: Edge = 'left'
+  #title: string | undefined
   #onToggle: Props['onToggle']
   #hotKey?: HotKey
 
@@ -76,7 +78,16 @@ export class Drawer extends Container {
     super.update(props)
   }
 
-  #update({isOpen, location, onToggle, hotKey}: Props) {
+  get title(): string | undefined {
+    return this.#title
+  }
+  set title(value: string | undefined) {
+    this.#title = value
+    this.invalidateRender()
+  }
+
+  #update({isOpen, location, onToggle, hotKey, title}: Props) {
+    this.#title = title
     if (isOpen !== undefined) {
       this.#setIsOpen(isOpen, false)
     }
@@ -303,6 +314,7 @@ export class Drawer extends Container {
 
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
     this.#renderDrawerTop(viewport, drawerButtonRect, uiStyle, textStyle)
+    this.#maybeRenderDrawerHeading(viewport, drawerRect)
   }
 
   #renderBottom(
@@ -335,6 +347,7 @@ export class Drawer extends Container {
     )
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
     this.#renderDrawerBottom(viewport, drawerButtonRect, uiStyle, textStyle)
+    this.#maybeRenderDrawerHeading(viewport, drawerRect)
   }
 
   #renderRight(
@@ -367,6 +380,7 @@ export class Drawer extends Container {
     )
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
     this.#renderDrawerRight(viewport, drawerButtonRect, uiStyle, textStyle)
+    this.#maybeRenderDrawerHeading(viewport, drawerRect)
   }
 
   #renderLeft(
@@ -395,6 +409,7 @@ export class Drawer extends Container {
 
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
     this.#renderDrawerLeft(viewport, drawerButtonRect, uiStyle, textStyle)
+    this.#maybeRenderDrawerHeading(viewport, drawerRect)
   }
 
   #renderContent(
@@ -442,10 +457,74 @@ export class Drawer extends Container {
     }
 
     if (this.#currentDx > 0) {
+      const resolvedTitle = this.#resolvedDrawerTitle()
+      const hasHeading = resolvedTitle !== undefined && resolvedTitle.length > 0
+      const isVertical = this.#location === 'top' || this.#location === 'bottom'
+
+      // For top/bottom drawers, shrink drawerRect to make room for a heading row
+      const contentDrawerRect =
+        hasHeading && isVertical
+          ? new Rect(
+              drawerRect.origin.offset(0, 1),
+              drawerRect.size.shrink(0, 1),
+            )
+          : drawerRect
+
       viewport.paint(this.theme.text(), drawerRect)
-      viewport.clipped(drawerRect, inside => {
+      viewport.clipped(contentDrawerRect, inside => {
         drawerView.render(inside)
       })
+    }
+  }
+
+  #resolvedDrawerTitle(): string | undefined {
+    if (this.#title !== undefined) return this.#title
+    return this.drawerView?.heading
+  }
+
+  #maybeRenderDrawerHeading(viewport: Viewport, drawerRect: Rect) {
+    const title = this.#resolvedDrawerTitle()
+    if (!title || this.#currentDx <= 0) {
+      return
+    }
+    this.#renderDrawerHeading(viewport, title, drawerRect)
+  }
+
+  #renderDrawerHeading(viewport: Viewport, heading: string, drawerRect: Rect) {
+    const headingStyle = new Style({
+      bold: true,
+      background: this.theme.text().background,
+    })
+
+    let headingX: number
+    let headingY: number
+    let maxWidth: number
+
+    switch (this.#location) {
+      case 'left':
+        // Heading on the ─ top border at y=0
+        headingX = DRAWER_HEADING_X
+        headingY = 0
+        maxWidth = drawerRect.maxX() - DRAWER_HEADING_X - DRAWER_HEADING_PAD
+        break
+      case 'right':
+        // Heading on the ─ top border at y=0, in the drawer area
+        headingX = drawerRect.minX() + DRAWER_HEADING_X
+        headingY = 0
+        maxWidth = viewport.contentSize.width - headingX - DRAWER_HEADING_PAD
+        break
+      case 'top':
+      case 'bottom':
+        // Heading on the reserved first row of the drawer area
+        headingX = drawerRect.minX() + DRAWER_HEADING_X
+        headingY = drawerRect.minY()
+        maxWidth = drawerRect.size.width - DRAWER_HEADING_X - DRAWER_HEADING_PAD
+        break
+    }
+
+    if (maxWidth > 0) {
+      const text = heading.slice(0, maxWidth)
+      viewport.write(text, new Point(headingX, headingY), headingStyle)
     }
   }
 
@@ -675,3 +754,6 @@ export class Drawer extends Container {
     })
   }
 }
+
+const DRAWER_HEADING_X = 2
+const DRAWER_HEADING_PAD = 1

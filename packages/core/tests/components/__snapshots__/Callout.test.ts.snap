@@ -46,6 +46,20 @@ exports[`Callout > renders without title 1`] = `
 ▌ A simple callout."
 `;
 
+exports[`Callout > title takes precedence over child heading 1`] = `
+"▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+▌ Explicit
+▌ ───────────────────────
+▌ Content here."
+`;
+
+exports[`Callout > uses child heading as title when title is not set 1`] = `
+"▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+▌ Tip
+▌ ───────────────────────
+▌ Use heading prop."
+`;
+
 exports[`Callout > wraps long text 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ This is a longer

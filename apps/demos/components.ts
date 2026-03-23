@@ -277,10 +277,9 @@ const scrollable = Scrollable.down([digits1, digits2], {
 })
 
 const drawerView = Stack.down({
+  heading: 'Drawer',
   maxWidth: 40,
   children: [
-    new Text({text: 'Drawer'}),
-    Separator.horizontal(),
     Accordion.create(
       Array(10)
         .fill(0)

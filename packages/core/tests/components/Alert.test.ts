@@ -156,6 +156,35 @@ describe('Alert', () => {
     })
   })
 
+  describe('heading', () => {
+    it('uses child heading as title when title is not set', () => {
+      const layout = Stack.down()
+      const alert = new Alert({
+        children: [new Text({text: 'Something happened', heading: 'Heads Up'})],
+      })
+
+      const t = testRender(layout, {width: 40, height: 12})
+      alert.presentFrom(layout)
+      t.render()
+
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('title takes precedence over child heading', () => {
+      const layout = Stack.down()
+      const alert = new Alert({
+        title: 'Explicit Title',
+        children: [new Text({text: 'Content', heading: 'Ignored'})],
+      })
+
+      const t = testRender(layout, {width: 40, height: 12})
+      alert.presentFrom(layout)
+      t.render()
+
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
+
   describe('presentFrom with existing content', () => {
     it('presents over existing views', () => {
       const layout = Stack.down({

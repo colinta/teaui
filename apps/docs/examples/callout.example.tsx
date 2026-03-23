@@ -4,14 +4,14 @@ import {Callout, Stack, Text} from '@teaui/react'
 function App() {
   return (
     <Stack.down gap={1}>
-      <Callout title="Note" purpose="primary">
-        <Text>Remember to save your work before closing.</Text>
+      <Callout purpose="primary">
+        <Text heading="Note">Remember to save your work before closing.</Text>
       </Callout>
       <Callout purpose="cancel">
         <Text>This action cannot be undone.</Text>
       </Callout>
-      <Callout title="Success" purpose="proceed">
-        <Text>Your changes have been saved.</Text>
+      <Callout purpose="proceed">
+        <Text heading="Success">Your changes have been saved.</Text>
       </Callout>
     </Stack.down>
   )

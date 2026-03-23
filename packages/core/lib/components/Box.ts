@@ -55,6 +55,7 @@ export interface BorderSizes {
 interface Props extends ContainerProps {
   border?: Border | BorderChars
   highlight?: boolean
+  title?: string
 }
 
 export class Box extends ZStack {
@@ -62,6 +63,7 @@ export class Box extends ZStack {
   #borderChars: CalculatedBorderChars = BORDERS.single
   #borderSizes: BorderSizes = BORDER_SIZE_ZERO
   #highlight: boolean = false
+  #title: string | undefined
 
   constructor(props: Props) {
     super(props)
@@ -84,22 +86,44 @@ export class Box extends ZStack {
     super.update(props)
   }
 
-  #update({highlight, border}: Props) {
+  get title(): string | undefined {
+    return this.#title
+  }
+  set title(value: string | undefined) {
+    this.#title = value
+    this.invalidateSize()
+  }
+
+  #update({highlight, border, title}: Props) {
     this.#highlight = highlight ?? false
+    this.#title = title
     this.border = border ?? 'single'
   }
 
+  #resolvedTitle(): string | undefined {
+    if (this.#title !== undefined) return this.#title
+    return this.children[0]?.heading
+  }
+
+  #headingHeight(): number {
+    if (!this.#resolvedTitle()) return 0
+    // When there's a border, the heading overlays the top border — no extra height.
+    // When border is 'none', we need a dedicated row for the heading.
+    return this.#borderSizes.maxTop === 0 ? 1 : 0
+  }
+
   naturalSize(available: Size): Size {
+    const headingHeight = this.#headingHeight()
     const naturalSize = super.naturalSize(
       available.shrink(
         this.#borderSizes.maxLeft + this.#borderSizes.maxRight,
-        this.#borderSizes.maxTop + this.#borderSizes.maxBottom,
+        this.#borderSizes.maxTop + this.#borderSizes.maxBottom + headingHeight,
       ),
     )
 
     return naturalSize.grow(
       this.#borderSizes.maxLeft + this.#borderSizes.maxRight,
-      this.#borderSizes.maxTop + this.#borderSizes.maxBottom,
+      this.#borderSizes.maxTop + this.#borderSizes.maxBottom + headingHeight,
     )
   }
 
@@ -112,10 +136,11 @@ export class Box extends ZStack {
       viewport.registerMouse('mouse.move')
     }
 
+    const headingHeight = this.#headingHeight()
     const [top, left, tl, tr, bl, br, bottom, right] = this.#borderChars
 
     const maxX = viewport.contentSize.width
-    const maxY = viewport.contentSize.height
+    const maxY = viewport.contentSize.height - headingHeight
     const innerTopWidth = Math.max(
       0,
       maxX - this.#borderSizes.topLeft.width - this.#borderSizes.topRight.width,
@@ -138,16 +163,13 @@ export class Box extends ZStack {
     const topRightX = this.#borderSizes.topLeft.width + innerTopWidth
     const bottomRightX = this.#borderSizes.bottomLeft.width + innerBottomWidth
     const middleRightX = this.#borderSizes.maxLeft + innerMiddleWidth
-    const topInnerY = this.#borderSizes.maxTop
-    const bottomInnerY = this.#borderSizes.maxTop + innerHeight
+    const topInnerY = headingHeight + this.#borderSizes.maxTop
+    const bottomInnerY = topInnerY + innerHeight
 
     const borderStyle = this.theme.text({isHover: this.isHover})
 
     const innerStyle = new Style({background: borderStyle.background})
-    const innerOrigin = new Point(
-      this.#borderSizes.maxLeft,
-      this.#borderSizes.maxTop,
-    )
+    const innerOrigin = new Point(this.#borderSizes.maxLeft, topInnerY)
     if (innerHeight && innerMiddleWidth) {
       for (let y = 0; y < innerHeight; ++y) {
         const spaces = ' '.repeat(innerMiddleWidth)
@@ -166,13 +188,14 @@ export class Box extends ZStack {
         top.split('\n'),
         tr.split('\n'),
       ]
-      for (let lineY = 0; lineY < topInnerY; ++lineY) {
+      for (let lineY = 0; lineY < this.#borderSizes.maxTop; ++lineY) {
+        const drawY = headingHeight + lineY
         const [lineTL, lineTop, lineTR] = [
           tlLines[lineY] ?? '',
           topLines[lineY] ?? '',
           trLines[lineY] ?? '',
         ]
-        viewport.write(lineTL, new Point(0, lineY))
+        viewport.write(lineTL, new Point(0, drawY))
         if (lineTop.length) {
           viewport.write(
             lineTop
@@ -180,10 +203,10 @@ export class Box extends ZStack {
                 Math.ceil(innerTopWidth / this.#borderSizes.topMiddle.width),
               )
               .slice(0, innerTopWidth),
-            new Point(leftMaxX, lineY),
+            new Point(leftMaxX, drawY),
           )
         }
-        viewport.write(lineTR, new Point(topRightX, lineY))
+        viewport.write(lineTR, new Point(topRightX, drawY))
       }
 
       const [leftLines, rightLines] = [left.split('\n'), right.split('\n')]
@@ -201,7 +224,7 @@ export class Box extends ZStack {
         bottom.split('\n'),
         br.split('\n'),
       ]
-      for (let lineY = bottomInnerY; lineY < maxY; ++lineY) {
+      for (let lineY = bottomInnerY; lineY < maxY + headingHeight; ++lineY) {
         const [lineBL, lineBottom, lineBR] = [
           blLines[lineY - bottomInnerY] ?? '',
           bottomLines[lineY - bottomInnerY] ?? '',
@@ -221,6 +244,23 @@ export class Box extends ZStack {
         viewport.write(lineBR, new Point(bottomRightX, lineY))
       }
     })
+
+    // Render heading over the top border (or on a blank line for borderless)
+    const resolvedTitle = this.#resolvedTitle()
+    if (resolvedTitle) {
+      const headingText = resolvedTitle.slice(0, maxX - HEADING_X - HEADING_PAD)
+      const headingY = headingHeight > 0 ? 0 : 0
+      viewport.write(
+        headingText,
+        new Point(HEADING_X, headingY),
+        this.#headingStyle(),
+      )
+    }
+  }
+
+  #headingStyle(): Style {
+    const textStyle = this.theme.text({isHover: this.isHover})
+    return new Style({bold: true, background: textStyle.background})
   }
 }
 
@@ -309,6 +349,9 @@ const BORDERS: Record<Border, CalculatedBorderChars> = {
   dotted: ['⠒', '⡇', '⡖', '⢲', '⠧', '⠼', '⠤', '⢸'],
   popout: [' \n─', '│', ' \n┌', ' /\\   \n/  \\─┐', '└', '┘', '─', '│'],
 }
+
+const HEADING_X = 2
+const HEADING_PAD = 1
 
 const BORDER_SIZE_ZERO: BorderSizes = {
   maxTop: 0,

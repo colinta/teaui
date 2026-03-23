@@ -86,6 +86,27 @@ describe('Callout', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
+  it('uses child heading as title when title is not set', () => {
+    const t = testRender(
+      new Callout({
+        children: [new Text({text: 'Use heading prop.', heading: 'Tip'})],
+      }),
+      {width: 25, height: 4},
+    )
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
+  it('title takes precedence over child heading', () => {
+    const t = testRender(
+      new Callout({
+        title: 'Explicit',
+        children: [new Text({text: 'Content here.', heading: 'Ignored'})],
+      }),
+      {width: 25, height: 4},
+    )
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
   it('wraps long text', () => {
     const t = testRender(
       new Callout({

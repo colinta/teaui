@@ -10,8 +10,8 @@ function App() {
       isOpen={open}
       onToggle={setOpen}
       drawer={
-        <Stack.down>
-          <Text>Sidebar</Text>
+        <Stack.down heading="Sidebar">
+          <Text>Navigation</Text>
           <Button onClick={() => setOpen(false)}>Close</Button>
         </Stack.down>
       }

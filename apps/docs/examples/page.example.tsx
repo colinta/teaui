@@ -4,15 +4,9 @@ import {Page, Text} from '@teaui/react'
 function App() {
   return (
     <Page>
-      <Page.Section title="Welcome">
-        <Text>Welcome to the Page component!</Text>
-      </Page.Section>
-      <Page.Section title="Features">
-        <Text>Animated slide transitions</Text>
-      </Page.Section>
-      <Page.Section title="Help">
-        <Text>Use PageUp/PageDown to navigate</Text>
-      </Page.Section>
+      <Text heading="Welcome">Welcome to the Page component!</Text>
+      <Text heading="Features">Animated slide transitions</Text>
+      <Text heading="Help">Use PageUp/PageDown to navigate</Text>
     </Page>
   )
 }

@@ -44,4 +44,51 @@ exports[`Box > content > renders text inside single border 1`] = `
 └────┘"
 `;
 
+exports[`Box > heading > empty title suppresses child heading 1`] = `
+"┌──────────────────┐
+│Content           │
+└──────────────────┘"
+`;
+
+exports[`Box > heading > renders heading on double border 1`] = `
+"╔═Config═══════════╗
+║Values            ║
+╚══════════════════╝"
+`;
+
+exports[`Box > heading > renders heading on rounded border 1`] = `
+"╭─Info─────────────╮
+│Details           │
+╰──────────────────╯"
+`;
+
+exports[`Box > heading > renders heading on single border 1`] = `
+"┌─Title────────────┐
+│Content           │
+└──────────────────┘"
+`;
+
+exports[`Box > heading > renders heading with no border (blank top line) 1`] = `
+"  Section
+Body text"
+`;
+
+exports[`Box > heading > renders without heading when not set 1`] = `
+"┌──────────────────┐
+│No heading        │
+└──────────────────┘"
+`;
+
+exports[`Box > heading > title prop overrides child heading 1`] = `
+"┌─Box Title────────┐
+│Content           │
+└──────────────────┘"
+`;
+
+exports[`Box > heading > truncates long heading to fit 1`] = `
+"┌─This Is A Ve┐
+│Hi           │
+└─────────────┘"
+`;
+
 exports[`Box > no border > renders without border 1`] = `"Hello"`;
