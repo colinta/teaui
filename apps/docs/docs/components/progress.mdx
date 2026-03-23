@@ -3,43 +3,24 @@ sidebar_position: 4
 title: Progress
 ---
 
-import TerminalScreenshot from '@site/src/components/TerminalScreenshot'
+import Example from '@site/src/components/Example'
 
 # Progress
 
 A progress bar. Horizontal or vertical, with optional percentage display.
 
-<TerminalScreenshot name="progress" title="Progress" />
-
-## React Example
-
-```tsx
-import React, {useState, useEffect} from 'react'
-import {Progress, run} from '@teaui/react'
-
-function App() {
-  const [value, setValue] = useState(0)
-
-  useEffect(() => {
-    const id = setInterval(() => setValue(v => Math.min(v + 5, 100)), 200)
-    return () => clearInterval(id)
-  }, [])
-
-  return <Progress value={value} max={100} showPercent />
-}
-
-run(<App />)
-```
+<Example name="progress" title="Progress" />
 
 ## Props
 
-| Prop          | Type                         | Default        | Description          |
-| ------------- | ---------------------------- | -------------- | -------------------- |
-| `direction`   | `'horizontal' \| 'vertical'` | `'horizontal'` | Bar direction        |
-| `min`         | `number`                     | `0`            | Minimum value        |
-| `max`         | `number`                     | `100`          | Maximum value        |
-| `value`       | `number`                     | `0`            | Current value        |
-| `showPercent` | `boolean`                    | `false`        | Show percentage text |
+| Prop          | Type                            | Default        | Description                                                        |
+| ------------- | ------------------------------- | -------------- | ------------------------------------------------------------------ |
+| `direction`   | `'horizontal' \| 'vertical'`    | `'horizontal'` | Bar direction                                                      |
+| `min`         | `number`                        | `0`            | Minimum value                                                      |
+| `max`         | `number`                        | `100`          | Maximum value                                                      |
+| `value`       | `number`                        | `0`            | Current value                                                      |
+| `showPercent` | `boolean`                       | `false`        | Show percentage text                                               |
+| `location`    | `'left' \| 'center' \| 'right'` | `'center'`     | Where to show the percent text (`'right'` renders outside the bar) |
 
 <details>
 <summary>Core API</summary>

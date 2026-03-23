@@ -9,32 +9,9 @@ A split-pane container for index/detail layouts. The first N-1 children are
 collapsible "browser" panes with draggable separators. The last child is the
 "detail" pane that takes remaining space.
 
-import Example from '../../src/components/Example'
-import PaneExample from '../../examples/pane.example'
+import Example from '@site/src/components/Example'
 
-<Example {...PaneExample} />
-
-## React Example
-
-```tsx
-import React from 'react'
-import {Pane, Text, Stack, run} from '@teaui/react'
-
-function App() {
-  return (
-    <Pane border>
-      <Stack.down>
-        <Text>Inbox</Text>
-        <Text>Drafts</Text>
-        <Text>Sent</Text>
-      </Stack.down>
-      <Text>Select an item to view details.</Text>
-    </Pane>
-  )
-}
-
-run(<App />)
-```
+<Example name="pane" title="Pane" />
 
 ## Props
 

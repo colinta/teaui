@@ -1,0 +1,27 @@
+---
+sidebar_position: 3
+title: Callout
+---
+
+import Example from '@site/src/components/Example'
+
+# Callout
+
+An inline notification banner with a colored left accent bar and tinted background. Shares the `Notification` base with `Alert`, but renders inline rather than as a modal.
+
+<Example name="callout" title="Callout" />
+
+## Props
+
+| Prop        | Type                                                                         | Default  | Description                        |
+| ----------- | ---------------------------------------------------------------------------- | -------- | ---------------------------------- |
+| `title`     | `string`                                                                     | —        | Bold title shown above a separator |
+| `purpose`   | `'primary' \| 'secondary' \| 'proceed' \| 'cancel' \| 'selected' \| 'plain'` | —        | Color theme for the callout        |
+| `direction` | `'up' \| 'down' \| 'left' \| 'right'`                                        | `'down'` | Layout direction for children      |
+| `children`  | `ReactNode`                                                                  | —        | Callout body content               |
+
+## Appearance
+
+- Left accent bar using `▎` in the theme's highlight color
+- Background tinted with the theme's darken color
+- Children (Text, Separator, etc.) automatically inherit the callout's background

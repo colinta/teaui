@@ -1,0 +1,28 @@
+---
+sidebar_position: 1
+title: Alert
+---
+
+import Example from '@site/src/components/Example'
+
+# Alert
+
+A modal alert dialog. Displays content inside a rounded box, centered on screen with a dimmed background. Dismissible via click or Escape by default.
+
+Alert extends the `Notification` base (shared with `Callout`), adding modal behavior.
+
+<Example name="alert" title="Alert" />
+
+## Props
+
+| Prop             | Type                                                                         | Default  | Description                         |
+| ---------------- | ---------------------------------------------------------------------------- | -------- | ----------------------------------- |
+| `title`          | `string`                                                                     | —        | Bold title shown above a separator  |
+| `purpose`        | `'primary' \| 'secondary' \| 'proceed' \| 'cancel' \| 'selected' \| 'plain'` | —        | Color theme                         |
+| `direction`      | `'up' \| 'down' \| 'left' \| 'right'`                                        | `'down'` | Layout direction for children       |
+| `visible`        | `boolean`                                                                    | —        | Show or hide the alert              |
+| `onDismiss`      | `() => void`                                                                 | —        | Called when dismissed               |
+| `dim`            | `boolean`                                                                    | `true`   | Dim the background behind the alert |
+| `dismissOnEsc`   | `boolean`                                                                    | `true`   | Dismiss on Escape key               |
+| `dismissOnClick` | `boolean`                                                                    | `true`   | Dismiss on background click         |
+| `children`       | `ReactNode`                                                                  | —        | Alert body content                  |

@@ -1,0 +1,92 @@
+---
+sidebar_position: 9
+title: Charts
+---
+
+# Charts
+
+Data visualization components: `Plot`, `LineChart`, and `BarChart`. Charts render using Unicode block characters and braille dots for sub-cell resolution.
+
+:::note Core API Only
+Charts are currently available only through the core API. The chart constructors take a `data` array as a positional argument and use `Plot.add(chart)` for composition, which doesn't map directly to React's declarative model. React wrappers are planned for a future release.
+:::
+
+## Plot
+
+The container for chart(s). Draws axes, labels, and a title. Add one or more charts to it.
+
+### Props
+
+| Prop          | Type      | Default | Description                     |
+| ------------- | --------- | ------- | ------------------------------- |
+| `title`       | `string`  | —       | Title displayed above the chart |
+| `xAxisLabels` | `boolean` | `true`  | Show x-axis tick labels         |
+| `yAxisLabels` | `boolean` | `true`  | Show y-axis tick labels         |
+| `showAxes`    | `boolean` | `true`  | Show border/axes lines          |
+
+## LineChart
+
+Renders data points connected by lines using braille-dot resolution (Canvas).
+
+### Constructor
+
+```ts
+new LineChart(data, {
+  extract: (row) => [x, y],  // Extract [x, y] from each row
+  xLabels?: (row) => string, // X-axis label per row
+  yLabels?: (value) => string, // Y-axis label formatter
+  style?: Style,              // Line style
+})
+```
+
+## BarChart
+
+Renders vertical bars using Unicode block characters (▁▂▃▄▅▆▇█) for sub-cell height resolution.
+
+### Constructor
+
+```ts
+new BarChart(data, {
+  extract: (row) => number,            // Extract y-value from each row
+  xLabels?: (row, index) => string,    // X-axis label per row
+  yLabels?: (value) => string,         // Y-axis label formatter
+  barWidth?: number,                    // Columns per bar (default 1)
+  gap?: number,                         // Gap between bars (default 0)
+  style?: Style,                        // Bar style
+})
+```
+
+## Usage Example
+
+```ts
+import {Plot, LineChart, BarChart} from '@teaui/core'
+
+const data = [
+  {month: 'Jan', sales: 120},
+  {month: 'Feb', sales: 200},
+  {month: 'Mar', sales: 150},
+  {month: 'Apr', sales: 300},
+  {month: 'May', sales: 250},
+]
+
+// Line chart
+const plot = new Plot({title: 'Monthly Sales'})
+plot.add(
+  new LineChart(data, {
+    extract: (row, i) => [i, row.sales],
+    xLabels: row => row.month,
+    yLabels: v => `$${v}`,
+  }),
+)
+
+// Bar chart
+const barPlot = new Plot({title: 'Sales Bars'})
+barPlot.add(
+  new BarChart(data, {
+    extract: row => row.sales,
+    xLabels: row => row.month,
+    barWidth: 3,
+    gap: 1,
+  }),
+)
+```

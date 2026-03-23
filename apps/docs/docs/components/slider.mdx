@@ -13,11 +13,12 @@ A draggable range slider. Supports horizontal and vertical orientation with conf
 
 ## Props
 
-| Prop        | Type                         | Default        | Description           |
-| ----------- | ---------------------------- | -------------- | --------------------- |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slider direction      |
-| `min`       | `number`                     | `0`            | Minimum value         |
-| `max`       | `number`                     | `100`          | Maximum value         |
-| `value`     | `number`                     | `0`            | Current value         |
-| `step`      | `number`                     | `1`            | Step increment        |
-| `onChange`  | `(value: number) => void`    | —              | Value change callback |
+| Prop        | Type                         | Default        | Description                                                          |
+| ----------- | ---------------------------- | -------------- | -------------------------------------------------------------------- |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slider direction                                                     |
+| `range`     | `[number, number]`           | —              | Min and max values (inclusive)                                       |
+| `value`     | `number`                     | `0`            | Current position within the range                                    |
+| `step`      | `number`                     | —              | Snap to increments of this value (required when `buttons` is `true`) |
+| `border`    | `boolean`                    | `false`        | Show a border around the slider                                      |
+| `buttons`   | `boolean`                    | `false`        | Show ◃/▹ buttons on either side                                      |
+| `onChange`  | `(value: number) => void`    | —              | Value change callback                                                |

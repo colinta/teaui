@@ -1,0 +1,21 @@
+---
+sidebar_position: 8
+title: Logo
+---
+
+import Example from '@site/src/components/Example'
+
+# Logo
+
+The TeaUI logo — a mug of tea with animated steam. Renders in 16×7 characters using Unicode box-drawing and braille characters.
+
+<Example name="logo" title="Logo" />
+
+## Props
+
+| Prop          | Type      | Default | Description                         |
+| ------------- | --------- | ------- | ----------------------------------- |
+| `isAnimating` | `boolean` | `true`  | Animate the rising steam particles  |
+| `seed`        | `number`  | —       | Random seed for deterministic steam |
+
+When `isAnimating` is `true` (default), steam particles rise from the mug using braille-dot rendering, updated every ~80ms.

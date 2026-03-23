@@ -3,41 +3,29 @@ sidebar_position: 5
 title: Scrollable
 ---
 
+import Example from '@site/src/components/Example'
+
 # Scrollable
 
 A scrollable container with an internal Stack for laying out children. Supports mouse wheel scrolling, scrollbars, and pinned children.
 
-## React Example
-
-```tsx
-import React from 'react'
-import {Scrollable, Text, run} from '@teaui/react'
-
-function App() {
-  return (
-    <Scrollable.down height={10}>
-      {Array.from({length: 50}, (_, i) => (
-        <Text key={i}>Line {i + 1}</Text>
-      ))}
-    </Scrollable.down>
-  )
-}
-
-run(<App />)
-```
+<Example name="scrollable" title="Scrollable" />
 
 ## Props
 
-| Prop             | Type                                    | Default  | Description                              |
-| ---------------- | --------------------------------------- | -------- | ---------------------------------------- |
-| `direction`      | `'down' \| 'up' \| 'left' \| 'right'`   | `'down'` | Layout direction for children            |
-| `gap`            | `number`                                | `0`      | Gap between children                     |
-| `scrollable`     | `'both' \| 'horizontal' \| 'vertical'`  | `'both'` | Which directions to allow scrolling      |
-| `showScrollbars` | `boolean \| 'horizontal' \| 'vertical'` | `true`   | Show/hide scrollbars                     |
-| `scrollHeight`   | `number`                                | `1`      | Rows to scroll per mouse wheel tick      |
-| `scrollWidth`    | `number`                                | `2`      | Columns to scroll per mouse wheel tick   |
-| `keepAtBottom`   | `boolean`                               | `false`  | Auto-scroll to bottom when content grows |
-| `children`       | `ReactNode`                             | —        | Children laid out by the internal Stack  |
+| Prop             | Type                                    | Default  | Description                                     |
+| ---------------- | --------------------------------------- | -------- | ----------------------------------------------- |
+| `direction`      | `'down' \| 'up' \| 'left' \| 'right'`   | `'down'` | Layout direction for children                   |
+| `gap`            | `number`                                | `0`      | Gap between children                            |
+| `scrollable`     | `'both' \| 'horizontal' \| 'vertical'`  | `'both'` | Which directions to allow scrolling             |
+| `showScrollbars` | `boolean \| 'horizontal' \| 'vertical'` | `true`   | Show/hide scrollbars                            |
+| `scrollHeight`   | `number`                                | `1`      | Rows to scroll per mouse wheel tick             |
+| `scrollWidth`    | `number`                                | `2`      | Columns to scroll per mouse wheel tick          |
+| `keepAtBottom`   | `boolean`                               | `false`  | Auto-scroll to bottom when content grows        |
+| `contentSize`    | `{width?: number, height?: number}`     | —        | Override content size (for virtualized content) |
+| `offset`         | `Point`                                 | —        | Controlled scroll offset                        |
+| `onOffsetChange` | `(offset: Point) => void`               | —        | Called when scroll offset changes               |
+| `children`       | `ReactNode`                             | —        | Children laid out by the internal Stack         |
 
 ### Static Constructors
 

@@ -1,0 +1,31 @@
+---
+sidebar_position: 8
+title: ZStack
+---
+
+import Example from '@site/src/components/Example'
+
+# ZStack
+
+Overlays children on top of each other. Each child receives the full available size. Children are rendered in order — later children appear above earlier ones.
+
+When `location` is set, each child is aligned within the available space.
+
+<Example name="zstack" title="ZStack" />
+
+## Props
+
+| Prop       | Type        | Default | Description                            |
+| ---------- | ----------- | ------- | -------------------------------------- |
+| `location` | `Location`  | —       | Alignment of children within the stack |
+| `children` | `ReactNode` | —       | Overlapping child views                |
+
+### Location
+
+```
+'top-left'    | 'top-center'    | 'top-right'
+'left'        | 'center'        | 'right'
+'bottom-left' | 'bottom-center' | 'bottom-right'
+```
+
+When `location` is not set, the ZStack sizes to fit its largest child. When set, it fills all available space and positions children accordingly.

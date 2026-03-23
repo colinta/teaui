@@ -13,8 +13,9 @@ A togglable checkbox with label text.
 
 ## Props
 
-| Prop        | Type                         | Default | Description    |
-| ----------- | ---------------------------- | ------- | -------------- |
-| `title`     | `string`                     | —       | Label text     |
-| `isChecked` | `boolean`                    | `false` | Checked state  |
-| `onChange`  | `(checked: boolean) => void` | —       | Change handler |
+| Prop       | Type                       | Default | Description         |
+| ---------- | -------------------------- | ------- | ------------------- |
+| `title`    | `string`                   | —       | Label text          |
+| `value`    | `boolean`                  | `false` | Checked state       |
+| `onChange` | `(value: boolean) => void` | —       | Called when toggled |
+| `hotKey`   | `HotKey`                   | —       | Keyboard shortcut   |

@@ -3,35 +3,13 @@ sidebar_position: 2
 title: Collapsible
 ---
 
+import Example from '@site/src/components/Example'
+
 # Collapsible
 
 Toggleable container that shows either a collapsed or expanded view. When `showCollapsed` is true, both views are shown when expanded.
 
-## React Example
-
-```tsx
-import React, {useState} from 'react'
-import {Collapsible, Text, Button, run} from '@teaui/react'
-
-function App() {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <Collapsible
-      isCollapsed={!open}
-      collapsed={<Button onClick={() => setOpen(true)}>Show more</Button>}
-      expanded={
-        <>
-          <Text>Full content here...</Text>
-          <Button onClick={() => setOpen(false)}>Show less</Button>
-        </>
-      }
-    />
-  )
-}
-
-run(<App />)
-```
+<Example name="collapsible" title="Collapsible" />
 
 ## Props
 

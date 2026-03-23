@@ -13,8 +13,9 @@ A container with optional border and padding.
 
 ## Props
 
-| Prop       | Type                                                  | Default  | Description   |
-| ---------- | ----------------------------------------------------- | -------- | ------------- |
-| `border`   | `'single' \| 'bold' \| 'double' \| 'round' \| 'none'` | `'none'` | Border style  |
-| `padding`  | `number \| {top, bottom, left, right}`                | `0`      | Inner padding |
-| `children` | `ReactNode`                                           | —        | Child views   |
+| Prop        | Type                                                                            | Default    | Description                                  |
+| ----------- | ------------------------------------------------------------------------------- | ---------- | -------------------------------------------- |
+| `border`    | `'none' \| 'single' \| 'bold' \| 'double' \| 'rounded' \| 'dotted' \| 'popout'` | `'single'` | Border style (or custom `BorderChars` tuple) |
+| `highlight` | `boolean`                                                                       | `false`    | Use highlight style for the border           |
+| `padding`   | `number \| {top, bottom, left, right}`                                          | `0`        | Inner padding (inherited from View)          |
+| `children`  | `ReactNode`                                                                     | —          | Child views                                  |
