@@ -81,7 +81,7 @@ type DropdownProps = {
   width?: number | 'shrink'
   flex?: number
 }
-type HeaderProps = {text?: string}
+type HeaderProps = {text?: string; children?: string}
 type HotKeyProps = TUIView<typeof WrHotKey>
 type KeyboardProps = TUIContainer<typeof WrKeyboard>
 type MouseProps = TUIContainer<typeof WrMouse>
@@ -272,36 +272,42 @@ export const Mouse = forwardRef<WrMouse, MouseProps>(function Mouse(
     </tui-mouse>
   )
 })
-export const H1 = forwardRef<WrHeader, HeaderProps>(
-  function H1(reactProps, ref): JSX.Element {
-    return <tui-h1 ref={ref} {...reactProps} />
-  },
-)
-export const H2 = forwardRef<WrHeader, HeaderProps>(
-  function H2(reactProps, ref): JSX.Element {
-    return <tui-h2 ref={ref} {...reactProps} />
-  },
-)
-export const H3 = forwardRef<WrHeader, HeaderProps>(
-  function H3(reactProps, ref): JSX.Element {
-    return <tui-h3 ref={ref} {...reactProps} />
-  },
-)
-export const H4 = forwardRef<WrHeader, HeaderProps>(
-  function H4(reactProps, ref): JSX.Element {
-    return <tui-h4 ref={ref} {...reactProps} />
-  },
-)
-export const H5 = forwardRef<WrHeader, HeaderProps>(
-  function H5(reactProps, ref): JSX.Element {
-    return <tui-h5 ref={ref} {...reactProps} />
-  },
-)
-export const H6 = forwardRef<WrHeader, HeaderProps>(
-  function H6(reactProps, ref): JSX.Element {
-    return <tui-h6 ref={ref} {...reactProps} />
-  },
-)
+export const H1 = forwardRef<WrHeader, HeaderProps>(function H1(
+  {children, ...reactProps},
+  ref,
+): JSX.Element {
+  return <tui-h1 ref={ref} text={children ?? reactProps.text} {...reactProps} />
+})
+export const H2 = forwardRef<WrHeader, HeaderProps>(function H2(
+  {children, ...reactProps},
+  ref,
+): JSX.Element {
+  return <tui-h2 ref={ref} text={children ?? reactProps.text} {...reactProps} />
+})
+export const H3 = forwardRef<WrHeader, HeaderProps>(function H3(
+  {children, ...reactProps},
+  ref,
+): JSX.Element {
+  return <tui-h3 ref={ref} text={children ?? reactProps.text} {...reactProps} />
+})
+export const H4 = forwardRef<WrHeader, HeaderProps>(function H4(
+  {children, ...reactProps},
+  ref,
+): JSX.Element {
+  return <tui-h4 ref={ref} text={children ?? reactProps.text} {...reactProps} />
+})
+export const H5 = forwardRef<WrHeader, HeaderProps>(function H5(
+  {children, ...reactProps},
+  ref,
+): JSX.Element {
+  return <tui-h5 ref={ref} text={children ?? reactProps.text} {...reactProps} />
+})
+export const H6 = forwardRef<WrHeader, HeaderProps>(function H6(
+  {children, ...reactProps},
+  ref,
+): JSX.Element {
+  return <tui-h6 ref={ref} text={children ?? reactProps.text} {...reactProps} />
+})
 export const Input = forwardRef<WrInput, InputProps>(
   function Input(reactProps, ref): JSX.Element {
     return <tui-input ref={ref} {...reactProps} />
@@ -402,15 +408,108 @@ interface TreeProps<T> extends ViewProps {
   getChildren?: (datum: T) => T[] | undefined
   title: React.ReactNode | string
 }
+
+interface AncestorInfo {
+  isLast: boolean
+}
+
+function TreeItems<T>({
+  items,
+  render,
+  getChildren,
+  expanded,
+  toggle,
+  prefix,
+  ancestors,
+}: {
+  items: T[]
+  render: (datum: T) => React.ReactNode
+  getChildren?: (datum: T) => T[] | undefined
+  expanded: Set<string>
+  toggle: (path: string) => void
+  prefix: string
+  ancestors: AncestorInfo[]
+}): JSX.Element {
+  return (
+    <>
+      {items.map((item, index) => {
+        const path = `${prefix}.${index}`
+        const children = getChildren?.(item)
+        const hasChildren = children != null && children.length > 0
+        const isExpanded = expanded.has(path)
+        const isLast = index === items.length - 1
+
+        let line = ''
+        for (const ancestor of ancestors) {
+          line += ancestor.isLast ? '    ' : TREE_VLINE
+        }
+
+        if (hasChildren) {
+          line += isLast ? TREE_LAST_BRANCH : TREE_BRANCH
+          line += isExpanded ? TREE_EXPANDED : TREE_COLLAPSED
+        } else {
+          line += isLast ? TREE_LAST_LEAF : TREE_LEAF
+        }
+
+        return (
+          <React.Fragment key={path}>
+            <tui-stack direction="right">
+              <tui-text>{line}</tui-text>
+              {render(item)}
+            </tui-stack>
+            {isExpanded && hasChildren && children && (
+              <TreeItems
+                items={children}
+                render={render}
+                getChildren={getChildren}
+                expanded={expanded}
+                toggle={toggle}
+                prefix={path}
+                ancestors={[...ancestors, {isLast}]}
+              />
+            )}
+          </React.Fragment>
+        )
+      })}
+    </>
+  )
+}
+
+const TREE_VLINE = '│   '
+const TREE_BRANCH = '├'
+const TREE_LAST_BRANCH = '└'
+const TREE_LEAF = '├──╴'
+const TREE_LAST_LEAF = '└──╴'
+const TREE_COLLAPSED = '─╴▹'
+const TREE_EXPANDED = '─╴▿'
+
 export function Tree<T>(reactProps: TreeProps<T>): JSX.Element {
-  const {title, ...props} = reactProps
-  const titleView = useMemo(() => {
-    if (typeof title === 'string') {
-      return <tui-text>{title}</tui-text>
-    }
-    return title
-  }, [title])
-  return <tui-tree {...props}>{titleView}</tui-tree>
+  const {title, data, render, getChildren, ...viewProps} = reactProps
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+
+  const toggle = useCallback((path: string) => {
+    setExpanded(prev => {
+      const next = new Set(prev)
+      if (next.has(path)) next.delete(path)
+      else next.add(path)
+      return next
+    })
+  }, [])
+
+  return (
+    <tui-stack direction="down" {...viewProps}>
+      {typeof title === 'string' ? <tui-text>{title}</tui-text> : title}
+      <TreeItems
+        items={data}
+        render={render}
+        getChildren={getChildren}
+        expanded={expanded}
+        toggle={toggle}
+        prefix=""
+        ancestors={[]}
+      />
+    </tui-stack>
+  )
 }
 
 export const Modal = forwardRef<WrModal, ModalProps>(function Modal(

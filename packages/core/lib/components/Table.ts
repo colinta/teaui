@@ -362,8 +362,9 @@ export class Table<TData> extends Container {
       return
     }
 
+    const TRAILING = 1
     const widths = this.#calculateColumnWidths(
-      this.contentSize.width - INDENT - checkboxWidth - rowNumWidth,
+      this.contentSize.width - INDENT - TRAILING - checkboxWidth - rowNumWidth,
     )
     let currentX = INDENT + checkboxWidth + rowNumWidth
     for (let i = 0; i < this.#columns.length; i++) {
@@ -552,11 +553,12 @@ export class Table<TData> extends Container {
 
     const width = viewport.contentSize.width
     const height = viewport.contentSize.height
-    // Reserve 1 character at the left for the selection marker (▶)
+    // Reserve 1 character at the left and right for selection markers (▶ ◀)
     const INDENT = 1
+    const TRAILING = 1
     const checkboxWidth = this.#checkboxWidth()
     const rowNumWidth = this.#rowNumberWidth()
-    const contentWidth = width - INDENT - checkboxWidth - rowNumWidth
+    const contentWidth = width - INDENT - TRAILING - checkboxWidth - rowNumWidth
     const widths = this.#calculateColumnWidths(contentWidth)
     const dimStyle = new Style({dim: true})
     const headerStyle = new Style({dim: true, bold: true})
@@ -717,10 +719,12 @@ export class Table<TData> extends Container {
         viewport.write(' '.repeat(width), new Point(0, y), rowHighlight)
       }
       if (isSelected && !scrollIndicator) {
+        const selectionStyle = isChecked ? cursorCheckedStyle : cursorStyle
+        viewport.write(SELECTION_MARKER, new Point(0, y), selectionStyle)
         viewport.write(
-          SELECTION_MARKER,
-          new Point(0, y),
-          isChecked ? cursorCheckedStyle : cursorStyle,
+          SELECTION_MARKER_END,
+          new Point(width - 1, y),
+          selectionStyle,
         )
       }
 
@@ -780,6 +784,7 @@ export class Table<TData> extends Container {
 }
 
 const SELECTION_MARKER = '▶'
+const SELECTION_MARKER_END = '◀'
 const COLUMN_SEPARATOR = ' │ '
 const HORIZONTAL_LINE = '─'
 const SORT_ASC = '▲'

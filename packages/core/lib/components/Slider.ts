@@ -395,7 +395,11 @@ export class Slider extends View {
         )
       } else {
         const [bl, br] = hasFocus ? BRACKETS_FOCUS : BRACKETS_DEFAULT
-        viewport.write(`${bl}${arrows.left}${br}`, Point.zero, decreaseButtonStyle)
+        viewport.write(
+          `${bl}${arrows.left}${br}`,
+          Point.zero,
+          decreaseButtonStyle,
+        )
         viewport.write(
           `${bl}${arrows.right}${br}`,
           Point.zero.offset(viewport.contentSize.width - 3, 0),

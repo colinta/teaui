@@ -40,6 +40,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'components/text',
             'components/header',
+            'components/table',
             'components/digits',
             'components/progress',
             'components/spinner',

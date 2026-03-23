@@ -83,11 +83,11 @@ describe('Table', () => {
 
     it('moves selection with arrow keys', () => {
       const t = testRender(makeTable(), {width: 30, height: 8})
-      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
 
       t.sendKey('down')
       expect(t.terminal.textAtRow(2)).toBe(' Alice    │    30 │ New York')
-      expect(t.terminal.textAtRow(3)).toBe('▶Bob      │    25 │ Chicago')
+      expect(t.terminal.textAtRow(3)).toBe('▶Bob      │    25 │ Chicago  ◀')
     })
 
     it('clamps selection at top', () => {
@@ -96,7 +96,7 @@ describe('Table', () => {
         height: 8,
       })
       t.sendKey('up')
-      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
     })
 
     it('clamps selection at bottom', () => {
@@ -105,7 +105,7 @@ describe('Table', () => {
         height: 8,
       })
       t.sendKey('down')
-      expect(t.terminal.textAtRow(6)).toBe('▶Eve      │    42 │ Denver')
+      expect(t.terminal.textAtRow(6)).toBe('▶Eve      │    42 │ Denver   ◀')
     })
 
     it('Home/End jump to first/last row', () => {
@@ -114,10 +114,10 @@ describe('Table', () => {
         height: 8,
       })
       t.sendKey('home')
-      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
 
       t.sendKey('end')
-      expect(t.terminal.textAtRow(6)).toBe('▶Eve      │    42 │ Denver')
+      expect(t.terminal.textAtRow(6)).toBe('▶Eve      │    42 │ Denver   ◀')
     })
 
     it('fires onSelect on Enter', () => {
@@ -303,14 +303,20 @@ describe('Table', () => {
         makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
         {width: 35, height: 8},
       )
-      expect(t.terminal.textAtRow(2)).toBe('▶[ ] │ Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(2)).toBe(
+        '▶[ ] │ Alice    │    30 │ New York◀',
+      )
 
       t.sendKey('space')
-      expect(t.terminal.textAtRow(2)).toBe('▶[⨉] │ Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(2)).toBe(
+        '▶[✕] │ Alice    │    30 │ New York◀',
+      )
 
       // Toggle off
       t.sendKey('space')
-      expect(t.terminal.textAtRow(2)).toBe('▶[ ] │ Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(2)).toBe(
+        '▶[ ] │ Alice    │    30 │ New York◀',
+      )
     })
 
     it('multiple rows can be selected', () => {
@@ -321,8 +327,10 @@ describe('Table', () => {
       t.sendKey('space') // select Alice
       t.sendKey('down')
       t.sendKey('space') // select Bob
-      expect(t.terminal.textAtRow(2)).toBe(' [⨉] │ Alice    │    30 │ New York')
-      expect(t.terminal.textAtRow(3)).toBe('▶[⨉] │ Bob      │    25 │ Chicago')
+      expect(t.terminal.textAtRow(2)).toBe(' [✕] │ Alice    │    30 │ New York')
+      expect(t.terminal.textAtRow(3)).toBe(
+        '▶[✕] │ Bob      │    25 │ Chicago ◀',
+      )
       expect(t.terminal.textAtRow(4)).toBe(' [ ] │ Charlie  │    35 │ Austin')
     })
 
@@ -359,7 +367,7 @@ describe('Table', () => {
       expect(t.terminal.textAtRow(0)).toContain('[·]')
     })
 
-    it('header shows [⨉] when all items checked', () => {
+    it('header shows [✕] when all items checked', () => {
       const t = testRender(
         makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
         {width: 35, height: 8},
@@ -369,7 +377,7 @@ describe('Table', () => {
         t.sendKey('space')
         t.sendKey('down')
       }
-      expect(t.terminal.textAtRow(0)).toContain('[⨉]')
+      expect(t.terminal.textAtRow(0)).toContain('[✕]')
     })
 
     it('isSelectable shows checkbox column by default', () => {
