@@ -20,7 +20,6 @@ import {Stack} from './Stack.js'
 export class Log extends Container {
   #logs: LogLine[] = []
   #scrollableList = new ScrollableList({
-    scrollHeight: 10,
     items: this.#logs,
     renderItem: log => {
       return new LogLineView(log)
@@ -145,6 +144,7 @@ export class ConsoleLog extends Log {
     addLogListener(this.invalidateSize.bind(this))
     super.didMount(screen)
   }
+
   didUnmount(screen: Screen) {
     removeLogListener(this.invalidateSize.bind(this))
     super.didUnmount(screen)

@@ -14,11 +14,6 @@ interface Props<T> extends ViewProps {
    */
   showScrollbars?: boolean
   /**
-   * How many rows to scroll by when using the mouse wheel.
-   * @default 1
-   */
-  scrollHeight?: number
-  /**
    * Useful for log views
    */
   keepAtBottom?: boolean
@@ -30,17 +25,17 @@ interface ContentOffset {
 }
 
 export class ScrollableList<T> extends Container {
-  /**
-   * Your function here need not return "stable" views; the views returned by this
-   * function will be cached until you call `scrollableList.invalidateCache()` or
-   * `scrollableList.invalidateRow(row)`.
-   */
   #items: T[]
+  /**
+   * Your renderItem function need not return "stable" views; the views returned by
+   * this function will be cached until you call `scrollableList.invalidateCache()`
+   * or `scrollableList.invalidateRow(row)`.
+   */
   #renderItem: Props<T>['renderItem']
   #keepAtBottom: boolean
   #isAtBottom = true
   #showScrollbars: boolean
-  #scrollHeight: number
+  #scrollHeight: number = 1
 
   #contentOffset: ContentOffset
   #maxWidth: number = 0
@@ -52,7 +47,6 @@ export class ScrollableList<T> extends Container {
     renderItem,
     items,
     keepAtBottom,
-    scrollHeight,
     showScrollbars,
     ...viewProps
   }: Props<T>) {
@@ -60,7 +54,6 @@ export class ScrollableList<T> extends Container {
     this.#showScrollbars = showScrollbars ?? true
     this.#contentOffset = {row: 0, offset: 0}
     this.#renderItem = renderItem
-    this.#scrollHeight = scrollHeight ?? 1
     this.#items = items
     this.#keepAtBottom = keepAtBottom ?? false
   }

@@ -17,8 +17,6 @@ function makeScrollable(
   props: {
     keepAtBottom?: boolean
     showScrollbars?: boolean
-    scrollHeight?: number
-    scrollWidth?: number
   } = {},
 ) {
   return new Scrollable({
@@ -243,36 +241,6 @@ describe('Scrollable', () => {
     })
   })
 
-  describe('scrollHeight and scrollWidth props', () => {
-    it('scrollHeight controls vertical scroll amount', () => {
-      const t = testRender(
-        makeScrollable(20, {scrollHeight: 3, showScrollbars: false}),
-        {width: 10, height: 5},
-      )
-      expect(t.terminal.textAtRow(0)).toContain('Line 0')
-
-      t.sendMouse('mouse.wheel.down', {x: 0, y: 0})
-      t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 3')
-    })
-
-    it('scrollWidth controls horizontal scroll amount', () => {
-      const wideText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-      const scrollable = new Scrollable({
-        scrollWidth: 5,
-        showScrollbars: false,
-        children: [new Text({text: wideText})],
-      })
-      const t = testRender(scrollable, {width: 10, height: 1})
-      expect(t.terminal.textAtRow(0)).toContain('A')
-
-      t.sendMouse('mouse.wheel.left', {x: 0, y: 0})
-      t.render()
-      expect(t.terminal.textAtRow(0)).not.toContain('A')
-      expect(t.terminal.textAtRow(0)).toContain('F')
-    })
-  })
-
   describe('ctrl+wheel fast scrolling', () => {
     it('ctrl multiplies vertical scroll by 5', () => {
       const t = testRender(makeScrollable(30, {showScrollbars: false}), {
@@ -297,17 +265,6 @@ describe('Scrollable', () => {
       t.sendMouse('mouse.wheel.left', {x: 0, y: 0}, {ctrl: true})
       t.render()
       expect(t.terminal.textAtRow(0)).toContain('K')
-    })
-
-    it('ctrl + custom scrollHeight stacks', () => {
-      const t = testRender(
-        makeScrollable(50, {scrollHeight: 2, showScrollbars: false}),
-        {width: 10, height: 5},
-      )
-
-      t.sendMouse('mouse.wheel.down', {x: 0, y: 0}, {ctrl: true})
-      t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 10')
     })
   })
 

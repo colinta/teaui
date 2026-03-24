@@ -31,16 +31,6 @@ interface Props extends ContainerProps {
    */
   showScrollbars?: boolean | 'horizontal' | 'vertical'
   /**
-   * How many rows to scroll by when using the mouse wheel.
-   * @default 1
-   */
-  scrollHeight?: number
-  /**
-   * How many cols to scroll by when using the mouse wheel.
-   * @default 2
-   */
-  scrollWidth?: number
-  /**
    * When true, automatically scrolls to the bottom when content grows,
    * as long as the view was already at the bottom. Useful for log views.
    * @default false
@@ -185,8 +175,6 @@ export class Scrollable extends Container {
 
   #update({
     scrollable,
-    scrollHeight,
-    scrollWidth,
     showScrollbars,
     keepAtBottom,
     contentSize: contentSizeOverride,
@@ -195,8 +183,6 @@ export class Scrollable extends Container {
   }: Props) {
     this.#scrollable = scrollable ?? 'both'
     this.#showScrollbars = showScrollbars ?? true
-    this.#scrollHeight = scrollHeight ?? 1
-    this.#scrollWidth = scrollWidth ?? 2
     this.#keepAtBottom = keepAtBottom ?? false
     this.#contentSizeOverride = contentSizeOverride
     this.#onOffsetChange = onOffsetChange
