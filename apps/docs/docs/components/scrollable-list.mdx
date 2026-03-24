@@ -7,30 +7,7 @@ title: ScrollableList
 
 Virtualized scrollable list. Only renders visible rows, making it efficient for large datasets.
 
-:::note Core API Only
-ScrollableList is not available as a React component because `renderItem` returns core `View` instances, not React elements. Use `Scrollable` with React children for React apps, or use ScrollableList directly via the core API for large virtualized lists.
-:::
-
-## React Example
-
-```tsx
-import React from 'react'
-import {ScrollableList, Text, run} from '@teaui/react'
-
-const items = Array.from({length: 1000}, (_, i) => `Item ${i + 1}`)
-
-function App() {
-  return (
-    <ScrollableList
-      height={15}
-      items={items}
-      renderItem={item => new Text({text: item})}
-    />
-  )
-}
-
-run(<App />)
-```
+<Example name="scrollable-list" title="ScrollableList" />
 
 ## Props
 

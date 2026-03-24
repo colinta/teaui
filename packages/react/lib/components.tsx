@@ -11,6 +11,7 @@ import type {
   Checkbox as WrCheckbox,
   Collapsible as WrCollapsible,
   CollapsibleText as WrCollapsibleText,
+  // Log as WrLog?
   ConsoleLog as WrConsoleLog,
   Digits as WrDigits,
   Drawer as WrDrawer,
@@ -25,15 +26,13 @@ import type {
   Stack as WrStack,
   Input as WrInput,
   Legend as WrLegend,
-  // Log,
   Progress as WrProgress,
-  // ScrollableList,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
   Slider as WrSlider,
   Space as WrSpace,
   Spinner as WrSpinner,
-  Table as WrTable,
+  ScrollableList as WrList,
   Tree as WrTree,
   Page as WrPage,
   Tabs as WrTabs,
@@ -168,6 +167,7 @@ declare module 'react' {
       'tui-spinner': WithRef<SpinnerProps, WrSpinner>
       'tui-logo': WithRef<LogoProps, WrLogo>
       'tui-zstack': WithRef<ZStackProps, WrZStack>
+      'tui-list': any
       'tui-table': any
       'tui-toggle-group': WithRef<ToggleGroupProps, WrToggleGroup>
 
@@ -740,6 +740,79 @@ export const Text = forwardRef<TextProvider, TextProps>(
 ////
 /// Virtualized components
 //
+
+interface ReactListProps<TData> extends ViewProps {
+  data: TData[]
+  renderItem: (item: TData, index: number) => React.ReactNode
+  /**
+   * Filter function that determines which items are visible.
+   * Return `true` to keep the item, `false` to hide it.
+   * Cached views are preserved when the filter changes (only cleared when `data` changes).
+   */
+  filter?: (item: TData) => boolean
+  /**
+   * Height of each row. Default: 1.
+   */
+  rowHeight?: number
+  selectedIndex?: number
+  /**
+   * Fired when the user presses Enter on a row, or clicks a data row.
+   */
+  onSelect?: (item: TData, index: number) => void
+  /**
+   * Fired when the highlighted row changes (keyboard navigation or click).
+   */
+  onHighlight?: (item: TData, index: number) => void
+  /**
+   * Enable multi-selection (space bar or click to toggle). Default: false.
+   */
+  isSelectable?: boolean
+  /**
+   * Show a checkbox column ([ ]/[✕]) for multi-selection. Implies isSelectable. Default: false.
+   */
+  showSelected?: boolean
+  /**
+   * Notification fired when the set of selected items changes.
+   */
+  onSelectionChange?: (selectedItems: Set<TData>) => void
+}
+
+/**
+ * List component with virtualized row rendering via React children.
+ *
+ * Similar to Table, this accepts a `renderItem` callback that returns JSX.
+ * The core List handles scrolling, keyboard/mouse navigation, and selection
+ * highlighting, while React renders each visible item.
+ *
+ * ```tsx
+ * <List
+ *   data={items}
+ *   renderItem={(item, index) => <Text>{item.name}</Text>}
+ *   onSelect={(item) => console.log('Selected:', item)}
+ * />
+ * ```
+ */
+export function ScrollableList<TData>(
+  reactProps: ReactListProps<TData>,
+): JSX.Element {
+  const {data, renderItem, filter, ...props} = reactProps
+
+  const filteredData = useMemo(
+    () => (filter ? data.filter(filter) : data),
+    [data, filter],
+  )
+
+  // The React List omits renderItem from the core props. Instead, it renders
+  // data items as React children. The core List detects the missing renderItem
+  // and renders its Container children by index, which the reconciler manages.
+  return (
+    <tui-list data={filteredData} {...props}>
+      {filteredData.map((item, index) => (
+        <React.Fragment key={index}>{renderItem(item, index)}</React.Fragment>
+      ))}
+    </tui-list>
+  )
+}
 
 interface ReactTableProps<TData> extends ViewProps {
   data: TData[]

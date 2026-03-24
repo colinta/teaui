@@ -45,6 +45,7 @@ import {
   Page,
   ZStack,
   Stack,
+  ScrollableList,
   Table,
   Tabs,
   ToggleGroup,
@@ -207,6 +208,8 @@ function createInstance(type: string, props: Props): any {
     case 'style':
     case 'tui-style':
       return new TextStyle(props as any)
+    case 'tui-list':
+      return new ScrollableList(props as any)
     case 'table':
     case 'tui-table':
       return new Table(props as any)

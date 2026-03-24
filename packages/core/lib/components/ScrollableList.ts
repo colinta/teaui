@@ -7,7 +7,13 @@ import {type MouseEvent, isMouseDragging} from '../events/index.js'
 
 interface Props<T> extends ViewProps {
   data: T[]
-  renderItem: (item: T, row: number) => View
+  renderItem?: (item: T, row: number) => View
+  /**
+   * Filter function that determines which items are visible.
+   * Return `true` to keep the item, `false` to hide it.
+   * Cached views are preserved when the filter changes (only cleared when `data` changes).
+   */
+  filter?: (item: T) => boolean
   /**
    * Show/hide the scrollbars
    * @default true
@@ -26,12 +32,14 @@ interface ContentOffset {
 
 export class ScrollableList<T> extends Container {
   #data: T[]
+  #filteredData: T[]
   /**
    * Your renderItem function need not return "stable" views; the views returned by
    * this function will be cached until you call `scrollableList.invalidateCache()`
    * or `scrollableList.invalidateRow(row)`.
    */
   #renderItem: Props<T>['renderItem']
+  #filter?: (item: T) => boolean
   #keepAtBottom: boolean
   #isAtBottom = true
   #showScrollbars: boolean
@@ -46,6 +54,7 @@ export class ScrollableList<T> extends Container {
   constructor({
     renderItem,
     data,
+    filter,
     keepAtBottom,
     showScrollbars,
     ...viewProps
@@ -54,7 +63,9 @@ export class ScrollableList<T> extends Container {
     this.#showScrollbars = showScrollbars ?? true
     this.#contentOffset = {row: 0, offset: 0}
     this.#renderItem = renderItem
+    this.#filter = filter
     this.#data = data
+    this.#filteredData = filter ? data.filter(filter) : data
     this.#keepAtBottom = keepAtBottom ?? false
   }
 
@@ -63,7 +74,12 @@ export class ScrollableList<T> extends Container {
     super.update(props)
   }
 
-  #update({}: Props<T>) {}
+  #update({filter}: Props<T>) {
+    if (filter !== this.#filter) {
+      this.#filter = filter
+      this.#applyFilter()
+    }
+  }
 
   naturalSize(available: Size): Size {
     let {row, offset: y} = this.#contentOffset
@@ -145,7 +161,7 @@ export class ScrollableList<T> extends Container {
       )
       this.#isAtBottom = heightY === maxY
       const cellWidth = this.contentSize.width
-      for (let row = 0, y = 0; row < this.#data.length; row++) {
+      for (let row = 0, y = 0; row < this.#filteredData.length; row++) {
         const rowHeight = this.sizeForRow(row, cellWidth)?.height
         if (rowHeight === undefined) {
           break
@@ -211,18 +227,45 @@ export class ScrollableList<T> extends Container {
     }
   }
 
+  #applyFilter() {
+    this.#filteredData = this.#filter
+      ? this.#data.filter(this.#filter)
+      : this.#data
+    this.#contentOffset = {row: 0, offset: 0}
+    this.invalidateAllRows('size')
+    super.invalidateSize()
+  }
+
+  updateFilter(filter?: (item: T) => boolean) {
+    this.#filter = filter
+    this.#applyFilter()
+  }
+
+  /**
+   * Re-applies the current filter. Useful when the filter function captures
+   * external state that has changed without the function reference itself changing.
+   */
+  refresh() {
+    this.#applyFilter()
+  }
+
   updateData(data: T[]) {
     this.#data = data
+    this.#filteredData = this.#filter ? data.filter(this.#filter) : data
     this.invalidateAllRows('view')
     this.invalidateSize()
   }
 
   viewForRow(row: number): View | undefined {
-    if (row < 0 || row >= this.#data.length) {
+    if (row < 0 || row >= this.#filteredData.length) {
       return
     }
 
-    const item = this.#data[row]
+    if (!this.#renderItem) {
+      return this.children[row]
+    }
+
+    const item = this.#filteredData[row]
     let view = this.#viewCache.get(item)
     if (!view) {
       view = this.#renderItem(item, row)
@@ -237,7 +280,7 @@ export class ScrollableList<T> extends Container {
   sizeForRow(row: number, contentWidth: number, view: View): Size
   sizeForRow(row: number, contentWidth: number): Size | undefined
   sizeForRow(row: number, contentWidth: number, view?: View): Size | undefined {
-    const item = this.#data[row]
+    const item = this.#filteredData[row]
     if (contentWidth === this.contentSize.width && item) {
       const size = this.#sizeCache.get(item)
       if (size !== undefined) {
@@ -263,7 +306,7 @@ export class ScrollableList<T> extends Container {
   }
 
   lastOffset(): ContentOffset {
-    const cellCount = this.#data.length
+    const cellCount = this.#filteredData.length
     const cellWidth = this.contentSize.width
     let row = cellCount - 1
     let y = 0
@@ -292,7 +335,7 @@ export class ScrollableList<T> extends Container {
     viewport.registerMouse('mouse.wheel')
 
     if (
-      this.#contentOffset.row >= this.#data.length ||
+      this.#contentOffset.row >= this.#filteredData.length ||
       (this.#keepAtBottom && this.#isAtBottom)
     ) {
       const offset = this.lastOffset()
@@ -366,7 +409,7 @@ export class ScrollableList<T> extends Container {
       )
 
       heights[2] = heights[1]
-      for (let i = row; i < this.#data.length; i++) {
+      for (let i = row; i < this.#filteredData.length; i++) {
         const rowHeight = this.sizeForRow(i, cellWidth)?.height
         if (rowHeight === undefined) {
           break
