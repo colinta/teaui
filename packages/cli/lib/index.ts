@@ -1,11 +1,14 @@
 import {mkdir, readFile, writeFile, readdir} from 'fs/promises'
-import {join} from 'path'
+import {fileURLToPath} from 'url'
+import {dirname, join} from 'path'
+
+const DIST_DIR = dirname(fileURLToPath(import.meta.url))
 
 export async function create(name: string, options: {framework: string}) {
   const appPath = join(process.cwd(), name)
   await mkdir(appPath, {recursive: true})
 
-  const templatePath = join(__dirname, 'frameworks', options.framework)
+  const templatePath = join(DIST_DIR, 'frameworks', options.framework)
   const templateFiles = await readdir(templatePath)
 
   for (const file of templateFiles) {

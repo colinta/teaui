@@ -28,7 +28,7 @@ program
   )
   .action(async (name: string, options: {framework: string}) => {
     try {
-      create(name, options)
+      await create(name, options)
     } catch (error) {
       console.error(`Error creating application: ${error}`)
       process.exit(1)
