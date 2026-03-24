@@ -71,17 +71,24 @@ type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
 type ConsoleProps = TUIView<typeof WrConsoleLog>
 type DigitsProps = TUIView<typeof WrDigits>
 type GeometryProps = TUIContainer<typeof WrGeometry>
-type DropdownProps = {
-  choices: [string, any][]
-  selected?: any
-  onSelect?: (value: any) => void
-  multiple?: boolean
+interface SharedDropdownProps<T> extends ViewProps {
+  choices: [string, T][]
   title?: string
-  theme?: string
-  height?: number | 'shrink'
-  width?: number | 'shrink'
-  flex?: number
 }
+
+interface DropdownSelectOne<T> extends SharedDropdownProps<T> {
+  multiple?: false
+  selected?: T
+  onSelect?: (value: T) => void
+}
+
+interface DropdownSelectMultiple<T> extends SharedDropdownProps<T> {
+  multiple: true
+  selected?: readonly T[]
+  onSelect?: (value: T[]) => void
+}
+
+type DropdownProps<T> = DropdownSelectOne<T> | DropdownSelectMultiple<T>
 type HeaderProps = {text?: string; children?: string}
 type HotKeyProps = TUIView<typeof WrHotKey>
 type KeyboardProps = TUIContainer<typeof WrKeyboard>
@@ -141,7 +148,7 @@ declare module 'react' {
       'tui-collapsible-text': WithRef<CollapsibleTextProps, WrCollapsibleText>
       'tui-console': WithRef<ConsoleProps, WrConsoleLog>
       'tui-digits': WithRef<DigitsProps, WrDigits>
-      'tui-dropdown': WithRef<DropdownProps, WrDropdown<any, any>>
+      'tui-dropdown': WithRef<DropdownProps<any>, WrDropdown<any, any>>
       'tui-geometry': WithRef<GeometryProps, WrGeometry>
       'tui-hotkey': WithRef<HotKeyProps, WrHotKey>
       'tui-keyboard': WithRef<KeyboardProps, WrKeyboard>
@@ -250,11 +257,9 @@ export const Digits = forwardRef<WrDigits, DigitsProps>(
     return <tui-digits ref={ref} {...reactProps} />
   },
 )
-export const Dropdown = forwardRef<WrDropdown<any, any>, DropdownProps>(
-  function Dropdown(reactProps, ref): JSX.Element {
-    return <tui-dropdown ref={ref} {...reactProps} />
-  },
-)
+export function Dropdown<T>(reactProps: DropdownProps<T>): JSX.Element {
+  return <tui-dropdown {...(reactProps as DropdownProps<any>)} />
+}
 export const HotKey = forwardRef<WrHotKey, HotKeyProps>(
   function HotKey(reactProps, ref): JSX.Element {
     return <tui-hotkey ref={ref} {...reactProps} />
