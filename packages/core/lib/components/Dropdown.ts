@@ -254,7 +254,7 @@ class DropdownSelector<T> extends Container {
       },
     })
     this.#scrollView = new ScrollableList({
-      items: this.#choices.map(([, choice]) => choice),
+      data: this.#choices.map(([, choice]) => choice),
       renderItem: (choice, row) => this.renderItem(choice, row),
     })
     const content = new Stack({direction: 'down', children: []})
@@ -343,7 +343,7 @@ class DropdownSelector<T> extends Container {
         return [index]
       }),
     )
-    this.#scrollView.updateItems(choices.map(([, choice]) => choice))
+    this.#scrollView.updateData(choices.map(([, choice]) => choice))
   }
 
   renderItem(choice: T, row: number): View {

@@ -6,7 +6,7 @@ import {Rect, Point, Size, interpolate} from '../geometry.js'
 import {type MouseEvent, isMouseDragging} from '../events/index.js'
 
 interface Props<T> extends ViewProps {
-  items: T[]
+  data: T[]
   renderItem: (item: T, row: number) => View
   /**
    * Show/hide the scrollbars
@@ -25,7 +25,7 @@ interface ContentOffset {
 }
 
 export class ScrollableList<T> extends Container {
-  #items: T[]
+  #data: T[]
   /**
    * Your renderItem function need not return "stable" views; the views returned by
    * this function will be cached until you call `scrollableList.invalidateCache()`
@@ -45,7 +45,7 @@ export class ScrollableList<T> extends Container {
 
   constructor({
     renderItem,
-    items,
+    data,
     keepAtBottom,
     showScrollbars,
     ...viewProps
@@ -54,7 +54,7 @@ export class ScrollableList<T> extends Container {
     this.#showScrollbars = showScrollbars ?? true
     this.#contentOffset = {row: 0, offset: 0}
     this.#renderItem = renderItem
-    this.#items = items
+    this.#data = data
     this.#keepAtBottom = keepAtBottom ?? false
   }
 
@@ -145,7 +145,7 @@ export class ScrollableList<T> extends Container {
       )
       this.#isAtBottom = heightY === maxY
       const cellWidth = this.contentSize.width
-      for (let row = 0, y = 0; row < this.#items.length; row++) {
+      for (let row = 0, y = 0; row < this.#data.length; row++) {
         const rowHeight = this.sizeForRow(row, cellWidth)?.height
         if (rowHeight === undefined) {
           break
@@ -211,18 +211,18 @@ export class ScrollableList<T> extends Container {
     }
   }
 
-  updateItems(items: T[]) {
-    this.#items = items
+  updateData(data: T[]) {
+    this.#data = data
     this.invalidateAllRows('view')
     this.invalidateSize()
   }
 
   viewForRow(row: number): View | undefined {
-    if (row < 0 || row >= this.#items.length) {
+    if (row < 0 || row >= this.#data.length) {
       return
     }
 
-    const item = this.#items[row]
+    const item = this.#data[row]
     let view = this.#viewCache.get(item)
     if (!view) {
       view = this.#renderItem(item, row)
@@ -237,7 +237,7 @@ export class ScrollableList<T> extends Container {
   sizeForRow(row: number, contentWidth: number, view: View): Size
   sizeForRow(row: number, contentWidth: number): Size | undefined
   sizeForRow(row: number, contentWidth: number, view?: View): Size | undefined {
-    const item = this.#items[row]
+    const item = this.#data[row]
     if (contentWidth === this.contentSize.width && item) {
       const size = this.#sizeCache.get(item)
       if (size !== undefined) {
@@ -263,7 +263,7 @@ export class ScrollableList<T> extends Container {
   }
 
   lastOffset(): ContentOffset {
-    const cellCount = this.#items.length
+    const cellCount = this.#data.length
     const cellWidth = this.contentSize.width
     let row = cellCount - 1
     let y = 0
@@ -292,7 +292,7 @@ export class ScrollableList<T> extends Container {
     viewport.registerMouse('mouse.wheel')
 
     if (
-      this.#contentOffset.row >= this.#items.length ||
+      this.#contentOffset.row >= this.#data.length ||
       (this.#keepAtBottom && this.#isAtBottom)
     ) {
       const offset = this.lastOffset()
@@ -366,7 +366,7 @@ export class ScrollableList<T> extends Container {
       )
 
       heights[2] = heights[1]
-      for (let i = row; i < this.#items.length; i++) {
+      for (let i = row; i < this.#data.length; i++) {
         const rowHeight = this.sizeForRow(i, cellWidth)?.height
         if (rowHeight === undefined) {
           break

@@ -20,7 +20,7 @@ import {Stack} from './Stack.js'
 export class Log extends Container {
   #logs: LogLine[] = []
   #scrollableList = new ScrollableList({
-    items: this.#logs,
+    data: this.#logs,
     renderItem: log => {
       return new LogLineView(log)
     },
@@ -35,7 +35,7 @@ export class Log extends Container {
 
   setLogs(logs: LogLine[]) {
     this.#logs = logs
-    this.#scrollableList.updateItems(logs)
+    this.#scrollableList.updateData(logs)
   }
 
   appendLog(log: LogLine) {
@@ -44,7 +44,7 @@ export class Log extends Container {
 
   clear() {
     this.#logs = []
-    this.#scrollableList.updateItems(this.#logs)
+    this.#scrollableList.updateData(this.#logs)
   }
 }
 
