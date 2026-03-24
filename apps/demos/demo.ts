@@ -8,12 +8,12 @@ import {
   interceptConsoleLog,
 } from '@teaui/core'
 
+interceptConsoleLog()
+
 export async function demo(
   demoContent: View,
   showConsoleLog: boolean | number = true,
 ) {
-  interceptConsoleLog()
-
   process.title = 'TeaUI'
   if (process.argv.includes('--no-log')) {
     showConsoleLog = false

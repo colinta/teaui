@@ -1,6 +1,5 @@
 import {
   inspect,
-  interceptConsoleLog,
   Accordion,
   Box,
   Button,
@@ -37,8 +36,6 @@ import {
 } from '@teaui/core'
 
 import {demo} from './demo.js'
-
-interceptConsoleLog()
 
 // Log,
 // ScrollableList,

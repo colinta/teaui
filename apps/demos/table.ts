@@ -1,13 +1,5 @@
-import {
-  interceptConsoleLog,
-  Checkbox,
-  Stack,
-  Table,
-  type Column,
-} from '@teaui/core'
+import {Checkbox, Stack, Table, type Column} from '@teaui/core'
 import {demo} from './demo.js'
-
-interceptConsoleLog()
 
 interface Person {
   name: string

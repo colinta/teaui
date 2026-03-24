@@ -1,15 +1,6 @@
-import {
-  Box,
-  Stack,
-  Input,
-  Space,
-  interceptConsoleLog,
-  Scrollable,
-} from '@teaui/core'
+import {Box, Stack, Input, Space, Scrollable} from '@teaui/core'
 
 import {demo} from './demo.js'
-
-interceptConsoleLog()
 
 const singleLine = new Input({
   value: "family: 👨‍👩‍👧‍👦 smiley: 😀 some other text that isn't very interesting.",
