@@ -1,4 +1,12 @@
-import {Input, ScrollableList, Separator, Stack, Style, Text} from '@teaui/core'
+import {
+  Align,
+  Input,
+  ScrollableList,
+  Separator,
+  Stack,
+  Style,
+  Text,
+} from '@teaui/core'
 import {demo} from './demo.js'
 
 interface Movie {
@@ -85,13 +93,23 @@ const list = new ScrollableList<Movie>({
     return Stack.down({
       children: [
         new Text({text: `  ${item.title}`, style: titleStyle()}),
-        new Text({
-          text: `  Actors   ${PIPE} ${item.actors.join(', ')}`,
-          style: actorsStyle(),
-        }),
-        new Text({
-          text: `  Released ${PIPE} ${item.released}`,
-          style: releasedStyle(),
+        new Align({
+          children: [
+            Align.row([
+              new Text({text: '  Actors', style: actorsStyle()}),
+              new Text({
+                text: item.actors.join(', '),
+                style: actorsStyle(),
+              }),
+            ]),
+            Align.row([
+              new Text({text: '  Released', style: releasedStyle()}),
+              new Text({
+                text: `${item.released}`,
+                style: releasedStyle(),
+              }),
+            ]),
+          ],
         }),
       ],
     })
@@ -116,5 +134,3 @@ function actorsStyle(): Style {
 function releasedStyle(): Style {
   return new Style({foreground: 'green'})
 }
-
-const PIPE = '│'

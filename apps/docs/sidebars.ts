@@ -14,6 +14,7 @@ const sidebars: SidebarsConfig = {
           label: '░ Layout',
           items: [
             'components/container',
+            'components/align',
             'components/box',
             'components/stack',
             'components/space',

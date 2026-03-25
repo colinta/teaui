@@ -1,6 +1,8 @@
 import React, {forwardRef, useCallback, useMemo, useState} from 'react'
 import type {
   Accordion as WrAccordion,
+  Align as WrAlign,
+  AlignRow as WrAlignRow,
   Alert as WrAlert,
   Box as WrBox,
   Breadcrumb as WrBreadcrumb,
@@ -107,6 +109,8 @@ type ToggleGroupProps = TUIView<typeof WrToggleGroup>
 
 type AlertProps = TUIContainer<typeof WrAlert>
 type CalloutProps = TUIContainer<typeof WrCallout>
+type AlignProps = TUIContainer<typeof WrAlign>
+type AlignRowProps = TUIContainer<typeof WrAlignRow>
 type ModalProps = TUIContainer<typeof WrModal>
 
 // "simple" containers
@@ -139,6 +143,8 @@ declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
       // views
+      'tui-align': WithRef<AlignProps, WrAlign>
+      'tui-align-row': WithRef<AlignRowProps, WrAlignRow>
       'tui-br': {}
       'tui-breadcrumb': WithRef<BreadcrumbProps, WrBreadcrumb>
       'tui-calendar': WithRef<CalendarProps, WrCalendar>
@@ -213,6 +219,79 @@ declare module 'react' {
 ////
 /// Views
 //
+
+type AlignDirectionProps = Omit<AlignProps, 'direction'>
+type AlignDirectionComponent = React.ForwardRefExoticComponent<
+  AlignDirectionProps & React.RefAttributes<WrAlign>
+>
+interface Align {
+  (reactProps: AlignProps): JSX.Element
+  down: AlignDirectionComponent
+  up: AlignDirectionComponent
+  left: AlignDirectionComponent
+  right: AlignDirectionComponent
+  column: AlignDirectionComponent
+  Row: (props: AlignRowProps) => JSX.Element
+  Column: (props: AlignRowProps) => JSX.Element
+}
+export const Align: Align = forwardRef<WrAlign, AlignProps>(function Align(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-align ref={ref} {...props}>
+      {children}
+    </tui-align>
+  )
+}) as unknown as Align
+Align.down = forwardRef<WrAlign, AlignDirectionProps>(function AlignDown(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-align ref={ref} direction="down" {...props}>
+      {children}
+    </tui-align>
+  )
+})
+Align.up = forwardRef<WrAlign, AlignDirectionProps>(function AlignUp(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-align ref={ref} direction="up" {...props}>
+      {children}
+    </tui-align>
+  )
+})
+Align.right = forwardRef<WrAlign, AlignDirectionProps>(function AlignRight(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-align ref={ref} direction="right" {...props}>
+      {children}
+    </tui-align>
+  )
+})
+Align.left = forwardRef<WrAlign, AlignDirectionProps>(function AlignLeft(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-align ref={ref} direction="left" {...props}>
+      {children}
+    </tui-align>
+  )
+})
+Align.column = Align.right
+Align.Row = function AlignRow({
+  children,
+  ...props
+}: AlignRowProps): JSX.Element {
+  return <tui-align-row {...props}>{children}</tui-align-row>
+}
+Align.Column = Align.Row
 
 export function Br(): JSX.Element {
   return <tui-br />

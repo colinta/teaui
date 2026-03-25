@@ -1,0 +1,52 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Align > column layout (left) > lays out columns right to left 1`] = `
+"CA
+  │
+DB"
+`;
+
+exports[`Align > column layout (right) > lays out columns left to right 1`] = `
+"AC
+  │
+BD"
+`;
+
+exports[`Align > mixed content > renders AlignRows and plain views interleaved 1`] = `
+"Header
+Name │ Alice
+Age  │ 30
+Footer"
+`;
+
+exports[`Align > row layout (down) > aligns columns across rows 1`] = `
+"Actors   │ Keanu Reeves, Lori Petty
+Released │ 1991"
+`;
+
+exports[`Align > row layout (down) > aligns three columns 1`] = `
+"A   │ BB │ CCC
+DDD │ E  │ F"
+`;
+
+exports[`Align > row layout (down) > handles empty Align 1`] = `""`;
+
+exports[`Align > row layout (down) > non-AlignRow children span full width 1`] = `
+"Title Line
+Key │ Value"
+`;
+
+exports[`Align > row layout (down) > renders single row 1`] = `"Only │ Row"`;
+
+exports[`Align > row layout (down) > renders with custom separator 1`] = `"Left | Right"`;
+
+exports[`Align > static constructors > Align.down creates down-direction 1`] = `"X │ Y"`;
+
+exports[`Align > up direction > renders rows bottom to top 1`] = `
+"Second │ B
+First  │ A"
+`;
+
+exports[`Align > update > updates children via update() 1`] = `"A │ B"`;
+
+exports[`Align > update > updates children via update() 2`] = `"CC │ DD"`;

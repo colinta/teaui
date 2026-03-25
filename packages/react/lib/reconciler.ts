@@ -4,6 +4,8 @@ import ReactReconciler from 'react-reconciler'
 import {DefaultEventPriority} from 'react-reconciler/constants.js'
 import {
   Accordion,
+  Align,
+  AlignRow,
   Alert,
   Box,
   Breadcrumb,
@@ -90,6 +92,12 @@ function createInstance(type: string, props: Props): any {
 
   switch (type) {
     // views
+    case 'align':
+    case 'tui-align':
+      return new Align(props as any)
+    case 'align-row':
+    case 'tui-align-row':
+      return new AlignRow(props as any)
     case 'br':
     case 'tui-br':
       return new TextLiteral('\n')
