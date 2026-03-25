@@ -5,6 +5,7 @@ import {
   Input,
   ScrollableList,
   Separator,
+  Space,
   Stack,
   Style,
   Text,
@@ -84,14 +85,14 @@ export function ListTab() {
         filter={filter}
         renderItem={item => (
           <Stack.down>
-            <Text>
-              {'  '}
+            <Text padding={{left: 2}}>
               <Style bold foreground="yellow">
                 {item.title}
               </Style>
             </Text>
             <Align>
               <Align.Row>
+                <Space width={2} />
                 <Text>
                   {'  '}
                   <Style foreground="cyan">Actors</Style>

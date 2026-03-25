@@ -3,6 +3,7 @@ import {
   Input,
   ScrollableList,
   Separator,
+  Space,
   Stack,
   Style,
   Text,
@@ -92,18 +93,20 @@ const list = new ScrollableList<Movie>({
   renderItem(item) {
     return Stack.down({
       children: [
-        new Text({text: `  ${item.title}`, style: titleStyle()}),
+        new Text({padding: {left: 2}, text: item.title, style: titleStyle()}),
         new Align({
           children: [
             Align.row([
-              new Text({text: '  Actors', style: actorsStyle()}),
+              Space.horizontal(2),
+              new Text({text: 'Actors', style: actorsStyle()}),
               new Text({
                 text: item.actors.join(', '),
                 style: actorsStyle(),
               }),
             ]),
             Align.row([
-              new Text({text: '  Released', style: releasedStyle()}),
+              Space.horizontal(2),
+              new Text({text: 'Released', style: releasedStyle()}),
               new Text({
                 text: `${item.released}`,
                 style: releasedStyle(),
