@@ -1,0 +1,58 @@
+---
+sidebar_position: 3
+title: Align
+---
+
+import Example from '@site/src/components/Example'
+
+# Align
+
+Aligns children into columns. Each `Align.Row` groups cells that are aligned
+across all rows — the column widths are computed as the maximum cell width at
+each position. Children that are not `Align.Row` instances span the full width.
+
+<Example name="align" title="Align" />
+
+## Usage
+
+```tsx
+<Align>
+  <Align.Row>
+    <Text>Actors</Text>
+    <Text>Keanu Reeves, Lori Petty</Text>
+  </Align.Row>
+  <Align.Row>
+    <Text>Released</Text>
+    <Text>1991</Text>
+  </Align.Row>
+</Align>
+```
+
+## Direction Shortcuts
+
+- `<Align>` / `<Align.down>` — rows stack top-to-bottom (default)
+- `<Align.up>` — rows stack bottom-to-top
+- `<Align.right>` / `<Align.column>` — columns stack left-to-right
+- `<Align.left>` — columns stack right-to-left
+
+## Props
+
+| Prop             | Type                                  | Default  | Description                             |
+| ---------------- | ------------------------------------- | -------- | --------------------------------------- |
+| `direction`      | `'up' \| 'down' \| 'left' \| 'right'` | `'down'` | Layout direction                        |
+| `separator`      | `string`                              | `'│'`    | Character drawn between aligned columns |
+| `separatorStyle` | `Style`                               | —        | Style applied to the separator          |
+| `children`       | `ReactNode`                           | —        | `Align.Row` or other child views        |
+
+## Core API
+
+```ts
+new Align({
+  children: [
+    Align.row([new Text({text: 'Actors'}), new Text({text: 'Keanu Reeves'})]),
+    Align.row([new Text({text: 'Released'}), new Text({text: '1991'})]),
+  ],
+})
+```
+
+Static constructors: `Align.down()`, `Align.up()`, `Align.right()`, `Align.left()`, `Align.column()`

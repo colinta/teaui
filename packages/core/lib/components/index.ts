@@ -1,4 +1,5 @@
 export {Accordion} from './Accordion.js'
+export * from './Align.js'
 export {Alert} from './Alert.js'
 export {Callout} from './Callout.js'
 export {Calendar} from './Calendar.js'

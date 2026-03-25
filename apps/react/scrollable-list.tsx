@@ -1,6 +1,7 @@
 import React, {useState, useCallback} from 'react'
 import {interceptConsoleLog} from '@teaui/core'
 import {
+  Align,
   Input,
   ScrollableList,
   Separator,
@@ -15,8 +16,6 @@ interface Movie {
   actors: string[]
   released: number
 }
-
-const PIPE = '│'
 
 const MOVIES: Movie[] = [
   {
@@ -91,18 +90,26 @@ export function ListTab() {
                 {item.title}
               </Style>
             </Text>
-            <Text>
-              {'  '}
-              <Style foreground="cyan">
-                Actors {PIPE} {item.actors.join(', ')}
-              </Style>
-            </Text>
-            <Text>
-              {'  '}
-              <Style foreground="green">
-                Released {PIPE} {item.released}
-              </Style>
-            </Text>
+            <Align>
+              <Align.Row>
+                <Text>
+                  {'  '}
+                  <Style foreground="cyan">Actors</Style>
+                </Text>
+                <Text>
+                  <Style foreground="cyan">{item.actors.join(', ')}</Style>
+                </Text>
+              </Align.Row>
+              <Align.Row>
+                <Text>
+                  {'  '}
+                  <Style foreground="green">Released</Style>
+                </Text>
+                <Text>
+                  <Style foreground="green">{item.released}</Style>
+                </Text>
+              </Align.Row>
+            </Align>
           </Stack.down>
         )}
         flex={1}
