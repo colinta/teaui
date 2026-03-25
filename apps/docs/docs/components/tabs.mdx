@@ -18,7 +18,13 @@ Tabbed container with clickable tab headers. Switch between views.
 | Prop       | Type             | Default | Description                |
 | ---------- | ---------------- | ------- | -------------------------- |
 | `border`   | `boolean`        | `true`  | Draw border around content |
+| `selected` | `number`         | `0`     | Selected tab index         |
 | `children` | `Tabs.Section[]` | —       | Tab sections               |
+
+## API
+
+- `tabs.select(index: number)` — select a tab programmatically.
+- `tabs.update({selected})` — update the selected tab from imperative or React-driven state.
 
 ### Tabs.Section
 

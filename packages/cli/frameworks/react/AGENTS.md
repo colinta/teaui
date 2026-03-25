@@ -32,7 +32,7 @@ Most components accept common view props: `theme`, `heading`, `x/y`, `width/heig
 - `Modal` — modal overlay. Props: `children`, `dim?`, `dimStyle?`, `dismissOnClick?`, `dismissOnEsc?`, `onDismiss?`.
 - `Drawer` — slide-out panel. Props: `content?`, `drawer?`, `children`, `location?`, `isOpen?`, `onToggle?`, `hotKey?`, `title?`. Helpers: `.top/.right/.bottom/.left`.
 - `Accordion` — expandable sections. Props: `children`, `multiple?`. `Accordion.Section`: `children`, `title?`, `isOpen?`.
-- `Tabs` — tabbed sections. Props: `children`, `border?`. `Tabs.Section`: `children`, `title?`.
+- `Tabs` — tabbed sections. Props/API: `children`, `border?`, `selected?`; ref supports `select(index)` and `update({selected})`. `Tabs.Section`: `children`, `title?`.
 - `Page` — full-page section switcher. Props: `children`, `activeIndex?`, `onChange?`. `Page.Section`: `children`, `title?`.
 - `Alert` — notification / modal alert. Props: `children`, `title?`, `purpose?`, `direction?`, `visible?`, `dim?`, `dismissOnEsc?`, `dismissOnClick?`, `onDismiss?`.
 - `Callout` — inline notification. Props: `children`, `title?`, `purpose?`, `direction?`.

@@ -33,6 +33,30 @@ describe('Tabs', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
+  it('selects a tab programmatically', () => {
+    const tabs = makeTabs()
+    const t = testRender(tabs, {width: 35, height: 5})
+
+    tabs.select(2)
+    t.render()
+
+    expect(tabs.selected).toBe(2)
+    expect(t.terminal.textContent()).toContain('Help panel')
+    expect(t.terminal.textContent()).not.toContain('Information panel')
+  })
+
+  it('updates selected tab from props', () => {
+    const tabs = makeTabs()
+    const t = testRender(tabs, {width: 35, height: 5})
+
+    tabs.update({selected: 1})
+    t.render()
+
+    expect(tabs.selected).toBe(1)
+    expect(t.terminal.textContent()).toContain('Settings panel')
+    expect(t.terminal.textContent()).not.toContain('Information panel')
+  })
+
   it('animates separator when selecting another tab', () => {
     const tabs = makeTabs()
     const t = testRender(tabs, {width: 35, height: 5})

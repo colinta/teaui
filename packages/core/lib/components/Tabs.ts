@@ -14,6 +14,11 @@ interface Props extends ContainerProps {
    * @default true
    */
   border?: boolean
+  /**
+   * Index of the selected tab.
+   * @default 0
+   */
+  selected?: number
 }
 
 interface TabProps extends ContainerProps {
@@ -70,13 +75,33 @@ export class Tabs extends Container {
     this.invalidateSize()
   }
 
+  get selected() {
+    return this.#selectedTab
+  }
+  set selected(value: number) {
+    this.select(value)
+  }
+
   update(props: Props) {
     super.update(props)
     this.#update(props)
   }
 
-  #update({border}: Props) {
+  #update({border, selected}: Props) {
     this.#border = border ?? true
+    if (selected !== undefined) {
+      this.select(selected)
+    }
+  }
+
+  select(tab: number) {
+    const selectedTab = Math.max(0, Math.floor(tab))
+    if (selectedTab === this.#selectedTab) {
+      return
+    }
+
+    this.#selectedTab = selectedTab
+    this.invalidateRender()
   }
 
   addTab(tab: Section): void
@@ -94,7 +119,7 @@ export class Tabs extends Container {
 
   add(child: View, at?: number) {
     if (child instanceof Section) {
-      child.titleView.onClick = tab => this.#selected(tab)
+      child.titleView.onClick = tab => this.#selectTitle(tab)
       super.add(child.titleView)
     }
     super.add(child, at)
@@ -108,14 +133,14 @@ export class Tabs extends Container {
     super.removeChild(child)
   }
 
-  #selected(tab: TabTitle) {
+  #selectTitle(tab: TabTitle) {
     const tabTitles = this.tabTitles
     const index = tabTitles.indexOf(tab)
     if (index === -1) {
       return
     }
 
-    this.#selectedTab = index
+    this.select(index)
   }
 
   naturalSize(available: Size) {
@@ -230,7 +255,10 @@ export class Tabs extends Container {
       separatorWidths.push(tabRect.size.width)
     })
 
-    this.#selectedTab = Math.min(separatorWidths.length - 1, this.#selectedTab)
+    this.#selectedTab = Math.max(
+      0,
+      Math.min(separatorWidths.length - 1, this.#selectedTab),
+    )
     this.#separatorWidths = separatorWidths
     if (this.#separatorLocation) {
       this.#renderSeparator(
