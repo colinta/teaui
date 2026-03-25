@@ -62,82 +62,84 @@ type TUIContainer<
     Children,
 > = TUIView<T, ChildrenProps> & {[Key in ChildrenProps]?: React.ReactNode}
 
+type Simplify<T> = {[Key in keyof T]: T[Key]} & {}
+
 type WithRef<Props, T> = Props & {ref?: React.Ref<T>}
 
-type BreadcrumbProps = TUIView<typeof WrBreadcrumb>
-type CalendarProps = TUIView<typeof WrCalendar>
-type CanvasProps = TUIView<typeof WrCanvas>
-type CheckboxProps = TUIView<typeof WrCheckbox>
-type CollapsibleTextProps = TUIView<typeof WrCollapsibleText>
-type ConsoleProps = TUIView<typeof WrConsoleLog>
-type DigitsProps = TUIView<typeof WrDigits>
-type GeometryProps = TUIContainer<typeof WrGeometry>
-interface SharedDropdownProps<T> extends ViewProps {
+export type BreadcrumbProps = Simplify<TUIView<typeof WrBreadcrumb>>
+export type CalendarProps = Simplify<TUIView<typeof WrCalendar>>
+export type CanvasProps = Simplify<TUIView<typeof WrCanvas>>
+export type CheckboxProps = Simplify<TUIView<typeof WrCheckbox>>
+export type CollapsibleTextProps = Simplify<TUIView<typeof WrCollapsibleText>>
+export type ConsoleProps = Simplify<TUIView<typeof WrConsoleLog>>
+export type DigitsProps = Simplify<TUIView<typeof WrDigits>>
+export type GeometryProps = Simplify<TUIContainer<typeof WrGeometry>>
+export interface SharedDropdownProps<T> extends ViewProps {
   choices: [string, T][]
   title?: string
 }
 
-interface DropdownSelectOne<T> extends SharedDropdownProps<T> {
+export interface DropdownSelectOne<T> extends SharedDropdownProps<T> {
   multiple?: false
   selected?: T
   onSelect?: (value: T) => void
 }
 
-interface DropdownSelectMultiple<T> extends SharedDropdownProps<T> {
+export interface DropdownSelectMultiple<T> extends SharedDropdownProps<T> {
   multiple: true
   selected?: readonly T[]
   onSelect?: (value: T[]) => void
 }
 
-type DropdownProps<T> = DropdownSelectOne<T> | DropdownSelectMultiple<T>
-type HeaderProps = {text?: string; children?: string}
-type HotKeyProps = TUIView<typeof WrHotKey>
-type KeyboardProps = TUIContainer<typeof WrKeyboard>
-type MouseProps = TUIContainer<typeof WrMouse>
-type InputProps = TUIView<typeof WrInput>
-type LegendProps = TUIView<typeof WrLegend>
-type ProgressProps = TUIView<typeof WrProgress>
-type SeparatorProps = TUIView<typeof WrSeparator>
-type SliderProps = TUIView<typeof WrSlider>
-type SpaceProps = TUIView<typeof WrSpace>
-type SpinnerProps = TUIView<typeof WrSpinner>
-type LogoProps = TUIView<typeof WrLogo>
-type ZStackProps = TUIContainer<typeof WrZStack>
-type ToggleGroupProps = TUIView<typeof WrToggleGroup>
+export type DropdownProps<T> = DropdownSelectOne<T> | DropdownSelectMultiple<T>
+export type HeaderProps = {text?: string; children?: string}
+export type HotKeyProps = Simplify<TUIView<typeof WrHotKey>>
+export type KeyboardProps = Simplify<TUIContainer<typeof WrKeyboard>>
+export type MouseProps = Simplify<TUIContainer<typeof WrMouse>>
+export type InputProps = Simplify<TUIView<typeof WrInput>>
+export type LegendProps = Simplify<TUIView<typeof WrLegend>>
+export type ProgressProps = Simplify<TUIView<typeof WrProgress>>
+export type SeparatorProps = Simplify<TUIView<typeof WrSeparator>>
+export type SliderProps = Simplify<TUIView<typeof WrSlider>>
+export type SpaceProps = Simplify<TUIView<typeof WrSpace>>
+export type SpinnerProps = Simplify<TUIView<typeof WrSpinner>>
+export type LogoProps = Simplify<TUIView<typeof WrLogo>>
+export type ZStackProps = Simplify<TUIContainer<typeof WrZStack>>
+export type ToggleGroupProps = Simplify<TUIView<typeof WrToggleGroup>>
 
 // Table uses its own prop types since it's generic and TUIView doesn't work well with generics
 
-type AlertProps = TUIContainer<typeof WrAlert>
-type CalloutProps = TUIContainer<typeof WrCallout>
-type AlignProps = TUIContainer<typeof WrAlign>
-type AlignRowProps = TUIContainer<typeof WrAlignRow>
-type ModalProps = TUIContainer<typeof WrModal>
+export type AlertProps = Simplify<TUIContainer<typeof WrAlert>>
+export type CalloutProps = Simplify<TUIContainer<typeof WrCallout>>
+export type AlignProps = Simplify<TUIContainer<typeof WrAlign>>
+export type AlignRowProps = Simplify<TUIContainer<typeof WrAlignRow>>
+export type ModalProps = Simplify<TUIContainer<typeof WrModal>>
 
 // "simple" containers
-type BoxProps = TUIContainer<typeof WrBox>
-type ButtonProps = TUIContainer<typeof WrButton>
-type CollapsibleProps = TUIContainer<
-  typeof WrCollapsible,
-  'collapsed' | 'expanded' | 'children'
+export type BoxProps = Simplify<TUIContainer<typeof WrBox>>
+export type ButtonProps = Simplify<TUIContainer<typeof WrButton>>
+export type CollapsibleProps = Simplify<
+  TUIContainer<typeof WrCollapsible, 'collapsed' | 'expanded' | 'children'>
 >
-type ScrollableProps = TUIContainer<typeof WrScrollable>
-type StackProps = TUIContainer<typeof WrStack>
-type StyleProps = TUIContainer<typeof TextStyle>
-type TextProps = TUIContainer<typeof TextProvider>
+export type ScrollableProps = Simplify<TUIContainer<typeof WrScrollable>>
+export type StackProps = Simplify<TUIContainer<typeof WrStack>>
+export type StyleProps = Simplify<TUIContainer<typeof TextStyle>>
+export type TextProps = Simplify<TUIContainer<typeof TextProvider>>
 
-type PaneProps = TUIContainer<typeof WrPane>
+export type PaneProps = Simplify<TUIContainer<typeof WrPane>>
 
 // "complex" containers
-type AccordionProps = TUIContainer<typeof WrAccordion>
-type AccordionSectionProps = TUIContainer<typeof WrAccordion.Section>
-type DrawerProps = TUIContainer<
-  typeof WrDrawer,
-  'content' | 'drawer' | 'children'
+export type AccordionProps = Simplify<TUIContainer<typeof WrAccordion>>
+export type AccordionSectionProps = Simplify<
+  TUIContainer<typeof WrAccordion.Section>
 >
-type PageProps = TUIContainer<typeof WrPage>
-type PageSectionProps = TUIContainer<typeof WrPage.Section>
-type TabsProps = TUIContainer<typeof WrTabs>
-type TabsSectionProps = TUIContainer<typeof WrTabs.Section>
+export type DrawerProps = Simplify<
+  TUIContainer<typeof WrDrawer, 'content' | 'drawer' | 'children'>
+>
+export type PageProps = Simplify<TUIContainer<typeof WrPage>>
+export type PageSectionProps = Simplify<TUIContainer<typeof WrPage.Section>>
+export type TabsProps = Simplify<TUIContainer<typeof WrTabs>>
+export type TabsSectionProps = Simplify<TUIContainer<typeof WrTabs.Section>>
 
 declare module 'react' {
   namespace JSX {
@@ -494,7 +496,7 @@ export const ToggleGroup = forwardRef<WrToggleGroup, ToggleGroupProps>(
   },
 )
 
-interface TreeProps<T> extends ViewProps {
+export interface TreeProps<T> extends ViewProps {
   data: T[]
   render: (datum: T) => React.ReactNode
   getChildren?: (datum: T) => T[] | undefined
@@ -820,7 +822,7 @@ export const Text = forwardRef<TextProvider, TextProps>(
 /// Virtualized components
 //
 
-interface ReactListProps<TData> extends ViewProps {
+export interface ReactListProps<TData> extends ViewProps {
   data: TData[]
   renderItem: (item: TData, index: number) => React.ReactNode
   /**
@@ -893,7 +895,7 @@ export function ScrollableList<TData>(
   )
 }
 
-interface ReactTableProps<TData> extends ViewProps {
+export interface ReactTableProps<TData> extends ViewProps {
   data: TData[]
   columns: Column<TData>[]
   renderItem?: (item: TData, index: number) => React.ReactNode
