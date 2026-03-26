@@ -275,35 +275,57 @@ export class Scrollable extends Container {
   receiveMouseDown(event: MouseEvent) {
     const tooWide = this.#contentSize.width > this.contentSize.width
     const tooTall = this.#contentSize.height > this.contentSize.height
+    const showVBar = this.#showVerticalScrollbar() && tooTall
+    const showHBar = this.#showHorizontalScrollbar() && tooWide
+    const visibleWidth = this.contentSize.width - (showVBar ? 1 : 0)
+    const visibleHeight = this.contentSize.height - (showHBar ? 1 : 0)
 
     if (tooWide && this.#prevMouseDown === 'horizontal') {
-      const maxX = this.#maxOffsetX()
-      const offsetX = Math.round(
-        interpolate(
-          event.position.x,
-          [0, this.contentSize.width - (tooTall ? 1 : 0)],
-          [0, maxX],
+      const trackWidth = visibleWidth
+      const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth)
+      const thumbWidth = Math.max(
+        1,
+        Math.min(
+          trackWidth,
+          Math.round((visibleWidth / this.#contentSize.width) * trackWidth),
         ),
       )
+      const thumbTravel = Math.max(0, trackWidth - thumbWidth)
+      const thumbX = Math.max(
+        0,
+        Math.min(thumbTravel, event.position.x - Math.floor(thumbWidth / 2)),
+      )
+      const offsetX = Math.round(
+        interpolate(thumbX, [0, thumbTravel], [0, maxOffsetX], true),
+      )
       this.#contentOffset = {
-        x: Math.max(maxX, Math.min(0, offsetX)),
+        x: -offsetX,
         y: this.#contentOffset.y,
       }
     } else if (tooTall && this.#prevMouseDown === 'vertical') {
-      const maxY = this.#maxOffsetY()
-      const offsetY = Math.round(
-        interpolate(
-          event.position.y,
-          [0, this.contentSize.height - (tooWide ? 1 : 0)],
-          [0, maxY],
+      const trackHeight = visibleHeight
+      const maxOffsetY = Math.max(0, this.#contentSize.height - visibleHeight)
+      const thumbHeight = Math.max(
+        1,
+        Math.min(
+          trackHeight,
+          Math.round((visibleHeight / this.#contentSize.height) * trackHeight),
         ),
       )
-      const y = Math.max(maxY, Math.min(0, offsetY))
+      const thumbTravel = Math.max(0, trackHeight - thumbHeight)
+      const thumbY = Math.max(
+        0,
+        Math.min(thumbTravel, event.position.y - Math.floor(thumbHeight / 2)),
+      )
+      const offsetY = Math.round(
+        interpolate(thumbY, [0, thumbTravel], [0, maxOffsetY], true),
+      )
+      const y = -offsetY
       this.#contentOffset = {
         x: this.#contentOffset.x,
         y,
       }
-      this.#isAtBottom = y <= maxY
+      this.#isAtBottom = y <= this.#maxOffsetY()
     }
   }
 
@@ -494,21 +516,26 @@ export class Scrollable extends Container {
           new Rect(new Point(0, scrollMaxY), new Size(scrollMaxHorizX + 1, 1)),
         )
 
+        const trackWidth = scrollMaxHorizX + 1
+        const maxOffsetX = Math.max(0, contentSize.width - visibleWidth)
+        const thumbWidth = Math.max(
+          1,
+          Math.min(
+            trackWidth,
+            Math.round((visibleWidth / contentSize.width) * trackWidth),
+          ),
+        )
         const contentOffsetX = -this.#contentOffset.x
         const viewX = Math.round(
           interpolate(
             contentOffsetX,
-            [
-              0,
-              contentSize.width -
-                viewport.contentSize.width +
-                (showVBar ? 1 : 0),
-            ],
-            [0, scrollMaxHorizX],
+            [0, maxOffsetX],
+            [0, Math.max(0, trackWidth - thumbWidth)],
+            true,
           ),
         )
         for (let x = 0; x <= scrollMaxHorizX; x++) {
-          const inRange = x === viewX
+          const inRange = x >= viewX && x < viewX + thumbWidth
           viewport.write(
             inRange ? '█' : ' ',
             new Point(x, scrollMaxY),
@@ -523,21 +550,26 @@ export class Scrollable extends Container {
           new Rect(new Point(scrollMaxX, 0), new Size(1, scrollMaxVertY + 1)),
         )
 
+        const trackHeight = scrollMaxVertY + 1
+        const maxOffsetY = Math.max(0, contentSize.height - visibleHeight)
+        const thumbHeight = Math.max(
+          1,
+          Math.min(
+            trackHeight,
+            Math.round((visibleHeight / contentSize.height) * trackHeight),
+          ),
+        )
         const contentOffsetY = -this.#contentOffset.y
         const viewY = Math.round(
           interpolate(
             contentOffsetY,
-            [
-              0,
-              contentSize.height -
-                viewport.contentSize.height +
-                (showHBar ? 1 : 0),
-            ],
-            [0, scrollMaxVertY],
+            [0, maxOffsetY],
+            [0, Math.max(0, trackHeight - thumbHeight)],
+            true,
           ),
         )
         for (let y = 0; y <= scrollMaxVertY; y++) {
-          const inRange = y === viewY
+          const inRange = y >= viewY && y < viewY + thumbHeight
           viewport.write(
             inRange ? '█' : ' ',
             new Point(scrollMaxX, y),

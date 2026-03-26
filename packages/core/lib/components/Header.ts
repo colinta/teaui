@@ -8,7 +8,7 @@ import {type Props as ViewProps} from '../View.js'
 
 interface Props extends ViewProps {
   text: string
-  border: 'single' | 'bold' | 'double'
+  border: 'none' | 'single' | 'bold' | 'double'
   font?: FontFamily
   bold?: boolean
   dim?: boolean
@@ -39,11 +39,17 @@ export class Header extends Container {
   }
 
   naturalSize(available: Size) {
-    return this.#text.naturalSize(available).grow(2, 1)
+    return this.#text
+      .naturalSize(available)
+      .grow(2, this.#border === 'none' ? 0 : 1)
   }
 
   render(viewport: Viewport) {
-    const inside = viewport.contentRect.inset({left: 1, right: 1, bottom: 1})
+    const inside = viewport.contentRect.inset({
+      left: 1,
+      right: 1,
+      bottom: this.#border === 'none' ? 0 : 1,
+    })
     const textSize = this.#text.naturalSize(inside.size)
     viewport.clipped(inside, inside => {
       this.#text.render(inside)
@@ -52,6 +58,8 @@ export class Header extends Container {
     const maxWidth = textSize.width + 2
     let border
     switch (this.#border) {
+      case 'none':
+        return
       case 'single':
         border = '─'
         break
@@ -74,7 +82,6 @@ export function H1(text: string = '') {
   return new Header({
     text,
     border: 'double',
-    font: 'script',
     bold: true,
   })
 }
@@ -83,7 +90,7 @@ export function H2(text: string = '') {
   return new Header({
     text,
     border: 'bold',
-    font: 'script',
+    bold: true,
   })
 }
 
@@ -91,7 +98,6 @@ export function H3(text: string = '') {
   return new Header({
     text,
     border: 'single',
-    font: 'sans-bold',
     bold: true,
   })
 }
@@ -100,7 +106,6 @@ export function H4(text: string = '') {
   return new Header({
     text,
     border: 'single',
-    font: 'sans',
   })
 }
 
@@ -108,8 +113,6 @@ export function H5(text: string = '') {
   return new Header({
     text,
     border: 'single',
-    font: 'serif-bold',
-    bold: true,
     dim: true,
   })
 }
@@ -117,8 +120,7 @@ export function H5(text: string = '') {
 export function H6(text: string = '') {
   return new Header({
     text,
-    font: 'serif-italic',
-    border: 'single',
+    border: 'none',
     dim: true,
   })
 }

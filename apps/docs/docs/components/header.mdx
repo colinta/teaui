@@ -7,18 +7,18 @@ import Example from '@site/src/components/Example'
 
 # Header
 
-Large text header with border decoration. Available as `H1` through `H6` in React.
+Large text header with underline decoration. Available as `H1` through `H6` in React.
 
 <Example name="header" title="Header" />
 
 ## Props
 
-| Prop     | Type                             | Default    | Description  |
-| -------- | -------------------------------- | ---------- | ------------ |
-| `text`   | `string`                         | —          | Header text  |
-| `border` | `'single' \| 'bold' \| 'double'` | `'single'` | Border style |
-| `font`   | `FontFamily`                     | —          | Text font    |
-| `bold`   | `boolean`                        | —          | Bold text    |
-| `dim`    | `boolean`                        | —          | Dimmed text  |
+| Prop     | Type                                       | Default    | Description     |
+| -------- | ------------------------------------------ | ---------- | --------------- |
+| `text`   | `string`                                   | —          | Header text     |
+| `border` | `'none' \| 'single' \| 'bold' \| 'double'` | `'single'` | Underline style |
+| `font`   | `FontFamily`                               | —          | Text font       |
+| `bold`   | `boolean`                                  | —          | Bold text       |
+| `dim`    | `boolean`                                  | —          | Dimmed text     |
 
-React shorthand: `<H1>` = `border="double"`, `<H2>` = `border="bold"`, `<H3>`–`<H6>` = `border="single"` with decreasing prominence.
+React shorthand: `<H1>` = `bold + border="double"`, `<H2>` = `bold + border="bold"`, `<H3>` = `bold + border="single"`, `<H4>` = `border="single"`, `<H5>` = `dim + border="single"`, `<H6>` = `dim + border="none"`.
