@@ -12,6 +12,28 @@ function makeLines(count: number): Text[] {
   return Array.from({length: count}, (_, i) => new Text({text: `Line ${i}`}))
 }
 
+function scrollbarColumn(
+  t: ReturnType<typeof testRender>,
+  x: number,
+  height: number,
+): string {
+  return Array.from({length: height}, (_, y) => {
+    const char = t.terminal.charAt(x, y)
+    return !char || char === ' ' ? '.' : char
+  }).join('')
+}
+
+function scrollbarRow(
+  t: ReturnType<typeof testRender>,
+  y: number,
+  width: number,
+): string {
+  return Array.from({length: width}, (_, x) => {
+    const char = t.terminal.charAt(x, y)
+    return !char || char === ' ' ? '.' : char
+  }).join('')
+}
+
 function makeScrollable(
   lineCount: number,
   props: {
@@ -135,33 +157,62 @@ describe('Scrollable', () => {
       }
     })
 
-    it('scrollbar indicator position changes after scrolling', () => {
-      const t = testRender(makeScrollable(20), {width: 10, height: 5})
-
-      let initialY = -1
-      for (let y = 0; y < 5; y++) {
-        const row = t.terminal.getRow(y, 9, 10)
-        if (row === '█') {
-          initialY = y
-          break
-        }
-      }
-      expect(initialY).toBeGreaterThanOrEqual(0)
+    it('scrollbar thumb keeps the same height while scrolling vertically', () => {
+      const t = testRender(makeScrollable(24), {width: 10, height: 8})
+      const initial = scrollbarColumn(t, 9, 8)
+      const initialThumbSize = initial
+        .split('')
+        .filter(char => char === '█').length
 
       for (let i = 0; i < 10; i++) {
         t.sendMouse('mouse.wheel.down', {x: 0, y: 0})
       }
       t.render()
 
-      let newY = -1
-      for (let y = 0; y < 5; y++) {
-        const row = t.terminal.getRow(y, 9, 10)
-        if (row === '█') {
-          newY = y
-          break
-        }
+      const scrolled = scrollbarColumn(t, 9, 8)
+      const scrolledThumbSize = scrolled
+        .split('')
+        .filter(char => char === '█').length
+
+      expect(scrolled.indexOf('█')).toBeGreaterThan(initial.indexOf('█'))
+      expect(initialThumbSize).toBeGreaterThan(1)
+      expect(scrolledThumbSize).toBe(initialThumbSize)
+    })
+
+    it('scrollbar thumb snapshots stay the same size at different positions', () => {
+      const vertical = testRender(makeScrollable(24), {width: 10, height: 8})
+      const verticalSnapshots = [scrollbarColumn(vertical, 9, 8)]
+      for (let i = 0; i < 6; i++) {
+        vertical.sendMouse('mouse.wheel.down', {x: 0, y: 0})
       }
-      expect(newY).toBeGreaterThan(initialY)
+      vertical.render()
+      verticalSnapshots.push(scrollbarColumn(vertical, 9, 8))
+      for (let i = 0; i < 20; i++) {
+        vertical.sendMouse('mouse.wheel.down', {x: 0, y: 0})
+      }
+      vertical.render()
+      verticalSnapshots.push(scrollbarColumn(vertical, 9, 8))
+
+      const horizontal = testRender(
+        makeWideScrollable('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
+        {width: 12, height: 3},
+      )
+      const horizontalSnapshots = [scrollbarRow(horizontal, 2, 12)]
+      for (let i = 0; i < 6; i++) {
+        horizontal.sendMouse('mouse.wheel.down', {x: 0, y: 0})
+      }
+      horizontal.render()
+      horizontalSnapshots.push(scrollbarRow(horizontal, 2, 12))
+      for (let i = 0; i < 20; i++) {
+        horizontal.sendMouse('mouse.wheel.down', {x: 0, y: 0})
+      }
+      horizontal.render()
+      horizontalSnapshots.push(scrollbarRow(horizontal, 2, 12))
+
+      expect({
+        vertical: verticalSnapshots,
+        horizontal: horizontalSnapshots,
+      }).toMatchSnapshot()
     })
   })
 

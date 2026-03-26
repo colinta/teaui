@@ -44,7 +44,7 @@ exports[`Scrollable > pin > pinned child does not overlap vertical scrollbar 1`]
 XXXXXXXXX
 XXXXXXXXX
 XXXXXXXXX
-█        █"
+████     █"
 `;
 
 exports[`Scrollable > pin > pinned slider fills visible width in wide scrollable 1`] = `
@@ -58,4 +58,19 @@ exports[`Scrollable > pin > vertically pinned child in horizontal stack uses vis
 ▐███▌
 ▐███▌
 ▐███▌"
+`;
+
+exports[`Scrollable > scrollbar rendering > scrollbar thumb snapshots stay the same size at different positions 1`] = `
+{
+  "horizontal": [
+    "████........",
+    "..████......",
+    "........████",
+  ],
+  "vertical": [
+    "███.....",
+    "..███...",
+    ".....███",
+  ],
+}
 `;
