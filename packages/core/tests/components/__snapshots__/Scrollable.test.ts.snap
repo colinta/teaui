@@ -60,6 +60,69 @@ exports[`Scrollable > pin > vertically pinned child in horizontal stack uses vis
 ▐███▌"
 `;
 
+exports[`Scrollable > scrollbar rendering > renders almost full-size scrollbars when content is only slightly larger than the viewport 1`] = `
+{
+  "0%": {
+    "horizontal": "█████████████████████████████████████████████████████████████████████████████████████████████████..",
+    "vertical": "█████████████████████████████████████████████████████████████████████████████████████████████████..",
+  },
+  "100%": {
+    "horizontal": "..█████████████████████████████████████████████████████████████████████████████████████████████████",
+    "vertical": "..█████████████████████████████████████████████████████████████████████████████████████████████████",
+  },
+  "33%": {
+    "horizontal": ".█████████████████████████████████████████████████████████████████████████████████████████████████.",
+    "vertical": ".█████████████████████████████████████████████████████████████████████████████████████████████████.",
+  },
+  "66%": {
+    "horizontal": ".█████████████████████████████████████████████████████████████████████████████████████████████████.",
+    "vertical": ".█████████████████████████████████████████████████████████████████████████████████████████████████.",
+  },
+}
+`;
+
+exports[`Scrollable > scrollbar rendering > renders half-size scrollbars when content is about twice the viewport 1`] = `
+{
+  "0%": {
+    "horizontal": "█████....",
+    "vertical": "█████....",
+  },
+  "100%": {
+    "horizontal": "....█████",
+    "vertical": "....█████",
+  },
+  "33%": {
+    "horizontal": ".█████...",
+    "vertical": ".█████...",
+  },
+  "66%": {
+    "horizontal": "...█████.",
+    "vertical": "...█████.",
+  },
+}
+`;
+
+exports[`Scrollable > scrollbar rendering > renders single-cell scrollbars when content is much larger than the viewport 1`] = `
+{
+  "0%": {
+    "horizontal": "█........",
+    "vertical": "█........",
+  },
+  "100%": {
+    "horizontal": "........█",
+    "vertical": "........█",
+  },
+  "33%": {
+    "horizontal": "...█.....",
+    "vertical": "...█.....",
+  },
+  "66%": {
+    "horizontal": ".....█...",
+    "vertical": ".....█...",
+  },
+}
+`;
+
 exports[`Scrollable > scrollbar rendering > scrollbar thumb snapshots stay the same size at different positions 1`] = `
 {
   "horizontal": [

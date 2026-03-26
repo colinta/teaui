@@ -283,20 +283,20 @@ export class Scrollable extends Container {
     if (tooWide && this.#prevMouseDown === 'horizontal') {
       const trackWidth = visibleWidth
       const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth)
-      const thumbWidth = Math.max(
-        1,
-        Math.min(
-          trackWidth,
-          Math.round((visibleWidth / this.#contentSize.width) * trackWidth),
-        ),
+      const thumbWidth = this.#scrollbarThumbLength(
+        trackWidth,
+        visibleWidth,
+        this.#contentSize.width,
       )
-      const thumbTravel = Math.max(0, trackWidth - thumbWidth)
+      const maxScrollbarX = Math.max(0, trackWidth - thumbWidth)
       const thumbX = Math.max(
         0,
-        Math.min(thumbTravel, event.position.x - Math.floor(thumbWidth / 2)),
+        Math.min(maxScrollbarX, event.position.x - Math.floor(thumbWidth / 2)),
       )
-      const offsetX = Math.round(
-        interpolate(thumbX, [0, thumbTravel], [0, maxOffsetX], true),
+      const offsetX = this.#scrollbarThumbPosition(
+        thumbX,
+        maxScrollbarX,
+        maxOffsetX,
       )
       this.#contentOffset = {
         x: -offsetX,
@@ -305,20 +305,20 @@ export class Scrollable extends Container {
     } else if (tooTall && this.#prevMouseDown === 'vertical') {
       const trackHeight = visibleHeight
       const maxOffsetY = Math.max(0, this.#contentSize.height - visibleHeight)
-      const thumbHeight = Math.max(
-        1,
-        Math.min(
-          trackHeight,
-          Math.round((visibleHeight / this.#contentSize.height) * trackHeight),
-        ),
+      const thumbHeight = this.#scrollbarThumbLength(
+        trackHeight,
+        visibleHeight,
+        this.#contentSize.height,
       )
-      const thumbTravel = Math.max(0, trackHeight - thumbHeight)
+      const maxScrollbarY = Math.max(0, trackHeight - thumbHeight)
       const thumbY = Math.max(
         0,
-        Math.min(thumbTravel, event.position.y - Math.floor(thumbHeight / 2)),
+        Math.min(maxScrollbarY, event.position.y - Math.floor(thumbHeight / 2)),
       )
-      const offsetY = Math.round(
-        interpolate(thumbY, [0, thumbTravel], [0, maxOffsetY], true),
+      const offsetY = this.#scrollbarThumbPosition(
+        thumbY,
+        maxScrollbarY,
+        maxOffsetY,
       )
       const y = -offsetY
       this.#contentOffset = {
@@ -408,6 +408,49 @@ export class Scrollable extends Container {
     return this.#showScrollbars === true || this.#showScrollbars === 'vertical'
   }
 
+  #scrollbarStyle(): Style {
+    return new Style({
+      foreground: this.theme.darkenColor,
+      background: this.theme.darkenColor,
+    })
+  }
+
+  #scrollbarThumbStyle(): Style {
+    return new Style({
+      foreground: this.theme.highlightColor,
+      background: this.theme.highlightColor,
+    })
+  }
+
+  #scrollbarThumbLength(
+    trackLength: number,
+    visibleLength: number,
+    contentLength: number,
+  ): number {
+    const proportionalLength = Math.round(
+      (visibleLength / contentLength) * trackLength,
+    )
+    const maxLength =
+      contentLength > visibleLength ? trackLength - 1 : trackLength
+
+    return Math.max(1, Math.min(maxLength, proportionalLength))
+  }
+
+  #scrollbarThumbPosition(
+    contentOffset: number,
+    maxContentOffset: number,
+    maxScrollbarOffset: number,
+  ): number {
+    return Math.round(
+      interpolate(
+        contentOffset,
+        [0, maxContentOffset],
+        [0, maxScrollbarOffset],
+        true,
+      ),
+    )
+  }
+
   get contentSize(): Size {
     const deltaW = this.#showVerticalScrollbar() ? 1 : 0
     const deltaH = this.#showHorizontalScrollbar() ? 1 : 0
@@ -489,14 +532,8 @@ export class Scrollable extends Container {
     )
 
     if (showVBar || showHBar) {
-      const scrollBar: Style = new Style({
-        foreground: this.theme.darkenColor,
-        background: this.theme.darkenColor,
-      })
-      const scrollControl: Style = new Style({
-        foreground: this.theme.highlightColor,
-        background: this.theme.highlightColor,
-      })
+      const scrollBar = this.#scrollbarStyle()
+      const scrollControl = this.#scrollbarThumbStyle()
 
       // scrollMaxX: x of the last column of the view
       // scrollMaxY: y of the last row of the view
@@ -518,21 +555,17 @@ export class Scrollable extends Container {
 
         const trackWidth = scrollMaxHorizX + 1
         const maxOffsetX = Math.max(0, contentSize.width - visibleWidth)
-        const thumbWidth = Math.max(
-          1,
-          Math.min(
-            trackWidth,
-            Math.round((visibleWidth / contentSize.width) * trackWidth),
-          ),
+        const thumbWidth = this.#scrollbarThumbLength(
+          trackWidth,
+          visibleWidth,
+          contentSize.width,
         )
+        const maxScrollbarX = Math.max(0, trackWidth - thumbWidth)
         const contentOffsetX = -this.#contentOffset.x
-        const viewX = Math.round(
-          interpolate(
-            contentOffsetX,
-            [0, maxOffsetX],
-            [0, Math.max(0, trackWidth - thumbWidth)],
-            true,
-          ),
+        const viewX = this.#scrollbarThumbPosition(
+          contentOffsetX,
+          maxOffsetX,
+          maxScrollbarX,
         )
         for (let x = 0; x <= scrollMaxHorizX; x++) {
           const inRange = x >= viewX && x < viewX + thumbWidth
@@ -552,21 +585,17 @@ export class Scrollable extends Container {
 
         const trackHeight = scrollMaxVertY + 1
         const maxOffsetY = Math.max(0, contentSize.height - visibleHeight)
-        const thumbHeight = Math.max(
-          1,
-          Math.min(
-            trackHeight,
-            Math.round((visibleHeight / contentSize.height) * trackHeight),
-          ),
+        const thumbHeight = this.#scrollbarThumbLength(
+          trackHeight,
+          visibleHeight,
+          contentSize.height,
         )
+        const maxScrollbarY = Math.max(0, trackHeight - thumbHeight)
         const contentOffsetY = -this.#contentOffset.y
-        const viewY = Math.round(
-          interpolate(
-            contentOffsetY,
-            [0, maxOffsetY],
-            [0, Math.max(0, trackHeight - thumbHeight)],
-            true,
-          ),
+        const viewY = this.#scrollbarThumbPosition(
+          contentOffsetY,
+          maxOffsetY,
+          maxScrollbarY,
         )
         for (let y = 0; y <= scrollMaxVertY; y++) {
           const inRange = y >= viewY && y < viewY + thumbHeight

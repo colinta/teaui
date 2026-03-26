@@ -34,6 +34,64 @@ function scrollbarRow(
   }).join('')
 }
 
+function makeScrollbarTestScrollable(contentSize: {
+  width: number
+  height: number
+}) {
+  return new Scrollable({
+    contentSize,
+    children: [],
+  })
+}
+
+function setScrollbarOffset(
+  scrollable: Scrollable,
+  viewportSize: {width: number; height: number},
+  contentSize: {width: number; height: number},
+  fraction: number,
+) {
+  const visibleWidth = viewportSize.width - 1
+  const visibleHeight = viewportSize.height - 1
+  const maxOffsetX = Math.max(0, contentSize.width - visibleWidth)
+  const maxOffsetY = Math.max(0, contentSize.height - visibleHeight)
+
+  scrollable.update({
+    contentSize,
+    offset: new Point(
+      Math.round(maxOffsetX * fraction),
+      Math.round(maxOffsetY * fraction),
+    ),
+  })
+}
+
+function expectBothScrollbarSnapshots(
+  scrollable: Scrollable,
+  viewportSize: {width: number; height: number},
+  contentSize: {width: number; height: number},
+) {
+  const t = testRender(scrollable, viewportSize)
+  const snapshots: Record<string, {horizontal: string; vertical: string}> = {}
+
+  for (const fraction of [0, 0.33, 0.66, 1]) {
+    setScrollbarOffset(scrollable, viewportSize, contentSize, fraction)
+    t.render()
+    snapshots[`${Math.round(fraction * 100)}%`] = {
+      horizontal: scrollbarRow(
+        t,
+        viewportSize.height - 1,
+        viewportSize.width - 1,
+      ),
+      vertical: scrollbarColumn(
+        t,
+        viewportSize.width - 1,
+        viewportSize.height - 1,
+      ),
+    }
+  }
+
+  expect(snapshots).toMatchSnapshot()
+}
+
 function makeScrollable(
   lineCount: number,
   props: {
@@ -213,6 +271,30 @@ describe('Scrollable', () => {
         vertical: verticalSnapshots,
         horizontal: horizontalSnapshots,
       }).toMatchSnapshot()
+    })
+
+    it('renders almost full-size scrollbars when content is only slightly larger than the viewport', () => {
+      const contentSize = {width: 101, height: 101}
+      const viewportSize = {width: 100, height: 100}
+      const scrollable = makeScrollbarTestScrollable(contentSize)
+
+      expectBothScrollbarSnapshots(scrollable, viewportSize, contentSize)
+    })
+
+    it('renders single-cell scrollbars when content is much larger than the viewport', () => {
+      const contentSize = {width: 1000, height: 1000}
+      const viewportSize = {width: 10, height: 10}
+      const scrollable = makeScrollbarTestScrollable(contentSize)
+
+      expectBothScrollbarSnapshots(scrollable, viewportSize, contentSize)
+    })
+
+    it('renders half-size scrollbars when content is about twice the viewport', () => {
+      const contentSize = {width: 18, height: 18}
+      const viewportSize = {width: 10, height: 10}
+      const scrollable = makeScrollbarTestScrollable(contentSize)
+
+      expectBothScrollbarSnapshots(scrollable, viewportSize, contentSize)
     })
   })
 
