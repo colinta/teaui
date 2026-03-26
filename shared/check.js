@@ -1,39 +1,78 @@
 import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
-import {promisify} from 'util'
 import {execSync} from 'child_process'
+import {fileURLToPath} from 'url'
 
-const readFile = promisify(fs.readFile)
-const readDir = promisify(fs.readdir)
-const writeFile = promisify(fs.writeFile)
-const unlink = promisify(fs.unlink)
-const stat = promisify(fs.stat)
+const HASHABLE_EXTENSIONS = new Set([
+  '.ts',
+  '.tsx',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
+  '.json',
+  '.yaml',
+  '.yml',
+  '.css',
+])
+const IGNORED_DIRECTORIES = new Set(['node_modules', '.dist', 'dist', '.git'])
+const CHECKSUM_FILE = '.sum'
+const BUILD_OUTPUT_DIRECTORY = '.dist'
+const SHARED_PACKAGE_NAME = '@teaui/shared'
+
+async function fileExists(filePath) {
+  try {
+    const stat = await fs.promises.stat(filePath)
+    return stat.isFile()
+  } catch {
+    return false
+  }
+}
+
+async function directoryExists(dirPath) {
+  try {
+    const stat = await fs.promises.stat(dirPath)
+    return stat.isDirectory()
+  } catch {
+    return false
+  }
+}
+
+function isHashableFile(fileName) {
+  if (fileName === CHECKSUM_FILE) {
+    return false
+  }
+
+  return HASHABLE_EXTENSIONS.has(path.extname(fileName))
+}
 
 async function generateFileHash(filePath) {
-  const fileContent = await readFile(filePath)
+  const fileContent = await fs.promises.readFile(filePath)
   return crypto.createHash('sha1').update(fileContent).digest('hex')
 }
 
-async function findFiles(startPath) {
+async function findHashableFiles(startPath) {
   const files = []
 
   async function traverse(currentPath) {
-    const items = await readDir(currentPath)
+    const entries = await fs.promises.readdir(currentPath, {
+      withFileTypes: true,
+    })
 
-    for (const item of items) {
-      const fullPath = path.join(currentPath, item)
-      const fileStat = await stat(fullPath)
+    for (const entry of entries) {
+      const fullPath = path.join(currentPath, entry.name)
 
-      if (fileStat.isDirectory()) {
-        if (item === 'node_modules' || item === '.dist' || item === 'dist') {
+      if (entry.isDirectory()) {
+        if (IGNORED_DIRECTORIES.has(entry.name)) {
           continue
         }
+
         await traverse(fullPath)
-      } else if (
-        fileStat.isFile() &&
-        ['.ts', '.tsx', '.js'].some(ext => item.endsWith(ext))
-      ) {
+        continue
+      }
+
+      if (entry.isFile() && isHashableFile(entry.name)) {
         files.push(fullPath)
       }
     }
@@ -43,196 +82,179 @@ async function findFiles(startPath) {
   return files.sort()
 }
 
-async function calculateChecksum(directories) {
+export async function calculateProjectChecksum(projectDir = '.') {
+  const rootDir = await fs.promises.realpath(projectDir)
+  const files = await findHashableFiles(rootDir)
   const hashes = []
 
-  for (const directory of directories) {
-    const files = await findFiles(directory)
-    for (const file of files) {
-      const hash = await generateFileHash(file)
-      hashes.push(`${hash}  ${file}`)
+  for (const file of files) {
+    const hash = await generateFileHash(file)
+    hashes.push(`${hash}  ${path.relative(rootDir, file)}`)
+  }
+
+  return crypto.createHash('sha1').update(hashes.join('\n')).digest('hex')
+}
+
+async function readPackageJson(projectDir) {
+  const packageJsonPath = path.join(projectDir, 'package.json')
+  const packageJson = await fs.promises.readFile(packageJsonPath, 'utf8')
+  return JSON.parse(packageJson)
+}
+
+function workspaceDependencyNames(packageJson) {
+  const names = []
+  const sections = [
+    packageJson.dependencies || {},
+    packageJson.devDependencies || {},
+    packageJson.peerDependencies || {},
+  ]
+
+  for (const section of sections) {
+    for (const [name, version] of Object.entries(section)) {
+      if (!String(version).startsWith('workspace:')) {
+        continue
+      }
+
+      if (name === SHARED_PACKAGE_NAME) {
+        continue
+      }
+
+      names.push(name)
     }
   }
 
-  // Sort the hashes and create a final combined hash
-  const sortedHashes = hashes.sort().join('\n')
-  return crypto.createHash('sha1').update(sortedHashes).digest('hex')
+  return [...new Set(names)]
 }
 
-async function dirExists(dirPath) {
-  try {
-    const s = await stat(dirPath)
-    return s.isDirectory()
-  } catch {
+async function resolveWorkspaceDependencyDir(projectDir, packageName) {
+  const candidatePaths = [
+    path.join(projectDir, 'node_modules', packageName),
+    path.join(process.cwd(), 'node_modules', packageName),
+  ]
+
+  for (const candidatePath of candidatePaths) {
+    try {
+      return await fs.promises.realpath(candidatePath)
+    } catch {
+      // Try the next candidate.
+    }
+  }
+
+  console.warn(`Warning: could not resolve workspace dependency ${packageName}`)
+  return null
+}
+
+async function collectWorkspaceBuildOrder(projectDir, visited, results) {
+  const realProjectDir = await fs.promises.realpath(projectDir)
+  if (visited.has(realProjectDir)) {
+    return
+  }
+
+  visited.add(realProjectDir)
+
+  const packageJson = await readPackageJson(realProjectDir)
+  for (const dependencyName of workspaceDependencyNames(packageJson)) {
+    const dependencyDir = await resolveWorkspaceDependencyDir(
+      realProjectDir,
+      dependencyName,
+    )
+
+    if (!dependencyDir) {
+      continue
+    }
+
+    await collectWorkspaceBuildOrder(dependencyDir, visited, results)
+  }
+
+  results.push(realProjectDir)
+}
+
+export async function getWorkspaceBuildOrder(projectDir = '.') {
+  const results = []
+  await collectWorkspaceBuildOrder(projectDir, new Set(), results)
+  return results
+}
+
+async function calculateWorkspaceAwareChecksum(projectDir) {
+  const buildOrder = await getWorkspaceBuildOrder(projectDir)
+  const checksums = []
+
+  for (const dependencyDir of buildOrder) {
+    const checksum = await calculateProjectChecksum(dependencyDir)
+    const relativeDir = path.relative(projectDir, dependencyDir) || '.'
+    checksums.push(`${relativeDir}:${checksum}`)
+  }
+
+  return crypto.createHash('sha1').update(checksums.join('\n')).digest('hex')
+}
+
+export async function compare(projectDir = '.') {
+  const realProjectDir = await fs.promises.realpath(projectDir)
+  const checksumPath = path.join(realProjectDir, CHECKSUM_FILE)
+  const outputDir = path.join(realProjectDir, BUILD_OUTPUT_DIRECTORY)
+
+  if (!(await directoryExists(outputDir))) {
+    try {
+      await fs.promises.unlink(checksumPath)
+    } catch {
+      // Ignore missing checksum file.
+    }
+
+    return 1
+  }
+
+  const newChecksum = await calculateWorkspaceAwareChecksum(realProjectDir)
+
+  if (await fileExists(checksumPath)) {
+    const oldChecksum = await fs.promises.readFile(checksumPath, 'utf8')
+    if (oldChecksum.trim() === newChecksum) {
+      return 0
+    }
+  }
+
+  return 1
+}
+
+async function buildProject(projectDir) {
+  const changed = await compare(projectDir)
+
+  if (changed === 0) {
+    console.log('No changes')
     return false
   }
+
+  console.log('Changes detected')
+  execSync('pnpm _build', {stdio: 'inherit', cwd: projectDir})
+
+  const checksumPath = path.join(projectDir, CHECKSUM_FILE)
+  const checksum = await calculateWorkspaceAwareChecksum(projectDir)
+  await fs.promises.writeFile(checksumPath, checksum)
+  return true
 }
 
-/**
- * Resolve workspace:* dependencies from a package dir, walking the full
- * transitive dependency tree. Returns {needs, sources} where:
- *   - needs: .dist dirs that must exist for each workspace dep
- *   - sources: source dirs (src/ or lib/) to watch for changes
- *
- * @teaui/shared is excluded since it's a build tool, not a compiled dep.
- */
-async function resolveWorkspaceDeps() {
-  const needs = ['.dist']
-  const sources = ['.']
-  const visited = new Set()
+export async function build(projectDir = '.') {
+  const buildOrder = await getWorkspaceBuildOrder(projectDir)
 
-  async function walk(pkgDir) {
-    const realDir = await fs.promises.realpath(pkgDir)
-    if (visited.has(realDir)) return
-    visited.add(realDir)
-
-    let pkg
-    try {
-      pkg = JSON.parse(
-        await readFile(path.join(realDir, 'package.json'), 'utf8'),
-      )
-    } catch {
-      return
-    }
-
-    const allDeps = {
-      ...(pkg.dependencies || {}),
-      ...(pkg.devDependencies || {}),
-    }
-
-    for (const [name, version] of Object.entries(allDeps)) {
-      if (!version.startsWith('workspace:')) continue
-      if (name === '@teaui/shared') continue
-
-      const nmPath = path.join(realDir, 'node_modules', name)
-      let depDir
-      try {
-        depDir = await fs.promises.realpath(nmPath)
-      } catch {
-        // Might not be hoisted here, try from the original cwd
-        try {
-          depDir = await fs.promises.realpath(path.join('node_modules', name))
-        } catch {
-          console.warn(`Warning: could not resolve ${name}`)
-          continue
-        }
-      }
-
-      if (visited.has(depDir)) continue
-
-      // needs: the .dist directory
-      needs.push(path.join(depDir, '.dist'))
-
-      // sources: prefer src/, fall back to lib/
-      const srcDir = path.join(depDir, 'src')
-      const libDir = path.join(depDir, 'lib')
-      if (await dirExists(srcDir)) {
-        sources.push(srcDir)
-      } else if (await dirExists(libDir)) {
-        sources.push(libDir)
-      }
-
-      // Recurse into this dep's own workspace deps
-      await walk(depDir)
-    }
-  }
-
-  await walk('.')
-  return {needs, sources}
-}
-
-export async function compare(directories, needs) {
-  try {
-    // If any required output directory is missing, force rebuild
-    for (const dir of needs) {
-      if (!(await dirExists(dir))) {
-        // Clear the sum so the next run after build will save a fresh one
-        try {
-          await unlink('.sum')
-        } catch {}
-        return 1
-      }
-    }
-
-    const newSum = await calculateChecksum(directories)
-
-    try {
-      const oldSum = await readFile('.sum', 'utf8')
-
-      if (oldSum.trim() === newSum) {
-        return 0
-      }
-    } catch (error) {}
-
-    try {
-      // Remove old sum file if it exists
-      try {
-        await unlink('.sum')
-      } catch (error) {
-        // Ignore error if file doesn't exist
-      }
-
-      // Write new sum
-      await writeFile('.sum', newSum)
-      return 1
-    } catch (error) {
-      return error.status || 1
-    }
-  } catch (error) {
-    console.error('Error:', error)
-    return 1
+  for (const dependencyDir of buildOrder) {
+    await buildProject(dependencyDir)
   }
 }
 
 export function main(...args) {
-  const directories = []
-  const needs = []
-  let autoResolve = true
-  let command = 'pnpm build'
-
-  for (const arg of args) {
-    if (arg.startsWith('--needs=')) {
-      needs.push(arg.slice('--needs='.length))
-      autoResolve = false
-    } else if (arg.startsWith('-')) {
-      console.error(`Unknown option: ${arg}`)
-      process.exit(1)
-    } else {
-      directories.push(arg)
-      autoResolve = false
-    }
+  if (args.length > 1) {
+    console.error('Usage: node shared/check.js [project-dir]')
+    process.exit(1)
   }
 
-  const run = async () => {
-    if (autoResolve) {
-      const resolved = await resolveWorkspaceDeps()
-      needs.push(...resolved.needs)
-      directories.push(...resolved.sources)
-    }
+  const projectDir = args[0] || '.'
 
-    if (directories.length === 0) {
-      console.error(
-        'Error: no source directories found. Provide dirs or add workspace:* deps.',
-      )
-      process.exit(1)
-    }
-
-    const changed = await compare(directories, needs)
-
-    if (changed === 0) {
-      console.log('No changes')
-    } else {
-      console.log('Changes detected')
-      execSync(command, {stdio: 'inherit'})
-      // Save checksum after successful build so the next run is a no-op
-      const newSum = await calculateChecksum(directories)
-      await writeFile('.sum', newSum)
-    }
-    process.exit(0)
-  }
-
-  run().catch(error => {
-    console.error(error)
+  build(projectDir).catch(error => {
+    console.error('Error:', error)
     process.exit(1)
   })
+}
+
+const entrypoint = process.argv[1]
+if (entrypoint && path.resolve(entrypoint) === fileURLToPath(import.meta.url)) {
+  main(...process.argv.slice(2))
 }

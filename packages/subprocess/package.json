@@ -30,7 +30,8 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "clean": "rm -rf .dist/",
-    "build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json",
+    "_build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json",
+    "build": "node ../../shared/check.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

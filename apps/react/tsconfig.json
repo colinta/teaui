@@ -1,9 +1,10 @@
 {
   "extends": "@teaui/shared/tsconfig.json",
   "include": ["./"],
-  "exclude": [".dist/"],
+  "exclude": [".dist/", "run.js", "../../shared/check.js"],
   "compilerOptions": {
     "outDir": ".dist",
+    "rootDir": ".",
     "jsx": "react"
   },
   "files": ["sqlite.d.ts"]

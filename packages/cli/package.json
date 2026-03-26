@@ -26,7 +26,8 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "clean": "rm -rf .dist/",
-    "build": "pnpm clean && pnpm tsc && cp -r frameworks .dist/"
+    "_build": "pnpm clean && pnpm tsc && cp -r frameworks .dist/",
+    "build": "node ../../shared/check.js"
   },
   "keywords": [
     "curses",
