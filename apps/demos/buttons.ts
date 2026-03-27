@@ -1,16 +1,16 @@
-import {Button, Stack, Separator, Space} from '@teaui/core'
+import {Button, Separator, Space, Scrollable, Stack} from '@teaui/core'
 
 import {demo} from './demo.js'
 
 demo(
-  Stack.down([
+  Scrollable.down([
     new Separator({
       direction: 'horizontal',
       border: 'trailing',
       padding: 1,
     }),
 
-    ['flex1', new Space()],
+    new Space({flex: 1}),
     Stack.right(
       Array(8)
         .fill(0)
@@ -23,7 +23,22 @@ demo(
           }),
         ]),
     ),
-    ['flex1', new Space()],
+
+    new Separator({
+      direction: 'horizontal',
+      border: 'trailing',
+      padding: 1,
+    }),
+
+    new Space({flex: 1}),
+    new Button({
+      height: 3,
+      border: 'none',
+      theme: 'primary',
+      title: 'Primary',
+    }),
+
+    new Space({flex: 1}),
     new Button({
       height: 3,
       border: 'none',
@@ -31,7 +46,7 @@ demo(
       title: 'Proceed',
     }),
 
-    ['flex1', new Space()],
+    new Space({flex: 1}),
     new Button({
       height: 3,
       border: 'none',
@@ -39,7 +54,7 @@ demo(
       title: 'Cancel',
     }),
 
-    ['flex1', new Space()],
+    new Space({flex: 1}),
     new Button({
       height: 3,
       border: 'none',
@@ -47,10 +62,16 @@ demo(
       title: 'Do it!',
     }),
 
-    ['flex1', new Space()],
+    new Separator({
+      direction: 'horizontal',
+      border: 'trailing',
+      padding: 1,
+    }),
+
+    new Space({flex: 1}),
     new Button({theme: 'plain', height: 3, title: 'Do it!'}),
     new Button({theme: 'selected', height: 3, title: 'Do it!'}),
-    ['flex1', new Space()],
+    new Space({flex: 1}),
     new Separator({
       direction: 'horizontal',
       border: 'trailing',
