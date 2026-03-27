@@ -16,6 +16,7 @@ import {childTheme} from '../UI.js'
 import type {View} from '../View.js'
 import {Alignment} from './types.js'
 import {System} from '../System.js'
+import {Color} from '../Color.js'
 
 type Border = 'default' | 'arrows' | 'none'
 type BorderChars = [string, string]
@@ -24,16 +25,18 @@ export interface Props extends ContainerProps {
   title?: string
   align?: Alignment
   border?: Border
-  onClick?: () => void
+  foreground?: Color
   hotKey?: HotKey
+  onClick?: () => void
 }
 
 export class Button extends Container {
+  #align: Alignment = 'center'
+  #border: Border = 'default'
+  #foreground?: Color
   #hotKey?: HotKey
   #onClick?: Props['onClick']
   #textView: Text
-  #border: Border = 'default'
-  #align: Alignment = 'center'
   #hasFocus: boolean = false
 
   constructor(props: Props) {
@@ -62,11 +65,12 @@ export class Button extends Container {
     return this.children.length !== 1 || this.children.at(0) !== this.#textView
   }
 
-  #update({title, border, align, hotKey, onClick}: Props) {
+  #update({title, align, border, foreground, hotKey, onClick}: Props) {
     const styledText = hotKey ? styleTextForHotKey(title ?? '', hotKey) : title
     this.#textView.text = styledText ?? ''
     this.#align = align ?? 'center'
     this.#border = border ?? 'default'
+    this.#foreground = foreground
     this.#hotKey = hotKey
     this.#onClick = onClick
   }
@@ -122,15 +126,23 @@ export class Button extends Container {
       viewport.registerHotKey(toHotKeyDef(this.#hotKey))
     }
 
-    const textStyle = this.theme.ui({
+    let textStyle = this.theme.ui({
       isPressed: this.isPressed,
       isHover: this.isHover || hasFocus,
     })
-    const topsStyle = this.theme.ui({
+    let topsStyle = this.theme.ui({
       isPressed: this.isPressed,
       isHover: this.isHover || hasFocus,
       isOrnament: true,
     })
+    if (this.#foreground) {
+      textStyle = textStyle.merge({foreground: this.#foreground})
+      topsStyle = topsStyle.merge({foreground: this.#foreground})
+    }
+    if (this.background && !(this.isHover || hasFocus)) {
+      textStyle = textStyle.merge({background: this.background})
+      topsStyle = topsStyle.merge({background: this.background})
+    }
 
     const useEmoji = this.theme.emoji
     viewport.visibleRect.forEachPoint(pt => {

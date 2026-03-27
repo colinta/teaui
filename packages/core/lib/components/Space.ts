@@ -5,13 +5,9 @@ import {Style} from '../Style.js'
 import {View} from '../View.js'
 import {Size} from '../geometry.js'
 
-interface Props extends ViewProps {
-  background?: Color
-}
+interface Props extends ViewProps {}
 
 export class Space extends View {
-  background?: Color
-
   static horizontal(value: Dimension, extraProps: Props = {}) {
     return new Space({width: value, ...extraProps})
   }

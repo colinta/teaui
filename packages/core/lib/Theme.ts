@@ -14,7 +14,7 @@ export type Purpose =
   | 'plain'
 
 const defaultText = '#E2E2E2(253)'
-const defaultBrightText = '#FFF(16)'
+const defaultContrastText = '#FFF(16)'
 const defaultDimText = '#808080(239)'
 const defaultDimBackground = '#434343(238)'
 
@@ -22,23 +22,27 @@ interface Props {
   text?: Color
   dimText?: Color
   dimBackground?: Color
-  brightText?: Color
+  contrastText?: Color
   background: Color
   textBackground?: Color
   highlight: Color
   darken: Color
+  tableChecked?: Color
+  tableCheckedHighlight?: Color
   emoji?: boolean
 }
 
 export class Theme {
   textColor: Color
-  brightTextColor: Color
+  contrastTextColor: Color
   dimTextColor: Color
   dimBackgroundColor: Color
   backgroundColor: Color
   textBackgroundColor: Color
   highlightColor: Color
   darkenColor: Color
+  tableCheckedColor: Color
+  tableCheckedHighlightColor: Color
   emoji: boolean
 
   static plain = new Theme({
@@ -46,14 +50,18 @@ export class Theme {
     textBackground: 'default',
     highlight: '#616161(241)',
     darken: '#3F3F3F(237)',
+    tableChecked: '#3a2040',
+    tableCheckedHighlight: '#4d2a55',
   })
   static primary = new Theme({
     background: '#3B5EA7',
     textBackground: '#273F70',
     highlight: '#5A7AC2',
     darken: '#314F8C',
+    tableChecked: '#6b4a1d',
+    tableCheckedHighlight: '#8a5f24',
     text: '#E2E2E2(253)',
-    brightText: '#5A7AC2',
+    contrastText: '#5A7AC2',
     dimText: '#314F8C',
   })
   static secondary = new Theme({
@@ -61,8 +69,10 @@ export class Theme {
     textBackground: '#805211',
     highlight: '#D0924B',
     darken: '#A66A16',
+    tableChecked: '#234a7a',
+    tableCheckedHighlight: '#2e629f',
     text: '#E2E2E2(253)',
-    brightText: '#D0924B',
+    contrastText: '#D0924B',
     dimText: '#A66A16',
   })
   static proceed = new Theme({
@@ -70,8 +80,10 @@ export class Theme {
     textBackground: '#2E4E3A',
     highlight: '#58A877',
     darken: '#3D664C',
+    tableChecked: '#5a3a70',
+    tableCheckedHighlight: '#71498d',
     text: '#E2E2E2(253)',
-    brightText: '#58A877',
+    contrastText: '#58A877',
     dimText: '#3D664C',
   })
   static cancel = new Theme({
@@ -79,8 +91,10 @@ export class Theme {
     textBackground: '#5B282A',
     highlight: '#C46264',
     darken: '#853D3F',
+    tableChecked: '#1f5b63',
+    tableCheckedHighlight: '#2b737d',
     text: '#E2E2E2(253)',
-    brightText: '#C46264',
+    contrastText: '#C46264',
     dimText: '#853D3F',
   })
   static selected = new Theme({
@@ -89,6 +103,8 @@ export class Theme {
     textBackground: '#BDBDBD(250)',
     highlight: '#E6E6E6(254)',
     darken: '#7F7F7F(243)',
+    tableChecked: '#8fa1c8',
+    tableCheckedHighlight: '#a7b8dc',
   })
   static red = Theme.cancel
   static green = Theme.proceed
@@ -97,23 +113,28 @@ export class Theme {
 
   constructor({
     text,
-    brightText,
+    contrastText,
     dimText,
     dimBackground,
     background,
     textBackground,
     highlight,
     darken,
+    tableChecked,
+    tableCheckedHighlight,
     emoji,
   }: Props) {
     this.textColor = text ?? defaultText
-    this.brightTextColor = brightText ?? defaultBrightText
+    this.contrastTextColor = contrastText ?? defaultContrastText
     this.dimTextColor = dimText ?? defaultDimText
     this.dimBackgroundColor = dimBackground ?? defaultDimBackground
     this.backgroundColor = background
     this.textBackgroundColor = textBackground ?? background
     this.highlightColor = highlight
     this.darkenColor = darken
+    this.tableCheckedColor = tableChecked ?? Theme.plain.tableCheckedColor
+    this.tableCheckedHighlightColor =
+      tableCheckedHighlight ?? Theme.plain.tableCheckedHighlightColor
     this.emoji = emoji ?? true
   }
 
@@ -192,7 +213,7 @@ export class Theme {
 
     if (isHover) {
       return new Style({
-        foreground: this.brightTextColor,
+        foreground: this.contrastTextColor,
         background: this.textBackgroundColor,
         inverse: hasFocus && isSelected,
         bold: hasFocus,

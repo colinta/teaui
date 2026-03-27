@@ -32,9 +32,10 @@ export type Color =
   | {sgr: string | number}
   // 0-255, these get mapped to 232-255
   | {grayscale: number}
-  // 0 - 255, these get mapped to the closest SGR color
+  // each color channel is 0-255. if the terminal doesn't support 16 million
+  // colors, they get mapped to the nearest SGR color
   | [r: number, g: number, b: number]
-  // 00-FF, also get mapped to the closest SGR color
+  // #rrggbb format (00-FF), also can get mapped to the closest SGR color
   | `#${string}`
 
 export function colorToHex(color: Color): `#${string}` {

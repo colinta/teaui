@@ -241,13 +241,15 @@ export class Screen {
       const currentTheme = rootView.theme
       rootView.theme = new Theme({
         text: currentTheme.textColor,
-        brightText: currentTheme.brightTextColor,
+        contrastText: currentTheme.contrastTextColor,
         dimText: currentTheme.dimTextColor,
         dimBackground: currentTheme.dimBackgroundColor,
         background: currentTheme.backgroundColor,
         textBackground: currentTheme.textBackgroundColor,
         highlight: currentTheme.highlightColor,
         darken: currentTheme.darkenColor,
+        tableChecked: currentTheme.tableCheckedColor,
+        tableCheckedHighlight: currentTheme.tableCheckedHighlightColor,
         emoji: opts.emoji,
       })
     }

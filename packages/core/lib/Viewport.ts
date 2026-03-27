@@ -271,7 +271,15 @@ export class Viewport {
     this.#terminal.writeMeta(str)
   }
 
+  /**
+   * Assigns a drawing style and starts drawing using it.
+   */
   usingPen(style: Style | undefined, draw: (pen: Pen) => void): void
+  /**
+   * Starts a drawing session, inheriting the current style as the default.
+   * The drawing callback receives the 'pen', and can use
+   * 'pen.replacePen(style)' to update the current style.
+   */
   usingPen(draw: (pen: Pen) => void): void
   usingPen(
     ...args: [Style | undefined, (pen: Pen) => void] | [(pen: Pen) => void]
@@ -282,11 +290,13 @@ export class Viewport {
     })
 
     if (args.length === 2) {
+      // usingPen(style: Style | undefined, draw: (pen: Pen) => void): void
       if (args[0] && args[0] !== Style.NONE) {
         pen.replacePen(args[0])
       }
       args[1](pen)
     } else {
+      // usingPen(draw: (pen: Pen) => void): void
       args[0](pen)
     }
 
@@ -406,16 +416,5 @@ class Pen {
   replacePen(style: Style) {
     this.#stack[0] = style
     this.#setter(style)
-  }
-
-  pushPen(style: Style | undefined = undefined) {
-    style ??= this.#stack[0] ?? this.#initial
-    // yeah I know I said pushPen but #style[0] is easier!
-    this.#stack.unshift(style)
-    this.#setter(style)
-  }
-
-  popPen() {
-    this.#setter(this.#stack.shift())
   }
 }

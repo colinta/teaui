@@ -14,6 +14,8 @@ import {
   type MouseEvent,
 } from './events/index.js'
 import {Point, Size, Rect} from './geometry.js'
+import {Color} from './Color.js'
+import {Style} from './Style.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number
@@ -49,6 +51,10 @@ export interface Props {
   maxHeight?: number
   padding?: number | Partial<Edges>
   isVisible?: boolean
+  // if a background color is assigned, the viewport will be drawn with this
+  // colour, and the default 'pen' will be assigned this colour as 'default
+  // background'
+  background?: Color
   // only used as a child of <Stack> views
   flex?: FlexShorthand
   /**
@@ -94,6 +100,7 @@ export abstract class View {
   #maxWidth: Props['maxWidth']
   #maxHeight: Props['maxHeight']
   #isVisible: NonNullable<Props['isVisible']> = true
+  #background: Props['background']
   padding: Edges | undefined
   flex: FlexSize = 'natural'
   pin: Pin | undefined = undefined
@@ -145,6 +152,7 @@ export abstract class View {
     maxWidth,
     maxHeight,
     isVisible,
+    background,
     padding,
     flex,
     pin,
@@ -161,6 +169,7 @@ export abstract class View {
     this.#maxWidth = maxWidth
     this.#maxHeight = maxHeight
     this.#isVisible = isVisible ?? true
+    this.#background = background
 
     this.padding = toEdges(padding)
     this.flex = flex === undefined ? 'natural' : parseFlexShorthand(flex)
@@ -208,6 +217,15 @@ export abstract class View {
 
   set isVisible(value: boolean) {
     this.#isVisible = value
+    this.invalidateSize()
+  }
+
+  get background(): Color | undefined {
+    return this.#background
+  }
+
+  set background(value: Color | undefined) {
+    this.#background = value
     this.invalidateSize()
   }
 
@@ -463,7 +481,15 @@ export abstract class View {
       )
 
       const rect = new Rect(origin, this.#renderedContentSize)
-      viewport._render(this, rect, render)
+      if (this.#background) {
+        const style = new Style({background: this.#background})
+        viewport.paint(style, rect)
+        viewport.usingPen(style, () => {
+          viewport._render(this, rect, render)
+        })
+      } else {
+        viewport._render(this, rect, render)
+      }
     }
   }
 

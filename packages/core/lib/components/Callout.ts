@@ -51,13 +51,15 @@ export class Callout extends Notification {
     const t = this.theme
     return new Theme({
       text: t.textColor,
-      brightText: t.brightTextColor,
+      contrastText: t.contrastTextColor,
       dimText: t.dimTextColor,
       dimBackground: t.darkenColor,
       background: t.darkenColor,
       textBackground: t.darkenColor,
       highlight: t.highlightColor,
       darken: t.darkenColor,
+      tableChecked: t.tableCheckedColor,
+      tableCheckedHighlight: t.tableCheckedHighlightColor,
     })
   }
 

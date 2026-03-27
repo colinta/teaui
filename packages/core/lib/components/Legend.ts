@@ -185,7 +185,7 @@ export class Legend extends View {
     )
 
     const keyStyle = new Style({
-      foreground: this.theme.brightTextColor,
+      foreground: this.theme.contrastTextColor,
       bold: true,
     })
     const labelStyle = new Style({

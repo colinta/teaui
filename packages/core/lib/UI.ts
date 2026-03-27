@@ -19,8 +19,10 @@ export function childTheme(theme: Theme, isPressed = false, isHover = false) {
         ? theme.highlightColor
         : theme.darkenColor,
     text: theme.textColor,
-    brightText: theme.brightTextColor,
+    contrastText: theme.contrastTextColor,
     dimText: theme.dimTextColor,
+    tableChecked: theme.tableCheckedColor,
+    tableCheckedHighlight: theme.tableCheckedHighlightColor,
     emoji: theme.emoji,
   })
 }

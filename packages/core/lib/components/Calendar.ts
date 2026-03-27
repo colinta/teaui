@@ -234,7 +234,7 @@ export class Calendar extends View {
   get #todayStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.theme.brightTextColor,
+      foreground: this.theme.contrastTextColor,
       background: this.theme.text().background,
     })
   }

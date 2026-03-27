@@ -568,14 +568,12 @@ export class Table<TData> extends Container {
       background: this.theme.highlightColor,
       bold: true,
     })
-    // Checked rows: light magenta background
     const checkedRowStyle = new Style({
-      background: '#3a2040',
+      background: this.theme.tableCheckedColor,
     })
-    // Cursor + checked: slightly brighter magenta
     const cursorCheckedStyle = new Style({
       foreground: this.theme.textColor,
-      background: '#4d2a55',
+      background: this.theme.tableCheckedHighlightColor,
       bold: true,
     })
 
@@ -659,12 +657,6 @@ export class Table<TData> extends Container {
       this.#scrollOffset = this.#dragScrollPinned
     }
 
-    const rowsAbove = this.#scrollOffset
-    const rowsBelow = Math.max(
-      0,
-      this.#data.length - this.#scrollOffset - this.#bodyHeight,
-    )
-
     for (let i = 0; i < this.#bodyHeight; i++) {
       const rowIndex = this.#scrollOffset + i
       const y = i + 2
@@ -676,22 +668,6 @@ export class Table<TData> extends Container {
       const row = this.#data[rowIndex]
       const isChecked = this.#selectedItems.has(row)
 
-      // Determine if this row has a scroll indicator overlaid on top
-      let scrollIndicator: string | undefined
-      if (i === 0 && rowsAbove > 0) {
-        const hiddenCount = rowsAbove + 1 // +1 for the row occluded by indicator
-        scrollIndicator = ` [ ${ARROW_UP} ${hiddenCount} more rows ] `
-      } else if (i === this.#bodyHeight - 1 && rowsBelow > 0) {
-        const hiddenCount = rowsBelow + 1 // +1 for the row occluded by indicator
-        scrollIndicator = ` [ ${ARROW_DOWN} ${hiddenCount} more rows ] `
-      }
-
-      // Styles for rows occluded by scroll indicators (easily customisable)
-      const occludedRowStyle = new Style({dim: true})
-      const occludedSepStyle = new Style({dim: true})
-      const indicatorStyle = new Style({bold: true, background: '#333333'})
-
-      // Pick effective styles: occluded > cursor+checked > cursor > checked > normal
       const rowHighlight =
         isSelected && isChecked
           ? cursorCheckedStyle
@@ -700,7 +676,7 @@ export class Table<TData> extends Container {
             : isChecked
               ? checkedRowStyle
               : Style.NONE
-      const sepHighlight =
+      const effectiveSepStyle =
         isSelected && isChecked
           ? cursorCheckedStyle
           : isSelected
@@ -708,17 +684,11 @@ export class Table<TData> extends Container {
             : isChecked
               ? checkedRowStyle
               : dimStyle
-      const effectiveRowStyle = scrollIndicator
-        ? occludedRowStyle
-        : rowHighlight
-      const effectiveSepStyle = scrollIndicator
-        ? occludedSepStyle
-        : sepHighlight
 
-      if (!scrollIndicator && (isSelected || isChecked)) {
+      if (isSelected || isChecked) {
         viewport.write(' '.repeat(width), new Point(0, y), rowHighlight)
       }
-      if (isSelected && !scrollIndicator) {
+      if (isSelected) {
         const selectionStyle = isChecked ? cursorCheckedStyle : cursorStyle
         viewport.write(SELECTION_MARKER, new Point(0, y), selectionStyle)
         viewport.write(
@@ -728,13 +698,12 @@ export class Table<TData> extends Container {
         )
       }
 
-      // Render the row cells (dimmed when occluded, highlighted when selected)
       let cellX = INDENT
 
       // Checkbox column
       if (this.#isShowSelected) {
         const checkText = isChecked ? CHECKBOX_CHECKED : CHECKBOX_UNCHECKED
-        viewport.write(checkText, new Point(cellX, y), effectiveRowStyle)
+        viewport.write(checkText, new Point(cellX, y), rowHighlight)
         cellX += 3
         viewport.write(COLUMN_SEPARATOR, new Point(cellX, y), effectiveSepStyle)
         cellX += 3
@@ -745,7 +714,7 @@ export class Table<TData> extends Container {
         const numColWidth = rowNumWidth - 3 // subtract separator
         const numText = String(rowIndex + 1)
         const aligned = this.#alignText(numText, numColWidth, 'right')
-        viewport.write(aligned, new Point(cellX, y), effectiveRowStyle)
+        viewport.write(aligned, new Point(cellX, y), rowHighlight)
         cellX += numColWidth
         viewport.write(COLUMN_SEPARATOR, new Point(cellX, y), effectiveSepStyle)
         cellX += 3
@@ -756,7 +725,7 @@ export class Table<TData> extends Container {
         const text = this.#format(col.key, row)
         const aligned = this.#alignText(text, widths[j], col.align ?? 'left')
 
-        viewport.write(aligned, new Point(cellX, y), effectiveRowStyle)
+        viewport.write(aligned, new Point(cellX, y), rowHighlight)
 
         cellX += widths[j]
         if (j < this.#columns.length - 1) {
@@ -768,17 +737,6 @@ export class Table<TData> extends Container {
           cellX += 3
         }
       }
-
-      // Overlay the scroll indicator label, centered on the row
-      if (scrollIndicator) {
-        const indicatorWidth = unicode.lineWidth(scrollIndicator)
-        const indicatorX = Math.max(0, Math.floor((width - indicatorWidth) / 2))
-        viewport.write(
-          scrollIndicator,
-          new Point(indicatorX, y),
-          indicatorStyle,
-        )
-      }
     }
   }
 }
@@ -789,8 +747,6 @@ const COLUMN_SEPARATOR = ' │ '
 const HORIZONTAL_LINE = '─'
 const SORT_ASC = '▲'
 const SORT_DESC = '▼'
-const ARROW_UP = '↑'
-const ARROW_DOWN = '↓'
 const ELLIPSIS = '…'
 const CHECKBOX_CHECKED = '[✕]'
 const CHECKBOX_UNCHECKED = '[ ]'
