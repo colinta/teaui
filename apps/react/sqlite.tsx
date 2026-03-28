@@ -69,9 +69,9 @@ function loadRows(
 
 // --- App ---
 
-const dbPath = process.argv[2]
+const [dbPath] = process.argv.slice(2)
 if (!dbPath) {
-  console.error('Usage: node index.js <path-to-sqlite-db>')
+  console.error('Usage: node sqlite.js <path-to-sqlite-db>')
   process.exit(1)
 }
 
