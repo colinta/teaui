@@ -1,5 +1,5 @@
 import * as unicode from '@teaui/term'
-import { Edges } from './types.js'
+import {Edges} from './types.js'
 
 let _debug = false
 /**
@@ -222,4 +222,39 @@ export function wrap(
 
     return outputLines
   })
+}
+
+export function toPaddingEdges(
+  edges: number | Partial<Edges> | undefined,
+  paddingTop?: number,
+  paddingRight?: number,
+  paddingBottom?: number,
+  paddingLeft?: number,
+): Edges | undefined {
+  const hasDefaults = [
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+  ].some(value => value !== undefined)
+
+  if (edges === undefined && !hasDefaults) {
+    return
+  }
+
+  if (typeof edges === 'number') {
+    return {
+      top: paddingTop ?? edges,
+      right: paddingRight ?? edges,
+      bottom: paddingBottom ?? edges,
+      left: paddingLeft ?? edges,
+    }
+  }
+
+  return {
+    top: edges?.top ?? paddingTop ?? 0,
+    right: edges?.right ?? paddingRight ?? 0,
+    bottom: edges?.bottom ?? paddingBottom ?? 0,
+    left: edges?.left ?? paddingLeft ?? 0,
+  }
 }

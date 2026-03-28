@@ -31,13 +31,13 @@ export function DigitsTab() {
       <Text>
         <Style bold foreground="cyan">
           Digits Display
-        </Style>{' '}
-        — Adjust width and height to resize the box
+        </Style>
+        {'\n'}— Adjust width and height to resize the box
       </Text>
       <Stack.right gap={2}>
         <Stack.down gap={1} flex={1}>
           <Stack.right gap={1}>
-            <Text>Width: </Text>
+            <Text paddingTop={1}>Width: </Text>
             <Slider
               flex={1}
               direction="horizontal"
@@ -50,7 +50,7 @@ export function DigitsTab() {
             />
           </Stack.right>
           <Stack.right gap={1}>
-            <Text>Height:</Text>
+            <Text paddingTop={1}>Height:</Text>
             <Slider
               flex={1}
               direction="horizontal"

@@ -128,15 +128,6 @@ export function isKeyPrintable(event: KeyEvent) {
     case 'f2':
     case 'f3':
     case 'f4':
-    case 'f1':
-    case 'f2':
-    case 'f3':
-    case 'f4':
-    case 'f1':
-    case 'f2':
-    case 'f3':
-    case 'f4':
-    case 'f5':
     case 'f5':
     case 'f6':
     case 'f7':

@@ -16,7 +16,8 @@ import {
 import {Point, Size, Rect} from './geometry.js'
 import {Color} from './Color.js'
 import {Style} from './Style.js'
-import { Edges } from './types.js'
+import {Edges} from './types.js'
+import {toPaddingEdges} from './util.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number
@@ -51,6 +52,10 @@ export interface Props {
   maxWidth?: number
   maxHeight?: number
   padding?: number | Partial<Edges>
+  paddingTop?: number
+  paddingRight?: number
+  paddingBottom?: number
+  paddingLeft?: number
   isVisible?: boolean
   // if a background color is assigned, the viewport will be drawn with this
   // colour, and the default 'pen' will be assigned this colour as 'default
@@ -148,6 +153,10 @@ export abstract class View {
     isVisible,
     background,
     padding,
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
     flex,
     pin,
     debug,
@@ -165,7 +174,13 @@ export abstract class View {
     this.#isVisible = isVisible ?? true
     this.#background = background
 
-    this.padding = toEdges(padding)
+    this.padding = toPaddingEdges(
+      padding,
+      paddingTop,
+      paddingRight,
+      paddingBottom,
+      paddingLeft,
+    )
     this.flex = flex === undefined ? 'natural' : parseFlexShorthand(flex)
     this.pin = pin
     this.debug = debug ?? false
@@ -580,30 +595,6 @@ export abstract class View {
    */
   receiveTick(dt: number): boolean {
     return false
-  }
-}
-
-function toEdges(
-  edges: number | Partial<Edges> | undefined,
-): Edges | undefined {
-  if (!edges) {
-    return
-  }
-
-  if (typeof edges === 'number') {
-    return {
-      top: edges,
-      right: edges,
-      bottom: edges,
-      left: edges,
-    }
-  }
-
-  return {
-    top: edges.top ?? 0,
-    right: edges.right ?? 0,
-    bottom: edges.bottom ?? 0,
-    left: edges.left ?? 0,
   }
 }
 
