@@ -1,4 +1,5 @@
 import * as unicode from '@teaui/term'
+import { Edges } from './types.js'
 
 let _debug = false
 /**

@@ -4,7 +4,7 @@ import type {FlexShorthand, FlexSize} from '../View.js'
 import {Container} from '../Container.js'
 import {Rect, Point, Size, MutablePoint} from '../geometry.js'
 import {define} from '../util.js'
-import {type Direction} from './types.js'
+import {type Direction} from '../types.js'
 
 interface Props extends ViewProps {
   children?: ([FlexShorthand, View] | View)[]

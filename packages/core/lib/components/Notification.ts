@@ -5,7 +5,7 @@ import type {View} from '../View.js'
 import {Stack} from './Stack.js'
 import {Separator} from './Separator.js'
 import {Text} from './Text.js'
-import {type Direction} from './types.js'
+import {type Direction} from '../types.js'
 
 export interface Props extends ContainerProps {
   title?: string

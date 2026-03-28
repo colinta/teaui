@@ -4,7 +4,7 @@ import {type Props as ViewProps, View} from '../View.js'
 import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
 import {Style} from '../Style.js'
-import {type Orientation, type Direction} from './types.js'
+import {type Orientation, type Direction} from '../types.js'
 import {Stack} from './Stack.js'
 
 interface Props extends ContainerProps {

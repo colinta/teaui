@@ -16,6 +16,7 @@ import {
 import {Point, Size, Rect} from './geometry.js'
 import {Color} from './Color.js'
 import {Style} from './Style.js'
+import { Edges } from './types.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number
@@ -69,13 +70,6 @@ export interface Props {
   pin?: Pin
   // use this however you want
   debug?: boolean
-}
-
-export interface Edges {
-  top: number
-  right: number
-  bottom: number
-  left: number
 }
 
 export abstract class View {

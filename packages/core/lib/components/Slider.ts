@@ -12,7 +12,7 @@ import {
   isMousePressEnd,
 } from '../events/index.js'
 import type {Style} from '../Style.js'
-import {type Orientation} from './types.js'
+import {type Orientation} from '../types.js'
 
 const MIN = 5
 

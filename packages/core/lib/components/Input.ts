@@ -8,7 +8,7 @@ import {View} from '../View.js'
 import {Style} from '../Style.js'
 import {Point, Size} from '../geometry.js'
 import {System} from '../System.js'
-import type {FontFamily} from './types.js'
+import type {FontFamily} from '../types.js'
 import {FONTS} from './fonts.js'
 
 interface TextProps {

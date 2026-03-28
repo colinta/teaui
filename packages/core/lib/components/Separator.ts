@@ -2,7 +2,7 @@ import type {Viewport} from '../Viewport.js'
 import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
 import {Point, Size} from '../geometry.js'
-import {type Orientation} from './types.js'
+import {type Orientation} from '../types.js'
 
 type Border =
   | 'single'

@@ -2,7 +2,7 @@ import {Viewport} from '../Viewport.js'
 import {type Props as ViewProps, View} from '../View.js'
 import {Point, Size, interpolate} from '../geometry.js'
 import {Style} from '../Style.js'
-import {type Orientation} from './types.js'
+import {type Orientation} from '../types.js'
 
 type PercentLocation = 'left' | 'center' | 'right'
 

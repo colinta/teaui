@@ -12,7 +12,7 @@ import {
   isMouseMove,
 } from '../events/index.js'
 import {System} from '../System.js'
-import {type Orientation} from './types.js'
+import {type Orientation} from '../types.js'
 
 interface Props extends ViewProps {
   multiple?: boolean

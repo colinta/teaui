@@ -3,7 +3,7 @@ import {Point, Size} from '../geometry.js'
 import {Style} from '../Style.js'
 import {Viewport} from '../Viewport.js'
 import {Text} from './Text.js'
-import {type FontFamily} from './types.js'
+import {type FontFamily} from '../types.js'
 import {type Props as ViewProps} from '../View.js'
 
 interface Props extends ViewProps {
