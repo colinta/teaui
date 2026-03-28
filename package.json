@@ -3,6 +3,7 @@
     "docs": "pnpm -C apps/docs start",
     "demo": "pnpm -C apps/demos demo",
     "react": "pnpm -C apps/react demo",
+    "react:dev": "pnpm -C apps/react dev",
     "publish": "pnpm -r publish --access public",
     "bump": "node shared/bump.js",
     "clean": "rm -rf packages/*/.dist apps/*/.dist",

@@ -78,7 +78,7 @@ if (!dbPath) {
 const db = new DatabaseSync(dbPath, {readOnly: true})
 const schema = loadSchema(db)
 
-function BrowseAnything() {
+export function BrowseAnything() {
   const [selectedTable, setSelectedTable] = useState<string | null>(null)
 
   const selectedSchema = useMemo(
@@ -138,4 +138,6 @@ function BrowseAnything() {
   )
 }
 
-run(<BrowseAnything />)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  run(<BrowseAnything />)
+}

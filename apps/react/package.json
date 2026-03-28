@@ -7,6 +7,7 @@
     "_build": "pnpm clean && pnpm tsc",
     "build": "node ../../shared/check.js",
     "demo": "node run.js",
+    "dev": "node dev.js",
     "clean": "rm -rf .dist/"
   },
   "private": true,
@@ -18,6 +19,8 @@
   },
   "devDependencies": {
     "@teaui/shared": "workspace:*",
-    "@types/react": "^18.3.1"
+    "@types/react": "^18.3.1",
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.5"
   }
 }

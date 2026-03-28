@@ -12,7 +12,8 @@ The main library is in `packages/core`, powered by `packages/term` (which is ava
 ###### [apps/react/index.tsx](https://github.com/colinta/teaui/blob/master/apps/react/index.tsx)
 
 ```
-pnpm run react
+# hot reload enabled:
+pnpm react:dev index
 ```
 
 <details>

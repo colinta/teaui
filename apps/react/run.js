@@ -8,7 +8,6 @@ import {getWorkspaceBuildOrder} from '../../shared/check.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const name = process.argv[2]
-const demoArgs = process.argv.slice(3)
 
 const demos = readdirSync(__dirname)
   .filter(f => f.endsWith('.tsx'))
@@ -81,9 +80,10 @@ if (demo !== name) {
 
 await buildWorkspaceProjects()
 
+const args = process.argv.slice(3)
 const child = spawn(
   'node',
-  ['--enable-source-maps', '--', `${demo}.js`, ...demoArgs],
+  ['--enable-source-maps', '--', `${demo}.js`, ...args],
   {
     cwd: resolve(__dirname, '.dist'),
     stdio: 'inherit',

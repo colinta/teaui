@@ -100,4 +100,6 @@ function Demo() {
 
 interceptConsoleLog()
 
-run(<Demo />)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  run(<Demo />)
+}

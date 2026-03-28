@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {interceptConsoleLog} from '@teaui/core'
 import {Box, Space, Stack, Style, run} from '@teaui/react'
 
-function Demo() {
+export function ColintaDemo() {
   const [time, setTime] = useState(() => new Date())
 
   useEffect(() => {
@@ -129,4 +129,6 @@ function pad(n: number) {
 
 interceptConsoleLog()
 
-run(<Demo />)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  run(<ColintaDemo />)
+}

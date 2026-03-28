@@ -11,6 +11,15 @@ pnpm demo index
 
 This builds (if needed) and launches the demo in fullscreen mode. Press **Ctrl-C** to exit.
 
+## Vite hot reload
+
+```bash
+cd apps/react
+pnpm dev index
+```
+
+This starts a Vite-powered dev runner that keeps the terminal screen alive and remounts the selected demo when `apps/react/`, `packages/core/`, `packages/react/`, or `packages/term/` source files change.
+
 ## What's Demonstrated
 
 The demo renders a `Drawer.bottom` layout with a component showcase on top and a centered text footer. It exercises:

@@ -215,7 +215,7 @@ function StatusBadge({status}: {status: string}) {
   )
 }
 
-function App() {
+export function TableDemo() {
   const [sortKey, setSortKey] = useState('name')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [selected, setSelected] = useState<Person | null>(null)
@@ -285,4 +285,6 @@ function App() {
   )
 }
 
-run(<App />)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  run(<TableDemo />)
+}
