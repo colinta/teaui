@@ -12,7 +12,7 @@ interceptConsoleLog()
 
 export async function demo(
   demoContent: View,
-  showConsoleLog: boolean | number = true,
+  showConsoleLog: boolean | number = false,
 ) {
   process.title = 'TeaUI'
   if (process.argv.includes('--no-log')) {
@@ -39,7 +39,7 @@ export async function demo(
         }),
       })
     },
-    {quitChar: 'C-q'},
+    {quitChar: 'C-c'},
   )
 
   program.key('escape', function () {

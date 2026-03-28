@@ -10,6 +10,7 @@ import {
   Window,
   interceptConsoleLog,
 } from '@teaui/core'
+
 ;(async () => {
   interceptConsoleLog()
   console.log('Logs appear in the "ConsoleLog" component')
@@ -37,6 +38,7 @@ import {
               Space.vertical(10),
               new Button({
                 title: 'Exit',
+                hotKey: 'C-x',
                 onClick: () => {
                   screen.exit()
                 },
@@ -47,7 +49,7 @@ import {
         ]),
       }),
     }),
-    {quitChar: 'C-q'},
+    {quitChar: 'C-c'},
   )
 
   program.key('escape', function () {
