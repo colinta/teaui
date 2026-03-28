@@ -1,0 +1,120 @@
+---
+sidebar_position: 0
+title: Container
+---
+
+import Example from '@site/src/components/Example'
+
+# Container
+
+`Container` extends `View` with child management. It is the base class for all
+components that hold other views: `Box`, `Stack`, `Window`, `Accordion`,
+`Drawer`, `Tabs`, and more.
+
+You never instantiate `Container` directly — instead you work with one of its
+subclasses. The examples on this page use `Box` to illustrate the concept.
+
+<Example name="container" title="Container" />
+
+## Adding children
+
+### `add(child, at?)`
+
+Appends a child view, or inserts it at a specific index.
+
+```ts
+import {Box, Stack, Text} from '@teaui/core'
+
+const box = new Box({border: 'single'})
+const first = new Text({text: 'First child'})
+const second = new Text({text: 'Second child'})
+const third = new Text({text: 'Third child'})
+
+box.add(first)
+box.add(second)
+box.add(third)
+```
+
+Pass a second argument to insert at a specific position (0-based):
+
+```ts
+const banner = new Text({text: 'Banner'})
+box.add(banner, 0) // inserts before all existing children
+```
+
+If the child already belongs to this container, `add()` re-orders it without
+triggering a parent change:
+
+```ts
+box.add(first, 2) // moves 'first' to index 2
+```
+
+If the child belongs to a **different** container, it is automatically detached
+from that container before being added here.
+
+### Constructor shorthand
+
+Most containers accept a `children` array in their constructor props, which
+calls `add()` for each entry:
+
+```ts
+const box = new Box({
+  border: 'single',
+  children: [first, second, third],
+})
+```
+
+## Removing children
+
+### `view.removeFromParent()`
+
+Detaches a view from whichever container currently owns it. Defined on `View`,
+so it is available on every view regardless of type.
+
+```ts
+second.removeFromParent() // removes 'second' from box
+```
+
+### `container.removeChild(child)`
+
+Removes a specific child from this container. No-op if the child does not belong
+to this container.
+
+```ts
+box.removeChild(second)
+```
+
+### `container.removeAllChildren()`
+
+Removes every child at once.
+
+```ts
+box.removeAllChildren()
+```
+
+## Dynamic updates
+
+A common pattern is to rebuild a container's contents in response to state
+changes:
+
+```ts
+function refresh(items: string[]) {
+  box.removeAllChildren()
+  for (const item of items) {
+    box.add(new Text({text: item}))
+  }
+}
+```
+
+In the React API this is handled automatically by the reconciler — you rarely
+need `add` or `removeFromParent` directly unless you are writing a custom view.
+
+## Methods at a glance
+
+| Method                          | Description                      |
+| ------------------------------- | -------------------------------- |
+| `container.add(child)`          | Append a child                   |
+| `container.add(child, at)`      | Insert a child at index `at`     |
+| `container.removeChild(child)`  | Remove a specific child          |
+| `container.removeAllChildren()` | Remove all children              |
+| `view.removeFromParent()`       | Detach this view from its parent |

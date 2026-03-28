@@ -13,6 +13,7 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: '░ Layout',
           items: [
+            'components/container',
             'components/box',
             'components/stack',
             'components/space',
