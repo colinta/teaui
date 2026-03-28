@@ -278,7 +278,7 @@ export class ToggleGroup extends Container {
         BORDER.size + this.#offAxisPadding,
       ),
       inner => {
-        inner.write(text, Point.zero)
+        inner.write(text, Point.zero, this.theme.text())
       },
     )
   }
