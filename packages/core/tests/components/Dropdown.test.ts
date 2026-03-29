@@ -195,4 +195,121 @@ describe('Dropdown', () => {
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
+
+  describe('background colors', () => {
+    it('dropdown popup rows have consistent background color', () => {
+      const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
+        width: 30,
+        height: 12,
+      })
+      click(t, 5, 0)
+
+      // The popup content rows (rows 2-4: Apple, Banana, Cherry) should have
+      // a consistent background across the entire row width.
+      // This catches the bug where View.background bleeds into the popup area.
+      for (let row = 2; row <= 4; row++) {
+        // Get the background of the first content cell as reference
+        const refBg = t.terminal.styleAt(1, row).background
+        expect(refBg, `row ${row} should have a background color`).toBeDefined()
+
+        // Check that every cell in the item area has the same background
+        // (from col 1 to the inner border, skipping the box border chars)
+        for (let col = 2; col < 27; col++) {
+          const style = t.terminal.styleAt(col, row)
+          expect(
+            style.background,
+            `row ${row}, col ${col} should have consistent background`,
+          ).toBe(refBg)
+        }
+      }
+    })
+
+    it('dropdown popup has no background bleed from parent view background', () => {
+      // When the dropdown has a background color set,
+      // the popup should NOT inherit that background — it should use
+      // the same background as a dropdown without a background prop.
+      const withBg = new Dropdown({choices: CHOICES, background: 'red'})
+      const withoutBg = new Dropdown({choices: CHOICES})
+
+      const tWithBg = testRender(dropdownInStack(withBg), {
+        width: 30,
+        height: 12,
+      })
+      click(tWithBg, 5, 0)
+
+      const tWithoutBg = testRender(dropdownInStack(withoutBg), {
+        width: 30,
+        height: 12,
+      })
+      click(tWithoutBg, 5, 0)
+
+      // The popup content rows should have the same background regardless of
+      // whether the dropdown control has a background prop
+      for (let row = 2; row <= 4; row++) {
+        for (let col = 1; col < 27; col++) {
+          const styleBg = tWithBg.terminal.styleAt(col, row)
+          const styleNoBg = tWithoutBg.terminal.styleAt(col, row)
+          expect(
+            styleBg.background,
+            `row ${row}, col ${col} popup bg should not be affected by dropdown background prop`,
+          ).toEqual(styleNoBg.background)
+        }
+      }
+    })
+
+    it('dropdown control row has a background color', () => {
+      const t = testRender(
+        dropdownInStack(new Dropdown({choices: CHOICES, selected: 'apple'})),
+        {width: 30, height: 3},
+      )
+
+      // The Dropdown paints with theme.ui() then writes text with the same style.
+      // The text cells should carry foreground and background from the theme.
+      const style = t.terminal.styleOf('Apple')
+      expect(style).not.toBeNull()
+      expect(style!.foreground).toBeDefined()
+      expect(style!.background).toBeDefined()
+    })
+
+    it('popup border and content rows have consistent backgrounds', () => {
+      const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
+        width: 30,
+        height: 12,
+      })
+      click(t, 5, 0)
+
+      // Get reference background from the top border
+      const borderBg = t.terminal.styleAt(1, 1).background
+      expect(borderBg, 'border should have a background').toBeDefined()
+
+      // Top border row (row 1) should be consistent
+      for (let col = 0; col < 28; col++) {
+        const style = t.terminal.styleAt(col, 1)
+        expect(
+          style.background,
+          `top border col ${col} should have consistent background`,
+        ).toEqual(borderBg)
+      }
+
+      // Bottom border row (row 5) should be consistent
+      for (let col = 0; col < 28; col++) {
+        const style = t.terminal.styleAt(col, 5)
+        expect(
+          style.background,
+          `bottom border col ${col} should have consistent background`,
+        ).toEqual(borderBg)
+      }
+
+      // Content rows should also match the border background
+      for (let row = 2; row <= 4; row++) {
+        for (let col = 1; col < 27; col++) {
+          const style = t.terminal.styleAt(col, row)
+          expect(
+            style.background,
+            `content row ${row}, col ${col} should match border background`,
+          ).toEqual(borderBg)
+        }
+      }
+    })
+  })
 })

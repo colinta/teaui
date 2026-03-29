@@ -4,7 +4,7 @@ exports[`Table > column layout > uses fixed widths for specified columns 1`] = `
 " Name       │ Age
 ────────────────────
 ▶Alice      │ 30   ◀
- [ ↓ 4 more rows ]"
+ Bob        │ 25"
 `;
 
 exports[`Table > header rendering > renders header, separator, and data rows 1`] = `
@@ -21,21 +21,21 @@ exports[`Table > header rendering > shows ascending sort indicator after column 
 " Name ▲   │   Age │ City
 ──────────────────────────────
 ▶Alice    │    30 │ New York ◀
- Bob  [ ↓ 4 more rows ] ago"
+ Bob      │    25 │ Chicago"
 `;
 
 exports[`Table > header rendering > shows descending sort indicator 1`] = `
 " Name     │   Age │ City ▼
 ──────────────────────────────
 ▶Diana    │    28 │ Seattle  ◀
- Alic [ ↓ 4 more rows ] York"
+ Alice    │    30 │ New York"
 `;
 
 exports[`Table > row numbers > does not show row numbers when disabled 1`] = `
 " Name     │   Age │ City
 ──────────────────────────────
 ▶Alice    │    30 │ New York ◀
- Bob  [ ↓ 4 more rows ] ago"
+ Bob      │    25 │ Chicago"
 `;
 
 exports[`Table > row numbers > renders row number column with # header 1`] = `
@@ -52,7 +52,7 @@ exports[`Table > row numbers > shows sort arrow on # when sorting by original or
 " ▲ │ Name     │   Age │ City
 ───────────────────────────────────
 ▶1 │ Alice    │    30 │ New York  ◀
- 2 │ Bob [ ↓ 4 more rows ] cago"
+ 2 │ Bob      │    25 │ Chicago"
 `;
 
 exports[`Table > row numbers > widens row number column for 2-digit counts 1`] = `
@@ -75,7 +75,7 @@ exports[`Table > row numbers > widens row number column for 2-digit counts 1`] =
 exports[`Table > row numbers > widens row number column for 3-digit counts 1`] = `
 "   # │ Name ▲   │   Age │ City
 ────────────────────────────────────────
- 147 │ R1 [ ↑ 147 more rows ]
+ 147 │ R146     │   146 │ C146
  148 │ R147     │   147 │ C147
  149 │ R148     │   148 │ C148
 ▶150 │ R149     │   149 │ C149         ◀"
@@ -84,9 +84,9 @@ exports[`Table > row numbers > widens row number column for 3-digit counts 1`] =
 exports[`Table > scroll indicators > both indicators overlaid on dimmed rows 1`] = `
 " Name     │   Age │ City
 ──────────────────────────────
- Bob  [ ↑ 2 more rows ] ago
+ Bob      │    25 │ Chicago
 ▶Charlie  │    35 │ Austin   ◀
- Dian [ ↓ 2 more rows ] tle"
+ Diana    │    28 │ Seattle"
 `;
 
 exports[`Table > scroll indicators > no indicators when all rows fit 1`] = `
@@ -104,7 +104,7 @@ exports[`Table > scroll indicators > no ↑ when scrollOffset is 0 1`] = `
 ──────────────────────────────
  Alice    │    30 │ New York
 ▶Bob      │    25 │ Chicago  ◀
- Char [ ↓ 3 more rows ] in"
+ Charlie  │    35 │ Austin"
 `;
 
 exports[`Table > scroll indicators > ↓ indicator overlaid on dimmed last row 1`] = `
@@ -112,7 +112,7 @@ exports[`Table > scroll indicators > ↓ indicator overlaid on dimmed last row 1
 ──────────────────────────────
 ▶Alice    │    30 │ New York ◀
  Bob      │    25 │ Chicago
- Char [ ↓ 3 more rows ] in"
+ Charlie  │    35 │ Austin"
 `;
 
 exports[`Table > selection (multi-select) > renders checkbox column with showSelected 1`] = `

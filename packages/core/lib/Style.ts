@@ -160,7 +160,8 @@ export class Style {
           code === '38' ||
           code === '38;5' ||
           code === '48' ||
-          code === '48;5'
+          code === '48;5' ||
+          /^[34]8;2(;\d+){0,2}$/.test(code)
         ) {
           code += ';'
         } else {
