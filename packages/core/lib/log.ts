@@ -1,5 +1,6 @@
 import {ConsoleLog} from './components/Log.js'
 import {inspect} from './inspect.js'
+import {removeAnsi} from '@teaui/term'
 
 const levels = ['debug', 'error', 'info', 'log', 'warn'] as const
 export type Level = (typeof levels)[number]
@@ -52,7 +53,14 @@ export function removeListener(listener: () => void) {
 }
 
 function appendLog(level: Level, args: any[]) {
-  logs.push({level, args: args.map(arg => inspect(arg, true))})
+  logs.push({
+    level,
+    args: args.map(arg =>
+      typeof arg === 'string'
+        ? inspect(removeAnsi(arg), true)
+        : inspect(arg, true),
+    ),
+  })
   for (const listener of logListeners) {
     listener()
   }
