@@ -1,0 +1,45 @@
+---
+title: Code
+---
+
+import Example from '@site/src/components/Example'
+
+# Code
+
+Syntax-highlighted code viewer. Uses [highlight.js](https://highlightjs.org/)
+(via `cli-highlight`) for colorization with support for 190+ languages,
+line numbers, and line highlighting.
+
+Provided by the `@teaui/code` package.
+
+<Example name="code" title="Code" />
+
+## Installation
+
+```bash
+pnpm add @teaui/code
+```
+
+## Usage
+
+### Core
+
+```ts
+import {CodeView} from '@teaui/code'
+
+const view = new CodeView({
+  code: 'const x = 1',
+  language: 'javascript',
+  showLineNumbers: true,
+})
+```
+
+## Props
+
+| Prop              | Type       | Default | Description                                          |
+| ----------------- | ---------- | ------- | ---------------------------------------------------- |
+| `code`            | `string`   | —       | Source code to display                               |
+| `language`        | `string`   | —       | Language for highlighting (auto-detected if omitted) |
+| `showLineNumbers` | `boolean`  | `false` | Show line number gutter                              |
+| `highlightLines`  | `number[]` | —       | Line numbers to highlight with a background          |
+| `wrap`            | `boolean`  | `false` | Wrap long lines                                      |

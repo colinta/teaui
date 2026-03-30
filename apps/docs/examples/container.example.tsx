@@ -3,11 +3,9 @@ import {Box, Stack, Text} from '@teaui/react'
 
 function App() {
   return (
-    <Stack.down gap={1}>
+    <Stack.down>
       <Box border="single" title="Panel">
         <Text>First child</Text>
-        <Text>Second child</Text>
-        <Text>Third child</Text>
       </Box>
     </Stack.down>
   )

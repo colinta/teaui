@@ -3,7 +3,10 @@ import type {Config} from '@docusaurus/types'
 import type * as Preset from '@docusaurus/preset-classic'
 
 const config: Config = {
-  plugins: [require.resolve('./src/plugins/auto-rebuild')],
+  plugins: [
+    require.resolve('./src/plugins/auto-rebuild'),
+    require.resolve('./src/plugins/watch-examples'),
+  ],
 
   title: 'TeaUI',
   tagline: 'React-compatible terminal UI framework',

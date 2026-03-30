@@ -1,5 +1,4 @@
 ---
-sidebar_position: 0
 title: Container
 ---
 
@@ -7,12 +6,9 @@ import Example from '@site/src/components/Example'
 
 # Container
 
-`Container` extends `View` with child management. It is the base class for all
-components that hold other views: `Box`, `Stack`, `Window`, `Accordion`,
-`Drawer`, `Tabs`, and more.
+`Container` extends `View`, adding child view management. It is the base class for all components that hold other views: `Box`, `Stack`, `Window`, `Accordion`, `Drawer`, `Tabs`, and more.
 
-You never instantiate `Container` directly — instead you work with one of its
-subclasses. The examples on this page use `Box` to illustrate the concept.
+You never instantiate `Container` directly — instead you work with one of its subclasses. The examples on this page use `Box` and `Stack` to illustrate the concept.
 
 <Example name="container" title="Container" />
 
@@ -39,7 +35,7 @@ Pass a second argument to insert at a specific position (0-based):
 
 ```ts
 const banner = new Text({text: 'Banner'})
-box.add(banner, 0) // inserts before all existing children
+box.add(banner, 0) // inserts before all existing children (ie at the bottom)
 ```
 
 If the child already belongs to this container, `add()` re-orders it without
@@ -61,6 +57,15 @@ calls `add()` for each entry:
 const box = new Box({
   border: 'single',
   children: [first, second, third],
+})
+```
+
+You can also use 'child' to add a single view:
+
+```ts
+const box = new Box({
+  border: 'single',
+  child: first,
 })
 ```
 
@@ -106,8 +111,8 @@ function refresh(items: string[]) {
 }
 ```
 
-In the React API this is handled automatically by the reconciler — you rarely
-need `add` or `removeFromParent` directly unless you are writing a custom view.
+In the React API this is handled automatically by the reconciler — you only
+need `add` or `removeFromParent` if you are using the Core API.
 
 ## Methods at a glance
 

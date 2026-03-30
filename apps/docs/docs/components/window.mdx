@@ -1,11 +1,10 @@
 ---
-sidebar_position: 7
 title: Window
 ---
 
 # Window
 
-The root container. Fills the entire terminal. Typically the outermost element of your app, wrapped by `run()` or `Screen.start()`.
+The root container. Fills the entire terminal. Typically the outermost element of your app, created by `run()` or `Screen.start()`. You don't really need to think about or use this one.
 
 ## React Example
 
@@ -13,15 +12,11 @@ The root container. Fills the entire terminal. Typically the outermost element o
 import React from 'react'
 import {Box, Text, run} from '@teaui/react'
 
-// run() automatically wraps your component in a Window
 function App() {
-  return (
-    <Box border="single">
-      <Text>Full screen app</Text>
-    </Box>
-  )
+  ...
 }
 
+// run() automatically wraps your component in a Window
 run(<App />)
 ```
 
@@ -41,12 +36,10 @@ import {Screen, Window, Box, Text} from '@teaui/core'
 
 Screen.start(
   new Window({
-    children: [
-      new Box({
-        border: 'single',
-        children: [new Text({text: 'Full screen app'})],
-      }),
-    ],
+    child: new Box({
+      border: 'single',
+      children: [new Text({text: 'Full screen app'})],
+    }),
   }),
 )
 ```

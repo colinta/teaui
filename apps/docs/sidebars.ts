@@ -11,7 +11,35 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
+          label: '░ Display',
+          collapsed: false,
+          items: [
+            'components/text',
+            'components/header',
+            'components/table',
+            'components/digits',
+            'components/progress',
+            'components/spinner',
+            'components/log',
+          ],
+        },
+        {
+          type: 'category',
+          label: '░ Input',
+          collapsed: false,
+          items: [
+            'components/button',
+            'components/checkbox',
+            'components/input',
+            'components/slider',
+            'components/dropdown',
+            'components/toggle-group',
+          ],
+        },
+        {
+          type: 'category',
           label: '░ Layout',
+          collapsed: false,
           items: [
             'components/container',
             'components/align',
@@ -26,37 +54,14 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: '░ Input',
-          items: [
-            'components/button',
-            'components/checkbox',
-            'components/input',
-            'components/slider',
-            'components/dropdown',
-            'components/toggle-group',
-          ],
-        },
-        {
-          type: 'category',
-          label: '░ Display',
-          items: [
-            'components/text',
-            'components/header',
-            'components/table',
-            'components/digits',
-            'components/progress',
-            'components/spinner',
-            'components/log',
-          ],
-        },
-        {
-          type: 'category',
           label: '░ Navigation',
+          collapsed: false,
           items: ['components/breadcrumb'],
         },
         {
           type: 'category',
           label: '░ Container',
+          collapsed: false,
           items: [
             'components/accordion',
             'components/collapsible',
@@ -66,6 +71,12 @@ const sidebars: SidebarsConfig = {
             'components/tree',
             'components/hotkey',
           ],
+        },
+        {
+          type: 'category',
+          label: '░ Extensions',
+          collapsed: false,
+          items: ['components/code'],
         },
       ],
     },
