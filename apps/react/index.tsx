@@ -51,6 +51,7 @@ import {DrawerTab} from './drawer.js'
 import {StylesTab} from './styles.js'
 import {ListTab} from './scrollable-list.js'
 import {WidgetsTab} from './widgets.js'
+import {CodeTab} from './code.js'
 
 // ── Main App ────────────────────────────────────────────────────────────────
 
@@ -86,6 +87,9 @@ function Demo() {
             </Tabs.Section>
             <Tabs.Section title="List">
               <ListTab />
+            </Tabs.Section>
+            <Tabs.Section title="Code">
+              <CodeTab />
             </Tabs.Section>
             <Tabs.Section title="More">
               <MoreTab />

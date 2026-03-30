@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "@teaui/code": "workspace:*",
     "@teaui/core": "workspace:*",
     "@teaui/react": "workspace:*",
     "react": "^18.3.1",

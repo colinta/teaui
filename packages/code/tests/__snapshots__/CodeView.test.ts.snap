@@ -1,0 +1,64 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CodeView > renders code 1`] = `
+"const x = 1
+if (x > 0) {
+  console.log("hello")
+}"
+`;
+
+exports[`CodeView > renders empty code 1`] = `""`;
+
+exports[`CodeView > renders line numbers with correct gutter width for many lines 1`] = `
+"  1│line 1
+  2│line 2
+  3│line 3
+  4│line 4
+  5│line 5"
+`;
+
+exports[`CodeView > renders python code 1`] = `
+"def greet(name):
+    print(f"Hello, {name}")
+
+greet("world")"
+`;
+
+exports[`CodeView > renders single line 1`] = `"let a = 42"`;
+
+exports[`CodeView > renders with auto-detected language 1`] = `
+"const x = 1
+if (x > 0) {
+  console.log("hello")
+}"
+`;
+
+exports[`CodeView > renders with explicit language 1`] = `"SELECT * FROM users"`;
+
+exports[`CodeView > renders with highlighted lines 1`] = `
+"1│const x = 1
+2│if (x > 0) {
+3│  console.log("hello")
+4│}"
+`;
+
+exports[`CodeView > renders with line numbers 1`] = `
+"1│const x = 1
+2│if (x > 0) {
+3│  console.log("hello")
+4│}"
+`;
+
+exports[`CodeView > renders with line numbers and wrap 1`] = `
+"1│const x = "a really lon
+  g string that should wr
+  ap around""
+`;
+
+exports[`CodeView > truncates long lines when wrap is disabled 1`] = `"const veryLongVariab"`;
+
+exports[`CodeView > wraps long lines when wrap is enabled 1`] = `
+"const veryLongVariab
+leName = "a very lon
+g string value""
+`;

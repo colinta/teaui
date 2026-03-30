@@ -1,0 +1,65 @@
+{
+  "name": "@teaui/code",
+  "description": "Syntax-highlighted code view for TeaUI",
+  "author": "Colin T.A. Gray <colinta@colinta.com>",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/colinta/teaui.git"
+  },
+  "homepage": "https://github.com/colinta/teaui",
+  "exports": {
+    ".": {
+      "types": "./.dist/index.d.ts",
+      "import": "./.dist/index.js",
+      "default": "./.dist/index.js"
+    },
+    "./react": {
+      "types": "./.dist/react.d.ts",
+      "import": "./.dist/react.js",
+      "default": "./.dist/react.js"
+    }
+  },
+  "main": ".dist/index.js",
+  "types": ".dist/index.d.ts",
+  "files": [
+    ".dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "clean": "rm -rf .dist/",
+    "_build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json",
+    "build": "node ../../shared/check.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">= 18.12.0"
+  },
+  "dependencies": {
+    "@teaui/core": "workspace:*",
+    "@teaui/term": "workspace:*",
+    "cli-highlight": "^2.1.11"
+  },
+  "peerDependencies": {
+    "@teaui/react": "workspace:*",
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@teaui/react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@teaui/shared": "workspace:*",
+    "@teaui/react": "workspace:*",
+    "react": "^18.3.1",
+    "@types/react": "^18.3.1",
+    "vitest": "^3.0.0"
+  }
+}
