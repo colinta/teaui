@@ -5,7 +5,7 @@ import {type Props as ContainerProps, Container} from '../Container.js'
 import {type Props as ViewProps, View} from '../View.js'
 import {Point, Rect, Size} from '../geometry.js'
 import {Style} from '../Style.js'
-import {type Direction} from './types.js'
+import {type Direction} from '../types.js'
 import {Stack} from './Stack.js'
 
 interface Props extends ContainerProps {
