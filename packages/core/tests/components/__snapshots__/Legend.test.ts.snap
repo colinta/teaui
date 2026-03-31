@@ -2,11 +2,11 @@
 
 exports[`Legend > maps Ctrl+C string syntax 1`] = `"⌃C quit"`;
 
-exports[`Legend > maps cmd key 1`] = `"⌘S save"`;
+exports[`Legend > maps cmd key 1`] = `"⌘/S save"`;
 
-exports[`Legend > maps compound keys like up/down 1`] = `"↑↓ navigate"`;
+exports[`Legend > maps compound keys like up/down 1`] = `"↑/↓ navigate"`;
 
-exports[`Legend > maps modifier+key arrays 1`] = `"⌃C quit"`;
+exports[`Legend > maps modifier+key arrays 1`] = `"⌃/C quit"`;
 
 exports[`Legend > maps named keys to sigils 1`] = `"⤦ select  ␛ cancel  ⇥ switch"`;
 

@@ -17,11 +17,7 @@ interface Props extends ViewProps {
   separator?: string
 }
 
-function formatKeys(key: string | string[]): string {
-  if (Array.isArray(key)) {
-    return key.map(mapKey).join('')
-  }
-
+function formatKey(key: string): string {
   // Handle 'Ctrl+C' style strings
   if (key.includes('+')) {
     return key
@@ -30,7 +26,29 @@ function formatKeys(key: string | string[]): string {
       .join('')
   }
 
+  // Handle 'C-a', 'A-S-x' style modifier prefixes
+  const modRe = /^([CAMS]-)+/
+  const modMatch = key.match(modRe)
+  if (modMatch) {
+    const modStr = modMatch[0]
+    const base = key.slice(modStr.length)
+    let sigils = ''
+    if (modStr.includes('C-')) sigils += MODIFIER_SIGILS.ctrl
+    if (modStr.includes('A-')) sigils += MODIFIER_SIGILS.alt
+    if (modStr.includes('M-')) sigils += MODIFIER_SIGILS.meta
+    if (modStr.includes('S-')) sigils += MODIFIER_SIGILS.shift
+    return sigils + mapKey(base)
+  }
+
   return mapKey(key)
+}
+
+function formatKeys(key: string | string[]): string {
+  if (Array.isArray(key)) {
+    return key.map(formatKey).join(KEY_SEPARATOR)
+  }
+
+  return formatKey(key)
 }
 
 interface ComputedItem {
@@ -238,4 +256,12 @@ export class Legend extends View {
       }
     }
   }
+}
+
+const KEY_SEPARATOR = '/'
+const MODIFIER_SIGILS = {
+  ctrl: '⌃',
+  alt: '⌥',
+  meta: '⌘',
+  shift: '⇧',
 }
