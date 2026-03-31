@@ -304,8 +304,8 @@ export class Input extends View {
     items.push(
       {key: ['C-a', 'home'], label: 'Line Start'},
       {key: ['C-e', 'end'], label: 'Line End'},
-      {key: 'A-S-<', label: 'Start'},
-      {key: 'A-S->', label: 'End'},
+      {key: 'A-,', label: 'Start'},
+      {key: 'A-.', label: 'End'},
     )
     if (this.#multiline) {
       items.push({key: 'C-]', label: 'Indent'}, {key: 'C-[', label: 'Dedent'})
@@ -383,12 +383,20 @@ export class Input extends View {
     } else if (event.full === 'C-e' || event.name === 'end') {
       this.#insertCoalesceEnabled = false
       this.#receiveEnd(event)
-    } else if (event.full === 'A-S-,' || event.full === 'A-S-<') {
+    } else if (
+      event.full === 'A-,' ||
+      event.full === 'A-S-,' ||
+      event.full === 'A-S-<'
+    ) {
       this.#insertCoalesceEnabled = false
-      this.#receiveGotoStart()
-    } else if (event.full === 'A-S-.' || event.full === 'A-S->') {
+      this.#receiveGotoStart(event)
+    } else if (
+      event.full === 'A-.' ||
+      event.full === 'A-S-.' ||
+      event.full === 'A-S->'
+    ) {
       this.#insertCoalesceEnabled = false
-      this.#receiveGotoEnd()
+      this.#receiveGotoEnd(event)
     } else if (event.name === 'up') {
       this.#insertCoalesceEnabled = false
       this.#receiveKeyUpArrow(event)
@@ -414,7 +422,12 @@ export class Input extends View {
       this.#beginEdit('insert')
       this.#receiveKeyAccent(event)
       removeAccent = false
-    } else if (isKeyPrintable(event)) {
+    } else if (
+      !event.ctrl &&
+      !event.alt &&
+      !event.meta &&
+      isKeyPrintable(event)
+    ) {
       this.#beginEdit('insert')
       this.#receiveKeyPrintable(event)
     }
@@ -973,12 +986,20 @@ export class Input extends View {
     }
   }
 
-  #receiveGotoStart() {
-    this.#cursor = {start: 0, end: 0}
+  #receiveGotoStart({shift}: KeyEvent) {
+    if (shift) {
+      this.#cursor.end = 0
+    } else {
+      this.#cursor = {start: 0, end: 0}
+    }
   }
 
-  #receiveGotoEnd() {
-    this.#cursor = {start: this.#chars.length, end: this.#chars.length}
+  #receiveGotoEnd({shift}: KeyEvent) {
+    if (shift) {
+      this.#cursor.end = this.#chars.length
+    } else {
+      this.#cursor = {start: this.#chars.length, end: this.#chars.length}
+    }
   }
 
   #receiveHome({shift}: KeyEvent) {
