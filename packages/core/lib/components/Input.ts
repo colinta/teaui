@@ -1478,9 +1478,11 @@ const ACCENTS: {[T in string]?: {[U in string]?: string}} = {
 }
 const ACCENT_KEYS: {[T in string]: string} = {
   'A-a': '‵',
+  'A-`': '‵',
   'A-c': '¸',
   'A-e': '´',
   'A-i': 'ˆ',
+  'A-6': 'ˆ',
   'A-n': '˜',
   'A-o': '¯',
   'A-s': '¸',

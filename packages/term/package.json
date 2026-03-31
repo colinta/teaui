@@ -21,6 +21,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
     "format:check": "prettier --check 'src/**/*.ts' 'tests/**/*.ts'",
+    "example:keyboard": "npx tsx examples/keyboard.ts",
     "example:speed": "npx tsx examples/speed.ts",
     "example:rain": "npx tsx examples/rain.ts",
     "example:mouse": "npx tsx examples/mouse.ts"
