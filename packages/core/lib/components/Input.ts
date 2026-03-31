@@ -33,6 +33,7 @@ interface Cursor {
 export type Props = StyleProps & TextProps & ViewProps
 
 const NL_SIGIL = '⤦'
+const TAB_SIGIL = '⭾'
 
 /**
  * Text input. Supports selection, word movement via alt+←→, single and multiline
@@ -147,10 +148,14 @@ export class Input extends View {
         [[], []] as [string[][], string[]],
       )
       this.#printableLines = charLines.map((printableLine, index, all) => {
+        // Replace tabs with the tab sigil for display
+        const displayLine = printableLine.map(char =>
+          char === '\t' ? TAB_SIGIL : char,
+        )
         // every line needs a ' ' or NL_SIGIL at the end, for the EOL cursor
         return [
-          printableLine.concat(index === all.length - 1 ? ' ' : NL_SIGIL),
-          printableLine.reduce(
+          displayLine.concat(index === all.length - 1 ? ' ' : NL_SIGIL),
+          displayLine.reduce(
             (width, char) => width + unicode.charWidth(char),
             0,
           ) + 1,
@@ -551,10 +556,12 @@ export class Input extends View {
               scanTextPosition.y === cursorEnd.y
             const inNewline =
               char === NL_SIGIL && scanTextPosition.x + charWidth === width
+            const inTab = isTabSigil(char)
+            const isDimSigil = inNewline || inTab
 
-            // Look up the format style for this character
+            // Look up the format style for this character.
             const formatStyle =
-              hasFormatStyles && !isSigil
+              hasFormatStyles && !isSigil && !inTab
                 ? this.#formatStyles[formatOffset + charIndex]
                 : undefined
             const baseStyle = formatStyle
@@ -565,20 +572,20 @@ export class Input extends View {
               if (isAccentChar(char)) {
                 style = baseStyle.merge({underline: true, inverse: true})
               } else if (hasFocus && inCursor) {
-                style = inNewline
+                style = isDimSigil
                   ? nlStyle.merge({underline: true})
                   : baseStyle.merge({underline: true})
-              } else if (inNewline) {
+              } else if (isDimSigil) {
                 style = nlStyle
               } else {
                 style = baseStyle
               }
             } else {
               if (inSelection) {
-                style = inNewline
+                style = isDimSigil
                   ? nlStyle.merge({background: selectedStyle.foreground})
                   : selectedStyle.merge({underline: inCursor})
-              } else if (inNewline) {
+              } else if (isDimSigil) {
                 style = nlStyle
               } else {
                 style = baseStyle
@@ -1481,3 +1488,7 @@ function isKeyAccent(event: KeyEvent) {
 }
 
 const RESET_RE = /^\x1b\[0?m$/
+
+function isTabSigil(char: string) {
+  return char === TAB_SIGIL
+}

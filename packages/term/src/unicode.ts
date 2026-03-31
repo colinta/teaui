@@ -51,6 +51,9 @@ export function charWidth(str: string): 0 | 1 | 2 {
   // tab
   if (point === 0x09) return 1
 
+  // tab symbol (⭾) — renders as double-wide in most terminal fonts
+  if (point === 0x2b7e) return 2
+
   // 8-bit control characters
   if (point < 32 || (point >= 0x7f && point < 0xa0)) return 0
 
