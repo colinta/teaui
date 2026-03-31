@@ -117,6 +117,10 @@ const KEY_SIGILS: Record<string, string> = {
   space: '␣',
   backspace: '⌫',
   delete: '⌦',
+  pageup: '⇞',
+  pagedown: '⇟',
+  home: '↖',
+  end: '↘',
 }
 
 export function mapKey(key: string): string {
