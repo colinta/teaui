@@ -22,6 +22,7 @@ interface StyleProps {
   wrap?: boolean
   multiline?: boolean
   font?: FontFamily
+  format?: (text: string) => string
 }
 
 interface Cursor {
@@ -57,6 +58,8 @@ export class Input extends View {
   #wrap: boolean = false
   #multiline: boolean = false
   #font: FontFamily = 'default'
+  #format?: (text: string) => string
+  #formatStyles: Style[] = []
   #onChange?: (value: string) => void
   #onSubmit?: (value: string) => void
 
@@ -81,6 +84,7 @@ export class Input extends View {
     wrap,
     multiline,
     font,
+    format,
     placeholder,
     onChange,
     onSubmit,
@@ -89,6 +93,7 @@ export class Input extends View {
     this.#onSubmit = onSubmit
     this.#wrap = wrap ?? false
     this.#multiline = multiline ?? false
+    this.#format = format
     this.#updatePlaceholderLines(placeholder ?? '')
     this.#updateLines(unicode.printableChars(value ?? ''), font ?? 'default')
   }
@@ -176,7 +181,48 @@ export class Input extends View {
       return Math.max(maxWidth, width)
     }, 0)
 
+    this.#updateFormatStyles()
     this.invalidateSize()
+  }
+
+  /**
+   * Run the format function on the current value and parse the ANSI output into
+   * a flat Style[] array with one entry per character in #chars.
+   */
+  #updateFormatStyles() {
+    if (!this.#format || !this.#chars.length) {
+      this.#formatStyles = []
+      return
+    }
+
+    let formatted: string
+    try {
+      formatted = this.#format(this.#value)
+    } catch {
+      this.#formatStyles = []
+      return
+    }
+
+    // Parse the ANSI output to extract a style per character.
+    // Walk through the formatted string, tracking ANSI state.
+    const styles: Style[] = []
+    let currentStyle = Style.NONE
+    for (const token of unicode.printableChars(formatted)) {
+      const charWidth = unicode.charWidth(token)
+      if (charWidth === 0) {
+        // ANSI escape sequence — update current style.
+        // Full resets (ESC[0m) clear back to no styling.
+        if (RESET_RE.test(token)) {
+          currentStyle = Style.NONE
+        } else {
+          currentStyle = currentStyle.merge(Style.fromSGR(token, Style.NONE))
+        }
+      } else {
+        styles.push(currentStyle)
+      }
+    }
+
+    this.#formatStyles = styles
   }
 
   get value() {
@@ -431,12 +477,25 @@ export class Input extends View {
 
     const fontMap = this.#font && FONTS[this.#font]
 
+    const hasFormatStyles = this.#formatStyles.length > 0
+
     viewport.usingPen(pen => {
       let style: Style = plainStyle
 
       const visibleLines = lines.slice(cursorVisible.y)
       if (visibleLines.length === 0) {
         visibleLines.push([[' '], 0])
+      }
+
+      // Compute the character offset into the format styles array at the start
+      // of visible lines. Each line's chars (excluding the trailing sigil) map
+      // 1:1 to format style entries. Newlines do NOT have entries in the styles
+      // array (charWidth('\n') === 0, so they're skipped during parsing).
+      let formatOffset = 0
+      if (hasFormatStyles) {
+        for (let i = 0; i < cursorVisible.y && i < lines.length; i++) {
+          formatOffset += lines[i][0].length - 1
+        }
       }
 
       // is the viewport tall/wide enough to show ellipses …
@@ -463,10 +522,12 @@ export class Input extends View {
         // set to true if any character is skipped
         let drawInitialEllipses = false
         scanTextPosition.x = 0
+        let charIndex = 0
         for (let char of line) {
           char = fontMap?.get(char) ?? char
 
           const charWidth = unicode.charWidth(char)
+          const isSigil = charIndex === line.length - 1
           if (scanTextPosition.x >= cursorVisible.x) {
             const inSelection = isInSelection(
               cursorMin,
@@ -479,17 +540,26 @@ export class Input extends View {
             const inNewline =
               char === NL_SIGIL && scanTextPosition.x + charWidth === width
 
+            // Look up the format style for this character
+            const formatStyle =
+              hasFormatStyles && !isSigil
+                ? this.#formatStyles[formatOffset + charIndex]
+                : undefined
+            const baseStyle = formatStyle
+              ? plainStyle.merge(formatStyle)
+              : plainStyle
+
             if (isEmptySelection(this.#cursor)) {
               if (isAccentChar(char)) {
-                style = plainStyle.merge({underline: true, inverse: true})
+                style = baseStyle.merge({underline: true, inverse: true})
               } else if (hasFocus && inCursor) {
                 style = inNewline
                   ? nlStyle.merge({underline: true})
-                  : cursorStyle
+                  : baseStyle.merge({underline: true})
               } else if (inNewline) {
                 style = nlStyle
               } else {
-                style = plainStyle
+                style = baseStyle
               }
             } else {
               if (inSelection) {
@@ -499,7 +569,7 @@ export class Input extends View {
               } else if (inNewline) {
                 style = nlStyle
               } else {
-                style = plainStyle
+                style = baseStyle
               }
             }
 
@@ -536,12 +606,18 @@ export class Input extends View {
           }
 
           scanTextPosition.x += charWidth
+          charIndex++
           if (
             scanTextPosition.x - cursorVisible.x >=
             viewport.contentSize.width
           ) {
             break
           }
+        }
+
+        // Advance formatOffset past this line's chars (excluding the trailing sigil).
+        if (hasFormatStyles) {
+          formatOffset += line.length - 1
         }
 
         scanTextPosition.y += 1
@@ -1294,3 +1370,5 @@ function isKeyAccent(event: KeyEvent) {
 
   return ACCENT_KEYS[event.full] !== undefined
 }
+
+const RESET_RE = /^\x1b\[0?m$/

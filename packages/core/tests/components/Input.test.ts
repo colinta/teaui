@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/testing.js'
 import {Input} from '../../lib/components/Input.js'
+import {Style} from '../../lib/Style.js'
 
 describe('Input', () => {
   describe('rendering', () => {
@@ -313,6 +314,90 @@ describe('Input', () => {
       t.sendPaste('')
       expect(input.value).toBe('hello')
       expect(changed).toBe(false)
+    })
+  })
+
+  describe('format', () => {
+    // A simple formatter that colors keywords red
+    function colorKeywords(text: string): string {
+      return text.replace(
+        /\b(const|let|var|function|return)\b/g,
+        '\x1b[31m$1\x1b[0m',
+      )
+    }
+
+    it('applies format styles to rendered text', () => {
+      const input = new Input({
+        value: 'const x = 1',
+        format: colorKeywords,
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      // 'const' should be red (foreground color)
+      const constStyle = t.terminal.styleAt(0, 0)
+      expect(constStyle.foreground).toBe('red')
+      // 'x' should not have red foreground
+      const xStyle = t.terminal.styleAt(6, 0)
+      expect(xStyle.foreground).not.toBe('red')
+    })
+
+    it('renders formatted text correctly', () => {
+      const input = new Input({
+        value: 'const x = 1',
+        format: colorKeywords,
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('applies format styles to multiline text', () => {
+      const input = new Input({
+        value: 'const x = 1\nlet y = 2',
+        multiline: true,
+        format: colorKeywords,
+      })
+      const t = testRender(input, {width: 20, height: 3})
+      // 'const' on line 0 should be red
+      expect(t.terminal.styleAt(0, 0).foreground).toBe('red')
+      // 'let' on line 1 should be red
+      expect(t.terminal.styleAt(0, 1).foreground).toBe('red')
+      // 'x' on line 0 should not be red
+      expect(t.terminal.styleAt(6, 0).foreground).not.toBe('red')
+    })
+
+    it('works with empty value', () => {
+      const input = new Input({
+        value: '',
+        format: colorKeywords,
+        placeholder: 'type here',
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('preserves cursor styling with format', () => {
+      const input = new Input({
+        value: 'const',
+        format: colorKeywords,
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      // cursor is at position 5 (after 'const'), should have underline
+      const cursorStyle = t.terminal.styleAt(5, 0)
+      expect(cursorStyle.underline).toBe(true)
+    })
+
+    it('updates format when value changes', () => {
+      const input = new Input({
+        value: 'hello',
+        format: colorKeywords,
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      // 'hello' has no keywords, should not be red
+      expect(t.terminal.styleAt(0, 0).foreground).not.toBe('red')
+
+      input.value = 'const x'
+      t.render()
+      // now 'const' should be red
+      expect(t.terminal.styleAt(0, 0).foreground).toBe('red')
     })
   })
 })

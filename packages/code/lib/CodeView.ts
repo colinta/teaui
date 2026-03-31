@@ -3,7 +3,7 @@ import * as unicode from '@teaui/term'
 import type {Viewport} from '@teaui/core'
 import {View, Style, Point, Size} from '@teaui/core'
 import type {ViewProps} from '@teaui/core'
-import {highlight} from 'cli-highlight'
+import {highlight} from './highlight.js'
 
 interface CodeProps {
   code: string

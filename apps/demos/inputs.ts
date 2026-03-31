@@ -1,4 +1,5 @@
 import {Box, Stack, Input, Space, Scrollable} from '@teaui/core'
+import {codeHighlighter} from '@teaui/code'
 
 import {demo} from './demo.js'
 
@@ -19,11 +20,22 @@ const wrapLine = new Input({
   height: 3,
 })
 
-const emptyMultiLine = new Input({
-  value: 'asdf\nasdf\nasdf\n',
-  placeholder: 'INSERT\nLINES\nHERE',
-  wrap: true,
+const codeInput = new Input({
+  value: `\
+[package]
+name = "my-app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4"
+`,
   multiline: true,
+  format: codeHighlighter('toml'),
 })
 
 const restrictedLine = new Input({
@@ -58,7 +70,7 @@ demo(
       box(singleLine),
       box(emptySingleLine),
       box(wrapLine),
-      box(emptyMultiLine),
+      box(codeInput),
       box(restrictedLine),
       box(restrictedMultiLine),
     ],
