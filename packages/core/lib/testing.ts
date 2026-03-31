@@ -34,6 +34,7 @@ import {ModalManager} from './managers/ModalManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {UnboundSystem} from './System.js'
 import {Space} from './components/Space.js'
+import type {ScreenEventUnsubscribe} from './Screen.js'
 
 class TestScreen {
   #view: View
@@ -46,6 +47,7 @@ class TestScreen {
   #modalManager: ModalManager
   #tickManager: TickManager
   #screenProxy: Screen | null = null
+  #focusChangeListeners = new Set<(view: View | undefined) => void>()
 
   constructor(
     view: View,
@@ -129,6 +131,18 @@ class TestScreen {
         checkMouse: (view: View, x: number, y: number) => {
           this.#mouseManager.checkMouse(view, x, y)
         },
+        on: (
+          event: string,
+          listener: (...args: any[]) => void,
+        ): ScreenEventUnsubscribe => {
+          if (event === 'focusChange') {
+            this.#focusChangeListeners.add(listener as any)
+            return () => {
+              this.#focusChangeListeners.delete(listener as any)
+            }
+          }
+          return () => {}
+        },
         needsRender: () => {
           // In test mode, renders are explicit — ignore async render requests
         },
@@ -166,6 +180,9 @@ class TestScreen {
     )
     const focusNeedsRender = this.#focusManager.commit()
     if (focusNeedsRender) {
+      for (const listener of this.#focusChangeListeners) {
+        listener(this.#focusManager.currentFocusView)
+      }
       // Match Screen.render(): re-render with the same viewport, no
       // mouse manager reset (so modal button registrations are preserved).
       rerenderView.render(modalViewport)

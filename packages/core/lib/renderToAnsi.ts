@@ -24,6 +24,9 @@ export function createHeadlessScreen(): Screen {
     get hotKeyViews(): [View, HotKeyDef][] {
       return []
     },
+    on() {
+      return () => {}
+    },
     registerHotKey(_view: View, _key: HotKeyDef) {},
     registerKeyboard(_view: View) {},
     registerFocus(_view: View, _isDefault: boolean) {

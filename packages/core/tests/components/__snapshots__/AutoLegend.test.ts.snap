@@ -3,28 +3,28 @@
 exports[`AutoLegend > snapshot: focus changes legend content 1`] = `
 "a
 b
-C-ahome Line Start  C-eend Line End  A-, Start  A-. End  C-] Indent  C-[ Dedent  C-z Undo  C-S-z Redo"
+C-a↖ Line Start  C-e↘ Line End  A-, Start  A-. End  C-] Indent  C-[ Dedent  C-z Undo  C-S-z Redo"
 `;
 
 exports[`AutoLegend > snapshot: focus changes legend content 2`] = `
 "a
 b
-C-ahome Line Start  C-eend Line End  A-, Start  A-. End  C-z Undo  C-S-z Redo"
+C-a↖ Line Start  C-e↘ Line End  A-, Start  A-. End  C-z Undo  C-S-z Redont  C-z Undo  C-S-z Redo"
 `;
 
 exports[`AutoLegend > snapshot: input with labeled HotKey 1`] = `
 "┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                                      │
 └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-C-ahome Line Start  C-eend Line End  A-, Start  A-. End  C-z Undo  C-S-z Redo  C-x Quit"
+C-a↖ Line Start  C-e↘ Line End  A-, Start  A-. End  C-z Undo  C-S-z Redo  C-x Quit"
 `;
 
 exports[`AutoLegend > snapshot: multiline input legend 1`] = `
 "hello
-C-ahome Line Start  C-eend Line End  A-, Start  A-. End  C-] Indent  C-[ Dedent  C-z Undo  C-S-z Redo"
+C-a↖ Line Start  C-e↘ Line End  A-, Start  A-. End  C-] Indent  C-[ Dedent  C-z Undo  C-S-z Redo"
 `;
 
 exports[`AutoLegend > snapshot: single-line input legend 1`] = `
 "hello
-C-ahome Line Start  C-eend Line End  A-, Start  A-. End  C-z Undo  C-S-z Redo"
+C-a↖ Line Start  C-e↘ Line End  A-, Start  A-. End  C-z Undo  C-S-z Redo"
 `;

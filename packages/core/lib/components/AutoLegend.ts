@@ -1,5 +1,6 @@
-import type {Viewport} from '../Viewport.js'
-import {Size} from '../geometry.js'
+import type {Screen} from '../Screen.js'
+import type {ScreenEventUnsubscribe} from '../Screen.js'
+import type {View} from '../View.js'
 import {Legend, type LegendItem} from './Legend.js'
 import {HotKey} from './HotKey.js'
 import {hotKeyToString} from '../events/index.js'
@@ -13,47 +14,52 @@ interface Props {
  * - The currently focused view's `legendItems()` method
  * - Registered HotKey components that have a `label` prop
  *
- * Updates automatically when focus changes.
+ * Subscribes to focusChange events on the screen and updates when focus changes.
  */
 export class AutoLegend extends Legend {
+  #unsubscribe?: ScreenEventUnsubscribe
+
   constructor(props: Props = {}) {
     super({items: [], ...props})
   }
 
-  #collectItems(): LegendItem[] {
-    const screen = this.screen
-    if (!screen) {
-      return []
-    }
+  didMount(screen: Screen) {
+    super.didMount(screen)
+    this.#unsubscribe?.()
+    this.#unsubscribe = screen.on('focusChange', view => {
+      this.#updateItems(view)
+    })
+    // Collect initial items from current focus
+    this.#updateItems(screen.currentFocusView)
+  }
 
+  didUnmount(screen: Screen) {
+    this.#unsubscribe?.()
+    this.#unsubscribe = undefined
+    super.didUnmount(screen)
+  }
+
+  #updateItems(focused: View | undefined) {
+    const screen = this.screen
     const items: LegendItem[] = []
 
     // Collect items from the focused view
-    const focused = screen.currentFocusView
     if (focused) {
       items.push(...focused.legendItems())
     }
 
     // Collect items from registered HotKey components with labels
-    for (const [view] of screen.hotKeyViews) {
-      if (view instanceof HotKey && view.label) {
-        items.push({
-          key: hotKeyToString(view.hotKey),
-          label: view.label,
-        })
+    if (screen) {
+      for (const [view] of screen.hotKeyViews) {
+        if (view instanceof HotKey && view.label) {
+          items.push({
+            key: hotKeyToString(view.hotKey),
+            label: view.label,
+          })
+        }
       }
     }
 
-    return items
-  }
-
-  naturalSize(available: Size): Size {
-    this.update({items: this.#collectItems()})
-    return super.naturalSize(available)
-  }
-
-  render(viewport: Viewport) {
-    this.update({items: this.#collectItems()})
-    super.render(viewport)
+    this.update({items})
   }
 }

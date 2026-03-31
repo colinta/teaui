@@ -176,6 +176,12 @@ export interface ScreenOptions {
   emoji?: boolean
 }
 
+export type ScreenEventUnsubscribe = () => void
+
+interface ScreenEventMap {
+  focusChange: (view: View | undefined) => void
+}
+
 export class Screen {
   #program: TerminalProgram
   #onExit?: () => void
@@ -187,6 +193,11 @@ export class Screen {
   #modalManager = new ModalManager()
   #mouseManager = new MouseManager()
   #tickManager = new TickManager(() => this.render())
+  #eventListeners: {
+    [K in keyof ScreenEventMap]: Set<ScreenEventMap[K]>
+  } = {
+    focusChange: new Set(),
+  }
 
   /**
    * A helper function that puts the terminal into a "known good" state. I use this
@@ -368,6 +379,28 @@ export class Screen {
     return this.#focusManager.hotKeyViews
   }
 
+  /**
+   * Subscribe to a screen event. Returns an unsubscribe function.
+   */
+  on<K extends keyof ScreenEventMap>(
+    event: K,
+    listener: ScreenEventMap[K],
+  ): ScreenEventUnsubscribe {
+    this.#eventListeners[event].add(listener)
+    return () => {
+      this.#eventListeners[event].delete(listener)
+    }
+  }
+
+  #emit<K extends keyof ScreenEventMap>(
+    event: K,
+    ...args: Parameters<ScreenEventMap[K]>
+  ) {
+    for (const listener of this.#eventListeners[event]) {
+      ;(listener as (...a: any[]) => void)(...args)
+    }
+  }
+
   nextFocus() {
     this.#focusManager.nextFocus()
   }
@@ -426,6 +459,11 @@ export class Screen {
     const system = new UnboundSystem(this.#focusManager)
     const focusNeedsRender = this.#focusManager.commit()
     const mouseNeedsRender = this.#mouseManager.commit(system)
+
+    if (focusNeedsRender) {
+      this.#emit('focusChange', this.#focusManager.currentFocusView)
+    }
+
     return focusNeedsRender || mouseNeedsRender
   }
 
