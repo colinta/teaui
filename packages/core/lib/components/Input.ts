@@ -580,7 +580,7 @@ export class Input extends View {
             } else {
               if (inSelection) {
                 style = isDimSigil
-                  ? nlStyle.merge({background: selectedStyle.foreground})
+                  ? selectedStyle.merge({foreground: nlStyle.foreground})
                   : selectedStyle.merge({underline: inCursor})
               } else if (isDimSigil) {
                 style = nlStyle
