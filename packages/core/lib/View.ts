@@ -18,6 +18,7 @@ import {Color} from './Color.js'
 import {Style} from './Style.js'
 import {Edges} from './types.js'
 import {toPaddingEdges} from './util.js'
+import type {LegendItem} from './components/Legend.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number
@@ -532,6 +533,14 @@ export abstract class View {
    */
   didBlur() {
     this.#hasFocus = false
+  }
+
+  /**
+   * Returns keyboard shortcut items for this view, shown by AutoLegend
+   * when this view has focus. Override in subclasses to advertise shortcuts.
+   */
+  legendItems(): LegendItem[] {
+    return []
   }
 
   removeFromParent() {

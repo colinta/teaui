@@ -89,6 +89,7 @@ class TestScreen {
   asScreen(): Screen {
     // Cache the screen proxy so moveToScreen identity checks work
     if (!this.#screenProxy) {
+      const focusManager = this.#focusManager
       this.#screenProxy = {
         rootView: this.#view,
         preRender: (view: View) => {
@@ -98,6 +99,12 @@ class TestScreen {
         },
         requestModal: (modal: Modal, rect: Rect) => {
           return this.#modalManager.requestModal(modal, rect)
+        },
+        get currentFocusView() {
+          return focusManager.currentFocusView
+        },
+        get hotKeyViews(): [View, HotKeyDef][] {
+          return focusManager.hotKeyViews
         },
         registerHotKey: (view: View, key: HotKeyDef) => {
           this.#focusManager.registerHotKey(view, key)

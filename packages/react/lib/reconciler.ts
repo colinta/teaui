@@ -35,6 +35,7 @@ import {
   H6,
   Input,
   Legend,
+  AutoLegend,
   Progress,
   Screen,
   type ScreenOptions,
@@ -161,6 +162,8 @@ function createInstance(type: string, props: Props): any {
     case 'legend':
     case 'tui-legend':
       return new Legend(props as any)
+    case 'tui-auto-legend':
+      return new AutoLegend(props as any)
     case 'separator':
     case 'tui-separator':
       return new Separator(props as any)

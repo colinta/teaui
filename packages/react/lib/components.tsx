@@ -28,6 +28,7 @@ import type {
   Stack as WrStack,
   Input as WrInput,
   Legend as WrLegend,
+  AutoLegend as WrAutoLegend,
   Progress as WrProgress,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
@@ -98,6 +99,7 @@ export type KeyboardProps = Simplify<TUIContainer<typeof WrKeyboard>>
 export type MouseProps = Simplify<TUIContainer<typeof WrMouse>>
 export type InputProps = Simplify<TUIView<typeof WrInput>>
 export type LegendProps = Simplify<TUIView<typeof WrLegend>>
+export type AutoLegendProps = Simplify<TUIView<typeof WrAutoLegend>>
 export type ProgressProps = Simplify<TUIView<typeof WrProgress>>
 export type SeparatorProps = Simplify<TUIView<typeof WrSeparator>>
 export type SliderProps = Simplify<TUIView<typeof WrSlider>>
@@ -168,6 +170,7 @@ declare module 'react' {
       'tui-h6': WithRef<HeaderProps, WrHeader>
       'tui-input': WithRef<InputProps, WrInput>
       'tui-legend': WithRef<LegendProps, WrLegend>
+      'tui-auto-legend': WithRef<AutoLegendProps, WrAutoLegend>
       'tui-progress': WithRef<ProgressProps, WrProgress>
       'tui-separator': WithRef<SeparatorProps, WrSeparator>
       'tui-slider': WithRef<SliderProps, WrSlider>
@@ -410,6 +413,11 @@ export const Input = forwardRef<WrInput, InputProps>(
 export const Legend = forwardRef<WrLegend, LegendProps>(
   function Legend(reactProps, ref): JSX.Element {
     return <tui-legend ref={ref} {...reactProps} />
+  },
+)
+export const AutoLegend = forwardRef<WrAutoLegend, AutoLegendProps>(
+  function AutoLegend(reactProps, ref): JSX.Element {
+    return <tui-auto-legend ref={ref} {...reactProps} />
   },
 )
 export const Progress = forwardRef<WrProgress, ProgressProps>(

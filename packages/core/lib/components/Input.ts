@@ -10,6 +10,7 @@ import {Point, Size} from '../geometry.js'
 import {System} from '../System.js'
 import type {FontFamily} from '../types.js'
 import {FONTS} from './fonts.js'
+import type {LegendItem} from './Legend.js'
 
 interface TextProps {
   placeholder?: string
@@ -296,6 +297,15 @@ export class Input extends View {
       this.#multiline = multiline
       this.#updateLines(undefined, undefined)
     }
+  }
+
+  legendItems(): LegendItem[] {
+    const items: LegendItem[] = []
+    if (this.#multiline) {
+      items.push({key: 'C-]', label: 'Indent'}, {key: 'C-[', label: 'Dedent'})
+    }
+    items.push({key: 'C-z', label: 'Undo'}, {key: 'C-S-z', label: 'Redo'})
+    return items
   }
 
   naturalSize(available: Size): Size {

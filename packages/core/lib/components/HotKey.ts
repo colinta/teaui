@@ -9,11 +9,13 @@ import {
 
 export interface Props extends ContainerProps {
   hotKey: HotKeyProp
+  label?: string
   onPress?: (event: KeyEvent) => void
 }
 
 export class HotKey extends Container {
   #hotKey: HotKeyProp = {char: ''}
+  #label?: string
   #onPress?: (event: KeyEvent) => void
 
   constructor(props: Props) {
@@ -27,9 +29,18 @@ export class HotKey extends Container {
     super.update(props)
   }
 
-  #update({hotKey, onPress}: Props) {
+  #update({hotKey, label, onPress}: Props) {
     this.#hotKey = hotKey
+    this.#label = label
     this.#onPress = onPress
+  }
+
+  get hotKey(): HotKeyProp {
+    return this.#hotKey
+  }
+
+  get label(): string | undefined {
+    return this.#label
   }
 
   naturalSize(): Size {

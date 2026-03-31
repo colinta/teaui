@@ -84,6 +84,16 @@ export class FocusManager {
     }
   }
 
+  get currentFocusView(): View | undefined {
+    return this.#currentFocus && this.#currentFocus !== UNFOCUS
+      ? this.#currentFocus
+      : undefined
+  }
+
+  get hotKeyViews(): [View, HotKeyDef][] {
+    return this.#hotKeys
+  }
+
   registerHotKey(view: View, key: HotKeyDef) {
     if (this.#didCommit) {
       return

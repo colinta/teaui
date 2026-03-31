@@ -360,6 +360,14 @@ export class Screen {
     return this.#focusManager.requestFocus(view)
   }
 
+  get currentFocusView(): View | undefined {
+    return this.#focusManager.currentFocusView
+  }
+
+  get hotKeyViews(): [View, HotKeyDef][] {
+    return this.#focusManager.hotKeyViews
+  }
+
   nextFocus() {
     this.#focusManager.nextFocus()
   }

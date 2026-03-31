@@ -18,6 +18,12 @@ export function createHeadlessScreen(): Screen {
     requestModal() {
       return false
     },
+    get currentFocusView() {
+      return undefined
+    },
+    get hotKeyViews(): [View, HotKeyDef][] {
+      return []
+    },
     registerHotKey(_view: View, _key: HotKeyDef) {},
     registerKeyboard(_view: View) {},
     registerFocus(_view: View, _isDefault: boolean) {
