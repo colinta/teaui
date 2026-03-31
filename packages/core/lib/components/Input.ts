@@ -930,8 +930,8 @@ export class Input extends View {
       const [targetChars, targetWidth] = this.#wrappedLines[cursorPosition.y]
       dest = this.#wrappedLines
         .slice(0, cursorPosition.y)
-        .reduce((dest, [, width]) => {
-          return dest + width
+        .reduce((dest, [chars]) => {
+          return dest + chars.length
         }, 0)
     }
 
@@ -958,8 +958,8 @@ export class Input extends View {
       dest =
         this.#wrappedLines
           .slice(0, cursorPosition.y + 1)
-          .reduce((dest, [, width]) => {
-            return dest + width
+          .reduce((dest, [chars]) => {
+            return dest + chars.length
           }, 0) - 1
     }
 
@@ -985,19 +985,21 @@ export class Input extends View {
         this.#wrappedLines[cursorPosition.y - 1]
       dest = this.#wrappedLines
         .slice(0, cursorPosition.y - 1)
-        .reduce((dest, [, width]) => {
-          return dest + width
+        .reduce((dest, [chars]) => {
+          return dest + chars.length
         }, 0)
 
       if (targetWidth <= cursorPosition.x) {
-        dest += targetWidth - 1
+        dest += targetChars.length - 1
       } else {
+        let displayX = 0
         let destOffset = 0
         for (const char of targetChars) {
           const charWidth = unicode.charWidth(char)
-          if (destOffset + charWidth > cursorPosition.x) {
+          if (displayX + charWidth > cursorPosition.x) {
             break
           }
+          displayX += charWidth
           destOffset += 1
         }
         dest += destOffset
@@ -1029,19 +1031,21 @@ export class Input extends View {
         this.#wrappedLines[cursorPosition.y + 1]
       dest = this.#wrappedLines
         .slice(0, cursorPosition.y + 1)
-        .reduce((dest, [, width]) => {
-          return dest + width
+        .reduce((dest, [chars]) => {
+          return dest + chars.length
         }, 0)
 
       if (targetWidth <= cursorPosition.x) {
-        dest += targetWidth - 1
+        dest += targetChars.length - 1
       } else {
+        let displayX = 0
         let destOffset = 0
         for (const char of targetChars) {
           const charWidth = unicode.charWidth(char)
-          if (destOffset + charWidth > cursorPosition.x) {
+          if (displayX + charWidth > cursorPosition.x) {
             break
           }
+          displayX += charWidth
           destOffset += 1
         }
         dest += destOffset

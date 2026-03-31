@@ -392,6 +392,51 @@ describe('Input', () => {
     })
   })
 
+  describe('cursor movement with tabs', () => {
+    it('down from tab moves cursor to correct column', () => {
+      const input = new Input({
+        value: '\ttest\none\ntwo',
+        multiline: true,
+      })
+      const t = testRender(input, {width: 30, height: 5})
+      // Move cursor to start
+      t.sendKey('a', {ctrl: true})
+      // Cursor is at position 0 (the tab char)
+      // Press down: should move to 'o' in 'one' (column 0)
+      t.sendKey('down')
+      t.sendKey('!')
+      expect(input.value).toBe('\ttest\n!one\ntwo')
+    })
+
+    it('down then down moves to correct position on third line', () => {
+      const input = new Input({
+        value: '\ttest\none\ntwo',
+        multiline: true,
+      })
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('a', {ctrl: true})
+      t.sendKey('down')
+      t.sendKey('down')
+      t.sendKey('!')
+      expect(input.value).toBe('\ttest\none\n!two')
+    })
+
+    it('up from line below tab moves to correct column', () => {
+      const input = new Input({
+        value: '\ttest\none\ntwo',
+        multiline: true,
+      })
+      const t = testRender(input, {width: 30, height: 5})
+      // Move to start of 'one' line
+      t.sendKey('a', {ctrl: true})
+      t.sendKey('down')
+      // Now press up: should go back to tab char (column 0)
+      t.sendKey('up')
+      t.sendKey('!')
+      expect(input.value).toBe('!\ttest\none\ntwo')
+    })
+  })
+
   describe('focus', () => {
     it('plain tab changes focus, not inserted', () => {
       const input = new Input({value: 'hello'})
