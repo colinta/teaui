@@ -33,7 +33,7 @@ interface Cursor {
 export type Props = StyleProps & TextProps & ViewProps
 
 const NL_SIGIL = '⤦'
-const TAB_SIGIL = '⭾'
+const TAB_SIGIL = '⭾ '
 
 /**
  * Text input. Supports selection, word movement via alt+←→, single and multiline
@@ -148,10 +148,7 @@ export class Input extends View {
         [[], []] as [string[][], string[]],
       )
       this.#printableLines = charLines.map((printableLine, index, all) => {
-        // Replace tabs with the tab sigil for display
-        const displayLine = printableLine.map(char =>
-          char === '\t' ? TAB_SIGIL : char,
-        )
+        const displayLine = printableLine
         // every line needs a ' ' or NL_SIGIL at the end, for the EOL cursor
         return [
           displayLine.concat(index === all.length - 1 ? ' ' : NL_SIGIL),
@@ -615,10 +612,20 @@ export class Input extends View {
               }
             }
 
-            viewport.write(
-              drawEllipses ? '…' : char,
-              scanTextPosition.offset(-cursorVisible.x, -cursorVisible.y),
-            )
+            if (!drawEllipses && char === '\t') {
+              // Render tab as two-char sigil
+              const offset = scanTextPosition.offset(
+                -cursorVisible.x,
+                -cursorVisible.y,
+              )
+              viewport.write(TAB_SIGIL[0], offset)
+              viewport.write(TAB_SIGIL[1], offset.offset(1, 0))
+            } else {
+              viewport.write(
+                drawEllipses ? '…' : char,
+                scanTextPosition.offset(-cursorVisible.x, -cursorVisible.y),
+              )
+            }
             drawInitialEllipses = false
           } else {
             drawInitialEllipses = true
@@ -1490,5 +1497,5 @@ function isKeyAccent(event: KeyEvent) {
 const RESET_RE = /^\x1b\[0?m$/
 
 function isTabSigil(char: string) {
-  return char === TAB_SIGIL
+  return char === '\t'
 }
