@@ -317,6 +317,99 @@ describe('Input', () => {
     })
   })
 
+  describe('indentation', () => {
+    it('preserves indentation on enter', () => {
+      const input = new Input({value: '  hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      // cursor is at end of '  hello'
+      t.sendKey('enter')
+      expect(input.value).toBe('  hello\n  ')
+    })
+
+    it('preserves tab indentation on enter', () => {
+      const input = new Input({value: '\thello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('enter')
+      expect(input.value).toBe('\thello\n\t')
+    })
+
+    it('shift+enter inserts plain newline without indent', () => {
+      const input = new Input({value: '  hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('enter', {shift: true})
+      expect(input.value).toBe('  hello\n')
+    })
+
+    it('alt+enter inserts plain newline without indent', () => {
+      const input = new Input({value: '  hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('enter', {alt: true})
+      expect(input.value).toBe('  hello\n')
+    })
+
+    it('ctrl+] indents with spaces by default', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey(']', {ctrl: true})
+      expect(input.value).toBe('  hello')
+    })
+
+    it('ctrl+] indents with tab when tabs are used', () => {
+      const input = new Input({value: '\tline1\nline2', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      // move to line 2
+      t.sendKey('down')
+      t.sendKey(']', {ctrl: true})
+      expect(input.value).toBe('\tline1\n\tline2')
+    })
+
+    it('ctrl+[ removes two-space indent', () => {
+      const input = new Input({value: '  hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('[', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('ctrl+[ removes tab indent', () => {
+      const input = new Input({value: '\thello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('[', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('ctrl+[ does nothing without indentation', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('[', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('alt+tab inserts a literal tab', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 5})
+      t.sendKey('tab', {alt: true})
+      expect(input.value).toBe('hello\t')
+    })
+  })
+
+  describe('focus', () => {
+    it('plain tab changes focus, not inserted', () => {
+      const input = new Input({value: 'hello'})
+      const t = testRender(input, {width: 30, height: 1})
+      t.sendKey('tab')
+      expect(input.value).toBe('hello')
+    })
+
+    it('ctrl+tab does not change focus and is sent to input', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      // ctrl+tab goes to the focused input (not handled as focus change)
+      // Input doesn't handle ctrl+tab, so value should be unchanged
+      t.sendKey('tab', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+  })
+
   describe('format', () => {
     // A simple formatter that colors keywords red
     function colorKeywords(text: string): string {

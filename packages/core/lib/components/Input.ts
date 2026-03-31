@@ -311,11 +311,23 @@ export class Input extends View {
 
     if (event.name === 'enter' || event.name === 'return') {
       if (this.#multiline) {
-        this.#receiveChar('\n', true)
+        if (event.shift || event.alt) {
+          // Shift+Enter or Alt+Enter: plain newline without indentation
+          this.#receiveChar('\n', true)
+        } else {
+          // Enter: newline + preserve current line's indentation
+          this.#receiveEnterWithIndent()
+        }
       } else {
         this.#onSubmit?.(this.#value)
         return
       }
+    } else if (event.full === 'C-]') {
+      this.#receiveIndent()
+    } else if (event.full === 'C-[') {
+      this.#receiveDedent()
+    } else if (event.name === 'tab' && event.alt) {
+      this.#receiveChar('\t', true)
     } else if (event.full === 'C-a') {
       this.#receiveGotoStart()
     } else if (event.full === 'C-e') {
@@ -1168,6 +1180,103 @@ export class Input extends View {
       .concat(this.#chars.slice(this.#cursor.start))
     this.#cursor.start = this.#cursor.end = offset
     this.#updateWidth()
+  }
+
+  /**
+   * Insert a newline followed by the current line's leading whitespace.
+   */
+  #receiveEnterWithIndent() {
+    const indent = this.#currentLineIndent()
+    const chars = ['\n', ...indent]
+    if (isEmptySelection(this.#cursor)) {
+      this.#chars = this.#chars
+        .slice(0, this.#cursor.start)
+        .concat(chars, this.#chars.slice(this.#cursor.start))
+      this.#cursor.start = this.#cursor.end = this.#cursor.start + chars.length
+    } else {
+      this.#chars = this.#chars
+        .slice(0, this.minSelected())
+        .concat(chars, this.#chars.slice(this.maxSelected()))
+      this.#cursor.start = this.#cursor.end = this.minSelected() + chars.length
+    }
+  }
+
+  /**
+   * Indent the current line. Uses tabs if any line starts with a tab,
+   * otherwise uses two spaces.
+   */
+  #receiveIndent() {
+    const indent = this.#useTabs() ? ['\t'] : [' ', ' ']
+    const lineStart = this.#currentLineStart()
+    this.#chars = this.#chars
+      .slice(0, lineStart)
+      .concat(indent, this.#chars.slice(lineStart))
+    this.#cursor.start += indent.length
+    this.#cursor.end += indent.length
+  }
+
+  /**
+   * Remove one level of indentation from the current line.
+   */
+  #receiveDedent() {
+    const lineStart = this.#currentLineStart()
+    if (this.#chars[lineStart] === '\t') {
+      this.#chars = this.#chars
+        .slice(0, lineStart)
+        .concat(this.#chars.slice(lineStart + 1))
+      this.#cursor.start = Math.max(lineStart, this.#cursor.start - 1)
+      this.#cursor.end = Math.max(lineStart, this.#cursor.end - 1)
+    } else if (
+      this.#chars[lineStart] === ' ' &&
+      this.#chars[lineStart + 1] === ' '
+    ) {
+      this.#chars = this.#chars
+        .slice(0, lineStart)
+        .concat(this.#chars.slice(lineStart + 2))
+      this.#cursor.start = Math.max(lineStart, this.#cursor.start - 2)
+      this.#cursor.end = Math.max(lineStart, this.#cursor.end - 2)
+    }
+  }
+
+  /**
+   * Returns the leading whitespace characters of the current line.
+   */
+  #currentLineIndent(): string[] {
+    const lineStart = this.#currentLineStart()
+    const indent: string[] = []
+    for (let i = lineStart; i < this.#chars.length; i++) {
+      if (this.#chars[i] === ' ' || this.#chars[i] === '\t') {
+        indent.push(this.#chars[i])
+      } else {
+        break
+      }
+    }
+    return indent
+  }
+
+  /**
+   * Returns the index in #chars where the current line starts.
+   */
+  #currentLineStart(): number {
+    const pos = Math.min(this.#cursor.end, this.#chars.length)
+    for (let i = pos - 1; i >= 0; i--) {
+      if (this.#chars[i] === '\n') {
+        return i + 1
+      }
+    }
+    return 0
+  }
+
+  /**
+   * Returns true if any line in the current text starts with a tab character.
+   */
+  #useTabs(): boolean {
+    for (let i = 0; i < this.#chars.length; i++) {
+      if (this.#chars[i] === '\t' && (i === 0 || this.#chars[i - 1] === '\n')) {
+        return true
+      }
+    }
+    return false
   }
 }
 
