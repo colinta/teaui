@@ -241,17 +241,13 @@ export class Theme {
       contrastText: props.contrastText ?? this.contrastTextColor,
       dimText: props.dimText ?? this.dimTextColor,
       dimBackground: props.dimBackground ?? this.dimBackgroundColor,
-      controlBackground:
-        props.controlBackground ?? this.controlBackgroundColor,
-      textBackground:
-        props.textBackground ?? this.textBackgroundColor,
+      controlBackground: props.controlBackground ?? this.controlBackgroundColor,
+      textBackground: props.textBackground ?? this.textBackgroundColor,
       highlight: props.highlight ?? this.highlightColor,
       darken: props.darken ?? this.darkenColor,
-      tableChecked:
-        props.tableChecked ?? this.tableCheckedColor,
+      tableChecked: props.tableChecked ?? this.tableCheckedColor,
       tableCheckedHighlight:
-        props.tableCheckedHighlight ??
-        this.tableCheckedHighlightColor,
+        props.tableCheckedHighlight ?? this.tableCheckedHighlightColor,
       emoji: props.emoji ?? this.emoji,
     })
   }

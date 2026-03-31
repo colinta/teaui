@@ -38,7 +38,7 @@ function setRGBFromHex(hex: string) {
   setRGB(red, green, blue)
 }
 
-function themeColorHex(theme: Theme, color: Color, ): `#${string}` {
+function themeColorHex(theme: Theme, color: Color): `#${string}` {
   const resolved = color === 'default' ? theme.textBackgroundColor : color
   const hex = colorToHex(resolved)
   const [red, green, blue] = colors.hexToRGB(hex.replace(/\(.+\)$/, ''))
