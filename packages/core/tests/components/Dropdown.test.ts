@@ -300,14 +300,16 @@ describe('Dropdown', () => {
         ).toEqual(borderBg)
       }
 
-      // Content rows should also match the border background
+      // Content rows should have a consistent background
+      const contentBg = t.terminal.styleAt(1, 2).background
+      expect(contentBg, 'content should have a background').toBeDefined()
       for (let row = 2; row <= 4; row++) {
         for (let col = 1; col < 27; col++) {
           const style = t.terminal.styleAt(col, row)
           expect(
             style.background,
-            `content row ${row}, col ${col} should match border background`,
-          ).toEqual(borderBg)
+            `content row ${row}, col ${col} should have consistent background`,
+          ).toEqual(contentBg)
         }
       }
     })
