@@ -20,10 +20,7 @@ interface Props extends ViewProps {
 function formatKey(key: string): string {
   // Handle 'Ctrl+C' style strings
   if (key.includes('+')) {
-    return key
-      .split('+')
-      .map(k => mapKey(k.trim()))
-      .join('')
+    return formatKey(key.replaceAll('+', '-'))
   }
 
   // Handle 'C-a', 'A-S-x' style modifier prefixes

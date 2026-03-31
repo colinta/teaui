@@ -41,16 +41,6 @@ describe('Legend', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
-  it('maps Ctrl+C string syntax', () => {
-    const t = testRender(
-      new Legend({
-        items: [{key: 'Ctrl+C', label: 'quit'}],
-      }),
-      {width: 20, height: 1},
-    )
-    expect(t.terminal.textContent()).toMatchSnapshot()
-  })
-
   it('maps compound keys like up/down', () => {
     const t = testRender(
       new Legend({

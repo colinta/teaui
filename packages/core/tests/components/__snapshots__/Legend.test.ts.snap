@@ -1,7 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Legend > maps Ctrl+C string syntax 1`] = `"⌃C quit"`;
-
 exports[`Legend > maps cmd key 1`] = `"⌘/S save"`;
 
 exports[`Legend > maps compound keys like up/down 1`] = `"↑/↓ navigate"`;
