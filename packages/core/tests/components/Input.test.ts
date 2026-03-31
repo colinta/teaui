@@ -437,6 +437,173 @@ describe('Input', () => {
     })
   })
 
+  describe('undo/redo', () => {
+    it('ctrl+z undoes the last edit', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('!')
+      expect(input.value).toBe('hello!')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('ctrl+- undoes the last edit', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('!')
+      expect(input.value).toBe('hello!')
+      t.sendKey('-', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('ctrl+shift+z redoes an undone edit', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('!')
+      expect(input.value).toBe('hello!')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+      t.sendKey('z', {ctrl: true, shift: true})
+      expect(input.value).toBe('hello!')
+    })
+
+    it('ctrl+shift+- redoes an undone edit', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('!')
+      expect(input.value).toBe('hello!')
+      t.sendKey('-', {ctrl: true})
+      expect(input.value).toBe('hello')
+      t.sendKey('-', {ctrl: true, shift: true})
+      expect(input.value).toBe('hello!')
+    })
+
+    it('undo restores cursor position', () => {
+      const input = new Input({value: 'abc', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      // cursor at end (pos 3), type '!'
+      t.sendKey('!')
+      expect(input.value).toBe('abc!')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('abc')
+      // typing again should insert at restored cursor position (end)
+      t.sendKey('?')
+      expect(input.value).toBe('abc?')
+    })
+
+    it('consecutive inserts are grouped', () => {
+      const input = new Input({value: '', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('a')
+      t.sendKey('b')
+      t.sendKey('c')
+      expect(input.value).toBe('abc')
+      // Single undo should revert all three characters
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('')
+    })
+
+    it('consecutive inserts at different positions are not grouped', () => {
+      const input = new Input({value: 'ac', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      // Move cursor to after 'a'
+      t.sendKey('a', {ctrl: true})
+      t.sendKey('right')
+      t.sendKey('b')
+      expect(input.value).toBe('abc')
+      // Move to end and type
+      t.sendKey('e', {ctrl: true})
+      t.sendKey('!')
+      expect(input.value).toBe('abc!')
+      // First undo reverts '!'
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('abc')
+      // Second undo reverts 'b'
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('ac')
+    })
+
+    it('undo reverts backspace', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('backspace')
+      expect(input.value).toBe('hell')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('undo reverts paste', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendPaste(' world')
+      expect(input.value).toBe('hello world')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('new edit after undo clears redo stack', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('!')
+      expect(input.value).toBe('hello!')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+      // New edit should clear redo
+      t.sendKey('?')
+      expect(input.value).toBe('hello?')
+      // Redo should do nothing now
+      t.sendKey('z', {ctrl: true, shift: true})
+      expect(input.value).toBe('hello?')
+    })
+
+    it('undo does nothing when stack is empty', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('redo does nothing when stack is empty', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('z', {ctrl: true, shift: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('multiple undos walk back through history', () => {
+      const input = new Input({value: '', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('a')
+      // move cursor to break grouping
+      t.sendKey('left')
+      t.sendKey('right')
+      t.sendKey('b')
+      expect(input.value).toBe('ab')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('a')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('')
+    })
+
+    it('undo reverts indent', () => {
+      const input = new Input({value: 'hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey(']', {ctrl: true})
+      expect(input.value).toBe('  hello')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('hello')
+    })
+
+    it('undo reverts enter with indent', () => {
+      const input = new Input({value: '  hello', multiline: true})
+      const t = testRender(input, {width: 30, height: 3})
+      t.sendKey('enter')
+      expect(input.value).toBe('  hello\n  ')
+      t.sendKey('z', {ctrl: true})
+      expect(input.value).toBe('  hello')
+    })
+  })
+
   describe('focus', () => {
     it('plain tab changes focus, not inserted', () => {
       const input = new Input({value: 'hello'})

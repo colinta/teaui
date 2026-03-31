@@ -30,6 +30,21 @@ interface Cursor {
   end: number
 }
 
+interface UndoEntry {
+  /** 'insert' entries can be coalesced when consecutive */
+  kind: 'insert' | 'delete' | 'replace'
+  /** chars before the edit */
+  beforeChars: string[]
+  /** cursor before the edit */
+  beforeCursor: Cursor
+  /** chars after the edit */
+  afterChars: string[]
+  /** cursor after the edit */
+  afterCursor: Cursor
+  /** For insert coalescing: the insertion point of the first char */
+  insertOffset?: number
+}
+
 export type Props = StyleProps & TextProps & ViewProps
 
 const NL_SIGIL = '⤦'
@@ -68,6 +83,14 @@ export class Input extends View {
   #maxLineWidth: number = 0
   #cursor: Cursor = {start: 0, end: 0}
   #visibleWidth = 0
+
+  // Undo/redo
+  #undoStack: UndoEntry[] = []
+  #redoStack: UndoEntry[] = []
+  #pendingUndoKind: UndoEntry['kind'] | undefined
+  #preEditChars: string[] = []
+  #preEditCursor: Cursor = {start: 0, end: 0}
+  #insertCoalesceEnabled: boolean = true
 
   constructor(props: Props = {}) {
     super(props)
@@ -311,8 +334,13 @@ export class Input extends View {
     const prevText = this.#value
     let removeAccent = true
 
-    if (event.name === 'enter' || event.name === 'return') {
+    if (event.full === 'C-z' || event.full === 'C--') {
+      this.#undo()
+    } else if (event.full === 'C-S-z' || event.full === 'C-S--') {
+      this.#redo()
+    } else if (event.name === 'enter' || event.name === 'return') {
       if (this.#multiline) {
+        this.#beginEdit('replace')
         if (event.shift || event.alt) {
           // Shift+Enter or Alt+Enter: plain newline without indentation
           this.#receiveChar('\n', true)
@@ -325,37 +353,53 @@ export class Input extends View {
         return
       }
     } else if (event.full === 'C-]') {
+      this.#beginEdit('replace')
       this.#receiveIndent()
     } else if (event.full === 'C-[') {
+      this.#beginEdit('replace')
       this.#receiveDedent()
     } else if (event.name === 'tab' && event.alt) {
+      this.#beginEdit('insert')
       this.#receiveChar('\t', true)
     } else if (event.full === 'C-a') {
+      this.#insertCoalesceEnabled = false
       this.#receiveGotoStart()
     } else if (event.full === 'C-e') {
+      this.#insertCoalesceEnabled = false
       this.#receiveGotoEnd()
     } else if (event.name === 'up') {
+      this.#insertCoalesceEnabled = false
       this.#receiveKeyUpArrow(event)
     } else if (event.name === 'down') {
+      this.#insertCoalesceEnabled = false
       this.#receiveKeyDownArrow(event)
     } else if (event.name === 'home') {
+      this.#insertCoalesceEnabled = false
       this.#receiveHome(event)
     } else if (event.name === 'end') {
+      this.#insertCoalesceEnabled = false
       this.#receiveEnd(event)
     } else if (event.name === 'left') {
+      this.#insertCoalesceEnabled = false
       this.#receiveKeyLeftArrow(event)
     } else if (event.name === 'right') {
+      this.#insertCoalesceEnabled = false
       this.#receiveKeyRightArrow(event)
     } else if (event.full === 'backspace') {
+      this.#beginEdit('delete')
       this.#receiveKeyBackspace()
     } else if (event.name === 'delete') {
+      this.#beginEdit('delete')
       this.#receiveKeyDelete()
     } else if (event.full === 'A-backspace' || event.full === 'C-w') {
+      this.#beginEdit('delete')
       this.#receiveKeyDeleteWord()
     } else if (isKeyAccent(event)) {
+      this.#beginEdit('insert')
       this.#receiveKeyAccent(event)
       removeAccent = false
     } else if (isKeyPrintable(event)) {
+      this.#beginEdit('insert')
       this.#receiveKeyPrintable(event)
     }
 
@@ -364,7 +408,10 @@ export class Input extends View {
     }
 
     if (prevChars !== this.#chars) {
+      this.#commitEdit()
       this.#updateLines(this.#chars, undefined)
+    } else {
+      this.#pendingUndoKind = undefined
     }
 
     if (prevText !== this.#value) {
@@ -378,6 +425,7 @@ export class Input extends View {
     )
     if (pasteChars.length === 0) return
 
+    this.#beginEdit('replace')
     const prevText = this.#value
 
     if (isEmptySelection(this.#cursor)) {
@@ -394,6 +442,7 @@ export class Input extends View {
         this.minSelected() + pasteChars.length
     }
 
+    this.#commitEdit()
     this.#updateLines(this.#chars, undefined)
 
     if (prevText !== this.#value) {
@@ -1295,6 +1344,85 @@ export class Input extends View {
       }
     }
     return false
+  }
+
+  /**
+   * Snapshot the current state before an edit.
+   */
+  #beginEdit(kind: UndoEntry['kind']) {
+    this.#pendingUndoKind = kind
+    this.#preEditChars = [...this.#chars]
+    this.#preEditCursor = {...this.#cursor}
+  }
+
+  /**
+   * Push the completed edit onto the undo stack. For consecutive inserts at
+   * adjacent positions, coalesce into a single undo entry.
+   */
+  #commitEdit() {
+    if (!this.#pendingUndoKind) {
+      return
+    }
+
+    const kind = this.#pendingUndoKind
+    this.#pendingUndoKind = undefined
+
+    const entry: UndoEntry = {
+      kind,
+      beforeChars: this.#preEditChars,
+      beforeCursor: this.#preEditCursor,
+      afterChars: [...this.#chars],
+      afterCursor: {...this.#cursor},
+      insertOffset: kind === 'insert' ? this.#preEditCursor.start : undefined,
+    }
+
+    // Coalesce consecutive inserts at adjacent positions
+    if (
+      kind === 'insert' &&
+      this.#insertCoalesceEnabled &&
+      this.#undoStack.length > 0
+    ) {
+      const last = this.#undoStack[this.#undoStack.length - 1]
+      if (
+        last.kind === 'insert' &&
+        last.afterCursor.start === entry.insertOffset
+      ) {
+        // Extend the previous entry
+        last.afterChars = entry.afterChars
+        last.afterCursor = entry.afterCursor
+        this.#redoStack = []
+        return
+      }
+    }
+
+    this.#insertCoalesceEnabled = kind === 'insert'
+
+    this.#undoStack.push(entry)
+    this.#redoStack = []
+  }
+
+  #undo() {
+    const entry = this.#undoStack.pop()
+    if (!entry) {
+      return
+    }
+
+    this.#redoStack.push(entry)
+    this.#chars = [...entry.beforeChars]
+    this.#cursor = {...entry.beforeCursor}
+    this.#updateLines(this.#chars, undefined)
+  }
+
+  #redo() {
+    const entry = this.#redoStack.pop()
+    if (!entry) {
+      return
+    }
+
+    this.#undoStack.push(entry)
+    this.#chars = [...entry.afterChars]
+    this.#cursor = {...entry.afterCursor}
+    this.#updateLines(this.#chars, undefined)
   }
 }
 
