@@ -129,7 +129,7 @@ export type {AnsiLocation} from './unicode.js'
 // Colors (256-color palette utilities)
 export * as colors from './colors.js'
 
-// SGR style descriptor parser (replaces blessed program.style())
+// SGR style descriptor parser
 export {parseStyleDescriptor} from './sgr.js'
 
 // Terminal (main class)

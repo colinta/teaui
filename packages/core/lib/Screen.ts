@@ -41,7 +41,6 @@ type KeyListener = (char: string, key: KeyEvent) => void
 
 /**
  * Wraps @teaui/term's Terminal for use by Screen and the public API.
- * Provides a blessed-compatible `.key()` helper and implements SGRTerminal.
  */
 export class TerminalProgram implements SGRTerminal {
   #terminal: TermTerminal
@@ -145,7 +144,7 @@ export class TerminalProgram implements SGRTerminal {
   }
 
   /**
-   * Register a key binding (blessed-compatible).
+   * Register a key binding.
    * Pattern: 'escape', 'C-c', 'C-q', 'return', etc.
    */
   key(pattern: string | string[], fn: KeyListener): void {

@@ -94,9 +94,9 @@ describe('AutoLegend', () => {
   })
 
   it('snapshot: focus changes legend content', () => {
-    const legend = new AutoLegend()
     const input1 = new Input({value: 'a', multiline: true})
     const input2 = new Input({value: 'b'})
+    const legend = new AutoLegend()
     const view = Stack.down([input1, input2, legend])
     const t = testRender(view, {width: 120, height: 5})
     const before = t.terminal.textContent()

@@ -160,7 +160,6 @@ class TestScreen {
 
     if (!this.#focus) {
       this.#focusManager.unfocus()
-      this.#focusManager.requestFocus(new Space())
     }
 
     const renderSize = this.#view.naturalSize(this.#size).min(this.#size)
@@ -191,8 +190,6 @@ class TestScreen {
 
     this.#tickManager.endRender()
 
-    this.#terminal.reset()
-    this.#buffer.invalidate()
     this.#buffer.flush(this.#terminal)
   }
 

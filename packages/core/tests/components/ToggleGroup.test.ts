@@ -107,13 +107,6 @@ describe('ToggleGroup', () => {
     t.sendMouse('mouse.button.up', {x: 1, y: 1})
     expect(currentSelected).toEqual([0])
 
-    // Simulate React update cycle
-    tg.update({
-      titles: ['A', 'B', 'C'],
-      selected: currentSelected,
-      multiple: true,
-      onChange,
-    })
     t.render()
 
     expect(t.terminal.textContent()).toMatchSnapshot()
