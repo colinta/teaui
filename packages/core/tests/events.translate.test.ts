@@ -10,7 +10,7 @@ import {
 
 function termKey(
   key: string,
-  mods: {ctrl?: boolean; alt?: boolean; shift?: boolean; meta?: boolean} = {},
+  mods: {ctrl?: boolean; alt?: boolean; shift?: boolean; gui?: boolean} = {},
 ): TermKeyEvent {
   return {
     type: 'key',
@@ -18,7 +18,7 @@ function termKey(
     ctrl: mods.ctrl ?? false,
     alt: mods.alt ?? false,
     shift: mods.shift ?? false,
-    meta: mods.meta ?? false,
+    gui: mods.gui ?? false,
   }
 }
 
@@ -54,7 +54,7 @@ describe('translateTermKeyEvent', () => {
       char: 'a',
       ctrl: false,
       alt: false,
-      meta: false,
+      gui: false,
       shift: false,
       full: 'a',
     })
@@ -76,15 +76,15 @@ describe('translateTermKeyEvent', () => {
   test('alt maps to alt', () => {
     const result = translateTermKeyEvent(termKey('x', {alt: true}))
     expect(result.alt).toBe(true)
-    expect(result.meta).toBe(false)
+    expect(result.gui).toBe(false)
     expect(result.full).toBe('A-x')
   })
 
-  test('meta maps to meta', () => {
-    const result = translateTermKeyEvent(termKey('x', {meta: true}))
-    expect(result.meta).toBe(true)
+  test('gui maps to gui', () => {
+    const result = translateTermKeyEvent(termKey('x', {gui: true}))
+    expect(result.gui).toBe(true)
     expect(result.alt).toBe(false)
-    expect(result.full).toBe('M-x')
+    expect(result.full).toBe('G-x')
   })
 
   test('shift modifier', () => {
@@ -100,7 +100,7 @@ describe('translateTermKeyEvent', () => {
     expect(result.full).toBe('C-A-S-a')
     expect(result.ctrl).toBe(true)
     expect(result.alt).toBe(true)
-    expect(result.meta).toBe(false)
+    expect(result.gui).toBe(false)
     expect(result.shift).toBe(true)
   })
 })
@@ -161,7 +161,7 @@ describe('translateTermMouseEvent', () => {
     )
     expect(result!.ctrl).toBe(true)
     expect(result!.alt).toBe(true)
-    expect(result!.meta).toBe(false)
+    expect(result!.gui).toBe(false)
     expect(result!.shift).toBe(true)
   })
 

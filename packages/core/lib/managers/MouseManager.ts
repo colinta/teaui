@@ -69,7 +69,7 @@ export class MouseManager {
           button: 'unknown',
           ctrl: false,
           alt: false,
-          meta: false,
+          gui: false,
           shift: false,
           ...this.#mousePosition,
         },

@@ -425,7 +425,7 @@ export class Input extends View {
     } else if (
       !event.ctrl &&
       !event.alt &&
-      !event.meta &&
+      !event.gui &&
       isKeyPrintable(event)
     ) {
       this.#beginEdit('insert')

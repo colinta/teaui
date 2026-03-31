@@ -27,7 +27,7 @@ function formatKey(key: string): string {
   }
 
   // Handle 'C-a', 'A-S-x' style modifier prefixes
-  const modRe = /^([CAMS]-)+/
+  const modRe = /^([CAGS]-)+/
   const modMatch = key.match(modRe)
   if (modMatch) {
     const modStr = modMatch[0]
@@ -35,7 +35,7 @@ function formatKey(key: string): string {
     let sigils = ''
     if (modStr.includes('C-')) sigils += MODIFIER_SIGILS.ctrl
     if (modStr.includes('A-')) sigils += MODIFIER_SIGILS.alt
-    if (modStr.includes('M-')) sigils += MODIFIER_SIGILS.meta
+    if (modStr.includes('G-')) sigils += MODIFIER_SIGILS.gui
     if (modStr.includes('S-')) sigils += MODIFIER_SIGILS.shift
     return sigils + mapKey(base)
   }
@@ -262,6 +262,6 @@ const KEY_SEPARATOR = '/'
 const MODIFIER_SIGILS = {
   ctrl: '⌃',
   alt: '⌥',
-  meta: '⌘',
+  gui: '⌘',
   shift: '⇧',
 }

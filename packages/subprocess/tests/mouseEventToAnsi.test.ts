@@ -10,7 +10,7 @@ function mouseEvent(
   opts: {
     button?: TeaMouseEvent['button']
     ctrl?: boolean
-    meta?: boolean
+    alt?: boolean
     shift?: boolean
   } = {},
 ): TeaMouseEvent {
@@ -20,7 +20,8 @@ function mouseEvent(
     position: new Point(x, y),
     button: opts.button ?? 'left',
     ctrl: opts.ctrl ?? false,
-    meta: opts.meta ?? false,
+    alt: opts.alt ?? false,
+    gui: false,
     shift: opts.shift ?? false,
   }
 }
@@ -131,9 +132,9 @@ describe('mouseEventToAnsi', () => {
       expect(result).toBe('\x1b[<4;1;1M')
     })
 
-    it('meta adds +8', () => {
+    it('alt adds +8', () => {
       const result = mouseEventToAnsi(
-        mouseEvent('mouse.button.down', 0, 0, {button: 'left', meta: true}),
+        mouseEvent('mouse.button.down', 0, 0, {button: 'left', alt: true}),
       )
       expect(result).toBe('\x1b[<8;1;1M')
     })
@@ -150,7 +151,7 @@ describe('mouseEventToAnsi', () => {
         mouseEvent('mouse.button.down', 0, 0, {
           button: 'right',
           shift: true,
-          meta: true,
+          alt: true,
           ctrl: true,
         }),
       )

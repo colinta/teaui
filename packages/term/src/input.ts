@@ -12,7 +12,7 @@ const ESC = 0x1b
 
 function keyEvent(
   key: string,
-  mods: {ctrl?: boolean; alt?: boolean; shift?: boolean; meta?: boolean} = {},
+  mods: {ctrl?: boolean; alt?: boolean; shift?: boolean; gui?: boolean} = {},
 ): KeyEvent {
   return {
     type: 'key',
@@ -20,7 +20,7 @@ function keyEvent(
     ctrl: mods.ctrl ?? false,
     alt: mods.alt ?? false,
     shift: mods.shift ?? false,
-    meta: mods.meta ?? false,
+    gui: mods.gui ?? false,
   }
 }
 
@@ -29,19 +29,19 @@ function isUpperAlpha(codePoint: number): boolean {
 }
 
 // Modifier decoding for CSI sequences: parameter = 1 + bitmask
-// bit 0 = shift, bit 1 = alt, bit 2 = ctrl, bit 3 = meta
+// bit 0 = shift, bit 1 = alt, bit 2 = ctrl, bit 3 = gui
 function decodeMods(param: number): {
   shift: boolean
   alt: boolean
   ctrl: boolean
-  meta: boolean
+  gui: boolean
 } {
   const bits = param - 1
   return {
     shift: (bits & 1) !== 0,
     alt: (bits & 2) !== 0,
     ctrl: (bits & 4) !== 0,
-    meta: (bits & 8) !== 0,
+    gui: (bits & 8) !== 0,
   }
 }
 

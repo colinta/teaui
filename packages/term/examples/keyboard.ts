@@ -41,7 +41,7 @@ function formatKey(event: KeyEvent): string {
   if (event.ctrl) mods.push('ctrl')
   if (event.alt) mods.push('alt')
   if (event.shift) mods.push('shift')
-  if (event.meta) mods.push('meta')
+  if (event.gui) mods.push('gui')
 
   const keyName = event.key === ' ' ? 'space' : event.key
   if (mods.length > 0) {
@@ -56,7 +56,7 @@ function formatKeyDetailed(event: KeyEvent): string {
   if (event.ctrl) details.push('ctrl')
   if (event.alt) details.push('alt')
   if (event.shift) details.push('shift')
-  if (event.meta) details.push('meta')
+  if (event.gui) details.push('gui')
   if (details.length > 0) {
     parts.push(`[${details.join(', ')}]`)
   }
@@ -80,7 +80,7 @@ function drawHeader() {
     const x = Math.max(0, Math.floor((cols - keyStr.length) / 2))
     term.moveTo(x, 0).fg('brightWhite').bold().write(keyStr)
 
-    const detail = `key: ${JSON.stringify(currentKey.key)}  ctrl: ${currentKey.ctrl}  alt: ${currentKey.alt}  shift: ${currentKey.shift}  meta: ${currentKey.meta}`
+    const detail = `key: ${JSON.stringify(currentKey.key)}  ctrl: ${currentKey.ctrl}  alt: ${currentKey.alt}  shift: ${currentKey.shift}  gui: ${currentKey.gui}`
     const dx = Math.max(0, Math.floor((cols - detail.length) / 2))
     term.moveTo(dx, 1).fg('brightBlack').write(detail)
   } else {

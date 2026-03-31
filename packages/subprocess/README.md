@@ -90,10 +90,10 @@ Converts a TeaUI `KeyEvent` back to the raw bytes a terminal would send. Handles
 
 - Printable characters
 - Ctrl+letter (`ctrl+c` → `\x03`)
-- Meta/Alt+key (`meta+f` → `\x1bf`)
+- Alt+key (`alt+f` → `\x1bf`)
 - Arrow keys, Home, End, Page Up/Down, Insert, Delete
 - Function keys F1–F12
-- Modifier combinations (shift, ctrl, meta)
+- Modifier combinations (shift, ctrl, alt, gui)
 
 ### `mouseEventToAnsi(event: MouseEvent): string`
 

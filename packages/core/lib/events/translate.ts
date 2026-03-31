@@ -15,7 +15,7 @@ export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
   const name = event.key
   const ctrl = event.ctrl
   const alt = event.alt
-  const meta = event.meta
+  const gui = event.gui
   const shift = event.shift
   // Named keys (return, backspace, escape, etc.) have length > 1 and are all ASCII.
   // Single characters may have length > 1 due to surrogate pairs (emoji) or
@@ -25,11 +25,11 @@ export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
     String.fromCodePoint(event.key.codePointAt(0)!).length === event.key.length
   const char = event.key === 'space' ? ' ' : isSingleCodePoint ? event.key : ''
 
-  // Build "full" string: "C-A-M-S-x"
+  // Build "full" string: "C-A-G-S-x"
   let full = ''
   if (ctrl) full += 'C-'
   if (alt) full += 'A-'
-  if (meta) full += 'M-'
+  if (gui) full += 'G-'
   if (shift) full += 'S-'
   full += name
 
@@ -39,7 +39,7 @@ export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
     name,
     ctrl,
     alt,
-    meta,
+    gui,
     shift,
     full: full as FullKeyName,
   }
@@ -108,7 +108,7 @@ export function translateTermMouseEvent(
     y: event.y,
     ctrl: event.ctrl,
     alt: event.alt,
-    meta: false,
+    gui: false,
     shift: event.shift,
     button,
   }

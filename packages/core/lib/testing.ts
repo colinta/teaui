@@ -198,17 +198,17 @@ class TestScreen {
 
   sendKey(
     key: KeyName,
-    mods: {ctrl?: boolean; alt?: boolean; meta?: boolean; shift?: boolean} = {},
+    mods: {ctrl?: boolean; alt?: boolean; gui?: boolean; shift?: boolean} = {},
   ) {
     const ctrl = mods.ctrl ?? false
     const alt = mods.alt ?? false
-    const meta = mods.meta ?? false
+    const gui = mods.gui ?? false
     const shift = mods.shift ?? false
 
     let full = ''
     if (ctrl) full += 'C-'
     if (alt) full += 'A-'
-    if (meta) full += 'M-'
+    if (gui) full += 'G-'
     if (shift) full += 'S-'
     full += key
 
@@ -221,7 +221,7 @@ class TestScreen {
       full: full as import('./events/index.js').FullKeyName,
       ctrl,
       alt,
-      meta,
+      gui,
       shift,
     }
 
@@ -232,7 +232,7 @@ class TestScreen {
   sendMouse(
     name: SystemMouseEvent['name'],
     pos: {x: number; y: number},
-    mods: {ctrl?: boolean; alt?: boolean; meta?: boolean; shift?: boolean} = {},
+    mods: {ctrl?: boolean; alt?: boolean; gui?: boolean; shift?: boolean} = {},
   ) {
     const button = name.startsWith('mouse.wheel')
       ? ('wheel' as const)
@@ -247,7 +247,7 @@ class TestScreen {
       y: pos.y,
       ctrl: mods.ctrl ?? false,
       alt: mods.alt ?? false,
-      meta: mods.meta ?? false,
+      gui: mods.gui ?? false,
       shift: mods.shift ?? false,
       button,
     }

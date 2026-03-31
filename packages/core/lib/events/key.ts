@@ -2,28 +2,28 @@ import {underline} from '../ansi.js'
 import type {KeyName, NamedKey, Printable} from '@teaui/term'
 
 /**
- * Modifier prefix combinations, always in the order C- A- M- S-.
+ * Modifier prefix combinations, always in the order C- A- G- S-.
  */
 type ModifierPrefix =
   | ''
   | 'C-'
   | 'A-'
-  | 'M-'
+  | 'G-'
   | 'S-'
   | 'C-A-'
-  | 'C-M-'
+  | 'C-G-'
   | 'C-S-'
-  | 'A-M-'
+  | 'A-G-'
   | 'A-S-'
-  | 'M-S-'
-  | 'C-A-M-'
+  | 'G-S-'
+  | 'C-A-G-'
   | 'C-A-S-'
-  | 'C-M-S-'
-  | 'A-M-S-'
-  | 'C-A-M-S-'
+  | 'C-G-S-'
+  | 'A-G-S-'
+  | 'C-A-G-S-'
 
 /**
- * A key name with optional modifier prefixes, e.g. "C-a", "M-backspace", "C-M-S-up".
+ * A key name with optional modifier prefixes, e.g. "C-a", "G-backspace", "C-G-S-up".
  * Provides autocomplete for known key+modifier combos while accepting any string.
  */
 export type FullKeyName =
@@ -42,10 +42,10 @@ export interface KeyEvent {
   name: KeyName
   ctrl: boolean
   alt: boolean
-  meta: boolean
+  gui: boolean
   shift: boolean
   /**
-   * The letter that was pressed, *plus* the modifiers (C-M-S- for control- meta- shift, always in that order)
+   * The letter that was pressed, *plus* the modifiers (C-G-S- for control- gui- shift, always in that order)
    */
   full: FullKeyName
 }
@@ -53,7 +53,7 @@ export type HotKeyDef = {
   char: string
   ctrl?: boolean
   alt?: boolean
-  meta?: boolean
+  gui?: boolean
   shift?: boolean
 }
 export type HotKey = FullKeyName | HotKeyDef
@@ -69,7 +69,7 @@ export function hotKeyToString(hotKey: HotKey): string {
   let str = ''
   if (hotKey.ctrl) str += 'C-'
   if (hotKey.alt) str += 'A-'
-  if (hotKey.meta) str += 'M-'
+  if (hotKey.gui) str += 'G-'
   if (hotKey.shift) str += 'S-'
   str += hotKey.char
   return str
@@ -83,14 +83,14 @@ export function toHotKeyDef(hotKey: HotKey) {
   // hotkey string supports:
   // C- control
   // A- alt
-  // M- meta
+  // G- gui
   // S- shift
   const ctrl = hotKey.includes('C-')
   const alt = hotKey.includes('A-')
-  const meta = hotKey.includes('M-')
+  const gui = hotKey.includes('G-')
   const shift = hotKey.includes('S-')
-  const char = mapKey(hotKey.replace(/^([CAMS]-)*/, '').toLowerCase())
-  return {char, ctrl, alt, meta, shift}
+  const char = mapKey(hotKey.replace(/^([CAGS]-)*/, '').toLowerCase())
+  return {char, ctrl, alt, gui, shift}
 }
 
 /**
@@ -172,7 +172,7 @@ export const match = (key: HotKeyDef, event: KeyEvent) => {
   if ((key.alt ?? false) !== event.alt) {
     return false
   }
-  if ((key.meta ?? false) !== event.meta) {
+  if ((key.gui ?? false) !== event.gui) {
     return false
   }
   if ((key.shift ?? false) !== event.shift) {
@@ -197,7 +197,7 @@ export function styleTextForHotKey(text: string, key_: HotKey) {
     mod += alt
   }
 
-  if (key.meta) {
+  if (key.gui) {
     mod += '⌘'
   }
 

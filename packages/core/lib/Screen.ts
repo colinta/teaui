@@ -511,7 +511,7 @@ function translateKeyEvent(event: KeyEvent): KeyEvent {
       name: 'left',
       ctrl: false,
       alt: true,
-      meta: false,
+      gui: false,
       shift: false,
       char: '1;9D',
     }
@@ -523,7 +523,7 @@ function translateKeyEvent(event: KeyEvent): KeyEvent {
       name: 'right',
       ctrl: false,
       alt: true,
-      meta: false,
+      gui: false,
       shift: false,
       char: '1;9C',
     }

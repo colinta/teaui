@@ -186,7 +186,7 @@ export interface KeyEvent {
   ctrl: boolean
   alt: boolean
   shift: boolean
-  meta: boolean
+  gui: boolean
 }
 
 export type MouseButton = 'left' | 'middle' | 'right' | 'none'

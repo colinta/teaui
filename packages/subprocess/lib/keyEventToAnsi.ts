@@ -7,7 +7,7 @@ import type {KeyEvent} from '@teaui/core'
 function modifierParam(event: KeyEvent): number {
   let bits = 0
   if (event.shift) bits |= 1
-  if (event.meta) bits |= 2
+  if (event.alt) bits |= 2
   if (event.ctrl) bits |= 4
   return bits === 0 ? 0 : 1 + bits
 }
@@ -85,7 +85,7 @@ export function keyEventToAnsi(event: KeyEvent): string {
       return '\x1b'
     case 'space':
       if (event.ctrl) return '\x00'
-      if (event.meta) return '\x1b '
+      if (event.alt) return '\x1b '
       return ' '
   }
 
@@ -98,7 +98,7 @@ export function keyEventToAnsi(event: KeyEvent): string {
   }
 
   // Meta+char: ESC prefix
-  if (event.meta && event.char.length > 0) {
+  if (event.alt && event.char.length > 0) {
     return '\x1b' + event.char
   }
 

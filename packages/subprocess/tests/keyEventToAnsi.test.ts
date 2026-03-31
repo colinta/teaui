@@ -4,18 +4,18 @@ import type {KeyEvent} from '@teaui/core'
 
 function key(
   name: string,
-  opts: {char?: string; ctrl?: boolean; meta?: boolean; shift?: boolean} = {},
+  opts: {char?: string; ctrl?: boolean; alt?: boolean; shift?: boolean} = {},
 ): KeyEvent {
   const char = opts.char ?? (name.length === 1 ? name : '')
   const ctrl = opts.ctrl ?? false
-  const meta = opts.meta ?? false
+  const alt = opts.alt ?? false
   const shift = opts.shift ?? false
   let full = ''
   if (ctrl) full += 'C-'
-  if (meta) full += 'M-'
+  if (alt) full += 'A-'
   if (shift) full += 'S-'
   full += name
-  return {type: 'key', name, char, ctrl, meta, shift, full}
+  return {type: 'key', name, char, ctrl, alt, gui: false, shift, full}
 }
 
 describe('keyEventToAnsi', () => {
@@ -82,19 +82,17 @@ describe('keyEventToAnsi', () => {
     })
   })
 
-  describe('meta+key', () => {
-    it('meta+f → ESC f', () => {
-      expect(keyEventToAnsi(key('f', {char: 'f', meta: true}))).toBe('\x1bf')
+  describe('alt+key', () => {
+    it('alt+f → ESC f', () => {
+      expect(keyEventToAnsi(key('f', {char: 'f', alt: true}))).toBe('\x1bf')
     })
 
-    it('meta+b → ESC b', () => {
-      expect(keyEventToAnsi(key('b', {char: 'b', meta: true}))).toBe('\x1bb')
+    it('alt+b → ESC b', () => {
+      expect(keyEventToAnsi(key('b', {char: 'b', alt: true}))).toBe('\x1bb')
     })
 
-    it('meta+space → ESC space', () => {
-      expect(keyEventToAnsi(key('space', {char: ' ', meta: true}))).toBe(
-        '\x1b ',
-      )
+    it('alt+space → ESC space', () => {
+      expect(keyEventToAnsi(key('space', {char: ' ', alt: true}))).toBe('\x1b ')
     })
   })
 
@@ -127,10 +125,8 @@ describe('keyEventToAnsi', () => {
       )
     })
 
-    it('meta+up → CSI 1;3 A', () => {
-      expect(keyEventToAnsi(key('up', {char: '', meta: true}))).toBe(
-        '\x1b[1;3A',
-      )
+    it('alt+up → CSI 1;3 A', () => {
+      expect(keyEventToAnsi(key('up', {char: '', alt: true}))).toBe('\x1b[1;3A')
     })
 
     it('ctrl+shift+right → CSI 1;6 C', () => {

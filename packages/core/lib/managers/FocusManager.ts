@@ -38,7 +38,7 @@ export class FocusManager {
       }
     }
 
-    if (event.name === 'tab' && !event.ctrl && !event.alt && !event.meta) {
+    if (event.name === 'tab' && !event.ctrl && !event.alt && !event.gui) {
       if (event.shift) {
         this.prevFocus()
       } else {

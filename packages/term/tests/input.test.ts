@@ -4,7 +4,7 @@ import type {KeyEvent, MouseEvent, PasteEvent} from '../src/types.js'
 
 function key(
   key: string,
-  mods: Partial<Pick<KeyEvent, 'ctrl' | 'alt' | 'shift' | 'meta'>> = {},
+  mods: Partial<Pick<KeyEvent, 'ctrl' | 'alt' | 'shift' | 'gui'>> = {},
 ): KeyEvent {
   return {
     type: 'key',
@@ -12,7 +12,7 @@ function key(
     ctrl: false,
     alt: false,
     shift: false,
-    meta: false,
+    gui: false,
     ...mods,
   }
 }
@@ -600,9 +600,9 @@ describe('parseInput', () => {
       expect(events).toEqual([key('a', {ctrl: true})])
     })
 
-    it('parses meta modifier (CSI 97;9 u)', () => {
+    it('parses gui modifier (CSI 97;9 u)', () => {
       const events = parseInput(Buffer.from('\x1b[97;9u'))
-      expect(events).toEqual([key('a', {meta: true})])
+      expect(events).toEqual([key('a', {gui: true})])
     })
   })
 
