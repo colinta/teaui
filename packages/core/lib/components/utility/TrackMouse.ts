@@ -1,21 +1,18 @@
 import {Style} from '../../Style.js'
 import {Viewport} from '../../Viewport.js'
-import {type Props as ViewProps, View} from '../../View.js'
-import {Container} from '../../Container.js'
+import {View} from '../../View.js'
+import {type Props as ContainerProps, Container} from '../../Container.js'
 import {Point, Size, Rect} from '../../geometry.js'
 import type {MouseEvent} from '../../events/index.js'
 
-interface Props extends ViewProps {
-  content: View
-}
+interface Props extends ContainerProps {}
 
 export class TrackMouse extends Container {
   #position: Point
 
-  constructor({content, ...viewProps}: Props) {
+  constructor(viewProps: Props) {
     super(viewProps)
     this.#position = Point.zero
-    this.add(content)
   }
 
   naturalSize(available: Size) {

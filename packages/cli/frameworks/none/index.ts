@@ -25,7 +25,7 @@ import {
   const [screen, program] = await Screen.start(
     new Window({
       child: new TrackMouse({
-        content: Stack.down([
+        child: Stack.down([
           [
             'flex1',
             Stack.down([

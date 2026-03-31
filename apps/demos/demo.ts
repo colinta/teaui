@@ -28,7 +28,7 @@ export async function demo(
 
       return new Window({
         child: new TrackMouse({
-          content: Stack.down({
+          child: Stack.down({
             children: showConsoleLog
               ? [
                   ['flex1', demoContent],
