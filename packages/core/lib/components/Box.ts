@@ -168,9 +168,9 @@ export class Box extends ZStack {
 
     const borderStyle = this.theme
       .text({isHover: this.isHover})
-      .merge(new Style({background: this.theme.backgroundColor}))
+      .merge(new Style({background: this.theme.textBackgroundColor}))
 
-    const innerStyle = new Style({background: this.theme.backgroundColor})
+    const innerStyle = new Style({background: this.theme.textBackgroundColor})
     const innerOrigin = new Point(this.#borderSizes.maxLeft, topInnerY)
     if (innerHeight && innerMiddleWidth) {
       for (let y = 0; y < innerHeight; ++y) {

@@ -2,16 +2,16 @@ import {Theme} from './Theme.js'
 
 export function childTheme(theme: Theme, isPressed = false, isHover = false) {
   return new Theme({
-    background: isPressed
+    controlBackground: isPressed
       ? theme.darkenColor
       : isHover
         ? theme.highlightColor
-        : theme.backgroundColor,
+        : theme.controlBackgroundColor,
     textBackground: isPressed
       ? theme.darkenColor
       : isHover
         ? theme.highlightColor
-        : theme.backgroundColor,
+        : theme.controlBackgroundColor,
     highlight: theme.highlightColor,
     darken: isPressed
       ? theme.darkenColor

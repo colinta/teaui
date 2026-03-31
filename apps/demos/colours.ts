@@ -38,8 +38,8 @@ function setRGBFromHex(hex: string) {
   setRGB(red, green, blue)
 }
 
-function themeColorHex(theme: Theme, color: Color): `#${string}` {
-  const resolved = color === 'default' ? theme.backgroundColor : color
+function themeColorHex(theme: Theme, color: Color, ): `#${string}` {
+  const resolved = color === 'default' ? theme.textBackgroundColor : color
   const hex = colorToHex(resolved)
   const [red, green, blue] = colors.hexToRGB(hex.replace(/\(.+\)$/, ''))
   return colors.RGBtoHex(red, green, blue)
@@ -126,7 +126,7 @@ const themeRows = [
   {name: 'contrastText', key: 'contrastTextColor'},
   {name: 'dimText', key: 'dimTextColor'},
   {name: 'dimBackground', key: 'dimBackgroundColor'},
-  {name: 'background', key: 'backgroundColor'},
+  {name: 'controlBackground', key: 'controlBackgroundColor'},
   {name: 'textBackground', key: 'textBackgroundColor'},
   {name: 'highlight', key: 'highlightColor'},
   {name: 'darken', key: 'darkenColor'},
@@ -158,14 +158,15 @@ function themeValueRow(
     [
       new Text({text: row.name, width: ROW_LABEL_WIDTH}),
       ...themeColumns.slice(start, end).map(({purpose, theme}) => {
+        const isBackground = row.name !== 'text' && !row.name.endsWith('Text')
         const hex = themeColorHex(theme, (theme as any)[row.key] as Color)
         return new Button({
           title: hex,
           width: CELL_WIDTH,
           theme: purpose,
           border: 'none',
-          foreground: row.name === 'text' ? hex : undefined,
-          background: row.name === 'text' ? undefined : hex,
+          foreground: isBackground ? undefined : hex,
+          background: isBackground ? hex : undefined,
           onClick() {
             setRGBFromHex(hex)
           },

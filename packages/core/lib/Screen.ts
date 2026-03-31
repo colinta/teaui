@@ -238,20 +238,7 @@ export class Screen {
         : await viewConstructor(program)
 
     if (opts.emoji !== undefined) {
-      const currentTheme = rootView.theme
-      rootView.theme = new Theme({
-        text: currentTheme.textColor,
-        contrastText: currentTheme.contrastTextColor,
-        dimText: currentTheme.dimTextColor,
-        dimBackground: currentTheme.dimBackgroundColor,
-        background: currentTheme.backgroundColor,
-        textBackground: currentTheme.textBackgroundColor,
-        highlight: currentTheme.highlightColor,
-        darken: currentTheme.darkenColor,
-        tableChecked: currentTheme.tableCheckedColor,
-        tableCheckedHighlight: currentTheme.tableCheckedHighlightColor,
-        emoji: opts.emoji,
-      })
+      rootView.theme = rootView.theme.merge({emoji: opts.emoji})
     }
 
     const screen = new Screen(program, rootView)

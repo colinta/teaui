@@ -13,7 +13,7 @@ export type Purpose =
   | 'selected'
   | 'plain'
 
-const defaultText = '#E2E2E2(253)'
+const defaultText = 'default'
 const defaultContrastText = '#FFF(16)'
 const defaultDimText = '#808080(239)'
 const defaultDimBackground = '#434343(238)'
@@ -23,7 +23,7 @@ interface Props {
   dimText?: Color
   dimBackground?: Color
   contrastText?: Color
-  background: Color
+  controlBackground: Color
   textBackground?: Color
   highlight: Color
   darken: Color
@@ -37,7 +37,7 @@ export class Theme {
   contrastTextColor: Color
   dimTextColor: Color
   dimBackgroundColor: Color
-  backgroundColor: Color
+  controlBackgroundColor: Color
   textBackgroundColor: Color
   highlightColor: Color
   darkenColor: Color
@@ -46,7 +46,7 @@ export class Theme {
   emoji: boolean
 
   static plain = new Theme({
-    background: '#4F4F4F(239)',
+    controlBackground: '#4F4F4F(239)',
     textBackground: 'default',
     highlight: '#616161(241)',
     darken: '#3F3F3F(237)',
@@ -54,7 +54,7 @@ export class Theme {
     tableCheckedHighlight: '#4d2a55',
   })
   static primary = new Theme({
-    background: '#3B5EA7',
+    controlBackground: '#3B5EA7',
     textBackground: '#273F70',
     highlight: '#5A7AC2',
     darken: '#314F8C',
@@ -65,7 +65,7 @@ export class Theme {
     dimText: '#314F8C',
   })
   static secondary = new Theme({
-    background: '#D0851C',
+    controlBackground: '#D0851C',
     textBackground: '#805211',
     highlight: '#D0924B',
     darken: '#A66A16',
@@ -76,7 +76,7 @@ export class Theme {
     dimText: '#A66A16',
   })
   static proceed = new Theme({
-    background: '#4A7A5B',
+    controlBackground: '#4A7A5B',
     textBackground: '#2E4E3A',
     highlight: '#58A877',
     darken: '#3D664C',
@@ -87,7 +87,7 @@ export class Theme {
     dimText: '#3D664C',
   })
   static cancel = new Theme({
-    background: '#A04A4C',
+    controlBackground: '#A04A4C',
     textBackground: '#5B282A',
     highlight: '#C46264',
     darken: '#853D3F',
@@ -99,7 +99,7 @@ export class Theme {
   })
   static selected = new Theme({
     text: '#383838(236)',
-    background: '#BDBDBD(250)',
+    controlBackground: '#BDBDBD(250)',
     textBackground: '#BDBDBD(250)',
     highlight: '#E6E6E6(254)',
     darken: '#7F7F7F(243)',
@@ -116,7 +116,7 @@ export class Theme {
     contrastText,
     dimText,
     dimBackground,
-    background,
+    controlBackground,
     textBackground,
     highlight,
     darken,
@@ -128,8 +128,8 @@ export class Theme {
     this.contrastTextColor = contrastText ?? defaultContrastText
     this.dimTextColor = dimText ?? defaultDimText
     this.dimBackgroundColor = dimBackground ?? defaultDimBackground
-    this.backgroundColor = background
-    this.textBackgroundColor = textBackground ?? background
+    this.controlBackgroundColor = controlBackground
+    this.textBackgroundColor = textBackground ?? controlBackground
     this.highlightColor = highlight
     this.darkenColor = darken
     this.tableCheckedColor = tableChecked ?? Theme.plain.tableCheckedColor
@@ -163,12 +163,12 @@ export class Theme {
     } else if (isOrnament) {
       return new Style({
         foreground: this.darkenColor,
-        background: this.backgroundColor,
+        background: this.controlBackgroundColor,
       })
     } else {
       return new Style({
         foreground: this.textColor,
-        background: this.backgroundColor,
+        background: this.controlBackgroundColor,
       })
     }
   }
@@ -232,6 +232,27 @@ export class Theme {
       background: this.textBackgroundColor,
       inverse: hasFocus && isSelected,
       bold: hasFocus,
+    })
+  }
+
+  merge(props: Partial<Props>): Theme {
+    return new Theme({
+      text: props.text ?? this.textColor,
+      contrastText: props.contrastText ?? this.contrastTextColor,
+      dimText: props.dimText ?? this.dimTextColor,
+      dimBackground: props.dimBackground ?? this.dimBackgroundColor,
+      controlBackground:
+        props.controlBackground ?? this.controlBackgroundColor,
+      textBackground:
+        props.textBackground ?? this.textBackgroundColor,
+      highlight: props.highlight ?? this.highlightColor,
+      darken: props.darken ?? this.darkenColor,
+      tableChecked:
+        props.tableChecked ?? this.tableCheckedColor,
+      tableCheckedHighlight:
+        props.tableCheckedHighlight ??
+        this.tableCheckedHighlightColor,
+      emoji: props.emoji ?? this.emoji,
     })
   }
 }
