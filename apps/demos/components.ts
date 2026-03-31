@@ -1,6 +1,7 @@
 import {
   inspect,
   Accordion,
+  AutoLegend,
   Box,
   Button,
   Checkbox,
@@ -346,10 +347,16 @@ const contentView = Stack.right([
 ])
 
 demo(
-  new Drawer({
-    theme: 'secondary',
-    drawer: drawerView,
-    content: contentView,
-  }),
+  Stack.down([
+    [
+      'flex1',
+      new Drawer({
+        theme: 'secondary',
+        drawer: drawerView,
+        content: contentView,
+      }),
+    ],
+    new AutoLegend(),
+  ]),
   false,
 )

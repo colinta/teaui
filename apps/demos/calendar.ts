@@ -1,4 +1,4 @@
-import {Calendar, Stack, Space, Text} from '@teaui/core'
+import {AutoLegend, Calendar, Stack, Space, Text} from '@teaui/core'
 
 import {demo} from './demo.js'
 
@@ -85,6 +85,7 @@ demo(
       new Space({height: 1}),
       statusText,
       ['flex1', new Space()],
+      new AutoLegend(),
     ],
   }),
 )

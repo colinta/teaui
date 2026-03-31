@@ -1,4 +1,4 @@
-import {Box, Stack, Input, Space, Scrollable} from '@teaui/core'
+import {AutoLegend, Box, Stack, Input, Space, Scrollable} from '@teaui/core'
 import {codeHighlighter} from '@teaui/code'
 
 import {demo} from './demo.js'
@@ -64,16 +64,22 @@ function box(input: Input) {
 }
 
 demo(
-  Scrollable.down({
-    children: [
-      //
-      box(singleLine),
-      box(emptySingleLine),
-      box(wrapLine),
-      box(codeInput),
-      box(restrictedLine),
-      box(restrictedMultiLine),
+  Stack.down([
+    [
+      'flex1',
+      Scrollable.down({
+        children: [
+          //
+          box(singleLine),
+          box(emptySingleLine),
+          box(wrapLine),
+          box(codeInput),
+          box(restrictedLine),
+          box(restrictedMultiLine),
+        ],
+      }),
     ],
-  }),
+    new AutoLegend(),
+  ]),
   false,
 )

@@ -12,7 +12,9 @@ import {
   isMouseEnter,
   isMouseExit,
   toHotKeyDef,
+  hotKeyToString,
 } from '../events/index.js'
+import type {LegendItem} from './Legend.js'
 import {Style} from '../Style.js'
 import {Theme} from '../Theme.js'
 import {define} from '../util.js'
@@ -84,6 +86,13 @@ export class Drawer extends Container {
   set title(value: string | undefined) {
     this.#title = value
     this.invalidateRender()
+  }
+
+  legendItems(): LegendItem[] {
+    if (!this.#hotKey) {
+      return []
+    }
+    return [{key: hotKeyToString(this.#hotKey), label: 'Toggle Drawer'}]
   }
 
   #update({isOpen, location, onToggle, hotKey, title}: Props) {

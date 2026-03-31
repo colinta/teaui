@@ -13,6 +13,7 @@ import {
 } from '../events/index.js'
 import type {Style} from '../Style.js'
 import {type Orientation} from '../types.js'
+import type {LegendItem} from './Legend.js'
 
 const MIN = 5
 
@@ -173,6 +174,14 @@ export class Slider extends View {
         return new Size(1, minHeight)
       }
     }
+  }
+
+  legendItems(): LegendItem[] {
+    return [
+      {key: ['left', 'right'], label: 'Adjust'},
+      {key: 'home', label: 'Min'},
+      {key: 'end', label: 'Max'},
+    ]
   }
 
   receiveKey(event: KeyEvent) {

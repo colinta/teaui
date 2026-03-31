@@ -399,8 +399,8 @@ describe('Input', () => {
         multiline: true,
       })
       const t = testRender(input, {width: 30, height: 5})
-      // Move cursor to start
-      t.sendKey('a', {ctrl: true})
+      // Move cursor to start of input
+      t.sendKey(',', {alt: true, shift: true})
       // Cursor is at position 0 (the tab char)
       // Press down: should move to 'o' in 'one' (column 0)
       t.sendKey('down')
@@ -414,7 +414,7 @@ describe('Input', () => {
         multiline: true,
       })
       const t = testRender(input, {width: 30, height: 5})
-      t.sendKey('a', {ctrl: true})
+      t.sendKey(',', {alt: true, shift: true})
       t.sendKey('down')
       t.sendKey('down')
       t.sendKey('!')
@@ -428,7 +428,7 @@ describe('Input', () => {
       })
       const t = testRender(input, {width: 30, height: 5})
       // Move to start of 'one' line
-      t.sendKey('a', {ctrl: true})
+      t.sendKey(',', {alt: true, shift: true})
       t.sendKey('down')
       // Now press up: should go back to tab char (column 0)
       t.sendKey('up')

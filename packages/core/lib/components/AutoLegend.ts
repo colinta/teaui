@@ -2,24 +2,10 @@ import type {Viewport} from '../Viewport.js'
 import {Size} from '../geometry.js'
 import {Legend, type LegendItem} from './Legend.js'
 import {HotKey} from './HotKey.js'
-import type {HotKey as HotKeyType} from '../events/index.js'
+import {hotKeyToString} from '../events/index.js'
 
 interface Props {
   separator?: string
-}
-
-function hotKeyToString(hotKey: HotKeyType): string {
-  if (typeof hotKey === 'string') {
-    return hotKey
-  }
-
-  let str = ''
-  if (hotKey.ctrl) str += 'C-'
-  if (hotKey.alt) str += 'A-'
-  if (hotKey.meta) str += 'M-'
-  if (hotKey.shift) str += 'S-'
-  str += hotKey.char
-  return str
 }
 
 /**

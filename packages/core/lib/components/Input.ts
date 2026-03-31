@@ -301,6 +301,12 @@ export class Input extends View {
 
   legendItems(): LegendItem[] {
     const items: LegendItem[] = []
+    items.push(
+      {key: ['C-a', 'home'], label: 'Line Start'},
+      {key: ['C-e', 'end'], label: 'Line End'},
+      {key: 'A-S-<', label: 'Start'},
+      {key: 'A-S->', label: 'End'},
+    )
     if (this.#multiline) {
       items.push({key: 'C-]', label: 'Indent'}, {key: 'C-[', label: 'Dedent'})
     }
@@ -371,10 +377,16 @@ export class Input extends View {
     } else if (event.name === 'tab' && event.alt) {
       this.#beginEdit('insert')
       this.#receiveChar('\t', true)
-    } else if (event.full === 'C-a') {
+    } else if (event.full === 'C-a' || event.name === 'home') {
+      this.#insertCoalesceEnabled = false
+      this.#receiveHome(event)
+    } else if (event.full === 'C-e' || event.name === 'end') {
+      this.#insertCoalesceEnabled = false
+      this.#receiveEnd(event)
+    } else if (event.full === 'A-S-,' || event.full === 'A-S-<') {
       this.#insertCoalesceEnabled = false
       this.#receiveGotoStart()
-    } else if (event.full === 'C-e') {
+    } else if (event.full === 'A-S-.' || event.full === 'A-S->') {
       this.#insertCoalesceEnabled = false
       this.#receiveGotoEnd()
     } else if (event.name === 'up') {
@@ -383,12 +395,6 @@ export class Input extends View {
     } else if (event.name === 'down') {
       this.#insertCoalesceEnabled = false
       this.#receiveKeyDownArrow(event)
-    } else if (event.name === 'home') {
-      this.#insertCoalesceEnabled = false
-      this.#receiveHome(event)
-    } else if (event.name === 'end') {
-      this.#insertCoalesceEnabled = false
-      this.#receiveEnd(event)
     } else if (event.name === 'left') {
       this.#insertCoalesceEnabled = false
       this.#receiveKeyLeftArrow(event)

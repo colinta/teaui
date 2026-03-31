@@ -11,7 +11,9 @@ import {
   KeyEvent,
   styleTextForHotKey,
   toHotKeyDef,
+  hotKeyToString,
 } from '../events/index.js'
+import type {LegendItem} from './Legend.js'
 import {childTheme} from '../UI.js'
 import type {View} from '../View.js'
 import {Alignment} from '../types.js'
@@ -89,6 +91,13 @@ export class Button extends Container {
       : (value ?? '')
     this.#textView.text = styledText
     this.invalidateSize()
+  }
+
+  legendItems(): LegendItem[] {
+    if (!this.#hotKey) {
+      return []
+    }
+    return [{key: hotKeyToString(this.#hotKey), label: this.title ?? ''}]
   }
 
   #borderSize(hasFocus: boolean): [number, number] {

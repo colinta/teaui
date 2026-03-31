@@ -9,6 +9,7 @@ import {
 import {Style} from '../Style.js'
 import {System} from '../System.js'
 import {lineWidth} from '@teaui/term'
+import type {LegendItem} from './Legend.js'
 
 type DisplayMode = 'days' | 'months' | 'years'
 type Selection = 'single' | 'range'
@@ -694,6 +695,17 @@ export class Calendar extends View {
     }
 
     this.invalidateRender()
+  }
+
+  legendItems(): LegendItem[] {
+    return [
+      {key: ['left', 'right', 'up', 'down'], label: 'Navigate'},
+      {key: 'return', label: 'Select'},
+      {key: 't', label: 'Today'},
+      {key: ['pageup', 'pagedown'], label: 'Month'},
+      {key: 'home', label: 'First Day'},
+      {key: 'end', label: 'Last Day'},
+    ]
   }
 
   receiveKey(event: KeyEvent) {

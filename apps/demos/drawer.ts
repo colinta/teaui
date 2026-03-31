@@ -1,4 +1,13 @@
-import {Box, Button, Drawer, Stack, Input, Space, Text} from '@teaui/core'
+import {
+  AutoLegend,
+  Box,
+  Button,
+  Drawer,
+  Stack,
+  Input,
+  Space,
+  Text,
+} from '@teaui/core'
 
 import {demo} from './demo.js'
 
@@ -110,4 +119,4 @@ drawer = new Drawer({
   }),
 })
 
-demo(drawer)
+demo(Stack.down([['flex1', drawer], new AutoLegend()]))

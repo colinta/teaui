@@ -58,6 +58,23 @@ export type HotKeyDef = {
 }
 export type HotKey = FullKeyName | HotKeyDef
 
+/**
+ * Convert a HotKey to a display string like 'C-x' suitable for Legend items.
+ */
+export function hotKeyToString(hotKey: HotKey): string {
+  if (typeof hotKey === 'string') {
+    return hotKey
+  }
+
+  let str = ''
+  if (hotKey.ctrl) str += 'C-'
+  if (hotKey.alt) str += 'A-'
+  if (hotKey.meta) str += 'M-'
+  if (hotKey.shift) str += 'S-'
+  str += hotKey.char
+  return str
+}
+
 export function toHotKeyDef(hotKey: HotKey) {
   if (typeof hotKey !== 'string') {
     return hotKey

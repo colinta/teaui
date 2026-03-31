@@ -1,4 +1,5 @@
 import {
+  AutoLegend,
   Button,
   colorToHex,
   colors,
@@ -254,5 +255,6 @@ demo(
       ]),
     ],
     builtInColors,
+    new AutoLegend(),
   ]),
 )

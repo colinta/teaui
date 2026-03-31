@@ -1,5 +1,6 @@
 import {
   Align,
+  AutoLegend,
   Input,
   ScrollableList,
   Separator,
@@ -122,7 +123,7 @@ const list = new ScrollableList<Movie>({
 
 demo(
   Stack.down({
-    children: [input, Separator.horizontal(), list],
+    children: [input, Separator.horizontal(), list, new AutoLegend()],
   }),
 )
 

@@ -39,6 +39,7 @@ import {
   Tabs,
   Text,
   run,
+  AutoLegend,
 } from '@teaui/react'
 import YAML from 'yaml'
 import {BreadcrumbTab} from './breadcrumb.js'
@@ -95,6 +96,7 @@ function Demo() {
               <MoreTab />
             </Tabs.Section>
           </Tabs>
+          <AutoLegend />
         </Stack.down>
       </Box>
       <Logo isAnimating />

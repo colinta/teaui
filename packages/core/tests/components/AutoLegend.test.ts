@@ -11,7 +11,7 @@ describe('AutoLegend', () => {
     const legend = new AutoLegend()
     const input = new Input({value: 'hello', multiline: true})
     const view = Stack.down([input, legend])
-    const t = testRender(view, {width: 60, height: 5})
+    const t = testRender(view, {width: 120, height: 5})
     const text = t.terminal.textContent()
     // Input's legendItems includes Undo and Redo
     expect(text).toContain('Undo')
@@ -22,7 +22,7 @@ describe('AutoLegend', () => {
     const legend = new AutoLegend()
     const input = new Input({value: 'hello', multiline: true})
     const view = Stack.down([input, legend])
-    const t = testRender(view, {width: 60, height: 5})
+    const t = testRender(view, {width: 120, height: 5})
     const text = t.terminal.textContent()
     expect(text).toContain('Indent')
     expect(text).toContain('Dedent')
@@ -32,7 +32,7 @@ describe('AutoLegend', () => {
     const legend = new AutoLegend()
     const input = new Input({value: 'hello'})
     const view = Stack.down([input, legend])
-    const t = testRender(view, {width: 60, height: 5})
+    const t = testRender(view, {width: 120, height: 5})
     const text = t.terminal.textContent()
     expect(text).not.toContain('Indent')
     expect(text).not.toContain('Dedent')
@@ -45,7 +45,7 @@ describe('AutoLegend', () => {
     const input = new Input({value: ''})
     const hotkey = new HotKey({hotKey: 'C-x', label: 'Quit'})
     const view = Stack.down([new Box({children: [input, hotkey]}), legend])
-    const t = testRender(view, {width: 60, height: 5})
+    const t = testRender(view, {width: 120, height: 5})
     const text = t.terminal.textContent()
     expect(text).toContain('Quit')
   })
@@ -55,7 +55,7 @@ describe('AutoLegend', () => {
     const input = new Input({value: ''})
     const hotkey = new HotKey({hotKey: 'C-x'})
     const view = Stack.down([new Box({children: [input, hotkey]}), legend])
-    const t = testRender(view, {width: 60, height: 5})
+    const t = testRender(view, {width: 120, height: 5})
     const text = t.terminal.textContent()
     // Only Input legend items should appear, not the unlabeled hotkey
     expect(text).toContain('Undo')
@@ -111,7 +111,7 @@ describe('AutoLegend', () => {
     const input1 = new Input({value: 'a', multiline: true})
     const input2 = new Input({value: 'b'})
     const view = Stack.down([input1, input2, legend])
-    const t = testRender(view, {width: 60, height: 5})
+    const t = testRender(view, {width: 120, height: 5})
 
     // input1 (multiline) has focus by default
     let text = t.terminal.textContent()

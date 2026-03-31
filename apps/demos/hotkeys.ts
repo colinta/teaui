@@ -1,4 +1,5 @@
 import {
+  AutoLegend,
   Box,
   HotKey,
   Keyboard,
@@ -109,6 +110,7 @@ entries.forEach((e, i) => {
   hotKeyChildren.push(
     new HotKey({
       hotKey: e.hotKey,
+      label: e.label,
       onPress: () => {
         if (e.hotKey === 'r') {
           counts.fill(0)
@@ -161,8 +163,14 @@ const rightPanel = new Box({
 // ─── Layout ─────────────────────────────────────────────────────────────────
 
 demo(
-  Stack.right([
-    ['flex1', leftPanel],
-    ['flex1', rightPanel],
+  Stack.down([
+    [
+      'flex1',
+      Stack.right([
+        ['flex1', leftPanel],
+        ['flex1', rightPanel],
+      ]),
+    ],
+    new AutoLegend(),
   ]),
 )

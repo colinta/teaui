@@ -10,7 +10,9 @@ import {
   type MouseEvent,
   isMouseClicked,
   styleTextForHotKey,
+  hotKeyToString,
 } from '../events/index.js'
+import type {LegendItem} from './Legend.js'
 import {childTheme} from '../UI.js'
 import {Style} from '../Style.js'
 import {System} from '../System.js'
@@ -82,6 +84,13 @@ export class Checkbox extends Container {
       : value
     this.#textView.text = styledText ?? ''
     this.invalidateSize()
+  }
+
+  legendItems(): LegendItem[] {
+    if (!this.#hotKey) {
+      return []
+    }
+    return [{key: hotKeyToString(this.#hotKey), label: this.title ?? ''}]
   }
 
   naturalSize(available: Size): Size {
