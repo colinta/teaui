@@ -1,6 +1,6 @@
 {
   "name": "@teaui/term",
-  "version": "1.10.8",
+  "version": "1.11.8",
   "description": "Zero-dependency TypeScript terminal library for modern terminals",
   "type": "module",
   "main": "./.dist/index.js",
