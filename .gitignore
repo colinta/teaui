@@ -2,7 +2,6 @@ node_modules/
 .dist/
 .tsimp/
 /lib/test.ts
-/demos/node_modules/
 .sum
 apps/docs/.docusaurus/
 apps/docs/build/

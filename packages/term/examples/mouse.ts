@@ -118,8 +118,14 @@ term.onInput(event => {
     // Draw cursor at new position
     drawCursor(event.x, event.y, event.action)
 
-    // Show coordinates in bottom-left
-    const status = `pos: (${event.x}, ${event.y})  action: ${event.action.padEnd(7)}  button: ${event.button.padEnd(6)}  `
+    // Show coordinates and modifiers in bottom-left
+    const mods: string[] = []
+    if (event.ctrl) mods.push('ctrl')
+    if (event.alt) mods.push('alt')
+    if (event.gui) mods.push('gui')
+    if (event.shift) mods.push('shift')
+    const modStr = mods.length > 0 ? mods.join('+') : 'none'
+    const status = `pos: (${event.x}, ${event.y})  action: ${event.action.padEnd(7)}  button: ${event.button.padEnd(6)}  mods: ${modStr.padEnd(20)}`
     term
       .moveTo(0, rows - 1)
       .fg('brightBlack')

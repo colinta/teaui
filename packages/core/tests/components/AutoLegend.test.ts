@@ -98,11 +98,12 @@ describe('AutoLegend', () => {
     const input2 = new Input({value: 'b'})
     const legend = new AutoLegend()
     const view = Stack.down([input1, input2, legend])
-    const t = testRender(view, {width: 120, height: 5})
+    const t = testRender(view, {width: 120, height: 3})
     const before = t.terminal.textContent()
+    expect(before).toMatchSnapshot()
+
     t.sendKey('tab')
     const after = t.terminal.textContent()
-    expect(before).toMatchSnapshot()
     expect(after).toMatchSnapshot()
   })
 

@@ -149,6 +149,8 @@ function parseSGRMouse(params: string, final: string): MouseEvent {
     ctrl,
     alt,
     shift,
+    // not supported in SGR protocol
+    gui: false,
   }
 }
 

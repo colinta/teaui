@@ -50,26 +50,13 @@ export class TestTerminal implements SGRTerminal {
   }
 
   write(str: string): void {
-    let i = 0
-    while (i < str.length) {
-      if (str[i] === '\x1b' && i + 1 < str.length && str[i + 1] === '[') {
-        // ANSI escape sequence
-        let j = i + 2
-        while (j < str.length && !isAnsiTerminator(str[j])) {
-          j++
-        }
-        if (j < str.length) {
-          j++ // include the terminator
-        }
-        const sgr = str.slice(i, j)
-        this.#pendingSgr += sgr
-        i = j
-      } else {
-        // Visible character — may be multi-code-unit (emoji, CJK)
-        const codePoint = str.codePointAt(i)!
-        const char = String.fromCodePoint(codePoint)
-        const width = unicode.charWidth(char)
+    for (const char of unicode.printableChars(str)) {
+      const width = unicode.charWidth(char)
 
+      if (width === 0) {
+        // ANSI escape sequence
+        this.#pendingSgr += char
+      } else {
         // Apply any pending SGR to current style
         if (this.#pendingSgr) {
           this.#currentStyle = this.#parseAccumulatedSGR(this.#pendingSgr)
@@ -95,7 +82,6 @@ export class TestTerminal implements SGRTerminal {
           }
         }
         this.#cursorX += Math.max(width, 1)
-        i += char.length
       }
     }
   }
@@ -312,7 +298,3 @@ export class TestTerminal implements SGRTerminal {
   }
 }
 
-function isAnsiTerminator(ch: string): boolean {
-  const code = ch.charCodeAt(0)
-  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
-}

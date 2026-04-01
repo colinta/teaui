@@ -14,12 +14,13 @@ import {Separator} from './Separator.js'
 import {Text} from './Text.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
 import {System} from '../System.js'
+import { Space } from './Space.js'
+import { Style } from '../Style.js'
 
 interface BorderChars {
   control: BoxBorderChars
   hover: BoxBorderChars
-  above: BoxBorderChars
-  below: BoxBorderChars
+  box: BoxBorderChars
 }
 
 type Choices<T> = [string, T][]
@@ -220,7 +221,7 @@ class DropdownSelector<T> extends Container {
   #multiple: boolean
   #onSelect: () => void
   #scrollView: ScrollableList<T>
-  #box = new Box({maxHeight: 24, border: BORDERS.below})
+  #box = new Box({maxHeight: 24, border: BORDERS.box})
   #checkbox: Checkbox
 
   constructor({
@@ -232,6 +233,8 @@ class DropdownSelector<T> extends Container {
   }: SelectorProps<T>) {
     super({...viewProps})
 
+    this.add(this.#box)
+
     this.#choices = choices.map(([text, value]) => [
       text.split('\n'),
       value,
@@ -242,7 +245,7 @@ class DropdownSelector<T> extends Container {
     this.#onSelect = onSelect
     this.#checkbox = new Checkbox({
       title: 'Select all',
-      value: false,
+      value: this.#isAllSelected(),
       onChange: value => {
         if (value) {
           this.#selected = new Set(Array(this.#choices.length).keys())
@@ -257,16 +260,17 @@ class DropdownSelector<T> extends Container {
       data: this.#choices.map(([, choice]) => choice),
       renderItem: (choice, row) => this.renderItem(choice, row),
     })
-    const content = new Stack({direction: 'down', children: []})
 
     if (multiple) {
+      const content = Stack.down([])
+      content.add(Stack.right([this.#checkbox, Space.horizontal(2)], {width: 'shrink'}))
       content.add(this.#checkbox)
+      content.add(this.#scrollView)
+      this.#box.add(content)
+      this.add(Stack.right([new Space({flex: 1}), new Text({text: '├─┤', style: new Style({background: this.theme.textBackgroundColor})})], {y: 1, width: 'shrink'}))
+    } else {
+      this.#box.add(this.#scrollView)
     }
-    content.add(this.#scrollView)
-    this.#box.add(content)
-    this.add(this.#box)
-
-    this.#checkbox.value = this.#isAllSelected()
   }
 
   #isAllSelected() {
@@ -454,8 +458,6 @@ class DropdownSelector<T> extends Container {
       y = viewport.parentRect.minY() - height
     }
 
-    this.#box.border = BORDERS[placement]
-
     const rect = new Rect([x, y], [width, height])
     viewport.clipped(rect, inside => super.render(inside))
   }
@@ -502,8 +504,7 @@ const ARROWS = {hover: '▼', default: '▽', open: '◇'}
 const BORDERS: BorderChars = {
   control: ['─', '│', '╭', '╮', '╰', '╯'],
   hover: ['─', '│', '╭', '╮', '╰', '╯', '─', '│'],
-  below: ['─', '│', '╭', '┬─╮', '╰', '┴─╯', '─', '│'],
-  above: ['─', '│', '╭', '┬─╮', '╰', '┴─╯', '─', '│'],
+  box: ['─', '│', '╭', '┬─╮', '╰', '┴─╯', '─', '│'],
 }
 
 const BOX: Record<

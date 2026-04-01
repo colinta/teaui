@@ -33,7 +33,6 @@ import {MouseManager} from './managers/MouseManager.js'
 import {ModalManager} from './managers/ModalManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {UnboundSystem} from './System.js'
-import {Space} from './components/Space.js'
 import type {ScreenEventUnsubscribe} from './Screen.js'
 
 class TestScreen {
@@ -179,9 +178,13 @@ class TestScreen {
     )
     const focusNeedsRender = this.#focusManager.commit()
     if (focusNeedsRender) {
+      this.#buffer.flush(this.#terminal)
       for (const listener of this.#focusChangeListeners) {
         listener(this.#focusManager.currentFocusView)
       }
+
+      this.#view.render(viewport)
+
       // Match Screen.render(): re-render with the same viewport, no
       // mouse manager reset (so modal button registrations are preserved).
       rerenderView.render(modalViewport)

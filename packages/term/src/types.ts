@@ -209,6 +209,7 @@ export interface MouseEvent {
   y: number
   ctrl: boolean
   alt: boolean
+  gui: boolean
   shift: boolean
 }
 
