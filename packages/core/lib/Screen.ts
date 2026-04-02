@@ -43,6 +43,18 @@ type KeyListener = (char: string, key: KeyEvent) => void
  */
 export interface Program extends SGRTerminal {
   /**
+   * Prepare the terminal for fullscreen app mode (e.g. enter alt buffer,
+   * enable mouse, hide cursor). Called once before the first render.
+   */
+  setup(): void
+
+  /**
+   * Restore the terminal to its original state (e.g. exit alt buffer,
+   * show cursor). Called when the screen stops.
+   */
+  teardown(): void
+
+  /**
    * Subscribe to system events (key, mouse, paste, focus/blur).
    * Returns an unsubscribe function.
    */
@@ -97,20 +109,18 @@ export class TerminalProgram implements Program {
 
   // --- Lifecycle ---
 
-  enterFullscreen(): void {
+  setup(): void {
     this.#terminal.enterFullscreen({
       mouse: true,
       hideCursor: true,
       focusEvents: true,
     })
-  }
-
-  exitFullscreen(): void {
-    this.#terminal.exitFullscreen()
-  }
-
-  clear(): void {
     this.#terminal.clear()
+  }
+
+  teardown(): void {
+    this.#terminal.clear()
+    this.#terminal.exitFullscreen()
   }
 
   // --- Events ---
@@ -208,21 +218,6 @@ export class Screen {
     focusChange: new Set(),
   }
 
-  /**
-   * A helper function that puts the terminal into a "known good" state. I use this
-   * during debugging, if the app crashes and I need to get the terminal CLI working
-   * again.
-   */
-  static reset() {
-    const program = new TerminalProgram()
-    program.clear()
-    program.terminal.showCursor()
-    program.exitFullscreen()
-    setTimeout(() => {
-      process.exit(0)
-    }, 0)
-  }
-
   static async start(): Promise<[Screen, TerminalProgram, Window]>
 
   static async start<T extends View>(
@@ -249,8 +244,7 @@ export class Screen {
     }
 
     const program = new TerminalProgram()
-    program.enterFullscreen()
-    program.clear()
+    program.setup()
 
     const rootView =
       viewConstructor instanceof View
@@ -263,8 +257,7 @@ export class Screen {
 
     const screen = new Screen(program, rootView)
     screen.onExit(() => {
-      program.clear()
-      program.exitFullscreen()
+      program.teardown()
     })
 
     if (opts.quitChar) {
