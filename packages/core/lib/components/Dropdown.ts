@@ -14,8 +14,8 @@ import {Separator} from './Separator.js'
 import {Text} from './Text.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
 import {System} from '../System.js'
-import { Space } from './Space.js'
-import { Style } from '../Style.js'
+import {Space} from './Space.js'
+import {Style} from '../Style.js'
 
 interface BorderChars {
   control: BoxBorderChars
@@ -263,11 +263,24 @@ class DropdownSelector<T> extends Container {
 
     if (multiple) {
       const content = Stack.down([])
-      content.add(Stack.right([this.#checkbox, Space.horizontal(2)], {width: 'shrink'}))
+      content.add(
+        Stack.right([this.#checkbox, Space.horizontal(2)], {width: 'shrink'}),
+      )
       content.add(this.#checkbox)
       content.add(this.#scrollView)
       this.#box.add(content)
-      this.add(Stack.right([new Space({flex: 1}), new Text({text: '├─┤', style: new Style({background: this.theme.textBackgroundColor})})], {y: 1, width: 'shrink'}))
+      this.add(
+        Stack.right(
+          [
+            new Space({flex: 1}),
+            new Text({
+              text: '├─┤',
+              style: new Style({background: this.theme.textBackgroundColor}),
+            }),
+          ],
+          {y: 1, width: 'shrink'},
+        ),
+      )
     } else {
       this.#box.add(this.#scrollView)
     }

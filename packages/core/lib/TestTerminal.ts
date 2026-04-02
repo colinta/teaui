@@ -297,4 +297,3 @@ export class TestTerminal implements SGRTerminal {
     this.#currentStyle = Style.NONE
   }
 }
-
