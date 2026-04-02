@@ -35,13 +35,33 @@ import {UnboundSystem} from './System.js'
 
 type KeyListener = (char: string, key: KeyEvent) => void
 
+// --- Program interface: abstract terminal program for Screen ---
+
+/**
+ * The abstract interface that Screen depends on. Any terminal backend
+ * (real terminal, test harness, web adapter, etc.) can implement this.
+ */
+export interface Program extends SGRTerminal {
+  /**
+   * Subscribe to system events (key, mouse, paste, focus/blur).
+   * Returns an unsubscribe function.
+   */
+  onEvents(listener: (event: SystemEvent) => void): () => void
+
+  /**
+   * Subscribe to terminal resize events.
+   * Returns an unsubscribe function.
+   */
+  onResize(listener: () => void): () => void
+}
+
 // --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
 
 /**
  * Wraps @teaui/term's Terminal for use by Screen and the public API.
  * Translates low-level terminal input into SystemEvents that Screen can consume.
  */
-export class TerminalProgram implements SGRTerminal {
+export class TerminalProgram implements Program {
   #terminal: TermTerminal
 
   constructor() {
@@ -148,6 +168,13 @@ type ViewConstructor<T extends View> = (
   program: TerminalProgram,
 ) => T | Promise<T>
 
+/**
+ * A ViewConstructor that receives a Program (for use with Screen constructor directly).
+ */
+export type ProgramViewConstructor<T extends View> = (
+  program: Program,
+) => T | Promise<T>
+
 type ScreenKeyListener = (char: string, key: KeyEvent) => void
 
 export interface ScreenOptions {
@@ -162,7 +189,7 @@ interface ScreenEventMap {
 }
 
 export class Screen {
-  #program: TerminalProgram
+  #program: Program
   #onExit?: () => void
   #keyListeners: {pattern: string; fn: ScreenKeyListener}[] = []
   #cleanupEvents?: () => void
@@ -251,14 +278,10 @@ export class Screen {
     return [screen, program, rootView]
   }
 
-  constructor(program: TerminalProgram, rootView: View) {
+  constructor(program: Program, rootView: View) {
     this.#program = program
     this.#buffer = new Buffer()
     this.rootView = rootView
-
-    Object.defineProperty(this, 'program', {
-      enumerable: false,
-    })
   }
 
   onExit(callback: () => void) {
