@@ -307,6 +307,7 @@ describe('parseInput', () => {
           y: 19,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -323,6 +324,7 @@ describe('parseInput', () => {
           y: 4,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -339,6 +341,7 @@ describe('parseInput', () => {
           y: 24,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -355,6 +358,7 @@ describe('parseInput', () => {
           y: 0,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -371,6 +375,7 @@ describe('parseInput', () => {
           y: 9,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -387,6 +392,7 @@ describe('parseInput', () => {
           y: 9,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -404,6 +410,7 @@ describe('parseInput', () => {
           y: 99,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -421,6 +428,7 @@ describe('parseInput', () => {
           y: 19,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -437,6 +445,7 @@ describe('parseInput', () => {
           y: 19,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -453,6 +462,7 @@ describe('parseInput', () => {
           y: 19,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -470,6 +480,7 @@ describe('parseInput', () => {
           y: 4,
           ctrl: true,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -486,6 +497,7 @@ describe('parseInput', () => {
           y: 9,
           ctrl: false,
           alt: false,
+          gui: false,
           shift: true,
         } satisfies MouseEvent,
       ])
@@ -502,6 +514,7 @@ describe('parseInput', () => {
           y: 9,
           ctrl: true,
           alt: false,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
@@ -518,6 +531,7 @@ describe('parseInput', () => {
           y: 9,
           ctrl: false,
           alt: true,
+          gui: false,
           shift: false,
         } satisfies MouseEvent,
       ])
