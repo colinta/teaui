@@ -20,6 +20,7 @@ const IGNORED_DIRECTORIES = new Set(['node_modules', '.dist', 'dist', '.git'])
 const CHECKSUM_FILE = '.sum'
 const BUILD_OUTPUT_DIRECTORY = '.dist'
 const SHARED_PACKAGE_NAME = '@teaui/shared'
+const WORKSPACE_MANIFEST = 'pnpm-workspace.yaml'
 
 async function fileExists(filePath) {
   try {
@@ -126,10 +127,46 @@ function workspaceDependencyNames(packageJson) {
   return [...new Set(names)]
 }
 
-async function resolveWorkspaceDependencyDir(projectDir, packageName) {
+function installDependencyNames(packageJson) {
+  const names = []
+  const sections = [
+    packageJson.dependencies || {},
+    packageJson.devDependencies || {},
+    packageJson.optionalDependencies || {},
+  ]
+
+  for (const section of sections) {
+    names.push(...Object.keys(section))
+  }
+
+  return [...new Set(names)]
+}
+
+async function findWorkspaceRoot(startDir) {
+  let currentDir = await fs.promises.realpath(startDir)
+
+  while (true) {
+    const workspaceManifest = path.join(currentDir, WORKSPACE_MANIFEST)
+    if (await fileExists(workspaceManifest)) {
+      return currentDir
+    }
+
+    const parentDir = path.dirname(currentDir)
+    if (parentDir === currentDir) {
+      throw new Error(
+        `Could not find ${WORKSPACE_MANIFEST} starting from ${startDir}`,
+      )
+    }
+
+    currentDir = parentDir
+  }
+}
+
+async function resolveInstalledDependencyDir(projectDir, packageName) {
+  const workspaceRoot = await findWorkspaceRoot(projectDir)
   const candidatePaths = [
     path.join(projectDir, 'node_modules', packageName),
-    path.join(process.cwd(), 'node_modules', packageName),
+    path.join(workspaceRoot, 'node_modules', packageName),
   ]
 
   for (const candidatePath of candidatePaths) {
@@ -138,6 +175,50 @@ async function resolveWorkspaceDependencyDir(projectDir, packageName) {
     } catch {
       // Try the next candidate.
     }
+  }
+
+  return null
+}
+
+async function ensureWorkspaceInstall(projectDir) {
+  const packageNodeModules = path.join(projectDir, 'node_modules')
+  if (!(await directoryExists(packageNodeModules))) {
+    const workspaceRoot = await findWorkspaceRoot(projectDir)
+    console.log(`Installing workspace dependencies from ${workspaceRoot}`)
+    execSync('pnpm install', {stdio: 'inherit', cwd: workspaceRoot})
+    return true
+  }
+
+  const packageJson = await readPackageJson(projectDir)
+  for (const dependencyName of installDependencyNames(packageJson)) {
+    const dependencyDir = await resolveInstalledDependencyDir(
+      projectDir,
+      dependencyName,
+    )
+
+    if (dependencyDir) {
+      continue
+    }
+
+    const workspaceRoot = await findWorkspaceRoot(projectDir)
+    console.log(
+      `Installing workspace dependencies from ${workspaceRoot} because ${dependencyName} is missing`,
+    )
+    execSync('pnpm install', {stdio: 'inherit', cwd: workspaceRoot})
+    return true
+  }
+
+  return false
+}
+
+async function resolveWorkspaceDependencyDir(projectDir, packageName) {
+  const dependencyDir = await resolveInstalledDependencyDir(
+    projectDir,
+    packageName,
+  )
+
+  if (dependencyDir) {
+    return dependencyDir
   }
 
   console.warn(`Warning: could not resolve workspace dependency ${packageName}`)
@@ -233,7 +314,10 @@ async function buildProject(projectDir) {
 }
 
 export async function build(projectDir = '.') {
-  const buildOrder = await getWorkspaceBuildOrder(projectDir)
+  const realProjectDir = await fs.promises.realpath(projectDir)
+  await ensureWorkspaceInstall(realProjectDir)
+
+  const buildOrder = await getWorkspaceBuildOrder(realProjectDir)
 
   for (const dependencyDir of buildOrder) {
     await buildProject(dependencyDir)
