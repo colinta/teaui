@@ -155,7 +155,7 @@ export class TestTerminal implements SGRTerminal {
       if (char === '') continue // skip wide char continuation cells
       line += char
     }
-    return line.trimEnd()
+    return line.trimEnd() // + '␤'
   }
 
   /**

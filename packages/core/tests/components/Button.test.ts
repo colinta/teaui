@@ -6,17 +6,17 @@ import {Stack} from '../../lib/components/Stack.js'
 describe('Button', () => {
   describe('rendering', () => {
     it('renders with top and bottom border decorations', () => {
-      const t = testRender(new Button({text: 'OK'}), {width: 10, height: 3})
+      const t = testRender(new Button({title: 'OK'}), {width: 10, height: 3})
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders at height 1', () => {
-      const t = testRender(new Button({text: 'Test'}), {width: 12, height: 1})
+      const t = testRender(new Button({title: 'Test'}), {width: 12, height: 1})
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
     it('renders at height 5', () => {
-      const t = testRender(new Button({text: 'Test'}), {width: 12, height: 5})
+      const t = testRender(new Button({title: 'Test'}), {width: 12, height: 5})
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
@@ -24,9 +24,9 @@ describe('Button', () => {
   describe('focus', () => {
     it('buttons do not receive focus by default', () => {
       const buttons = [
-        new Button({text: 'One', height: 3}),
-        new Button({text: 'Two', height: 3}),
-        new Button({text: 'Three', height: 3}),
+        new Button({title: 'One', height: 3}),
+        new Button({title: 'Two', height: 3}),
+        new Button({title: 'Three', height: 3}),
       ]
       const view = Stack.down(buttons)
       testRender(view, {width: 14, height: 9})
@@ -37,9 +37,9 @@ describe('Button', () => {
 
     it('tab cycles through buttons', () => {
       const buttons = [
-        new Button({text: 'One', height: 3}),
-        new Button({text: 'Two', height: 3}),
-        new Button({text: 'Three', height: 3}),
+        new Button({title: 'One', height: 3}),
+        new Button({title: 'Two', height: 3}),
+        new Button({title: 'Three', height: 3}),
       ]
       const view = Stack.down(buttons)
       const t = testRender(view, {width: 14, height: 9})
@@ -77,9 +77,9 @@ describe('Button', () => {
 
     it('shift-tab cycles in reverse with unfocus at start', () => {
       const buttons = [
-        new Button({text: 'One', height: 3}),
-        new Button({text: 'Two', height: 3}),
-        new Button({text: 'Three', height: 3}),
+        new Button({title: 'One', height: 3}),
+        new Button({title: 'Two', height: 3}),
+        new Button({title: 'Three', height: 3}),
       ]
       const view = Stack.down(buttons)
       const t = testRender(view, {width: 14, height: 9})
@@ -110,7 +110,7 @@ describe('Button', () => {
     it('fires onClick on mouse click', () => {
       let clicked = false
       const btn = new Button({
-        text: 'Click Me',
+        title: 'Click Me',
         onClick() {
           clicked = true
         },
@@ -124,7 +124,7 @@ describe('Button', () => {
     it('does not fire onClick if mouse released outside', () => {
       let clicked = false
       const btn = new Button({
-        text: 'Click Me',
+        title: 'Click Me',
         onClick() {
           clicked = true
         },

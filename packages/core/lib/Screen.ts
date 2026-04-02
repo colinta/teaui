@@ -8,9 +8,9 @@ import {
   type InputEvent as TermInputEvent,
 } from '@teaui/term'
 
-import type {SGRTerminal} from './terminal.js'
 import type {Rect, Point} from './geometry.js'
 import {Size} from './geometry.js'
+import {type Program} from './types.js'
 import {View} from './View.js'
 import {Viewport} from './Viewport.js'
 import {Buffer} from './Buffer.js'
@@ -32,40 +32,6 @@ import {MouseManager} from './managers/MouseManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {Window} from './components/Window.js'
 import {UnboundSystem} from './System.js'
-
-type KeyListener = (char: string, key: KeyEvent) => void
-
-// --- Program interface: abstract terminal program for Screen ---
-
-/**
- * The abstract interface that Screen depends on. Any terminal backend
- * (real terminal, test harness, web adapter, etc.) can implement this.
- */
-export interface Program extends SGRTerminal {
-  /**
-   * Prepare the terminal for fullscreen app mode (e.g. enter alt buffer,
-   * enable mouse, hide cursor). Called once before the first render.
-   */
-  setup(): void
-
-  /**
-   * Restore the terminal to its original state (e.g. exit alt buffer,
-   * show cursor). Called when the screen stops.
-   */
-  teardown(): void
-
-  /**
-   * Subscribe to system events (key, mouse, paste, focus/blur).
-   * Returns an unsubscribe function.
-   */
-  onEvents(listener: (event: SystemEvent) => void): () => void
-
-  /**
-   * Subscribe to terminal resize events.
-   * Returns an unsubscribe function.
-   */
-  onResize(listener: () => void): () => void
-}
 
 // --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
 
@@ -204,6 +170,7 @@ export class Screen {
   #keyListeners: {pattern: string; fn: ScreenKeyListener}[] = []
   #cleanupEvents?: () => void
   #cleanupResize?: () => void
+  #isFocused: boolean
 
   rootView: View
 
@@ -271,10 +238,15 @@ export class Screen {
     return [screen, program, rootView]
   }
 
-  constructor(program: Program, rootView: View) {
+  constructor(
+    program: Program,
+    rootView: View,
+    {isFocused = true}: {isFocused?: boolean} = {},
+  ) {
     this.#program = program
     this.#buffer = new Buffer()
     this.rootView = rootView
+    this.#isFocused = isFocused
   }
 
   onExit(callback: () => void) {
@@ -471,13 +443,23 @@ export class Screen {
     this.#tickManager.registerTick(view)
   }
 
-  triggerTick(dt: number) {}
+  /**
+   * Manually advance tick animations by `dt` milliseconds.
+   * Useful for testing animations without real timers.
+   */
+  tick(dt: number) {
+    this.#tickManager.triggerTick(dt)
+  }
 
   preRender(view: View) {
     this.#modalManager.reset()
     this.#tickManager.reset()
     this.#mouseManager.reset()
     this.#focusManager.reset(view === this.rootView)
+
+    if (!this.#isFocused) {
+      this.#focusManager.unfocus()
+    }
   }
 
   /**
@@ -506,7 +488,7 @@ export class Screen {
     // this may be called again by renderModals, before the last modal renders
     this.preRender(this.rootView)
 
-    const size = this.rootView.naturalSize(screenSize).max(screenSize)
+    const size = this.rootView.naturalSize(screenSize).min(screenSize)
     const viewport = new Viewport(this, this.#buffer, size)
     this.rootView.render(viewport)
     const rerenderView = this.#modalManager.renderModals(this, viewport)

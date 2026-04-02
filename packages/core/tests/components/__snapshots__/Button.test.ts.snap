@@ -1,17 +1,17 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Button > rendering > renders at height 1 1`] = `""`;
+exports[`Button > rendering > renders at height 1 1`] = `"  [ Test ]"`;
 
 exports[`Button > rendering > renders at height 5 1`] = `
 "▔▔▔▔▔▔▔▔▔▔▔▔
 
-
+  [ Test ]
 
 ▁▁▁▁▁▁▁▁▁▁▁▁"
 `;
 
 exports[`Button > rendering > renders with top and bottom border decorations 1`] = `
 "▔▔▔▔▔▔▔▔▔▔
-
+  [ OK ]
 ▁▁▁▁▁▁▁▁▁▁"
 `;

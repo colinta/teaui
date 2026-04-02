@@ -242,7 +242,7 @@ async function buildExamples() {
 
       // Render the React component
       const {createElement} = await import('react')
-      const view = renderReact(createElement(App))
+      const view = renderReact(createElement(App), {width, height})
       const ansi = renderToAnsi(view, {width, height})
       const fragment = renderAnsiToHtmlFragment(ansi)
 
@@ -272,7 +272,7 @@ async function buildExamples() {
       const codePath = join(EXAMPLES_OUTPUT_DIR, `${name}.tsx`)
       writeFileSync(codePath, displaySource, 'utf-8')
 
-      console.log(`  ✓ ${name} (${width}×${height})`)
+      console.log(`  ✓ ${name} (${width}×${height}) – ${title}`)
     } catch (err) {
       console.error(`  ✗ ${name}: ${err}`)
     }

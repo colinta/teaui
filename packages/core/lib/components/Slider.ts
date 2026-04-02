@@ -177,7 +177,11 @@ export class Slider extends View {
 
   legendItems(): LegendItem[] {
     return [
-      {key: ['left', 'right'], label: 'Adjust'},
+      {
+        key:
+          this.#direction === 'horizontal' ? ['left', 'right'] : ['up', 'down'],
+        label: 'Adjust',
+      },
       {key: 'home', label: 'Min'},
       {key: 'end', label: 'Max'},
     ]

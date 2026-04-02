@@ -15,67 +15,36 @@
  *   expect(t.terminal.charAt(0, 0)).toBe('a')
  */
 import {type KeyName} from '@teaui/term'
-import {Buffer} from './Buffer.js'
-import {Viewport} from './Viewport.js'
-import {Size, Point, Rect} from './geometry.js'
-import {TestTerminal} from './TestTerminal.js'
+import type {TestTerminal} from './TestTerminal.js'
 import type {View} from './View.js'
-import type {Screen} from './Screen.js'
-import type {
-  KeyEvent,
-  SystemMouseEvent,
-  HotKeyDef,
-  MouseEventListenerName,
-} from './events/index.js'
-import type {Modal} from './components/Modal.js'
-import {FocusManager} from './managers/FocusManager.js'
-import {MouseManager} from './managers/MouseManager.js'
-import {ModalManager} from './managers/ModalManager.js'
-import {TickManager} from './managers/TickManager.js'
-import {UnboundSystem} from './System.js'
-import type {ScreenEventUnsubscribe} from './Screen.js'
+import {Screen} from './Screen.js'
+import {TestProgram} from './TestProgram.js'
+import type {KeyEvent, SystemMouseEvent} from './events/index.js'
 
 class TestScreen {
-  #view: View
-  #buffer: Buffer
-  #terminal: TestTerminal
-  #size: Size
-  #focus: boolean
-  #focusManager: FocusManager
-  #mouseManager: MouseManager
-  #modalManager: ModalManager
-  #tickManager: TickManager
-  #screenProxy: Screen | null = null
-  #focusChangeListeners = new Set<(view: View | undefined) => void>()
+  #screen: Screen
+  #program: TestProgram
 
   constructor(
     view: View,
     readonly options: {width: number; height: number; isFocused?: boolean},
   ) {
-    this.#view = view
-    this.#focus = options.isFocused !== false
-    this.#size = new Size(options.width, options.height)
-    this.#buffer = new Buffer()
-    this.#terminal = new TestTerminal({
+    this.#program = new TestProgram({
       cols: options.width,
       rows: options.height,
     })
-    this.#focusManager = new FocusManager()
-    this.#mouseManager = new MouseManager()
-    this.#modalManager = new ModalManager()
-    this.#tickManager = new TickManager(() => this.render())
-
-    // Wire the view to this screen
-    view.moveToScreen(this.asScreen())
-    this.render()
+    this.#screen = new Screen(this.#program, view, {
+      isFocused: options.isFocused !== false,
+    })
+    this.#screen.start()
   }
 
   get terminal(): TestTerminal {
-    return this.#terminal
+    return this.#program.terminal
   }
 
   get view(): View {
-    return this.#view
+    return this.#screen.rootView
   }
 
   /**
@@ -83,117 +52,11 @@ class TestScreen {
    * animations and re-rendering.
    */
   tick(dt: number) {
-    this.#tickManager.triggerTick(dt)
-    this.render()
-  }
-
-  asScreen(): Screen {
-    // Cache the screen proxy so moveToScreen identity checks work
-    if (!this.#screenProxy) {
-      const focusManager = this.#focusManager
-      this.#screenProxy = {
-        rootView: this.#view,
-        preRender: (view: View) => {
-          this.#modalManager.reset()
-          this.#mouseManager.reset()
-          this.#focusManager.reset(view === this.#view)
-        },
-        requestModal: (modal: Modal, rect: Rect) => {
-          return this.#modalManager.requestModal(modal, rect)
-        },
-        get currentFocusView() {
-          return focusManager.currentFocusView
-        },
-        get hotKeyViews(): [View, HotKeyDef][] {
-          return focusManager.hotKeyViews
-        },
-        registerHotKey: (view: View, key: HotKeyDef) => {
-          this.#focusManager.registerHotKey(view, key)
-        },
-        registerKeyboard: (view: View) => {
-          this.#focusManager.registerKeyboard(view)
-        },
-        registerFocus: (view: View, isDefault: boolean) => {
-          return this.#focusManager.registerFocus(view, isDefault)
-        },
-        registerMouse: (
-          view: View,
-          offset: Point,
-          point: Point,
-          events: MouseEventListenerName[],
-        ) => {
-          this.#mouseManager.registerMouse(view, offset, point, events)
-        },
-        registerTick: (view: View) => {
-          this.#tickManager.registerTick(view)
-        },
-        checkMouse: (view: View, x: number, y: number) => {
-          this.#mouseManager.checkMouse(view, x, y)
-        },
-        on: (
-          event: string,
-          listener: (...args: any[]) => void,
-        ): ScreenEventUnsubscribe => {
-          if (event === 'focusChange') {
-            this.#focusChangeListeners.add(listener as any)
-            return () => {
-              this.#focusChangeListeners.delete(listener as any)
-            }
-          }
-          return () => {}
-        },
-        needsRender: () => {
-          // In test mode, renders are explicit — ignore async render requests
-        },
-      } as unknown as Screen
-    }
-    return this.#screenProxy
+    this.#screen.tick(dt)
   }
 
   render() {
-    this.#buffer.resize(this.#size)
-
-    this.#modalManager.reset()
-    this.#focusManager.reset(true)
-    this.#mouseManager.reset()
-
-    if (!this.#focus) {
-      this.#focusManager.unfocus()
-    }
-
-    const renderSize = this.#view.naturalSize(this.#size).min(this.#size)
-    const viewport = new Viewport(this.asScreen(), this.#buffer, renderSize)
-    this.#view.render(viewport)
-
-    // Modals need the full screen size to position overlays (e.g. dropdowns),
-    // matching Screen.render() which uses naturalSize.max(screenSize).
-    const modalViewport = new Viewport(
-      this.asScreen(),
-      this.#buffer,
-      this.#size,
-    )
-    const rerenderView = this.#modalManager.renderModals(
-      this.asScreen(),
-      modalViewport,
-    )
-    const focusNeedsRender = this.#focusManager.commit()
-    if (focusNeedsRender) {
-      this.#buffer.flush(this.#terminal)
-      for (const listener of this.#focusChangeListeners) {
-        listener(this.#focusManager.currentFocusView)
-      }
-
-      this.#view.render(viewport)
-
-      // Match Screen.render(): re-render with the same viewport, no
-      // mouse manager reset (so modal button registrations are preserved).
-      rerenderView.render(modalViewport)
-      this.#focusManager.commit()
-    }
-
-    this.#tickManager.endRender()
-
-    this.#buffer.flush(this.#terminal)
+    this.#screen.render()
   }
 
   sendKey(
@@ -225,8 +88,7 @@ class TestScreen {
       shift,
     }
 
-    this.#focusManager.trigger(event)
-    this.render()
+    this.#screen.trigger(event)
   }
 
   sendMouse(
@@ -252,14 +114,11 @@ class TestScreen {
       button,
     }
 
-    const system = new UnboundSystem(this.#focusManager)
-    this.#mouseManager.trigger(event, system)
-    this.render()
+    this.#screen.trigger(event)
   }
 
   sendPaste(text: string) {
-    this.#focusManager.triggerPaste(text)
-    this.render()
+    this.#screen.trigger({type: 'paste', text})
   }
 }
 
