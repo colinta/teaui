@@ -42,11 +42,6 @@ export default function Example({name, title}: Props) {
 
   return (
     <div className="example-container">
-      <div className="example-code">
-        <CodeBlock language="tsx" title={`${name}.tsx`}>
-          {code ?? '// Loading...'}
-        </CodeBlock>
-      </div>
       <div className="example-output">
         <div className="terminal-frame">
           {titleBar && <div className="terminal-titlebar">{titleBar}</div>}
@@ -59,6 +54,11 @@ export default function Example({name, title}: Props) {
             }}
           />
         </div>
+      </div>
+      <div className="example-code">
+        <CodeBlock language="tsx" title={`${name}.tsx`}>
+          {code ?? '// Loading...'}
+        </CodeBlock>
       </div>
     </div>
   )

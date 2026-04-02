@@ -9,26 +9,42 @@ import Example from '@site/src/components/Example'
 A hotkey legend bar that displays keyboard shortcuts. Commonly placed at the
 bottom of a screen to show available actions.
 
+Use `Legend` when you want to provide the items yourself. Use `AutoLegend`
+when you want the legend to reflect the currently focused component's
+`legendItems()` output and any labeled `HotKey` components.
+
 Keys can be specified as plain strings (`'q'`, `'?'`) or named keys that are
 automatically mapped to sigils (`'enter'` → `⤦`, `'escape'` → `␛`, etc.).
 Modifier+key combinations can be expressed as arrays (`['ctrl', 'C']`) or
 strings (`'Ctrl+C'`).
 
+## Legend
+
 <Example name="legend" title="Legend" />
 
-## Custom Separator
+`Legend` also supports a custom `separator` prop when you want a delimiter other
+than the default double-space.
 
-Use the `separator` prop to change the delimiter between items (default is
-double-space).
+## AutoLegend
 
-<Example name="legend-separator" title="Legend — Bullet Separator" />
+`AutoLegend` extends `Legend` and updates automatically as focus changes.
+
+<Example name="auto-legend" title="AutoLegend" />
 
 ## Props
+
+### Legend
 
 | Prop        | Type           | Default | Description              |
 | ----------- | -------------- | ------- | ------------------------ |
 | `items`     | `LegendItem[]` | `[]`    | Array of key/label pairs |
 | `separator` | `string`       | `'  '`  | Delimiter between items  |
+
+### AutoLegend
+
+| Prop        | Type     | Default | Description                            |
+| ----------- | -------- | ------- | -------------------------------------- |
+| `separator` | `string` | `'  '`  | Delimiter between auto-generated items |
 
 ### LegendItem
 
