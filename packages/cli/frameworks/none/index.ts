@@ -22,7 +22,7 @@ import {
   const consoleLog = new ConsoleLog({
     height: 10,
   })
-  const [screen, program] = await Screen.start(
+  const [screen] = await Screen.start(
     new Window({
       child: new TrackMouse({
         child: Stack.down([
@@ -52,7 +52,7 @@ import {
     {quitChar: 'C-c'},
   )
 
-  program.key('escape', function () {
+  screen.key('escape', function () {
     consoleLog.clear()
     screen.render()
   })

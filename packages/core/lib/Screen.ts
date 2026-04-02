@@ -33,17 +33,16 @@ import {TickManager} from './managers/TickManager.js'
 import {Window} from './components/Window.js'
 import {UnboundSystem} from './System.js'
 
-// --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
-
 type KeyListener = (char: string, key: KeyEvent) => void
+
+// --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
 
 /**
  * Wraps @teaui/term's Terminal for use by Screen and the public API.
+ * Translates low-level terminal input into SystemEvents that Screen can consume.
  */
 export class TerminalProgram implements SGRTerminal {
   #terminal: TermTerminal
-  #keyListeners: {pattern: string; fn: KeyListener}[] = []
-  #cleanupInput?: () => void
 
   constructor() {
     this.#terminal = new TermTerminal()
@@ -94,71 +93,52 @@ export class TerminalProgram implements SGRTerminal {
     this.#terminal.clear()
   }
 
-  // --- Input ---
+  // --- Events ---
 
-  startInput(screen: Screen): void {
-    this.#cleanupInput = this.#terminal.onInput((event: TermInputEvent) => {
+  /**
+   * Subscribe to translated system events from terminal input.
+   * Returns an unsubscribe function.
+   */
+  onEvents(listener: (event: SystemEvent) => void): () => void {
+    return this.#terminal.onInput((event: TermInputEvent) => {
       if (isFocusEvent(event)) {
-        screen.trigger({type: event.focused ? 'focus' : 'blur'})
+        listener({type: event.focused ? 'focus' : 'blur'})
         return
       }
 
       if (isKeyEvent(event)) {
-        const keyEvent = translateTermKeyEvent(event)
-
-        // Check .key() listeners
-        for (const {pattern, fn} of this.#keyListeners) {
-          if (matchKeyPattern(pattern, keyEvent)) {
-            fn(keyEvent.char, keyEvent)
-          }
-        }
-
-        screen.trigger(keyEvent)
+        listener(translateTermKeyEvent(event))
         return
       }
 
       if (isPasteEvent(event)) {
-        screen.trigger({type: 'paste', text: event.text})
+        listener({type: 'paste', text: event.text})
         return
       }
 
       if (isMouseEvent(event)) {
         const mouseEvent = translateTermMouseEvent(event)
         if (mouseEvent) {
-          screen.trigger(mouseEvent)
+          listener(mouseEvent)
         }
         return
       }
     })
-
-    this.#terminal.onResize(() => {
-      screen.trigger({type: 'resize'})
-    })
-  }
-
-  stopInput(): void {
-    this.#cleanupInput?.()
-    this.#cleanupInput = undefined
   }
 
   /**
-   * Register a key binding.
-   * Pattern: 'escape', 'C-c', 'C-q', 'return', etc.
+   * Subscribe to terminal resize events.
+   * Returns an unsubscribe function.
    */
-  key(pattern: string | string[], fn: KeyListener): void {
-    const patterns = Array.isArray(pattern) ? pattern : [pattern]
-    for (const p of patterns) {
-      this.#keyListeners.push({pattern: p, fn})
-    }
+  onResize(listener: () => void): () => void {
+    return this.#terminal.onResize(() => listener())
   }
 
   /**
-   * Provide raw data listener (for iTerm2 etc.)
+   * Listen for raw data once (for iTerm2 proprietary escape sequences, etc.)
    */
-  once(event: string, fn: (...args: any[]) => void): void {
-    if (event === 'data') {
-      this.#terminal.onceRawData(fn)
-    }
+  onceRawData(fn: (...args: any[]) => void): void {
+    this.#terminal.onceRawData(fn)
   }
 }
 
@@ -167,6 +147,8 @@ export class TerminalProgram implements SGRTerminal {
 type ViewConstructor<T extends View> = (
   program: TerminalProgram,
 ) => T | Promise<T>
+
+type ScreenKeyListener = (char: string, key: KeyEvent) => void
 
 export interface ScreenOptions {
   quitChar?: 'C-c' | 'C-q' | '' | undefined | false
@@ -182,6 +164,9 @@ interface ScreenEventMap {
 export class Screen {
   #program: TerminalProgram
   #onExit?: () => void
+  #keyListeners: {pattern: string; fn: ScreenKeyListener}[] = []
+  #cleanupEvents?: () => void
+  #cleanupResize?: () => void
 
   rootView: View
 
@@ -256,12 +241,11 @@ export class Screen {
     })
 
     if (opts.quitChar) {
-      program.key(opts.quitChar, () => {
+      screen.key(opts.quitChar, () => {
         screen.exit()
       })
     }
 
-    program.startInput(screen)
     screen.start()
 
     return [screen, program, rootView]
@@ -290,12 +274,40 @@ export class Screen {
   }
 
   /**
+   * Register a key binding on the screen.
+   * Pattern: 'escape', 'C-c', 'C-q', 'return', etc.
+   */
+  key(pattern: string | string[], fn: ScreenKeyListener): void {
+    const patterns = Array.isArray(pattern) ? pattern : [pattern]
+    for (const p of patterns) {
+      this.#keyListeners.push({pattern: p, fn})
+    }
+  }
+
+  /**
    * Called from Screen.start(). Don't call this yourself unless you wanted
    * to construct your own 'program'. I recommend starting with a
    * copy of the implementation of Screen.start.
    */
   start() {
     this.rootView.moveToScreen(this)
+
+    this.#cleanupEvents = this.#program.onEvents(event => {
+      if (event.type === 'key') {
+        for (const {pattern, fn} of this.#keyListeners) {
+          if (matchKeyPattern(pattern, event)) {
+            fn(event.char, event)
+          }
+        }
+      }
+
+      this.trigger(event)
+    })
+
+    this.#cleanupResize = this.#program.onResize(() => {
+      this.trigger({type: 'resize'})
+    })
+
     this.render()
   }
 
@@ -305,7 +317,10 @@ export class Screen {
   stop() {
     this.#tickManager.stop()
     this.rootView.moveToScreen(undefined)
-    this.#program.stopInput()
+    this.#cleanupEvents?.()
+    this.#cleanupResize?.()
+    this.#cleanupEvents = undefined
+    this.#cleanupResize = undefined
     this.#onExit?.()
   }
 

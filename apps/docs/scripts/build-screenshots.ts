@@ -5,7 +5,6 @@ import {renderToAnsi} from '@teaui/core'
 
 import {renderReact} from '../screenshots/renderReact.js'
 
-
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const EXAMPLES_DIR = join(__dirname, '..', 'examples')
 const EXAMPLES_OUTPUT_DIR = join(__dirname, '..', 'static', 'examples')

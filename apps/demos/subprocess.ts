@@ -20,7 +20,7 @@ async function main() {
 
   const consoleLog = new ConsoleLog({height: 5})
 
-  const [screen, program] = await Screen.start(
+  const [screen] = await Screen.start(
     async () => {
       const leftBox = new Box({
         border: 'bold',
@@ -87,7 +87,7 @@ async function main() {
     {quitChar: undefined},
   )
 
-  program.key('C-x', () => {
+  screen.key('C-x', () => {
     screen.exit()
   })
 }

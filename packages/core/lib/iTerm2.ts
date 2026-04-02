@@ -3,7 +3,7 @@ import {colorToHex} from './Color.js'
 
 interface WritableProgram {
   write(str: string): void
-  once(event: string, fn: (...args: any[]) => void): void
+  onceRawData(fn: (...args: any[]) => void): void
 }
 
 /**
@@ -30,7 +30,7 @@ export class iTerm2 {
     return new Promise(resolve => {
       const hex = colorToHex(bg).slice(1)
 
-      program.once('data', (input: any) => {
+      program.onceRawData((input: any) => {
         const response =
           typeof input === 'string' ? input : new TextDecoder().decode(input)
         iTerm2._restoreBg = parseBackgroundResponse(response)

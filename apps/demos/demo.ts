@@ -22,7 +22,7 @@ export async function demo(
   const consoleLog = new ConsoleLog({
     height: typeof showConsoleLog === 'number' ? showConsoleLog : 10,
   })
-  const [screen, program] = await Screen.start(
+  const [screen] = await Screen.start(
     async program => {
       // await iTerm2.setBackground(program, [23, 23, 23])
 
@@ -42,7 +42,7 @@ export async function demo(
     {quitChar: 'C-c'},
   )
 
-  program.key('escape', function () {
+  screen.key('escape', function () {
     consoleLog.clear()
     screen.render()
   })
