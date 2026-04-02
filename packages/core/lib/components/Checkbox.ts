@@ -1,5 +1,3 @@
-import * as unicode from '@teaui/term'
-
 import type {Viewport} from '../Viewport.js'
 import {type View} from '../View.js'
 import {type Props as ContainerProps, Container} from '../Container.js'
@@ -12,7 +10,7 @@ import {
   styleTextForHotKey,
   hotKeyToString,
 } from '../events/index.js'
-import type {LegendItem} from './Legend.js'
+import {type LegendItem} from '../types.js'
 import {childTheme} from '../UI.js'
 import {Style} from '../Style.js'
 import {System} from '../System.js'

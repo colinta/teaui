@@ -1,13 +1,16 @@
 import type {Screen} from '../Screen.js'
 import type {ScreenEventUnsubscribe} from '../Screen.js'
 import type {View} from '../View.js'
-import {Legend, type LegendItem} from './Legend.js'
+import {type LegendItem} from '../types.js'
+import {
+  AbstractLegend,
+  type Props as LegendProps,
+  type ComputedItem,
+} from './AbstractLegend.js'
 import {HotKey} from './HotKey.js'
 import {hotKeyToString} from '../events/index.js'
 
-interface Props {
-  separator?: string
-}
+interface Props extends LegendProps {}
 
 /**
  * A Legend that automatically shows keyboard shortcuts based on:
@@ -16,27 +19,35 @@ interface Props {
  *
  * Subscribes to focusChange events on the screen and updates when focus changes.
  */
-export class AutoLegend extends Legend {
+export class AutoLegend extends AbstractLegend {
   #unsubscribe?: ScreenEventUnsubscribe
+  #cachedItems: ComputedItem[] | undefined
 
   constructor(props: Props = {}) {
-    super({items: [], ...props})
+    super(props)
   }
 
   didMount(screen: Screen) {
     super.didMount(screen)
     this.#unsubscribe?.()
-    this.#unsubscribe = screen.on('focusChange', view => {
-      this.#updateItems(view)
+    this.#unsubscribe = screen.on('focusChange', () => {
+      this.#cachedItems = undefined
+      this.invalidateSize()
     })
-    // Collect initial items from current focus
-    this.#updateItems(screen.currentFocusView)
   }
 
   didUnmount(screen: Screen) {
     this.#unsubscribe?.()
     this.#unsubscribe = undefined
     super.didUnmount(screen)
+  }
+
+  collectItems(): ComputedItem[] {
+    if (!this.#cachedItems) {
+      this.#cachedItems = this.#updateItems(this.screen?.currentFocusView)
+    }
+
+    return this.#cachedItems
   }
 
   #updateItems(focused: View | undefined) {
@@ -60,6 +71,6 @@ export class AutoLegend extends Legend {
       }
     }
 
-    this.update({items})
+    return this.computeItems(items)
   }
 }

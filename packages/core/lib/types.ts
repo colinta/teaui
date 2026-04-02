@@ -27,3 +27,8 @@ export interface Edges {
   bottom: number
   left: number
 }
+
+export interface LegendItem {
+  key: string | string[]
+  label: string
+}

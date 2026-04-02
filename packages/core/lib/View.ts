@@ -16,9 +16,8 @@ import {
 import {Point, Size, Rect} from './geometry.js'
 import {Color} from './Color.js'
 import {Style} from './Style.js'
-import {Edges} from './types.js'
+import {type Edges, type LegendItem} from './types.js'
 import {toPaddingEdges} from './util.js'
-import type {LegendItem} from './components/Legend.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number

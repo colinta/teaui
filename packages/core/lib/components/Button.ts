@@ -13,10 +13,9 @@ import {
   toHotKeyDef,
   hotKeyToString,
 } from '../events/index.js'
-import type {LegendItem} from './Legend.js'
 import {childTheme} from '../UI.js'
 import type {View} from '../View.js'
-import {Alignment} from '../types.js'
+import {type Alignment, type LegendItem} from '../types.js'
 import {System} from '../System.js'
 import {Color} from '../Color.js'
 

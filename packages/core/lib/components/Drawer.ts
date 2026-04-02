@@ -1,20 +1,16 @@
 import type {Viewport} from '../Viewport.js'
 import {View} from '../View.js'
-import {Container, Props as ContainerProps} from '../Container.js'
+import {Container, type Props as ContainerProps} from '../Container.js'
 import {Rect, Point, Size, type Edge} from '../geometry.js'
 import {
   type MouseEvent,
   type KeyEvent,
   type HotKey,
   isMouseClicked,
-  isMousePressStart,
-  isMousePressExit,
-  isMouseEnter,
-  isMouseExit,
   toHotKeyDef,
   hotKeyToString,
 } from '../events/index.js'
-import type {LegendItem} from './Legend.js'
+import {type LegendItem} from '../types.js'
 import {Style} from '../Style.js'
 import {Theme} from '../Theme.js'
 import {define} from '../util.js'

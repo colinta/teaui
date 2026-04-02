@@ -6,10 +6,10 @@ import {
   type MouseEvent,
   isMouseClicked,
 } from '../events/index.js'
+import {type LegendItem} from '../types.js'
 import {Style} from '../Style.js'
 import {System} from '../System.js'
 import {lineWidth} from '@teaui/term'
-import type {LegendItem} from './Legend.js'
 
 type DisplayMode = 'days' | 'months' | 'years'
 type Selection = 'single' | 'range'

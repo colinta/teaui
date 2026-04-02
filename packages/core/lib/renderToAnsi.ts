@@ -12,11 +12,12 @@ import type {HotKeyDef, MouseEventListenerName} from './events/index.js'
  * these are all no-ops for screenshot/offscreen purposes.
  */
 export function createHeadlessScreen(): Screen {
+  let focusView: View | undefined
   return {
     render() {},
     needsRender() {},
     requestModal() {
-      return false
+      return focusView
     },
     get currentFocusView() {
       return undefined
@@ -30,6 +31,10 @@ export function createHeadlessScreen(): Screen {
     registerHotKey(_view: View, _key: HotKeyDef) {},
     registerKeyboard(_view: View) {},
     registerFocus(_view: View, _isDefault: boolean) {
+      if (!focusView) {
+        focusView = _view
+        return true
+      }
       return false
     },
     registerMouse(
