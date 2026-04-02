@@ -47,6 +47,7 @@ const sidebars: SidebarsConfig = {
             'components/dropdown',
             'components/toggle-group',
             'components/hotkey',
+            'components/legend',
           ],
         },
         {

@@ -18,11 +18,6 @@ interface Props extends ViewProps {
 }
 
 function formatKey(key: string): string {
-  // Handle 'Ctrl+C' style strings
-  if (key.includes('+')) {
-    return formatKey(key.replaceAll('+', '-'))
-  }
-
   // Handle 'C-a', 'A-S-x' style modifier prefixes
   const modRe = /^([CAGS]-)+/
   const modMatch = key.match(modRe)
