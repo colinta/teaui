@@ -13,7 +13,6 @@ import type {Rect, Point} from './geometry.js'
 import {Size} from './geometry.js'
 import {View} from './View.js'
 import {Viewport} from './Viewport.js'
-import {flushLogs} from './log.js'
 import {Buffer} from './Buffer.js'
 import type {
   HotKeyDef,
@@ -32,8 +31,7 @@ import {ModalManager} from './managers/ModalManager.js'
 import {MouseManager} from './managers/MouseManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {Window} from './components/Window.js'
-import {Theme} from './Theme.js'
-import {System, UnboundSystem} from './System.js'
+import {UnboundSystem} from './System.js'
 
 // --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
 

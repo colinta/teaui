@@ -7,8 +7,8 @@ interface Props {
   name: string
   /** Optional title shown in the terminal title bar */
   title?: string
-  /** Directory to read from (default: 'screenshots') */
-  dir?: 'screenshots' | 'examples'
+  /** Directory to read from */
+  dir?: 'examples'
 }
 
 /**
@@ -18,7 +18,7 @@ interface Props {
 export default function TerminalScreenshot({
   name,
   title,
-  dir = 'screenshots',
+  dir = 'examples',
 }: Props) {
   const url = useBaseUrl(`/${dir}/${name}.html.txt`)
   const [html, setHtml] = useState<string | null>(null)

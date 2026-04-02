@@ -22,9 +22,7 @@ apps/docs/
 │   └── ...
 ├── screenshots/              # Legacy core-API-only screenshot specs
 │   ├── types.ts              # ScreenshotSpec & ExampleSpec types
-│   ├── renderReact.tsx       # Headless React rendering helper
-│   ├── progress.screenshot.ts
-│   └── tree.screenshot.ts
+│   └── renderReact.tsx       # Headless React rendering helper
 ├── scripts/
 │   └── build-screenshots.ts  # Build script: renders everything to HTML
 ├── src/

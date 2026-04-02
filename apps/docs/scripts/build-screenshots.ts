@@ -2,12 +2,12 @@ import {readdirSync, readFileSync, writeFileSync, mkdirSync} from 'node:fs'
 import {join, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {renderToAnsi} from '@teaui/core'
-import type {ScreenshotSpec} from '../screenshots/types.js'
+
+import {renderReact} from '../screenshots/renderReact.js'
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const SCREENSHOTS_DIR = join(__dirname, '..', 'screenshots')
 const EXAMPLES_DIR = join(__dirname, '..', 'examples')
-const OUTPUT_DIR = join(__dirname, '..', 'static', 'screenshots')
 const EXAMPLES_OUTPUT_DIR = join(__dirname, '..', 'static', 'examples')
 
 // Zenburn 16-color palette
@@ -212,40 +212,6 @@ function renderAnsiToHtmlFragment(ansi: string): string {
   return `<pre style="background:${DEFAULT_BG};color:${DEFAULT_FG};font-family:'Fira Code',monospace;padding:8px;margin:0;line-height:1.2;overflow-x:auto;">${html}</pre>`
 }
 
-async function buildScreenshots() {
-  mkdirSync(OUTPUT_DIR, {recursive: true})
-
-  const files = readdirSync(SCREENSHOTS_DIR).filter(f =>
-    /\.screenshot\.tsx?$/.test(f),
-  )
-
-  if (files.length === 0) {
-    return
-  }
-
-  console.log(`Building ${files.length} screenshot(s)...`)
-
-  for (const file of files) {
-    const name = file.replace(/\.screenshot\.tsx?$/, '')
-    const specPath = join(SCREENSHOTS_DIR, file)
-
-    try {
-      const mod = await import(specPath)
-      const spec: ScreenshotSpec = mod.default
-
-      const view = spec.component()
-      const ansi = renderToAnsi(view, spec.size)
-      const fragment = renderAnsiToHtmlFragment(ansi)
-
-      const outputPath = join(OUTPUT_DIR, `${name}.html.txt`)
-      writeFileSync(outputPath, fragment, 'utf-8')
-      console.log(`  ✓ ${name} (${spec.size.width}×${spec.size.height})`)
-    } catch (err) {
-      console.error(`  ✗ ${name}: ${err}`)
-    }
-  }
-}
-
 async function buildExamples() {
   mkdirSync(EXAMPLES_OUTPUT_DIR, {recursive: true})
 
@@ -254,9 +220,6 @@ async function buildExamples() {
   if (files.length === 0) {
     return
   }
-
-  // Lazy-import renderReact only when we have examples
-  const {renderReact} = await import('../screenshots/renderReact.js')
 
   console.log(`Building ${files.length} example(s)...`)
 
@@ -318,7 +281,6 @@ async function buildExamples() {
 }
 
 async function main() {
-  await buildScreenshots()
   await buildExamples()
   console.log('Done.')
 }

@@ -9,7 +9,7 @@ import {render} from '@teaui/react'
 export function renderReact(element: ReactNode): Window {
   const window = new Window()
   const screen = createHeadlessScreen()
-  render(screen, window, element)
   window.moveToScreen(screen)
+  render(screen, window, element)
   return window
 }

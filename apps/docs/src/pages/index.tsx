@@ -119,7 +119,7 @@ export default function Home() {
             <CodeBlock language="tsx">{code ?? '// Loading...'}</CodeBlock>
           </div>
           <div className="demo-preview">
-            <TerminalScreenshot name="hero" title="Output" dir="examples" />
+            <TerminalScreenshot name="hero" title="Output" />
           </div>
         </section>
 

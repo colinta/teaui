@@ -1,8 +1,3 @@
-import * as unicode from '@teaui/term'
-
-import type {Viewport} from '../Viewport.js'
-import {Point, Size} from '../geometry.js'
-import {Style} from '../Style.js'
 import {type LegendItem} from '../types.js'
 import {
   type Props as LegendProps,

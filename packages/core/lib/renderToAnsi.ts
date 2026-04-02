@@ -16,11 +16,9 @@ export function createHeadlessScreen(): Screen {
   return {
     render() {},
     needsRender() {},
-    requestModal() {
-      return focusView
-    },
+    requestModal() {},
     get currentFocusView() {
-      return undefined
+      return focusView
     },
     get hotKeyViews(): [View, HotKeyDef][] {
       return []
@@ -30,9 +28,9 @@ export function createHeadlessScreen(): Screen {
     },
     registerHotKey(_view: View, _key: HotKeyDef) {},
     registerKeyboard(_view: View) {},
-    registerFocus(_view: View, _isDefault: boolean) {
+    registerFocus(view: View, _isDefault: boolean) {
       if (!focusView) {
-        focusView = _view
+        focusView = view
         return true
       }
       return false
@@ -63,7 +61,12 @@ export function renderToAnsi(
   const buffer = new Buffer()
   buffer.resize(termSize)
 
-  const screen = createHeadlessScreen()
+  let screen = view.screen
+  if (!screen) {
+    screen = createHeadlessScreen()
+    view.moveToScreen(screen)
+  }
+
   const renderSize = view.naturalSize(termSize).max(termSize)
   const viewport = new Viewport(screen, buffer, renderSize)
   view.render(viewport)
