@@ -43,3 +43,4 @@ export {
   setLocale,
 } from '@teaui/term'
 export * from './util.js'
+export * from './inspect.js'

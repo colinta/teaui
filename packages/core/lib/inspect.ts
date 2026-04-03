@@ -9,7 +9,7 @@ export function isDebugging(enabled?: boolean) {
 }
 
 function isEmpty(object: object) {
-  for (const key in object) {
+  for (const _ in Object.keys(object)) {
     return false
   }
   return true

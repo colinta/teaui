@@ -130,9 +130,6 @@ export abstract class AbstractLegend extends View {
       return {rows, maxKeyWidth, maxLabelWidth}
     }
 
-    // For multi-row, find the number of columns and align
-    const numCols = Math.max(...rows.map(r => r.length))
-
     // Calculate max key and label widths per column
     let maxKeyWidth = 0
     let maxLabelWidth = 0
@@ -157,6 +154,7 @@ export abstract class AbstractLegend extends View {
       return Size.zero
     }
 
+    const sepWidth = unicode.lineWidth(this.#separator)
     const {rows, maxKeyWidth, maxLabelWidth} = this.#layout(
       computed,
       available.width,
@@ -164,7 +162,6 @@ export abstract class AbstractLegend extends View {
 
     if (rows.length <= 1) {
       // Single row: tight width
-      const sepWidth = unicode.lineWidth(this.#separator)
       let width = 0
       for (let i = 0; i < computed.length; i++) {
         if (i > 0) width += sepWidth
@@ -174,7 +171,6 @@ export abstract class AbstractLegend extends View {
     }
 
     // Multi-row: use column-aligned width
-    const sepWidth = unicode.lineWidth(this.#separator)
     const colWidth = maxKeyWidth + 1 + maxLabelWidth
     const numCols = Math.max(...rows.map(r => r.length))
     const width = numCols * colWidth + (numCols - 1) * sepWidth
