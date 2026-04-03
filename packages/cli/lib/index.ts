@@ -18,7 +18,7 @@ export async function create(name: string, options: {framework: string}) {
     await writeFile(join(appPath, file), processedContent)
   }
 
-  console.log(
+  console.info(
     `Created new TeaUI application: ${name} with framework: ${options.framework}`,
   )
 }

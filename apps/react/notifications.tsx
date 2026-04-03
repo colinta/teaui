@@ -76,7 +76,7 @@ export function NotificationsTab() {
           <Button
             theme="cancel"
             onClick={() => {
-              console.log('Deleted!')
+              console.info('Deleted!')
               setShowDelete(false)
             }}
           >

@@ -74,7 +74,7 @@ export function MoreTab() {
         <Checkbox title="Show Console" value={debug} onChange={setDebug} />
         <Button
           title="log()"
-          onClick={() => console.log('Hello from console.log!')}
+          onClick={() => console.info('Hello from console.info!')}
         />
         <Button
           title="debug()"

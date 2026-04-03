@@ -62,7 +62,7 @@ new Table({
     {key: 'age', title: 'Age', width: 6, align: 'right'},
   ],
   format: (key, row) => String(row[key]),
-  onSelect: (row, index) => console.log('Selected:', row.name),
+  onSelect: (row, index) => console.info('Selected:', row.name),
 })
 ```
 

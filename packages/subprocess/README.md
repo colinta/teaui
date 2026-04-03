@@ -25,7 +25,7 @@ import {SubprocessView} from '@teaui/subprocess'
 const [screen, program] = await Screen.start(async () => {
   const subprocess = new SubprocessView({
     command: '/bin/bash',
-    onExit: code => console.log(`Shell exited: ${code}`),
+    onExit: code => console.info(`Shell exited: ${code}`),
   })
 
   return new Window({

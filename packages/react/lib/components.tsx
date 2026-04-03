@@ -877,7 +877,7 @@ export interface ReactListProps<TData> extends ViewProps {
  * <List
  *   data={items}
  *   renderItem={(item, index) => <Text>{item.name}</Text>}
- *   onSelect={(item) => console.log('Selected:', item)}
+ *   onSelect={(item) => console.info('Selected:', item)}
  * />
  * ```
  */

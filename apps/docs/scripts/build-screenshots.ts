@@ -220,7 +220,7 @@ async function buildExamples() {
     return
   }
 
-  console.log(`Building ${files.length} example(s)...`)
+  console.info(`Building ${files.length} example(s)...`)
 
   for (const file of files) {
     const name = file.replace(/\.example\.tsx$/, '')
@@ -272,7 +272,7 @@ async function buildExamples() {
       const codePath = join(EXAMPLES_OUTPUT_DIR, `${name}.tsx`)
       writeFileSync(codePath, displaySource, 'utf-8')
 
-      console.log(`  ✓ ${name} (${width}×${height}) – ${title}`)
+      console.info(`  ✓ ${name} (${width}×${height}) – ${title}`)
     } catch (err) {
       console.error(`  ✗ ${name}: ${err}`)
     }
@@ -281,7 +281,7 @@ async function buildExamples() {
 
 async function main() {
   await buildExamples()
-  console.log('Done.')
+  console.info('Done.')
 }
 
 main()

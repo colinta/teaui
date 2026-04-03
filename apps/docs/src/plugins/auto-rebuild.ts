@@ -31,7 +31,7 @@ export default function autoRebuildPlugin(): Plugin {
                   if (!hasTeauiError) return
 
                   isRebuilding = true
-                  console.log(
+                  console.info(
                     '\n[auto-rebuild] @teaui/* module resolution failed — rebuilding packages...\n',
                   )
 
@@ -40,7 +40,7 @@ export default function autoRebuildPlugin(): Plugin {
                       cwd: MONOREPO_ROOT,
                       stdio: 'inherit',
                     })
-                    console.log(
+                    console.info(
                       '\n[auto-rebuild] Rebuild complete. Webpack will recompile.\n',
                     )
                   } catch (e) {

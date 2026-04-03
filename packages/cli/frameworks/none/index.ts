@@ -13,9 +13,9 @@ import {
 
 ;(async () => {
   interceptConsoleLog()
-  console.log('Logs appear in the "ConsoleLog" component')
+  console.info('Logs appear in the "ConsoleLog" component')
   setTimeout(() => {
-    console.log('one more log for good measure')
+    console.info('one more log for good measure')
   }, 1000)
 
   process.title = '{{name}}'

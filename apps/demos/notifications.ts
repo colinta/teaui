@@ -54,7 +54,7 @@ const deleteAlert = new Alert({
   purpose: 'cancel',
   dismissOnEsc: true,
   onDismiss() {
-    console.log('Alert dismissed')
+    console.info('Alert dismissed')
   },
   children: [
     new Text({
@@ -69,7 +69,7 @@ const deleteAlert = new Alert({
           title: 'Delete',
           theme: 'cancel',
           onClick() {
-            console.log('Deleted!')
+            console.info('Deleted!')
             deleteAlert.dismiss()
           },
         }),
@@ -90,7 +90,7 @@ const infoAlert = new Alert({
   purpose: 'primary',
   dismissOnEsc: true,
   onDismiss() {
-    console.log('Info dismissed')
+    console.info('Info dismissed')
   },
   children: [
     new Text({

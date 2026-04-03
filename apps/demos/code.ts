@@ -68,11 +68,11 @@ class Server {
 
   async start(): Promise<void> {
     const {host, port} = this.config
-    console.log(\`Listening on \${host}:\${port}\`)
+    console.info(\`Listening on \${host}:\${port}\`)
   }
 
   stop(): void {
-    console.log('Server stopped')
+    console.info('Server stopped')
   }
 }
 

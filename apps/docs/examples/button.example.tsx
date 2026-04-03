@@ -3,7 +3,7 @@ import {Button} from '@teaui/react'
 
 function App() {
   return (
-    <Button theme="primary" onClick={() => console.log('clicked!')}>
+    <Button theme="primary" onClick={() => console.info('clicked!')}>
       Click Me
     </Button>
   )

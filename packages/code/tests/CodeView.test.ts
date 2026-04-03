@@ -4,7 +4,7 @@ import {CodeView} from '../lib/CodeView.js'
 
 const JS_CODE = `const x = 1
 if (x > 0) {
-  console.log("hello")
+  console.info("hello")
 }`
 
 const SHORT_CODE = `let a = 42`

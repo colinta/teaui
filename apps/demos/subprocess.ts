@@ -34,7 +34,7 @@ async function main() {
         command: 'npx',
         args: ['tsx', path.resolve(__dirname, 'components.js')],
         onExit: code => {
-          console.log(`Left child exited with code ${code}`)
+          console.info(`Left child exited with code ${code}`)
         },
         onFocus: () => {
           leftBox.border = 'bold'
@@ -49,7 +49,7 @@ async function main() {
         command: 'npx',
         args: ['tsx', path.resolve(__dirname, 'inputs.js')],
         onExit: code => {
-          console.log(`Right child exited with code ${code}`)
+          console.info(`Right child exited with code ${code}`)
         },
         onFocus: () => {
           rightBox.border = 'bold'

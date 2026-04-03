@@ -3,7 +3,7 @@
 exports[`CodeView > renders code 1`] = `
 "const x = 1
 if (x > 0) {
-  console.log("hello")
+  console.info("hello")
 }"
 `;
 
@@ -29,7 +29,7 @@ exports[`CodeView > renders single line 1`] = `"let a = 42"`;
 exports[`CodeView > renders with auto-detected language 1`] = `
 "const x = 1
 if (x > 0) {
-  console.log("hello")
+  console.info("hello")
 }"
 `;
 
@@ -38,14 +38,14 @@ exports[`CodeView > renders with explicit language 1`] = `"SELECT * FROM users"`
 exports[`CodeView > renders with highlighted lines 1`] = `
 "1│const x = 1
 2│if (x > 0) {
-3│  console.log("hello")
+3│  console.info("hello")
 4│}"
 `;
 
 exports[`CodeView > renders with line numbers 1`] = `
 "1│const x = 1
 2│if (x > 0) {
-3│  console.log("hello")
+3│  console.info("hello")
 4│}"
 `;
 

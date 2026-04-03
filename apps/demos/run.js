@@ -13,11 +13,11 @@ const demos = readdirSync(__dirname)
   .sort()
 
 if (!name) {
-  console.log('Available demos:\n')
+  console.info('Available demos:\n')
   for (const d of demos) {
-    console.log(`  ${d}`)
+    console.info(`  ${d}`)
   }
-  console.log(`\nUsage: pnpm demo <name>`)
+  console.info(`\nUsage: pnpm demo <name>`)
   process.exit(0)
 }
 
@@ -73,7 +73,7 @@ if (matches.length > 1) {
 
 const demo = matches[0]
 if (demo !== name) {
-  console.log(`Running demo: ${demo}`)
+  console.info(`Running demo: ${demo}`)
 }
 
 await buildWorkspaceProjects()

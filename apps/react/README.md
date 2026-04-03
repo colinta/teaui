@@ -29,7 +29,7 @@ The demo renders a `Drawer.bottom` layout with a component showcase on top and a
 - **Inputs** — `Input` fields, `Checkbox` toggles, `Slider` (horizontal/vertical), `ToggleGroup`, `Button` with click handlers
 - **Containers** — `Scrollable` content, `Collapsible` / `CollapsibleText`, `Accordion` with multiple sections, `Tabs`
 - **Data display** — `Digits` large-font numbers, `Separator` lines, `Space` spacers
-- **Debug** — `ConsoleLog` component (toggled at runtime) showing intercepted `console.log` output
+- **Debug** — `ConsoleLog` component (toggled at runtime) showing intercepted `console.info` output
 - **React features** — `useState`, `useReducer` for interactive state, conditional rendering
 
 ## Structure

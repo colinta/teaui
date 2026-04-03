@@ -184,7 +184,7 @@ async function ensureWorkspaceInstall(projectDir) {
   const packageNodeModules = path.join(projectDir, 'node_modules')
   if (!(await directoryExists(packageNodeModules))) {
     const workspaceRoot = await findWorkspaceRoot(projectDir)
-    console.log(`Installing workspace dependencies from ${workspaceRoot}`)
+    console.info(`Installing workspace dependencies from ${workspaceRoot}`)
     execSync('pnpm install', {stdio: 'inherit', cwd: workspaceRoot})
     return true
   }
@@ -201,7 +201,7 @@ async function ensureWorkspaceInstall(projectDir) {
     }
 
     const workspaceRoot = await findWorkspaceRoot(projectDir)
-    console.log(
+    console.info(
       `Installing workspace dependencies from ${workspaceRoot} because ${dependencyName} is missing`,
     )
     execSync('pnpm install', {stdio: 'inherit', cwd: workspaceRoot})
@@ -300,11 +300,11 @@ async function buildProject(projectDir) {
   const changed = await compare(projectDir)
 
   if (changed === 0) {
-    console.log('No changes')
+    console.info('No changes')
     return false
   }
 
-  console.log('Changes detected')
+  console.info('Changes detected')
   execSync('pnpm _build', {stdio: 'inherit', cwd: projectDir})
 
   const checksumPath = path.join(projectDir, CHECKSUM_FILE)

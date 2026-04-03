@@ -213,13 +213,13 @@ const table = new Table<Person>({
   showRowNumbers: true,
   isSelectable: true,
   onSelect(row, index) {
-    console.log(`Selected: ${row.name} (row ${index})`)
+    console.info(`Selected: ${row.name} (row ${index})`)
   },
   onSort(key, direction) {
-    console.log(`Sort changed: ${key} ${direction}`)
+    console.info(`Sort changed: ${key} ${direction}`)
   },
   onSelectionChange(items) {
-    console.log(
+    console.info(
       `Selection: ${[...items].map(p => p.name).join(', ')} (${items.size})`,
     )
   },

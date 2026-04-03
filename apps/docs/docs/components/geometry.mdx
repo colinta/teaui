@@ -63,7 +63,7 @@ import {Geometry, Text} from '@teaui/core'
 
 new Geometry({
   onLayout: size => {
-    console.log(`Available: ${size.width}×${size.height}`)
+    console.info(`Available: ${size.width}×${size.height}`)
   },
   child: new Text({lines: ['Content goes here']}),
 })

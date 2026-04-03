@@ -2,6 +2,7 @@ import {View} from '../View.js'
 import {match, type HotKeyDef, type KeyEvent} from '../events/index.js'
 
 const UNFOCUS = Symbol('UNFOCUS')
+type FocusView = View | undefined | typeof UNFOCUS
 
 export class FocusManager {
   #didCommit = false

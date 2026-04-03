@@ -113,7 +113,7 @@ import React from 'react'
 import {Button} from '@teaui/react'
 
 function App() {
-  return <Button onClick={() => console.log('clicked!')}>Click Me</Button>
+  return <Button onClick={() => console.info('clicked!')}>Click Me</Button>
 }
 
 export default {width: 30, height: 3, title: 'Button', App}

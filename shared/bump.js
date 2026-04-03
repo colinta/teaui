@@ -50,7 +50,7 @@ async function updateDependentPackages(newVersion, packageName) {
       pkg.dependencies[packageName] = `^${newVersion}`
     }
     await writePackageJson(packagePath, pkg)
-    console.log(`Updated ${packagePath} to version ^${newVersion}`)
+    console.info(`Updated ${packagePath} to version ^${newVersion}`)
   }
 }
 
@@ -70,12 +70,12 @@ async function main() {
 
     mainPkg.version = newVersion
     await writePackageJson(MAIN_PACKAGE, mainPkg)
-    console.log(`Bumped version from ${currentVersion} to ${newVersion}`)
+    console.info(`Bumped version from ${currentVersion} to ${newVersion}`)
 
     // Update dependent packages
     await updateDependentPackages(newVersion, '@teaui/core')
 
-    console.log('Version bump completed successfully!')
+    console.info('Version bump completed successfully!')
   } catch (error) {
     console.error('Error:', error.message)
     process.exit(1)

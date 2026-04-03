@@ -112,7 +112,7 @@ const rgb2oklch = rgb =>
   oklab2oklch(xyz2oklab(rgbLinear2xyz(rgb2srgbLinear(rgb))))
 
 for (const [name, colour] of Object.entries(colours)) {
-  console.log('original', name)
+  console.info('original', name)
   const rgb = colour.original
     .slice(1)
     .split('')
@@ -124,7 +124,7 @@ for (const [name, colour] of Object.entries(colours)) {
       l < 50
         ? 95 - l * 0.3 // l=0 → 95, l=50 → 80
         : 20 - (l - 50) * 0.4 // l=50 → 20, l=100 → 0
-    console.log({l, textL})
+    console.info({l, textL})
     return [textL, 0, 0]
   }
   function adjust(input: number[], amount: number) {
@@ -133,7 +133,7 @@ for (const [name, colour] of Object.entries(colours)) {
 
   const dark_oklch = adjust(oklch, 15)
   const light_oklch = adjust(oklch, -15)
-  console.log({oklch})
+  console.info({oklch})
   const text = contrastedGray(oklch, -15)
   const textHover = contrastedGray(light_oklch, -15)
 
@@ -142,7 +142,7 @@ for (const [name, colour] of Object.entries(colours)) {
       .map(rgb => Math.max(0, rgb))
       .map(rgb => Math.min(255, rgb))
       .map(rgb => Math.round(rgb))
-    console.log(
+    console.info(
       name,
       '#' + rgb2.map(c => c.toString(16).padStart(2, '0')).join(''),
     )

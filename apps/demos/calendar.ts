@@ -12,7 +12,7 @@ const calendar = new Calendar({
   visibleDate: new Date(now.getFullYear(), now.getMonth(), 1),
   theme: 'primary',
   onChangeVisible(date) {
-    console.log(
+    console.info(
       `Navigated to: ${date.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}`,
     )
   },
@@ -22,7 +22,7 @@ const calendar = new Calendar({
     } else {
       statusText.text = `Range: ${date1.toLocaleDateString()} – ${date2.toLocaleDateString()}`
     }
-    console.log(statusText.text)
+    console.info(statusText.text)
   },
 })
 
@@ -32,12 +32,12 @@ const calendarRange = new Calendar({
   selection: 'range',
   theme: 'proceed',
   onChangeVisible(date) {
-    console.log(
+    console.info(
       `Range calendar navigated to: ${date.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}`,
     )
   },
   onChange(date1, date2) {
-    console.log(
+    console.info(
       `Range selected: ${date1.toLocaleDateString()} – ${date2.toLocaleDateString()}`,
     )
   },

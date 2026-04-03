@@ -22,7 +22,7 @@ import React from 'react'
 import {interceptConsoleLog} from '@teaui/core'
 import {Box, Button, Stack, Text, run} from '@teaui/react'
 
-// Redirect console.log away from the TUI — logs flush on exit
+// Redirect console.info away from the TUI — logs flush on exit
 interceptConsoleLog()
 
 function App() {
@@ -55,7 +55,7 @@ TeaUI renders your component tree into a fullscreen terminal buffer using ["raw 
 2. Creates a React reconciler that maps JSX elements to TeaUI `View` objects
 3. Renders the view tree into a `Buffer`, which is flushed to the terminal
 4. Handles keyboard, mouse, and window resize & focus events
-5. On Ctrl-C (keybinding is configurable), restores the terminal and flushes any captured `console.log` output (`interceptConsoleLog`)
+5. On Ctrl-C (keybinding is configurable), restores the terminal and flushes any captured `console.info` output (`interceptConsoleLog`)
 
 ## Key Concepts
 

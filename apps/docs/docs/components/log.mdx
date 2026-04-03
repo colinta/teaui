@@ -4,7 +4,7 @@ title: Log
 
 # Log
 
-Captures `console.log` / `console.error` / `console.warn` output and displays it in a scrollable view. Use with `interceptConsoleLog()`.
+Captures `console.info` / `console.error` / `console.warn` output and displays it in a scrollable view. Use with `interceptConsoleLog()`.
 
 ## React Example
 
@@ -18,7 +18,7 @@ interceptConsoleLog()
 function App() {
   return (
     <Stack.down>
-      <Button onClick={() => console.log('Hello!')}>Log Message</Button>
+      <Button onClick={() => console.info('Hello!')}>Log Message</Button>
       <ConsoleLog height={10} />
     </Stack.down>
   )
@@ -48,7 +48,7 @@ interceptConsoleLog()
 const log = new ConsoleLog()
 Screen.start(
   Stack.down([
-    new Button({title: 'Log', onClick: () => console.log('Hello!')}),
+    new Button({title: 'Log', onClick: () => console.info('Hello!')}),
     log,
   ]),
 )

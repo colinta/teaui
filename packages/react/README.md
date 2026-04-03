@@ -79,7 +79,7 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 | `<Br />`              | `<tui-br>`               | Line break in text                        |
 | `<Checkbox />`        | `<tui-checkbox>`         | Toggle checkbox                           |
 | `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse  |
-| `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.log` output |
+| `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.*` output |
 | `<Digits />`          | `<tui-digits>`           | Large-font digit display                  |
 | `<H1 />`–`<H6 />`     | `<tui-h1>`–`<tui-h6>`    | Header text                               |
 | `<Input />`           | `<tui-input>`            | Text input field                          |

@@ -95,7 +95,7 @@ class AlertLayout extends BaseContainer {
  *     title: 'Confirm Delete',
  *     purpose: 'cancel',
  *     dismissOnEsc: true,
- *     onDismiss() { console.log('dismissed') },
+ *     onDismiss() { console.info('dismissed') },
  *     children: [
  *       new Text({text: 'Are you sure?'}),
  *       new Button({title: 'Cancel', onClick() { alert.dismiss() }}),

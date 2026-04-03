@@ -105,7 +105,7 @@ function loop() {
   if (!running) {
     unsub()
     term.exitFullscreen()
-    console.log(`Rendered ${frame} frames. Final FPS: ${fps}`)
+    console.info(`Rendered ${frame} frames. Final FPS: ${fps}`)
     process.exit(0)
   }
 

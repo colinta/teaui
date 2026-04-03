@@ -16,11 +16,11 @@ const demos = readdirSync(__dirname)
   .sort()
 
 if (!name) {
-  console.log('Available demos:\n')
+  console.info('Available demos:\n')
   for (const demo of demos) {
-    console.log(`  ${demo}`)
+    console.info(`  ${demo}`)
   }
-  console.log('\nUsage: pnpm dev <name> [args...]')
+  console.info('\nUsage: pnpm dev <name> [args...]')
   process.exit(0)
 }
 
@@ -68,7 +68,7 @@ if (matches.length > 1) {
 
 const demo = matches[0]
 if (demo !== name) {
-  console.log(`Running demo: ${demo}`)
+  console.info(`Running demo: ${demo}`)
 }
 
 const server = await createServer({
