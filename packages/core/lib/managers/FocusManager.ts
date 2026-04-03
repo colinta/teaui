@@ -202,8 +202,6 @@ export class FocusManager {
     const last = this.#focusRing.pop()!
     this.#focusRing.unshift(last)
     this.#currentFocus = last
-
-    return this.#currentFocus
   }
 
   nextFocus() {
@@ -230,8 +228,6 @@ export class FocusManager {
     this.#focusRing.push(first)
 
     this.#currentFocus = this.#focusRing[0]
-
-    return this.#currentFocus
   }
 }
 

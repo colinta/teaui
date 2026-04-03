@@ -401,14 +401,6 @@ export class Screen {
     }
   }
 
-  nextFocus() {
-    this.#focusManager.nextFocus()
-  }
-
-  prevFocus() {
-    this.#focusManager.prevFocus()
-  }
-
   triggerKeyboard(event: KeyEvent) {
     event = translateKeyEvent(event)
     this.#focusManager.trigger(event)
