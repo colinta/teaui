@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {testRender} from '../../lib/testing.js'
+import {testRender} from '../../lib/TestScreen.js'
 import {Table, type Column} from '../../lib/components/Table.js'
 
 interface Row {

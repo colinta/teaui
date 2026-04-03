@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {testRender} from '../../lib/testing.js'
+import {testRender} from '../../lib/TestScreen.js'
 import {Stack} from '../../lib/components/Stack.js'
 import {Text} from '../../lib/components/Text.js'
 import {Input} from '../../lib/components/Input.js'

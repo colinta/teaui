@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {testRender} from '../../lib/testing.js'
+import {testRender} from '../../lib/TestScreen.js'
 import {Dropdown, Stack, Space} from '../../lib/components/index.js'
 
 const CHOICES: [string, string][] = [

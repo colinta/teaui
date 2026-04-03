@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {testRender} from '../../lib/testing.js'
+import {testRender} from '../../lib/TestScreen.js'
 import {Calendar} from '../../lib/components/Calendar.js'
 
 function date(y: number, m: number, d: number): Date {

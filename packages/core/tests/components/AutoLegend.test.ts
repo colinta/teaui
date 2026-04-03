@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {testRender} from '../../lib/testing.js'
+import {testRender} from '../../lib/TestScreen.js'
 import {AutoLegend} from '../../lib/components/AutoLegend.js'
 import {Input} from '../../lib/components/Input.js'
 import {HotKey} from '../../lib/components/HotKey.js'
