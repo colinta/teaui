@@ -444,6 +444,8 @@ export class Screen {
   }
 
   preRender(view: View) {
+    this.#focusManager.determineFocus()
+
     this.#modalManager.reset()
     this.#tickManager.reset()
     this.#mouseManager.reset()

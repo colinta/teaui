@@ -6,9 +6,9 @@ type FocusView = View | undefined | typeof UNFOCUS
 
 export class FocusManager {
   #didCommit = false
-  #currentFocus: View | undefined | typeof UNFOCUS
-  #prevFocus: View | undefined | typeof UNFOCUS
-  #lastCommittedFocus: View | undefined | typeof UNFOCUS
+  #currentFocusView: FocusView
+  #prevFocusView: FocusView
+  #lastCommittedFocus: FocusView
   #focusRing: View[] = []
   #hotKeys: [View, HotKeyDef][] = []
   #keyboardListeners: View[] = []
@@ -23,9 +23,9 @@ export class FocusManager {
    */
   reset(isRootView: boolean) {
     if (isRootView) {
-      this.#prevFocus = this.#currentFocus
+      this.#prevFocusView = this.#currentFocusView
     }
-    this.#currentFocus = undefined
+    this.#currentFocusView = undefined
     this.#focusRing = []
     this.#hotKeys = []
     this.#keyboardListeners = []
@@ -45,8 +45,8 @@ export class FocusManager {
       } else {
         this.nextFocus()
       }
-    } else if (this.#currentFocus && this.#currentFocus !== UNFOCUS) {
-      this.#currentFocus.receiveKey(event)
+    } else if (this.#currentFocusView && this.#currentFocusView !== UNFOCUS) {
+      this.#currentFocusView.receiveKey(event)
     } else if (this.#keyboardListeners.length > 0) {
       // Last registered = innermost view = highest priority
       this.#keyboardListeners[this.#keyboardListeners.length - 1].receiveKey(
@@ -56,8 +56,8 @@ export class FocusManager {
   }
 
   triggerPaste(text: string) {
-    if (this.#currentFocus && this.#currentFocus !== UNFOCUS) {
-      this.#currentFocus.receivePaste(text)
+    if (this.#currentFocusView && this.#currentFocusView !== UNFOCUS) {
+      this.#currentFocusView.receivePaste(text)
     }
   }
 
@@ -69,16 +69,16 @@ export class FocusManager {
       this.#focusRing.push(view)
     }
 
-    if (!this.#currentFocus && this.#prevFocus === view) {
+    if (!this.#currentFocusView && this.#prevFocusView === view) {
       // The previously-focused view is re-registering — restore its focus
       // regardless of isDefault (it was explicitly focused via tab/click).
-      this.#currentFocus = view
+      this.#currentFocusView = view
       return true
-    } else if (!this.#currentFocus && !this.#prevFocus && isDefault) {
+    } else if (!this.#currentFocusView && !this.#prevFocusView && isDefault) {
       // First render: only isDefault views can claim initial focus.
-      this.#currentFocus = view
+      this.#currentFocusView = view
       return true
-    } else if (this.#currentFocus === view) {
+    } else if (this.#currentFocusView === view) {
       return true
     } else {
       return false
@@ -86,8 +86,8 @@ export class FocusManager {
   }
 
   get currentFocusView(): View | undefined {
-    return this.#currentFocus && this.#currentFocus !== UNFOCUS
-      ? this.#currentFocus
+    return this.#currentFocusView && this.#currentFocusView !== UNFOCUS
+      ? this.#currentFocusView
       : undefined
   }
 
@@ -116,43 +116,38 @@ export class FocusManager {
   }
 
   requestFocus(view: View) {
-    this.#currentFocus = view
+    this.#currentFocusView = view
     return true
   }
 
   unfocus() {
-    this.#currentFocus = UNFOCUS
+    this.#currentFocusView = UNFOCUS
   }
 
-  /**
-   * @return boolean Whether the focus changed
-   */
-  commit(): boolean {
-    this.#didCommit = true
-
-    if (this.#prevFocus === UNFOCUS && !this.#currentFocus) {
-      this.#currentFocus = UNFOCUS
+  determineFocus() {
+    if (this.#prevFocusView === UNFOCUS && !this.#currentFocusView) {
+      this.#currentFocusView = UNFOCUS
     } else if (
       this.#focusRing.length > 0 &&
-      this.#prevFocus &&
-      !this.#currentFocus
+      this.#prevFocusView &&
+      !this.#currentFocusView
     ) {
       // The previously-focused view didn't re-register — fall back to the
       // first view in the ring so focus doesn't disappear.
-      this.#currentFocus = this.#focusRing[0]
+      this.#currentFocusView = this.#focusRing[0]
     } else if (
       this.#focusRing.length > 0 &&
-      !this.#prevFocus &&
-      !this.#currentFocus
+      !this.#prevFocusView &&
+      !this.#currentFocusView
     ) {
       // First render with focusable views but no default view claimed focus —
       // enter the unfocused state so that tab can move into the focus ring.
-      this.#currentFocus = UNFOCUS
+      this.#currentFocusView = UNFOCUS
     }
 
     // Detect focus changes and fire lifecycle events
     const prev = this.#lastCommittedFocus
-    const current = this.#currentFocus
+    const current = this.#currentFocusView
 
     if (prev !== current) {
       if (prev && prev !== UNFOCUS) {
@@ -168,12 +163,21 @@ export class FocusManager {
     return false
   }
 
+  /**
+   * @return boolean Whether the focus changed
+   */
+  commit(): boolean {
+    this.#didCommit = true
+
+    return this.determineFocus()
+  }
+
   #reorderRing() {
-    if (!this.#currentFocus || this.#currentFocus === UNFOCUS) {
+    if (!this.#currentFocusView || this.#currentFocusView === UNFOCUS) {
       return
     }
 
-    const index = this.#focusRing.indexOf(this.#currentFocus)
+    const index = this.#focusRing.indexOf(this.#currentFocusView)
     if (~index) {
       const pre = this.#focusRing.slice(0, index)
       this.#focusRing = this.#focusRing.slice(index).concat(pre)
@@ -181,20 +185,20 @@ export class FocusManager {
   }
 
   prevFocus() {
-    if (!this.#currentFocus || this.#currentFocus === UNFOCUS) {
-      this.#currentFocus = this.#focusRing.at(-1)
+    if (!this.#currentFocusView || this.#currentFocusView === UNFOCUS) {
+      this.#currentFocusView = this.#focusRing.at(-1)
       return
     }
 
     if (this.#focusRing.length <= 1) {
-      this.#currentFocus = UNFOCUS
+      this.#currentFocusView = UNFOCUS
       return
     }
 
     // If focused on the first item, unfocus instead of wrapping.
-    const index = this.#focusRing.indexOf(this.#currentFocus)
+    const index = this.#focusRing.indexOf(this.#currentFocusView)
     if (index === 0) {
-      this.#currentFocus = UNFOCUS
+      this.#currentFocusView = UNFOCUS
       return
     }
 
@@ -202,24 +206,24 @@ export class FocusManager {
 
     const last = this.#focusRing.pop()!
     this.#focusRing.unshift(last)
-    this.#currentFocus = last
+    this.#currentFocusView = last
   }
 
   nextFocus() {
-    if (!this.#currentFocus || this.#currentFocus === UNFOCUS) {
-      this.#currentFocus = this.#focusRing[0]
+    if (!this.#currentFocusView || this.#currentFocusView === UNFOCUS) {
+      this.#currentFocusView = this.#focusRing[0]
       return
     }
 
     if (this.#focusRing.length <= 1) {
-      this.#currentFocus = UNFOCUS
+      this.#currentFocusView = UNFOCUS
       return
     }
 
     // If focused on the last item, unfocus instead of wrapping.
-    const index = this.#focusRing.indexOf(this.#currentFocus)
+    const index = this.#focusRing.indexOf(this.#currentFocusView)
     if (index === this.#focusRing.length - 1) {
-      this.#currentFocus = UNFOCUS
+      this.#currentFocusView = UNFOCUS
       return
     }
 
@@ -228,7 +232,7 @@ export class FocusManager {
     const first = this.#focusRing.shift()!
     this.#focusRing.push(first)
 
-    this.#currentFocus = this.#focusRing[0]
+    this.#currentFocusView = this.#focusRing[0]
   }
 }
 
