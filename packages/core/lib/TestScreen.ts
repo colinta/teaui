@@ -19,7 +19,11 @@ import type {TestTerminal} from './TestTerminal.js'
 import type {View} from './View.js'
 import {Screen} from './Screen.js'
 import {TestProgram} from './TestProgram.js'
-import {type KeyEvent, type SystemMouseEvent, type FullKeyName} from './events/index.js'
+import {
+  type KeyEvent,
+  type SystemMouseEvent,
+  type FullKeyName,
+} from './events/index.js'
 
 class TestScreen {
   #screen: Screen

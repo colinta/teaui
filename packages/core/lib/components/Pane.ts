@@ -76,7 +76,9 @@ export class Pane extends Container {
     return this.#border
   }
   set border(value: boolean) {
-    if (value === this.#border) return
+    if (value === this.#border) {
+      return
+    }
     this.#border = value
     this.invalidateSize()
   }
@@ -91,7 +93,9 @@ export class Pane extends Container {
    */
   get browserViews(): View[] {
     const children = this.children
-    if (children.length <= 1) return []
+    if (children.length <= 1) {
+      return []
+    }
     return children.slice(0, -1)
   }
 
