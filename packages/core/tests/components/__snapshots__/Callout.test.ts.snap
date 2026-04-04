@@ -2,7 +2,8 @@
 
 exports[`Callout > renders with direction right 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-▌ LeftRight"
+▌ LeftRight
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > renders with multiple children 1`] = `
@@ -10,59 +11,68 @@ exports[`Callout > renders with multiple children 1`] = `
 ▌ Steps
 ▌ ───────────────────────
 ▌ Step 1: Do this.
-▌ Step 2: Do that."
+▌ Step 2: Do that.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > renders with purpose cancel 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ Danger
 ▌ ──────────────────────────
-▌ This is dangerous."
+▌ This is dangerous.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > renders with purpose primary 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ Info
 ▌ ──────────────────────────
-▌ Blue themed callout."
+▌ Blue themed callout.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > renders with purpose proceed 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ Success
 ▌ ──────────────────────────
-▌ All good!"
+▌ All good!
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > renders with title 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ Note
 ▌ ───────────────────────
-▌ Remember to save."
+▌ Remember to save.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > renders without title 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-▌ A simple callout."
+▌ A simple callout.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > title takes precedence over child heading 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ Explicit
 ▌ ───────────────────────
-▌ Content here."
+▌ Content here.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > uses child heading as title when title is not set 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ Tip
 ▌ ───────────────────────
-▌ Use heading prop."
+▌ Use heading prop.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;
 
 exports[`Callout > wraps long text 1`] = `
 "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ▌ This is a longer
 ▌ message that
-▌ should wrap."
+▌ should wrap.
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 `;

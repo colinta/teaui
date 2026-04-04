@@ -10,7 +10,7 @@ describe('Callout', () => {
         title: 'Note',
         children: [new Text({text: 'Remember to save.'})],
       }),
-      {width: 25, height: 4},
+      {width: 25, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -20,7 +20,7 @@ describe('Callout', () => {
       new Callout({
         children: [new Text({text: 'A simple callout.'})],
       }),
-      {width: 25, height: 2},
+      {width: 25, height: 3},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -32,7 +32,7 @@ describe('Callout', () => {
         purpose: 'primary',
         children: [new Text({text: 'Blue themed callout.'})],
       }),
-      {width: 28, height: 4},
+      {width: 28, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -44,7 +44,7 @@ describe('Callout', () => {
         purpose: 'cancel',
         children: [new Text({text: 'This is dangerous.'})],
       }),
-      {width: 28, height: 4},
+      {width: 28, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -56,7 +56,7 @@ describe('Callout', () => {
         purpose: 'proceed',
         children: [new Text({text: 'All good!'})],
       }),
-      {width: 28, height: 4},
+      {width: 28, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -70,7 +70,7 @@ describe('Callout', () => {
           new Text({text: 'Step 2: Do that.'}),
         ],
       }),
-      {width: 25, height: 5},
+      {width: 25, height: 6},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -81,7 +81,7 @@ describe('Callout', () => {
         direction: 'right',
         children: [new Text({text: 'Left'}), new Text({text: 'Right'})],
       }),
-      {width: 20, height: 2},
+      {width: 20, height: 3},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -91,7 +91,7 @@ describe('Callout', () => {
       new Callout({
         children: [new Text({text: 'Use heading prop.', heading: 'Tip'})],
       }),
-      {width: 25, height: 4},
+      {width: 25, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -102,7 +102,7 @@ describe('Callout', () => {
         title: 'Explicit',
         children: [new Text({text: 'Content here.', heading: 'Ignored'})],
       }),
-      {width: 25, height: 4},
+      {width: 25, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
@@ -117,7 +117,7 @@ describe('Callout', () => {
           }),
         ],
       }),
-      {width: 20, height: 4},
+      {width: 20, height: 5},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
