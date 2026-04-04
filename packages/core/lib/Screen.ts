@@ -444,7 +444,9 @@ export class Screen {
   }
 
   preRender(view: View) {
-    this.#focusManager.determineFocus()
+    if(this.#focusManager.determineFocus()) {
+      this.#emit('focusChange', this.#focusManager.currentFocusView)
+    }
 
     this.#modalManager.reset()
     this.#tickManager.reset()

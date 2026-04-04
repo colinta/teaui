@@ -1,13 +1,13 @@
 import {View} from '../View.js'
 
 export class TickManager {
-  #render: () => void
+  #onRender: () => void
   #tickTimer: ReturnType<typeof setInterval> | undefined
   #tickViews: Set<View> = new Set()
   #needsRender = false
 
-  constructor(render: () => void) {
-    this.#render = render
+  constructor(onRender: () => void) {
+    this.#onRender = onRender
   }
 
   reset() {
@@ -64,7 +64,7 @@ export class TickManager {
     }
 
     if (needsRender) {
-      this.#render()
+      this.#onRender()
 
       this.#needsRender = false
     }

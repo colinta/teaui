@@ -93,7 +93,7 @@ describe('AutoLegend', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
-  it('snapshot: focus changes legend content', () => {
+  it.only('snapshot: focus changes legend content', () => {
     const input1 = new Input({value: 'a', multiline: true})
     const input2 = new Input({value: 'b'})
     const legend = new AutoLegend()

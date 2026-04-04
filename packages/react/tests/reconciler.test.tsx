@@ -123,9 +123,12 @@ describe('reconciler', () => {
     })
 
     it('throws for unknown element types', async () => {
+      const e = console.error
+      console.error = () => {}
       expect(() => {
         renderToWindow(React.createElement('unknown-element' as any))
       }).toThrow('unknown component "unknown-element"')
+      console.error = e
     })
   })
 

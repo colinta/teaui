@@ -19,9 +19,12 @@ describe('codeHighlighter', () => {
   })
 
   it('returns plain text on unknown language', () => {
+    const e = console.error
+    console.error = () => {}
     const format = codeHighlighter('nonexistent_language_xyz')
     const result = format('hello world')
     expect(result).toContain('hello world')
+    console.error = e
   })
 
   it('auto-detects language when none specified', () => {

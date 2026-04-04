@@ -227,14 +227,10 @@ export class Page extends Container {
   }
 
   receiveTick(dt: number): boolean {
-    let needsTick = false
-
     if (this.#disableScrollTimeout > 0) {
       this.#disableScrollTimeout -= dt
       if (this.#disableScrollTimeout <= 0) {
         this.#disableScrollTimeout = 0
-      } else {
-        needsTick = true
       }
     }
 
@@ -243,12 +239,8 @@ export class Page extends Container {
       if (this.#scrollTimeout <= 0) {
         this.#scrollDx = 0
         this.#scrollTimeout = 0
-      } else {
-        needsTick = true
       }
     }
-
-    if (!this.#animating) return needsTick
 
     this.#animationElapsed += dt
 
@@ -258,7 +250,7 @@ export class Page extends Container {
       this.#outgoingIndex = -1
       this.#incomingIndex = -1
       this.invalidateSize()
-      return false
+      return true
     }
 
     this.invalidateSize()
