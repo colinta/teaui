@@ -444,7 +444,7 @@ export class Screen {
   }
 
   preRender(view: View) {
-    if(this.#focusManager.determineFocus()) {
+    if (this.#focusManager.determineFocus()) {
       this.#emit('focusChange', this.#focusManager.currentFocusView)
     }
 
@@ -484,7 +484,10 @@ export class Screen {
     // this may be called again by renderModals, before the last modal renders
     this.preRender(this.rootView)
 
-    const size = this.rootView.naturalSize(screenSize).min(screenSize).max(screenSize)
+    const size = this.rootView
+      .naturalSize(screenSize)
+      .min(screenSize)
+      .max(screenSize)
     const viewport = new Viewport(this, this.#buffer, size)
     this.rootView.render(viewport)
     const rerenderView = this.#modalManager.renderModals(this, viewport)

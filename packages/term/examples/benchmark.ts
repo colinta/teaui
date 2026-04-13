@@ -122,7 +122,9 @@ setTimeout(() => {
   const bufferedFps = Math.round((FRAMES / bufferedMs) * 1000)
   const speedup = (directMs / bufferedMs).toFixed(1)
 
-  console.info(`\nBuffer Benchmark — ${FRAMES} frames, ${cols}×${rows} terminal`)
+  console.info(
+    `\nBuffer Benchmark — ${FRAMES} frames, ${cols}×${rows} terminal`,
+  )
   console.info(`${'─'.repeat(50)}`)
   console.info(`  Block size:  ${BLOCK_SIZE}×${BLOCK_SIZE}`)
   console.info(
@@ -131,7 +133,9 @@ setTimeout(() => {
   console.info(`  Cells/frame: ${cols * rows}`)
   console.info()
   console.info(`  Direct:      ${directMs.toFixed(1)}ms  (${directFps} fps)`)
-  console.info(`  Buffered:    ${bufferedMs.toFixed(1)}ms  (${bufferedFps} fps)`)
+  console.info(
+    `  Buffered:    ${bufferedMs.toFixed(1)}ms  (${bufferedFps} fps)`,
+  )
   console.info(`  Speedup:     ${speedup}×`)
   console.info()
 }, 100)
