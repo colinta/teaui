@@ -19,6 +19,7 @@ export class Viewport {
   #terminal: Terminal
   #currentRender: View | null = null
   #contentSize: Size
+  #availableRect: Rect
   #visibleRect: Rect
   #offset: Point
   #screen: Screen
@@ -35,6 +36,7 @@ export class Viewport {
     this.#terminal = terminal
     this.#screen = screen
     this.#contentSize = contentSize
+    this.#availableRect = rect
     this.parentRect = rect
     this.#visibleRect = rect
     this.#offset = Point.zero
@@ -53,6 +55,20 @@ export class Viewport {
    */
   get contentSize() {
     return this.#contentSize
+  }
+
+  /**
+   * In most cases, `availableRect` is synonymous with `contentRect`, but in some
+   * rare cases (e.g. drawing on top of box borders) the `availableRect` is larger.
+   * The available Rect will always be positioned outside or overlapping the
+   * `contentRect`, i.e.
+   *     availableRect.origin.x <= 0
+   *     availableRect.origin.y <= 0
+   *     availableRect.size.width >= contentRect.size.width
+   *     availableRect.size.height >= contentRect.size.height
+   */
+  get availableRect() {
+    return this.#availableRect
   }
 
   /*
@@ -347,6 +363,13 @@ export class Viewport {
     )
 
     const contentSize = new Size(contentWidth, contentHeight)
+    const availableRect = new Rect(
+      new Point(
+        this.#availableRect.origin.x - clip.origin.x,
+        this.#availableRect.origin.y - clip.origin.y,
+      ),
+      this.#availableRect.size,
+    )
     const visibleRect = new Rect(
       new Point(visibleMinX, visibleMinY),
       new Size(visibleMaxX - visibleMinX, visibleMaxY - visibleMinY),
@@ -354,11 +377,13 @@ export class Viewport {
     const offset = new Point(offsetX, offsetY)
 
     const prevContentSize = this.#contentSize
+    const prevAvailableRect = this.#availableRect
     const prevVisibleRect = this.#visibleRect
     const prevOffset = this.#offset
     const prevStyle = this.#style
 
     this.#contentSize = contentSize
+    this.#availableRect = availableRect
     this.#visibleRect = visibleRect
     this.#offset = offset
     this.#style = style
@@ -366,9 +391,61 @@ export class Viewport {
     draw(this)
 
     this.#contentSize = prevContentSize
+    this.#availableRect = prevAvailableRect
     this.#visibleRect = prevVisibleRect
     this.#offset = prevOffset
     this.#style = prevStyle
+  }
+
+  /**
+   * Shifts the viewport origin inward (to `rect.origin`) and sets contentSize to
+   * `rect.size`, without changing the clip boundary. This makes `availableRect`
+   * extend beyond `contentRect` so children can draw "on top of" the surrounding
+   * area (e.g. box borders).
+   *
+   * Must be called inside a `clipped()` callback — the enclosing `clipped` will
+   * restore the previous state.
+   *
+   *     viewport.clipped(outerRect, inside => {
+   *       inside.inset(innerRect)
+   *       super.render(inside)
+   *     })
+   */
+  inset(rect: Rect, draw: (viewport: Viewport) => void): void {
+    const prevAvailableRect = this.#availableRect
+    const prevContentSize = this.#contentSize
+    const prevOffset = this.#offset
+    const prevVisibleRect = this.#visibleRect
+
+    // The enclosing clip area, expressed in the inset coordinate system
+    this.#availableRect = new Rect(
+      new Point(-rect.origin.x, -rect.origin.y),
+      this.#contentSize,
+    )
+
+    this.#contentSize = rect.size
+
+    // Shift the offset so writes at (0,0) map to the inset origin
+    this.#offset = new Point(
+      this.#offset.x + rect.origin.x,
+      this.#offset.y + rect.origin.y,
+    )
+
+    // Adjust visibleRect to the new coordinate system
+    this.#visibleRect = new Rect(
+      new Point(
+        this.#visibleRect.origin.x - rect.origin.x,
+        this.#visibleRect.origin.y - rect.origin.y,
+      ),
+      this.#visibleRect.size,
+    )
+
+    draw(this)
+
+    this.#availableRect = prevAvailableRect
+    this.#contentSize = prevContentSize
+    this.#offset = prevOffset
+    this.#visibleRect = prevVisibleRect
   }
 }
 

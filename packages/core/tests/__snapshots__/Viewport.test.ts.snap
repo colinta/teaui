@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Viewport.inset > availableRect extends beyond contentRect 1`] = `
+"#######
+Lok   R
+#######"
+`;
+
+exports[`Viewport.inset > children render inside the inset area 1`] = `
+"######
+#Hi  #
+######"
+`;
