@@ -220,12 +220,7 @@ export class Viewport {
       y = to.y
     for (const char of unicode.printableChars(input)) {
       if (char === '\n') {
-        x = to.x
-        y += 1
-        if (y >= maxY) {
-          break
-        }
-        continue
+        break
       }
 
       if (x >= maxX) {
