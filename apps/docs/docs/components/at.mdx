@@ -1,0 +1,56 @@
+---
+title: At
+---
+
+import Example from '@site/src/components/Example'
+
+# At
+
+Positions children at a fixed location within the available space. Children are rendered as a ZStack (overlaid on top of each other), then placed at the specified `location`.
+
+Designed for use inside a `ZStack` to anchor content at edges, corners, or the center.
+
+<Example name="at" title="At" />
+
+## Props
+
+| Prop           | Type       | Default      | Description                                                |
+| -------------- | ---------- | ------------ | ---------------------------------------------------------- |
+| `location`     | `Location` | `'top-left'` | Where to place the children                                |
+| `useAvailable` | `boolean`  | `false`      | Use `availableRect` instead of `contentRect` for placement |
+| `children`     | `View[]`   | —            | Child views, rendered as a ZStack                          |
+
+### Location
+
+```
+'top-left'    | 'top-center'    | 'top-right'
+'left'        | 'center'        | 'right'
+'bottom-left' | 'bottom-center' | 'bottom-right'
+```
+
+## Static Helpers
+
+Instead of passing `location` as a prop, use the static helpers for readability:
+
+```tsx
+<At.topLeft>...</At.topLeft>
+<At.topCenter>...</At.topCenter>
+<At.topRight>...</At.topRight>
+<At.left>...</At.left>
+<At.center>...</At.center>
+<At.right>...</At.right>
+<At.bottomLeft>...</At.bottomLeft>
+<At.bottomCenter>...</At.bottomCenter>
+<At.bottomRight>...</At.bottomRight>
+```
+
+### Core API
+
+```ts
+At.topLeft([new Text({text: 'hi'})])
+At.center({children: [new Text({text: 'hi'})], useAvailable: true})
+```
+
+## useAvailable
+
+When `useAvailable` is `true`, the component uses the viewport's `availableRect` instead of `contentRect` for sizing and placement. This is useful for drawing on top of box borders or in other cases where the available area extends beyond the content area.

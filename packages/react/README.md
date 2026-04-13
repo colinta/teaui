@@ -74,19 +74,19 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 
 ### Views (leaf nodes)
 
-| Component             | Element                  | Description                               |
-| --------------------- | ------------------------ | ----------------------------------------- |
-| `<Br />`              | `<tui-br>`               | Line break in text                        |
-| `<Checkbox />`        | `<tui-checkbox>`         | Toggle checkbox                           |
-| `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse  |
-| `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.*` output |
-| `<Digits />`          | `<tui-digits>`           | Large-font digit display                  |
-| `<H1 />`–`<H6 />`     | `<tui-h1>`–`<tui-h6>`    | Header text                               |
-| `<Input />`           | `<tui-input>`            | Text input field                          |
-| `<Separator />`       | `<tui-separator>`        | Horizontal or vertical line               |
-| `<Slider />`          | `<tui-slider>`           | Value slider                              |
-| `<Space />`           | `<tui-space>`            | Empty spacer                              |
-| `<ToggleGroup />`     | `<tui-toggle-group>`     | Group of toggle options                   |
+| Component             | Element                  | Description                              |
+| --------------------- | ------------------------ | ---------------------------------------- |
+| `<Br />`              | `<tui-br>`               | Line break in text                       |
+| `<Checkbox />`        | `<tui-checkbox>`         | Toggle checkbox                          |
+| `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse |
+| `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.*` output  |
+| `<Digits />`          | `<tui-digits>`           | Large-font digit display                 |
+| `<H1 />`–`<H6 />`     | `<tui-h1>`–`<tui-h6>`    | Header text                              |
+| `<Input />`           | `<tui-input>`            | Text input field                         |
+| `<Separator />`       | `<tui-separator>`        | Horizontal or vertical line              |
+| `<Slider />`          | `<tui-slider>`           | Value slider                             |
+| `<Space />`           | `<tui-space>`            | Empty spacer                             |
+| `<ToggleGroup />`     | `<tui-toggle-group>`     | Group of toggle options                  |
 
 `Separator` has `.horizontal` and `.vertical` variants. `Slider` has `.horizontal` and `.vertical` variants.
 

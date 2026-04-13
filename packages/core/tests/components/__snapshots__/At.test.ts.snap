@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`At > overlays multiple children like a ZStack 1`] = `
+"
+   BBAA"
+`;
+
+exports[`At > rendering at each location > bottom-center 1`] = `
+"
+
+
+
+    Hi"
+`;
+
+exports[`At > rendering at each location > bottom-left 1`] = `
+"
+
+
+
+Hi"
+`;
+
+exports[`At > rendering at each location > bottom-right 1`] = `
+"
+
+
+
+        Hi"
+`;
+
+exports[`At > rendering at each location > center 1`] = `
+"
+
+    Hi"
+`;
+
+exports[`At > rendering at each location > left 1`] = `
+"
+
+Hi"
+`;
+
+exports[`At > rendering at each location > right 1`] = `
+"
+
+        Hi"
+`;
+
+exports[`At > rendering at each location > top-center 1`] = `"    Hi"`;
+
+exports[`At > rendering at each location > top-left 1`] = `"Hi"`;
+
+exports[`At > rendering at each location > top-right 1`] = `"        Hi"`;
+
+exports[`At > updates location 1`] = `"X"`;
+
+exports[`At > updates location 2`] = `
+"
+
+
+
+         X"
+`;
+
+exports[`At > works with box children 1`] = `
+"
+
+     ┌───┐
+     │X  │
+     └───┘"
+`;

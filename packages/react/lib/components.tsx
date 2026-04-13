@@ -4,6 +4,7 @@ import type {
   Align as WrAlign,
   AlignRow as WrAlignRow,
   Alert as WrAlert,
+  At as WrAt,
   Box as WrBox,
   Breadcrumb as WrBreadcrumb,
   Button as WrButton,
@@ -45,6 +46,7 @@ import type {
   Column,
   SortDirection,
   ViewProps,
+  Location,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
 
@@ -107,6 +109,7 @@ export type SpaceProps = Simplify<TUIView<typeof WrSpace>>
 export type SpinnerProps = Simplify<TUIView<typeof WrSpinner>>
 export type LogoProps = Simplify<TUIView<typeof WrLogo>>
 export type ZStackProps = Simplify<TUIContainer<typeof WrZStack>>
+export type AtProps = Simplify<TUIContainer<typeof WrAt>>
 export type ToggleGroupProps = Simplify<TUIView<typeof WrToggleGroup>>
 
 // Table uses its own prop types since it's generic and TUIView doesn't work well with generics
@@ -178,6 +181,7 @@ declare module 'react' {
       'tui-spinner': WithRef<SpinnerProps, WrSpinner>
       'tui-logo': WithRef<LogoProps, WrLogo>
       'tui-zstack': WithRef<ZStackProps, WrZStack>
+      'tui-at': WithRef<AtProps, WrAt>
       'tui-list': any
       'tui-table': any
       'tui-toggle-group': WithRef<ToggleGroupProps, WrToggleGroup>
@@ -498,6 +502,124 @@ export const ZStack = forwardRef<WrZStack, ZStackProps>(
     return <tui-zstack ref={ref} {...reactProps} />
   },
 )
+
+type AtLocationProps = Omit<AtProps, 'location'>
+type AtLocationComponent = React.ForwardRefExoticComponent<
+  AtLocationProps & React.RefAttributes<WrAt>
+>
+interface At {
+  (reactProps: AtProps): JSX.Element
+  topLeft: AtLocationComponent
+  topCenter: AtLocationComponent
+  topRight: AtLocationComponent
+  left: AtLocationComponent
+  center: AtLocationComponent
+  right: AtLocationComponent
+  bottomLeft: AtLocationComponent
+  bottomCenter: AtLocationComponent
+  bottomRight: AtLocationComponent
+}
+export const At: At = forwardRef<WrAt, AtProps>(function At(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} {...props}>
+      {children}
+    </tui-at>
+  )
+}) as unknown as At
+At.topLeft = forwardRef<WrAt, AtLocationProps>(function AtTopLeft(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="top-left" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.topCenter = forwardRef<WrAt, AtLocationProps>(function AtTopCenter(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="top-center" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.topRight = forwardRef<WrAt, AtLocationProps>(function AtTopRight(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="top-right" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.left = forwardRef<WrAt, AtLocationProps>(function AtLeft(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="left" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.center = forwardRef<WrAt, AtLocationProps>(function AtCenter(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="center" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.right = forwardRef<WrAt, AtLocationProps>(function AtRight(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="right" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.bottomLeft = forwardRef<WrAt, AtLocationProps>(function AtBottomLeft(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="bottom-left" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.bottomCenter = forwardRef<WrAt, AtLocationProps>(function AtBottomCenter(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="bottom-center" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+At.bottomRight = forwardRef<WrAt, AtLocationProps>(function AtBottomRight(
+  {children, ...props},
+  ref,
+) {
+  return (
+    <tui-at ref={ref} location="bottom-right" {...props}>
+      {children}
+    </tui-at>
+  )
+})
+
 export const ToggleGroup = forwardRef<WrToggleGroup, ToggleGroupProps>(
   function ToggleGroup(reactProps, ref): JSX.Element {
     return <tui-toggle-group ref={ref} {...reactProps} />

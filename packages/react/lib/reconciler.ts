@@ -6,6 +6,7 @@ import {
   Accordion,
   Align,
   AlignRow,
+  At,
   Alert,
   Box,
   Breadcrumb,
@@ -93,6 +94,9 @@ function createInstance(type: string, props: Props): any {
 
   switch (type) {
     // views
+    case 'at':
+    case 'tui-at':
+      return new At(props as any)
     case 'align':
     case 'tui-align':
       return new Align(props as any)
