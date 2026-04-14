@@ -108,16 +108,17 @@ export class Style {
 
   isEqual(style: Style) {
     return (
-      this.underline === style.underline &&
-      this.inverse === style.inverse &&
-      this.bold === style.bold &&
-      this.dim === style.dim &&
-      this.italic === style.italic &&
-      this.strikeout === style.strikeout &&
-      this.blink === style.blink &&
-      this.invisible === style.invisible &&
-      this.foreground === style.foreground &&
-      this.background === style.background
+      this === style ||
+      (this.underline === style.underline &&
+        this.inverse === style.inverse &&
+        this.bold === style.bold &&
+        this.dim === style.dim &&
+        this.italic === style.italic &&
+        this.strikeout === style.strikeout &&
+        this.blink === style.blink &&
+        this.invisible === style.invisible &&
+        this.foreground === style.foreground &&
+        this.background === style.background)
     )
   }
 

@@ -7,6 +7,16 @@ import {Style} from './Style.js'
 import {Size} from './geometry.js'
 
 type Char = {char: string; width: 1 | 2; style: Style; hiding?: Char}
+type PaintRect = {
+  style: Style
+  cell: Char
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
+const EMPTY_CELL: Char = {char: ' ', style: Style.NONE, width: 1}
 
 export class Buffer implements Terminal {
   size: Size = Size.zero
@@ -14,6 +24,11 @@ export class Buffer implements Terminal {
   #meta: string = ''
   #canvas: Map<number, Map<number, Char>> = new Map()
   #prev: Map<number, Map<number, Char>> = new Map()
+  #paintRects: PaintRect[] = []
+  #prevPaintRects: PaintRect[] = []
+  #dirtyRows: Set<number> = new Set()
+  #prevDirtyRows: Set<number> = new Set()
+  #mergeCache: Map<Style, Map<Style, Style>> = new Map()
 
   setForeground(fg: Color): void {}
   setBackground(bg: Color): void {}
@@ -54,16 +69,16 @@ export class Buffer implements Terminal {
       return
     }
 
+    this.#dirtyRows.add(y)
     let line = this.#canvas.get(y)
     if (line) {
       const prev = line.get(x)
       if (prev?.char === BG_DRAW) {
-        const {foreground, background} = prev.style
-        if (style.foreground === undefined) {
-          style = style.merge({foreground})
-        }
-        if (style.background === undefined) {
-          style = style.merge({background})
+        style = this.#mergeBackgroundStyle(style, prev.style)
+      } else if (!prev) {
+        const paintStyle = this.#paintStyleAt(x, y)
+        if (paintStyle) {
+          style = this.#mergeBackgroundStyle(style, paintStyle)
         }
       }
 
@@ -97,9 +112,92 @@ export class Buffer implements Terminal {
         }
       }
     } else {
+      const paintStyle = this.#paintStyleAt(x, y)
+      if (paintStyle) {
+        style = this.#mergeBackgroundStyle(style, paintStyle)
+      }
       line = new Map([[x, {char, width, style}]])
       this.#canvas.set(y, line)
     }
+  }
+
+  /**
+   * Merges foreground/background from a background style into a text style,
+   * only when the text style is missing those properties. Single merge call.
+   */
+  #mergeBackgroundStyle(style: Style, bgStyle: Style): Style {
+    const needsFg =
+      style.foreground === undefined && bgStyle.foreground !== undefined
+    const needsBg =
+      style.background === undefined && bgStyle.background !== undefined
+    if (!needsFg && !needsBg) {
+      return style
+    }
+
+    // Check cache
+    let bgCache = this.#mergeCache.get(bgStyle)
+    if (bgCache) {
+      const cached = bgCache.get(style)
+      if (cached) return cached
+    } else {
+      bgCache = new Map()
+      this.#mergeCache.set(bgStyle, bgCache)
+    }
+
+    const merged = style.merge({
+      foreground: needsFg ? bgStyle.foreground : undefined,
+      background: needsBg ? bgStyle.background : undefined,
+    })
+    bgCache.set(style, merged)
+    return merged
+  }
+
+  /**
+   * Fills a rectangular region with BG_DRAW cells lazily.
+   * The cells are materialized during flush or when overwritten by writeChar.
+   */
+  paintRect(
+    style: Style,
+    minX: number,
+    minY: number,
+    maxX: number,
+    maxY: number,
+  ) {
+    this.#paintRects.push({
+      style,
+      cell: {char: BG_DRAW, width: 1, style},
+      minX: Math.max(0, ~~minX),
+      minY: Math.max(0, ~~minY),
+      maxX: Math.min(this.size.width, ~~maxX),
+      maxY: Math.min(this.size.height, ~~maxY),
+    })
+  }
+
+  /**
+   * Returns the paint style for coordinates that fall within a paint rect,
+   * checking most recent rects first.
+   */
+  #paintStyleAt(x: number, y: number): Style | undefined {
+    for (let i = this.#paintRects.length - 1; i >= 0; i--) {
+      const r = this.#paintRects[i]
+      if (x >= r.minX && x < r.maxX && y >= r.minY && y < r.maxY) {
+        return r.style
+      }
+    }
+    return undefined
+  }
+
+  /**
+   * Returns a pre-allocated Char for coordinates in a paint rect.
+   */
+  #paintCellAt(x: number, y: number): Char | undefined {
+    for (let i = this.#paintRects.length - 1; i >= 0; i--) {
+      const r = this.#paintRects[i]
+      if (x >= r.minX && x < r.maxX && y >= r.minY && y < r.maxY) {
+        return r.cell
+      }
+    }
+    return undefined
   }
 
   /**
@@ -113,6 +211,7 @@ export class Buffer implements Terminal {
       return
     }
 
+    this.#dirtyRows.add(y)
     let line = this.#canvas.get(y)
     if (!line) {
       line = new Map()
@@ -139,16 +238,50 @@ export class Buffer implements Terminal {
       terminal.write(this.#meta)
     }
 
+    // Check if paint rects changed since last flush
+    const paintRectsChanged = !this.#paintRectsEqual(
+      this.#paintRects,
+      this.#prevPaintRects,
+    )
+
     let prevStyle = Style.NONE
     for (let y = 0; y < this.size.height; y++) {
+      // Skip rows with no canvas writes (now or previously) and unchanged paint rects
+      if (
+        !this.#dirtyRows.has(y) &&
+        !this.#prevDirtyRows.has(y) &&
+        !paintRectsChanged &&
+        this.#prev.has(y)
+      ) {
+        continue
+      }
+
       const line = this.#canvas.get(y) ?? new Map<number, Char>()
       const prevLine = this.#prev.get(y) ?? new Map<number, Char>()
       this.#prev.set(y, prevLine)
 
+      // Pre-compute paint rects applicable to this row
+      let rowPaintCell: Char | undefined
+      let rowPaintMinX = 0
+      let rowPaintMaxX = 0
+      for (let i = this.#paintRects.length - 1; i >= 0; i--) {
+        const r = this.#paintRects[i]
+        if (y >= r.minY && y < r.maxY) {
+          rowPaintCell = r.cell
+          rowPaintMinX = r.minX
+          rowPaintMaxX = r.maxX
+          break
+        }
+      }
+
       let didWrite = false
       let dx = 1
       for (let x = 0; x < this.size.width; x += dx) {
-        const chrInfo = line.get(x) ?? {char: ' ', style: Style.NONE, width: 1}
+        const chrInfo =
+          line.get(x) ??
+          (rowPaintCell && x >= rowPaintMinX && x < rowPaintMaxX
+            ? rowPaintCell
+            : EMPTY_CELL)
         const prevInfo = prevLine.get(x)
         dx = chrInfo.width
 
@@ -185,6 +318,28 @@ export class Buffer implements Terminal {
     terminal.flush()
 
     this.#canvas = new Map()
+    this.#prevDirtyRows = this.#dirtyRows
+    this.#dirtyRows = new Set()
+    this.#prevPaintRects = this.#paintRects
+    this.#paintRects = []
+  }
+
+  #paintRectsEqual(a: PaintRect[], b: PaintRect[]): boolean {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i++) {
+      const ra = a[i]
+      const rb = b[i]
+      if (
+        ra.minX !== rb.minX ||
+        ra.minY !== rb.minY ||
+        ra.maxX !== rb.maxX ||
+        ra.maxY !== rb.maxY ||
+        !ra.style.isEqual(rb.style)
+      ) {
+        return false
+      }
+    }
+    return true
   }
 }
 

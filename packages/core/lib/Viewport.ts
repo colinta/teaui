@@ -191,7 +191,17 @@ export class Viewport {
       this.write(BG_DRAW, region, defaultStyle)
     } else {
       region ??= this.visibleRect
-      region.forEachPoint(pt => this.write(BG_DRAW, pt, defaultStyle))
+      const minX = Math.max(region.minX(), this.#visibleRect.minX())
+      const maxX = Math.min(region.maxX(), this.#visibleRect.maxX())
+      const minY = Math.max(region.minY(), this.#visibleRect.minY())
+      const maxY = Math.min(region.maxY(), this.#visibleRect.maxY())
+      this.#terminal.paintRect(
+        defaultStyle,
+        minX + this.#offset.x,
+        minY + this.#offset.y,
+        maxX + this.#offset.x,
+        maxY + this.#offset.y,
+      )
     }
   }
 
