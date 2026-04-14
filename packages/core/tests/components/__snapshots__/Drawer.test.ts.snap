@@ -1,5 +1,38 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Drawer > content behind drawer does not bleed through > bottom drawer covers background content 1`] = `
+"XXXXXXXXXXXXXXXXXXXX
+
+
+
+
+╭──────────────────╮
+│∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ ∨ │
+│AB                │"
+`;
+
+exports[`Drawer > content behind drawer does not bleed through > left drawer covers background content 1`] = `
+"───╮XXXXXXXXXXXXXXXX
+AB‹│
+  ‹│
+  ‹│
+───╯"
+`;
+
+exports[`Drawer > content behind drawer does not bleed through > right drawer covers background content 1`] = `
+"XXXXXXXXXXXXXXXX╭───
+                │›AB
+                │›
+                │›
+                ╰───"
+`;
+
+exports[`Drawer > content behind drawer does not bleed through > top drawer covers background content 1`] = `
+"│AB                │
+╮∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ╭
+│──────────────────│"
+`;
+
 exports[`Drawer > heading > does not render heading when drawer is closed 1`] = `
 "─╮Main
 ›│

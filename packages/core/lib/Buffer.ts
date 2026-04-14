@@ -163,13 +163,28 @@ export class Buffer implements Terminal {
     maxX: number,
     maxY: number,
   ) {
+    const rMinX = Math.max(0, ~~minX)
+    const rMinY = Math.max(0, ~~minY)
+    const rMaxX = Math.min(this.size.width, ~~maxX)
+    const rMaxY = Math.min(this.size.height, ~~maxY)
+
+    // Clear canvas cells in this region so the lazy paint rect takes priority
+    // over content that was rendered before this paint call.
+    for (let y = rMinY; y < rMaxY; y++) {
+      const line = this.#canvas.get(y)
+      if (!line) continue
+      for (let x = rMinX; x < rMaxX; x++) {
+        line.delete(x)
+      }
+    }
+
     this.#paintRects.push({
       style,
       cell: {char: BG_DRAW, width: 1, style},
-      minX: Math.max(0, ~~minX),
-      minY: Math.max(0, ~~minY),
-      maxX: Math.min(this.size.width, ~~maxX),
-      maxY: Math.min(this.size.height, ~~maxY),
+      minX: rMinX,
+      minY: rMinY,
+      maxX: rMaxX,
+      maxY: rMaxY,
     })
   }
 
