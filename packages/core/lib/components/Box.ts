@@ -15,7 +15,6 @@ export type Border =
   | 'double'
   | 'rounded'
   | 'dotted'
-  | 'popout'
 
 export type BorderChars =
   // top, sides, top-left, top-right, bottom-left, bottom-right
@@ -349,7 +348,6 @@ const BORDERS: Record<Border, CalculatedBorderChars> = {
   double: ['═', '║', '╔', '╗', '╚', '╝', '═', '║'],
   rounded: ['─', '│', '╭', '╮', '╰', '╯', '─', '│'],
   dotted: ['⠒', '⡇', '⡖', '⢲', '⠧', '⠼', '⠤', '⢸'],
-  popout: [' \n─', '│', ' \n┌', ' /\\   \n/  \\─┐', '└', '┘', '─', '│'],
 }
 
 const HEADING_X = 2

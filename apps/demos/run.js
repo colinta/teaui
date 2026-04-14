@@ -1,11 +1,12 @@
 import {readdirSync} from 'fs'
-import {execSync} from 'child_process'
+import {execSync, execFileSync} from 'child_process'
 import {basename, resolve, dirname} from 'path'
 import {fileURLToPath} from 'url'
 import {getWorkspaceBuildOrder} from '../../shared/check.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const name = process.argv[2]
+const extraArgs = process.argv.slice(3)
 
 const demos = readdirSync(__dirname)
   .filter(f => f.endsWith('.ts') && f !== 'demo.ts')
@@ -77,7 +78,7 @@ if (demo !== name) {
 }
 
 await buildWorkspaceProjects()
-execSync(`node --enable-source-maps ${demo}`, {
+execFileSync('node', ['--enable-source-maps', demo, ...extraArgs], {
   stdio: 'inherit',
   cwd: resolve(__dirname, '.dist'),
 })
