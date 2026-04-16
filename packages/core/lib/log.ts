@@ -1,5 +1,5 @@
 import {ConsoleLog} from './components/Log.js'
-import {inspect} from './inspect.js'
+import {inspect} from '@teaui/inspect'
 import {removeAnsi} from '@teaui/term'
 
 const levels = ['debug', 'error', 'info', 'log', 'warn'] as const

@@ -13,7 +13,6 @@ export * from './log.js'
 export * from './Screen.js'
 export * from './Style.js'
 export * from './Theme.js'
-export * from './inspect.js'
 export * from './types.js'
 export {View, Props as ViewProps} from './View.js'
 export {Container, Props as ContainerProps} from './Container.js'
@@ -43,4 +42,3 @@ export {
   setLocale,
 } from '@teaui/term'
 export * from './util.js'
-export * from './inspect.js'

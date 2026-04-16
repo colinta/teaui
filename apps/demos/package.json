@@ -13,6 +13,7 @@
   "dependencies": {
     "@teaui/code": "workspace:*",
     "@teaui/core": "workspace:*",
+    "@teaui/inspect": "workspace:*",
     "@teaui/subprocess": "workspace:*"
   },
   "devDependencies": {

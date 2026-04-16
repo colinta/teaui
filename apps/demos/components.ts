@@ -1,5 +1,4 @@
 import {
-  inspect,
   Accordion,
   AutoLegend,
   Box,
@@ -35,6 +34,7 @@ import {
   underline,
   strikeout,
 } from '@teaui/core'
+import {inspect} from '@teaui/inspect'
 
 import {demo} from './demo.js'
 

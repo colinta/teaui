@@ -55,6 +55,9 @@ importers:
       '@teaui/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@teaui/inspect':
+        specifier: workspace:*
+        version: link:../../packages/inspect
       '@teaui/subprocess':
         specifier: workspace:*
         version: link:../../packages/subprocess
@@ -177,9 +180,18 @@ importers:
 
   packages/core:
     dependencies:
+      '@teaui/inspect':
+        specifier: workspace:*
+        version: link:../inspect
       '@teaui/term':
         specifier: workspace:*
         version: link:../term
+    devDependencies:
+      '@teaui/shared':
+        specifier: workspace:*
+        version: link:../../shared
+
+  packages/inspect:
     devDependencies:
       '@teaui/shared':
         specifier: workspace:*

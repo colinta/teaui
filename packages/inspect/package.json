@@ -1,0 +1,22 @@
+{
+  "name": "@teaui/inspect",
+  "description": "Colorized object inspection for terminal output",
+  "author": "Colin T.A. Gray <colinta@colinta.com>",
+  "version": "1.11.8",
+  "license": "MIT",
+  "type": "module",
+  "main": ".dist/index.js",
+  "types": ".dist/index.d.ts",
+  "files": [
+    ".dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "_build": "pnpm clean && pnpm tsc",
+    "build": "node ../../shared/check.js",
+    "clean": "rm -rf .dist/"
+  },
+  "devDependencies": {
+    "@teaui/shared": "workspace:*"
+  }
+}

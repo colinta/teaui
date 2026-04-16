@@ -1,4 +1,5 @@
-import {inspect, Collapsible, Text} from '@teaui/core'
+import {Collapsible, Text} from '@teaui/core'
+import {inspect} from '@teaui/inspect'
 
 import {demo} from './demo.js'
 

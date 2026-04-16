@@ -6,7 +6,7 @@ import {
   centerPad,
   toPaddingEdges,
 } from '../lib/util.js'
-import {inspect} from '../lib/inspect.js'
+import {inspect} from '@teaui/inspect'
 
 describe('leftPad', () => {
   test('pads a string to the requested width', () => {

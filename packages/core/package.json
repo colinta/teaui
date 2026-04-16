@@ -48,6 +48,7 @@
     "node": ">= 18.12.0"
   },
   "dependencies": {
+    "@teaui/inspect": "workspace:*",
     "@teaui/term": "workspace:*"
   },
   "devDependencies": {
