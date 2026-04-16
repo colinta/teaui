@@ -86,6 +86,10 @@ export class FocusManager {
   }
 
   get currentFocusView(): View | undefined {
+    if (!this.#didCommit) {
+      return this.#prevFocusView !== UNFOCUS ? this.#prevFocusView : undefined
+    }
+
     return this.#currentFocusView && this.#currentFocusView !== UNFOCUS
       ? this.#currentFocusView
       : undefined

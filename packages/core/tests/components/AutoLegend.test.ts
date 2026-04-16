@@ -93,7 +93,7 @@ describe('AutoLegend', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
-  it.only('snapshot: focus changes legend content', () => {
+  it('snapshot: focus changes legend content', () => {
     const input1 = new Input({value: 'a', multiline: true})
     const input2 = new Input({value: 'b'})
     const legend = new AutoLegend()
@@ -105,6 +105,24 @@ describe('AutoLegend', () => {
     t.sendKey('tab')
     const after = t.terminal.textContent()
     expect(after).toMatchSnapshot()
+  })
+
+  it('shows when input is focused, hides on unfocus, shows again on refocus', () => {
+    const legend = new AutoLegend()
+    const input = new Input({value: 'hello'})
+    const view = Stack.down([input, legend])
+    const t = testRender(view, {width: 120, height: 4})
+
+    // Initially focused — legend should show
+    expect(t.terminal.textContent()).toContain('Undo')
+
+    // Tab away from only input → UNFOCUS — legend should hide
+    t.sendKey('tab')
+    expect(t.terminal.textContent()).not.toContain('Undo')
+
+    // Tab again → focus returns to input — legend should show again
+    t.sendKey('tab')
+    expect(t.terminal.textContent()).toContain('Undo')
   })
 
   it('updates when focus changes', () => {

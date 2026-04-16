@@ -52,11 +52,13 @@ export class AutoLegend extends AbstractLegend {
 
   #updateItems(focused: View | undefined) {
     const screen = this.screen
-    const items: LegendItem[] = []
+    let items: LegendItem[]
 
     // Collect items from the focused view
     if (focused) {
-      items.push(...focused.legendItems())
+      items = focused.legendItems()
+    } else {
+      items = []
     }
 
     // Collect items from registered HotKey components with labels
