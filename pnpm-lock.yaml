@@ -109,6 +109,19 @@ importers:
         specifier: ^5.6.3
         version: 5.6.3
 
+  apps/log-viewer:
+    dependencies:
+      '@teaui/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@teaui/inspect':
+        specifier: workspace:*
+        version: link:../../packages/inspect
+    devDependencies:
+      '@teaui/shared':
+        specifier: workspace:*
+        version: link:../../shared
+
   apps/react:
     dependencies:
       '@teaui/code':

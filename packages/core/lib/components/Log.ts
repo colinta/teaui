@@ -140,13 +140,17 @@ export class ConsoleLog extends Log {
     super(props)
   }
 
+  logDidChange = () => {
+    this.invalidateSize()
+  }
+
   didMount(screen: Screen) {
-    addLogListener(this.invalidateSize.bind(this))
+    addLogListener(this.logDidChange)
     super.didMount(screen)
   }
 
   didUnmount(screen: Screen) {
-    removeLogListener(this.invalidateSize.bind(this))
+    removeLogListener(this.logDidChange)
     super.didUnmount(screen)
   }
 

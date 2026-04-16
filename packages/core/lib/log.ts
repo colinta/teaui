@@ -42,13 +42,14 @@ export function decorateConsoleLog() {
   })
 }
 
-const logListeners = new Set<() => void>()
+export type LogListener = (log: LogLine) => void
+const logListeners = new Set<LogListener>()
 
-export function addListener(listener: () => void) {
+export function addListener(listener: LogListener) {
   logListeners.add(listener)
 }
 
-export function removeListener(listener: () => void) {
+export function removeListener(listener: LogListener) {
   logListeners.delete(listener)
 }
 
@@ -61,11 +62,16 @@ function appendLog(level: Level, args: any[]) {
         : inspect(arg, true),
     ),
   })
+  const logLine = logs[logs.length - 1]
   for (const listener of logListeners) {
-    listener()
+    listener(logLine)
   }
 }
 
+/**
+ * Doesn't report 'console.debug' (I don't remember why). Clears logs, but keeps
+ * console.debug.
+ */
 export function fetchLogs() {
   const copy = logs.filter(({level}) => level !== 'debug')
   logs = logs.filter(({level}) => level === 'debug')

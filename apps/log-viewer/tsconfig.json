@@ -1,0 +1,9 @@
+{
+  "extends": "@teaui/shared/tsconfig.json",
+  "include": ["./"],
+  "exclude": [".dist/", "run.js", "../../shared/check.js"],
+  "compilerOptions": {
+    "outDir": ".dist",
+    "rootDir": "."
+  }
+}

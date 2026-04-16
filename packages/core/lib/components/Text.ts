@@ -43,7 +43,14 @@ export class Text extends View {
   #wrappedLines?: [number, [string, number][]]
   #font: FontFamily = DEFAULTS.font
 
-  constructor(props: Props = {}) {
+  constructor(propsOrString: string | Props = {}) {
+    let props: Props
+    if (typeof propsOrString === 'string') {
+      props = {text: propsOrString}
+    } else {
+      props = propsOrString
+    }
+
     super(props)
 
     this.#update(props)

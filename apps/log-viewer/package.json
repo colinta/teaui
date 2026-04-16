@@ -1,0 +1,19 @@
+{
+  "name": "log-viewer",
+  "type": "module",
+  "main": ".dist/main.js",
+  "license": "MIT",
+  "scripts": {
+    "_build": "pnpm clean && pnpm tsc",
+    "build": "node ../../shared/check.js",
+    "clean": "rm -rf .dist/"
+  },
+  "private": true,
+  "dependencies": {
+    "@teaui/core": "workspace:*",
+    "@teaui/inspect": "workspace:*"
+  },
+  "devDependencies": {
+    "@teaui/shared": "workspace:*"
+  }
+}
