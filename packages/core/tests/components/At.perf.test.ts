@@ -60,9 +60,9 @@ describe('At performance', () => {
       }),
     )
 
-    console.log(`With Space:    ${withSpace.toFixed(3)} ms/move`)
-    console.log(`Without Space: ${withoutSpace.toFixed(3)} ms/move`)
-    console.log(`Ratio:         ${(withSpace / withoutSpace).toFixed(2)}x`)
+    console.info(`With Space:    ${withSpace.toFixed(3)} ms/move`)
+    console.info(`Without Space: ${withoutSpace.toFixed(3)} ms/move`)
+    console.info(`Ratio:         ${(withSpace / withoutSpace).toFixed(2)}x`)
 
     // The Space background should not make rendering more than 3× slower.
     expect(withSpace / withoutSpace).toBeLessThan(3)
