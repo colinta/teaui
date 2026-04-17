@@ -1,5 +1,5 @@
 import type {Viewport} from '../Viewport.js'
-import {type Props as ContainerProps, Container} from '../Container.js'
+import {type Props as ViewProps, View} from '../View.js'
 import {Size} from '../geometry.js'
 import {
   type KeyEvent,
@@ -7,13 +7,13 @@ import {
   toHotKeyDef,
 } from '../events/index.js'
 
-export interface Props extends ContainerProps {
+export interface Props extends ViewProps {
   hotKey: HotKeyProp
   label?: string
   onPress?: (event: KeyEvent) => void
 }
 
-export class HotKey extends Container {
+export class HotKey extends View {
   #hotKey: HotKeyProp = {char: ''}
   #label?: string
   #onPress?: (event: KeyEvent) => void
