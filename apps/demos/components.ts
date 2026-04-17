@@ -19,7 +19,6 @@ import {
   Input,
   Progress,
   Scrollable,
-  Separator,
   Slider,
   Space,
   Spinner,
@@ -58,17 +57,29 @@ const primary1 = new Button({
   height: 3,
   theme: 'primary',
   title: 'Primary',
+  onClick() {
+    console.info('Clicked on «primary1»')
+  },
 })
 const primary2 = new Button({
   theme: 'primary',
   title: 'Primary',
+  onClick() {
+    console.info('Clicked on «primary2»')
+  },
 })
 const button1 = new Button({
   height: 3,
   title: 'Default',
+  onClick() {
+    console.info('Clicked on «button1»')
+  },
 })
 const button2 = new Button({
   title: 'Default',
+  onClick() {
+    console.info('Clicked on «button2»')
+  },
 })
 
 const progress0 = new Progress({value: 0, showPercent: true})

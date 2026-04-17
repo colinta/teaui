@@ -14,7 +14,8 @@
     "@teaui/code": "workspace:*",
     "@teaui/core": "workspace:*",
     "@teaui/inspect": "workspace:*",
-    "@teaui/subprocess": "workspace:*"
+    "@teaui/subprocess": "workspace:*",
+    "commander": "^14.0.3"
   },
   "devDependencies": {
     "@teaui/shared": "workspace:*"

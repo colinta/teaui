@@ -117,6 +117,13 @@ export class Tabs extends Container {
     this.add(tabView)
   }
 
+  removeTab(index: number) {
+    const tab = this.tabs.at(index)
+    if (tab) {
+      this.removeChild(tab)
+    }
+  }
+
   add(child: View, at?: number) {
     if (child instanceof Section) {
       child.titleView.onClick = tab => this.#selectTitle(tab)

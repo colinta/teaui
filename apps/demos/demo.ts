@@ -1,6 +1,7 @@
 import net from 'node:net'
-import fs from 'node:fs'
+import path from 'node:path'
 
+import {Command} from 'commander'
 import {
   Screen,
   TrackMouse,
@@ -9,46 +10,68 @@ import {
   Window,
   type View,
   interceptConsoleLog,
-  fetchLogs,
   addListener,
 } from '@teaui/core'
 
 const LOG_VIEWER_SOCKET = '/tmp/teaui-log-viewer.sock'
+const RECONNECT_INTERVAL = 2000
+
+const program = new Command()
+  .option('--socket', 'Forward logs to log-viewer')
+  .option('--no-log', 'Disable console log panel')
+  .option('--exit', 'Auto-exit after startup')
+  .allowUnknownOption()
+  .parse()
+
+const opts = program.opts<{socket?: boolean; log: boolean; exit?: boolean}>()
 
 interceptConsoleLog()
 
-let socketClients: Set<net.Socket> | undefined
-let socketServer: net.Server | undefined
+let socketClient: net.Socket | undefined
+let reconnectTimer: ReturnType<typeof setTimeout> | undefined
 
-if (process.argv.includes('--socket')) {
-  socketClients = new Set()
-  socketServer = net.createServer(socket => {
-    socketClients!.add(socket)
-    socket.on('close', () => socketClients!.delete(socket))
-    socket.on('error', () => socketClients!.delete(socket))
-  })
+if (opts.socket) {
+  const name = path.basename(process.argv[1] ?? 'unknown', '.js')
 
-  try {
-    fs.unlinkSync(LOG_VIEWER_SOCKET)
-  } catch {}
+  function connect() {
+    const client = net.createConnection(LOG_VIEWER_SOCKET, () => {
+      socketClient = client
+      client.write(JSON.stringify({type: 'register', name}) + '\n')
+    })
 
-  socketServer.listen(LOG_VIEWER_SOCKET)
+    client.on('error', (err: NodeJS.ErrnoException) => {
+      socketClient = undefined
+      scheduleReconnect()
+    })
+
+    client.on('close', () => {
+      socketClient = undefined
+      scheduleReconnect()
+    })
+  }
+
+  function scheduleReconnect() {
+    if (reconnectTimer) return
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = undefined
+      connect()
+    }, RECONNECT_INTERVAL)
+    reconnectTimer.unref()
+  }
+
+  connect()
 
   addListener(({level, args}) => {
-    fetchLogs()
-    const message = JSON.stringify({level, args}) + '\n'
-    for (const client of socketClients!) {
-      try {
-        client.write(message)
-      } catch {}
-    }
+    if (!socketClient) return
+    try {
+      const message = JSON.stringify({type: 'log', level, args}) + '\n'
+      socketClient.write(message)
+    } catch {}
   })
 
   process.on('exit', () => {
-    socketServer?.close()
-    try {
-      fs.unlinkSync(LOG_VIEWER_SOCKET)
-    } catch {}
+    if (reconnectTimer) clearTimeout(reconnectTimer)
+    socketClient?.end()
   })
 }
 
@@ -57,7 +80,7 @@ export async function demo(
   showConsoleLog: boolean | number = false,
 ) {
   process.title = 'TeaUI'
-  if (process.argv.includes('--no-log')) {
+  if (!opts.log) {
     showConsoleLog = false
   }
 
@@ -84,7 +107,7 @@ export async function demo(
     {quitChar: 'C-c'},
   )
 
-  if (process.argv.includes('--exit')) {
+  if (opts.exit) {
     setTimeout(() => {
       screen.exit()
     }, 100)

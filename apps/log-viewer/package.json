@@ -6,6 +6,7 @@
   "scripts": {
     "_build": "pnpm clean && pnpm tsc",
     "build": "node ../../shared/check.js",
+    "demo": "node run.js",
     "clean": "rm -rf .dist/"
   },
   "private": true,

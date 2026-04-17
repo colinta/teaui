@@ -6,7 +6,7 @@ import {getWorkspaceBuildOrder} from '../../shared/check.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const name = process.argv[2]
-const extraArgs = process.argv.slice(3)
+const extraArgs = process.argv.slice(3).filter(a => a !== '--')
 
 const demos = readdirSync(__dirname)
   .filter(f => f.endsWith('.ts') && f !== 'demo.ts')

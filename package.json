@@ -2,6 +2,7 @@
   "scripts": {
     "docs": "pnpm -C apps/docs start",
     "demo": "pnpm -C apps/demos demo",
+    "log-viewer": "pnpm -C apps/log-viewer demo",
     "react": "pnpm -C apps/react demo",
     "react:dev": "pnpm -C apps/react dev",
     "publish": "pnpm -r publish --access public",
