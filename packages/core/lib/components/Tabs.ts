@@ -104,8 +104,8 @@ export class Tabs extends Container {
     this.invalidateRender()
   }
 
-  addTab(tab: Section): void
-  addTab(title: string, child: View): void
+  addTab(tab: Section): Section
+  addTab(title: string, child: View): Section
   addTab(titleOrTab: string | Section, child?: View) {
     let tabView: Section
     if (titleOrTab instanceof Section) {
@@ -115,12 +115,17 @@ export class Tabs extends Container {
     }
 
     this.add(tabView)
+    return tabView
   }
 
-  removeTab(index: number) {
-    const tab = this.tabs.at(index)
-    if (tab) {
-      this.removeChild(tab)
+  removeTab(index: number | Section) {
+    if (index instanceof Section) {
+      this.removeChild(index)
+    } else {
+      const tab = this.tabs.at(index)
+      if (tab) {
+        this.removeChild(tab)
+      }
     }
   }
 
