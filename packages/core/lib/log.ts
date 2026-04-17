@@ -62,15 +62,17 @@ function appendLog(level: Level, args: any[]) {
         : inspect(arg, true),
     ),
   })
-  const logLine = logs[logs.length - 1]
-  for (const listener of logListeners) {
-    listener(logLine)
+  if (level !== 'debug') {
+    const logLine = logs[logs.length - 1]
+    for (const listener of logListeners) {
+      listener(logLine)
+    }
   }
 }
 
 /**
  * Doesn't report 'console.debug' (I don't remember why). Clears logs, but keeps
- * console.debug.
+ * console.debug, and returns the logs.
  */
 export function fetchLogs() {
   const copy = logs.filter(({level}) => level !== 'debug')

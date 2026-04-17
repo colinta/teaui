@@ -11,6 +11,7 @@ import {
   type View,
   interceptConsoleLog,
   addListener,
+  fetchLogs,
 } from '@teaui/core'
 
 const LOG_VIEWER_SOCKET = '/tmp/teaui-log-viewer.sock'
@@ -62,11 +63,14 @@ if (opts.socket) {
   connect()
 
   addListener(({level, args}) => {
-    if (!socketClient) return
-    try {
-      const message = JSON.stringify({type: 'log', level, args}) + '\n'
-      socketClient.write(message)
-    } catch {}
+    if (!socketClient) {
+      return
+    }
+
+    const message = JSON.stringify({type: 'log', level, args}) + '\n'
+    socketClient.write(message)
+    // clear the buffer
+    fetchLogs()
   })
 
   process.on('exit', () => {

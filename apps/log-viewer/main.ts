@@ -3,23 +3,24 @@ import fs from 'node:fs'
 
 import {
   AutoLegend,
-  Collapsible,
   ConsoleLog,
   HotKey,
   Input,
+  Log,
   Screen,
-  Scrollable,
   Stack,
-  Style,
   Tabs,
-  Text,
   Window,
-  centerPad,
   interceptConsoleLog,
+  type LogLine,
 } from '@teaui/core'
-import {inspect} from '@teaui/inspect'
 
-import {type FilterNode, parseFilter, matchFilter} from './parser.js'
+import {
+  type FilterNode,
+  type ParseResult,
+  parseFilter,
+  matchFilter,
+} from './parser.js'
 import {LOG_VIEWER_SOCKET} from './protocol.js'
 import type {Message} from './protocol.js'
 
@@ -30,16 +31,16 @@ interceptConsoleLog()
 interface LogEntry {
   level: string
   text: string
-  view: Collapsible
+  line: LogLine
 }
 
 interface ClientState {
   name: string
   entries: LogEntry[]
   filter: FilterNode | undefined
-  scrollable: Scrollable
+  log: Log
   filterInput: Input
-  tab: ReturnType<typeof createClientTab>
+  tabContent: ReturnType<typeof createClientTab>
 }
 
 const clients = new Map<net.Socket, ClientState>()
@@ -115,17 +116,15 @@ process.on('exit', () => {
 // ── Client management ───────────────────────────────────────────────────────
 
 function addClient(socket: net.Socket, name: string): ClientState {
-  const scrollable = new Scrollable({
-    keepAtBottom: true,
-    direction: 'down',
-  })
+  const log = new Log()
 
   const filterInput = new Input({
     placeholder: 'Filter logs… (supports "quoted" /regex/ AND OR)',
     onChange: (value: string) => {
       const state = clients.get(socket)
       if (!state) return
-      state.filter = value.trim() ? parseFilter(value) : undefined
+      const result = value.trim() ? parseFilter(value) : undefined
+      state.filter = result?.type === 'success' ? result.node : undefined
       rebuildVisible(state)
       screen.render()
     },
@@ -134,19 +133,19 @@ function addClient(socket: net.Socket, name: string): ClientState {
 
   const legend = new AutoLegend()
 
-  const tab = createClientTab(scrollable, filterInput, legend)
+  const tabContent = createClientTab(log, filterInput, legend)
 
   const state: ClientState = {
     name,
     entries: [],
     filter: undefined,
-    scrollable,
+    log,
     filterInput,
-    tab,
+    tabContent,
   }
 
   clients.set(socket, state)
-  tabs.addTab(name, tab)
+  tabs.addTab(name, tabContent)
   // switch to newly connected tab
   tabs.selected = tabs.tabs.length - 1
   console.log(`Client connected: ${name}`)
@@ -167,71 +166,52 @@ function removeClient(socket: net.Socket) {
   console.log(`Client disconnected: ${state.name}`)
 }
 
-function createClientTab(
-  scrollable: Scrollable,
-  filterInput: Input,
-  legend: AutoLegend,
-) {
-  return new HotKey({
+function createClientTab(log: Log, filterInput: Input, legend: AutoLegend) {
+  const clearHotKey = new HotKey({
     hotKey: {char: 'k', ctrl: true},
     label: 'Clear',
     onPress: () => {
-      // find which client owns this scrollable
       for (const state of clients.values()) {
-        if (state.scrollable === scrollable) {
+        if (state.log === log) {
           state.entries.length = 0
-          scrollable.removeAllChildren()
+          log.clear()
           screen.render()
           break
         }
       }
     },
-    child: Stack.down({
-      children: [
-        ['natural', legend],
-        ['natural', filterInput],
-        ['flex1', scrollable],
-      ],
-    }),
+  })
+
+  return Stack.down({
+    children: [
+      ['natural', legend],
+      ['natural', clearHotKey],
+      ['natural', filterInput],
+      ['flex1', log],
+    ],
   })
 }
 
 // ── Log entries ─────────────────────────────────────────────────────────────
 
 function addLogEntry(state: ClientState, level: string, args: any[]) {
-  const expandedText = args
-    .map(arg => (typeof arg === 'string' ? arg : inspect(arg, true)))
-    .join(' ')
-  const collapsedText = args
-    .map(arg => (typeof arg === 'string' ? arg : inspect(arg, false)))
-    .join(' ')
+  const text = args.map(arg => `${arg}`).join(' ')
+  const line: LogLine = {level: level as LogLine['level'], args}
 
-  const expanded = new Text(expandedText)
-  const collapsed = new Text(collapsedText)
-
-  const view = new Collapsible({
-    expanded,
-    collapsed,
-    isCollapsed: true,
-  })
-
-  const entry: LogEntry = {
-    level,
-    text: collapsedText,
-    view,
-  }
+  const entry: LogEntry = {level, text, line}
   state.entries.push(entry)
 
-  if (!state.filter || matchFilter(state.filter, entry.text)) {
-    state.scrollable.add(Stack.right([view]))
-  }
+  state.log.setLogs(
+    state.entries
+      .filter(e => !state.filter || matchFilter(state.filter, e.text))
+
+      .map(e => e.line),
+  )
 }
 
 function rebuildVisible(state: ClientState) {
-  state.scrollable.removeAllChildren()
-  for (const entry of state.entries) {
-    if (!state.filter || matchFilter(state.filter, entry.text)) {
-      state.scrollable.add(Stack.right([entry.view]))
-    }
-  }
+  const filtered = state.entries.filter(
+    e => !state.filter || matchFilter(state.filter, e.text),
+  )
+  state.log.setLogs(filtered.map(e => e.line))
 }

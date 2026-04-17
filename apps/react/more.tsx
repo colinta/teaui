@@ -78,7 +78,7 @@ export function MoreTab() {
         />
         <Button
           title="debug()"
-          onClick={() => console.debug({action: 'debug', ts: Date.now()})}
+          onClick={() => console.error({action: 'error', ts: Date.now()})}
         />
         <Button
           title="warn()"

@@ -34,6 +34,12 @@ export type FilterNode =
   | {type: 'and'; left: FilterNode; right: FilterNode}
   | {type: 'or'; left: FilterNode; right: FilterNode}
 
+// ── Result ──────────────────────────────────────────────────────────────────
+
+export type ParseResult =
+  | {type: 'success'; node: FilterNode}
+  | {type: 'failure'; error: string}
+
 // ── Tokenizer ───────────────────────────────────────────────────────────────
 
 function tokenize(input: string): Token[] {
@@ -140,15 +146,22 @@ function tokenize(input: string): Token[] {
 class Parser {
   #tokens: Token[]
   #pos: number = 0
+  #error: string | undefined
 
   constructor(tokens: Token[]) {
     this.#tokens = tokens
   }
 
-  parse(): FilterNode | undefined {
+  parse(): ParseResult | undefined {
     if (this.#tokens.length === 0) return undefined
     const node = this.#expr()
-    return node
+    if (this.#error) {
+      return {type: 'failure', error: this.#error}
+    }
+    if (!node) {
+      return {type: 'failure', error: 'Empty expression'}
+    }
+    return {type: 'success', node}
   }
 
   #peek(): Token | undefined {
@@ -159,30 +172,52 @@ class Parser {
     return this.#tokens[this.#pos++]!
   }
 
-  #expr(): FilterNode {
-    let left = this.#andExpr()
+  #fail(message: string) {
+    if (!this.#error) {
+      this.#error = message
+    }
+  }
+
+  #expr(): FilterNode | undefined {
+    const left = this.#andExpr()
+    if (!left) return undefined
+    let result = left
     while (this.#peek()?.type === 'or') {
       this.#advance()
       const right = this.#andExpr()
-      left = {type: 'or', left, right}
+      if (!right) {
+        this.#fail('Expected expression after OR')
+        return result
+      }
+      result = {type: 'or', left: result, right}
     }
-    return left
+    return result
   }
 
-  #andExpr(): FilterNode {
-    let left = this.#seqExpr()
+  #andExpr(): FilterNode | undefined {
+    const left = this.#seqExpr()
+    if (!left) return undefined
+    let result = left
     while (this.#peek()?.type === 'and') {
       this.#advance()
       const right = this.#seqExpr()
-      left = {type: 'and', left, right}
+      if (!right) {
+        this.#fail('Expected expression after AND')
+        return result
+      }
+      result = {type: 'and', left: result, right}
     }
-    return left
+    return result
   }
 
-  #seqExpr(): FilterNode {
-    const nodes: FilterNode[] = [this.#atom()]
+  #seqExpr(): FilterNode | undefined {
+    const first = this.#atom()
+    if (!first) return undefined
+    const nodes: FilterNode[] = [first]
     while (this.#isAtomStart()) {
-      nodes.push(this.#atom())
+      const next = this.#atom()
+      if (!next) break
+      nodes.push(next)
     }
     return nodes.length === 1 ? nodes[0] : {type: 'sequence', nodes}
   }
@@ -198,17 +233,23 @@ class Parser {
     )
   }
 
-  #atom(): FilterNode {
+  #atom(): FilterNode | undefined {
     const t = this.#peek()
-    if (!t) throw new Error('Unexpected end of filter')
+    if (!t) return undefined
 
     if (t.type === 'lparen') {
       this.#advance()
       const inner = this.#expr()
       if (this.#peek()?.type === 'rparen') {
         this.#advance()
+      } else {
+        this.#fail('Unclosed parenthesis')
       }
       return inner
+    }
+
+    if (t.type !== 'word' && t.type !== 'quoted' && t.type !== 'regex') {
+      return undefined
     }
 
     this.#advance()
@@ -219,20 +260,13 @@ class Parser {
         return {type: 'quoted', value: t.value, lower: t.value.toLowerCase()}
       case 'regex':
         return {type: 'regex', value: t.value}
-      default:
-        // stray AND/OR treated as word
-        return {
-          type: 'word',
-          value: t.type.toUpperCase(),
-          lower: t.type,
-        }
     }
   }
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────
 
-export function parseFilter(input: string): FilterNode | undefined {
+export function parseFilter(input: string): ParseResult | undefined {
   const tokens = tokenize(input.trim())
   return new Parser(tokens).parse()
 }

@@ -1,10 +1,22 @@
 import {describe, test, expect} from 'vitest'
-import {parseFilter, matchFilter, type FilterNode} from '../parser.js'
+import {
+  parseFilter,
+  matchFilter,
+  type FilterNode,
+  type ParseResult,
+} from '../parser.js'
+
+function parse(filter: string): FilterNode | undefined {
+  const result = parseFilter(filter)
+  if (!result) return undefined
+  if (result.type === 'failure') return undefined
+  return result.node
+}
 
 function matches(filter: string, text: string): boolean {
-  const node = parseFilter(filter)
-  if (!node) return true
-  return matchFilter(node, text)
+  const result = parseFilter(filter)
+  if (!result || result.type === 'failure') return true
+  return matchFilter(result.node, text)
 }
 
 describe('parseFilter', () => {
@@ -14,13 +26,11 @@ describe('parseFilter', () => {
   })
 
   test('single word', () => {
-    const node = parseFilter('foo')
-    expect(node).toEqual({type: 'word', value: 'foo', lower: 'foo'})
+    expect(parse('foo')).toEqual({type: 'word', value: 'foo', lower: 'foo'})
   })
 
   test('quoted string', () => {
-    const node = parseFilter('"hello world"')
-    expect(node).toEqual({
+    expect(parse('"hello world"')).toEqual({
       type: 'quoted',
       value: 'hello world',
       lower: 'hello world',
@@ -28,8 +38,7 @@ describe('parseFilter', () => {
   })
 
   test('single-quoted string', () => {
-    const node = parseFilter("'hello world'")
-    expect(node).toEqual({
+    expect(parse("'hello world'")).toEqual({
       type: 'quoted',
       value: 'hello world',
       lower: 'hello world',
@@ -37,18 +46,15 @@ describe('parseFilter', () => {
   })
 
   test('regex', () => {
-    const node = parseFilter('/\\d+/')
-    expect(node).toEqual({type: 'regex', value: /\d+/})
+    expect(parse('/\\d+/')).toEqual({type: 'regex', value: /\d+/})
   })
 
   test('regex with flags', () => {
-    const node = parseFilter('/foo/gi')
-    expect(node).toEqual({type: 'regex', value: /foo/gi})
+    expect(parse('/foo/gi')).toEqual({type: 'regex', value: /foo/gi})
   })
 
   test('sequence of words', () => {
-    const node = parseFilter('foo bar baz')
-    expect(node).toEqual({
+    expect(parse('foo bar baz')).toEqual({
       type: 'sequence',
       nodes: [
         {type: 'word', value: 'foo', lower: 'foo'},
@@ -59,8 +65,7 @@ describe('parseFilter', () => {
   })
 
   test('AND expression', () => {
-    const node = parseFilter('foo AND bar')
-    expect(node).toEqual({
+    expect(parse('foo AND bar')).toEqual({
       type: 'and',
       left: {type: 'word', value: 'foo', lower: 'foo'},
       right: {type: 'word', value: 'bar', lower: 'bar'},
@@ -68,8 +73,7 @@ describe('parseFilter', () => {
   })
 
   test('OR expression', () => {
-    const node = parseFilter('foo OR bar')
-    expect(node).toEqual({
+    expect(parse('foo OR bar')).toEqual({
       type: 'or',
       left: {type: 'word', value: 'foo', lower: 'foo'},
       right: {type: 'word', value: 'bar', lower: 'bar'},
@@ -77,8 +81,7 @@ describe('parseFilter', () => {
   })
 
   test('OR has lower precedence than AND', () => {
-    const node = parseFilter('a AND b OR c AND d')
-    expect(node).toEqual({
+    expect(parse('a AND b OR c AND d')).toEqual({
       type: 'or',
       left: {
         type: 'and',
@@ -94,8 +97,7 @@ describe('parseFilter', () => {
   })
 
   test('AND has lower precedence than sequence', () => {
-    const node = parseFilter('a b AND c d')
-    expect(node).toEqual({
+    expect(parse('a b AND c d')).toEqual({
       type: 'and',
       left: {
         type: 'sequence',
@@ -115,8 +117,7 @@ describe('parseFilter', () => {
   })
 
   test('parenthesized group', () => {
-    const node = parseFilter('(foo OR bar) AND baz')
-    expect(node).toEqual({
+    expect(parse('(foo OR bar) AND baz')).toEqual({
       type: 'and',
       left: {
         type: 'or',
@@ -128,8 +129,7 @@ describe('parseFilter', () => {
   })
 
   test('mixed tokens in sequence', () => {
-    const node = parseFilter('error "not found" /\\d+/')
-    expect(node).toEqual({
+    expect(parse('error "not found" /\\d+/')).toEqual({
       type: 'sequence',
       nodes: [
         {type: 'word', value: 'error', lower: 'error'},
@@ -139,22 +139,56 @@ describe('parseFilter', () => {
     })
   })
 
-  test('unclosed paren is tolerated', () => {
-    const node = parseFilter('(foo OR bar')
-    expect(node).toEqual({
-      type: 'or',
-      left: {type: 'word', value: 'foo', lower: 'foo'},
-      right: {type: 'word', value: 'bar', lower: 'bar'},
-    })
-  })
-
   test('unclosed quote is tolerated', () => {
-    const node = parseFilter('"hello')
-    expect(node).toEqual({
+    expect(parse('"hello')).toEqual({
       type: 'quoted',
       value: 'hello',
       lower: 'hello',
     })
+  })
+})
+
+describe('parseFilter — error cases', () => {
+  test('trailing AND returns failure', () => {
+    const result = parseFilter('foo AND')
+    expect(result).toEqual({
+      type: 'failure',
+      error: 'Expected expression after AND',
+    })
+  })
+
+  test('trailing OR returns failure', () => {
+    const result = parseFilter('foo OR')
+    expect(result).toEqual({
+      type: 'failure',
+      error: 'Expected expression after OR',
+    })
+  })
+
+  test('leading AND returns failure', () => {
+    const result = parseFilter('AND foo')
+    expect(result).toEqual({
+      type: 'failure',
+      error: 'Empty expression',
+    })
+  })
+
+  test('leading OR returns failure', () => {
+    const result = parseFilter('OR foo')
+    expect(result).toEqual({
+      type: 'failure',
+      error: 'Empty expression',
+    })
+  })
+
+  test('unclosed paren returns failure with partial parse', () => {
+    const result = parseFilter('(foo OR bar')
+    expect(result?.type).toBe('failure')
+  })
+
+  test('empty parens returns failure', () => {
+    const result = parseFilter('()')
+    expect(result?.type).toBe('failure')
   })
 })
 
