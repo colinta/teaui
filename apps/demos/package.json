@@ -14,6 +14,7 @@
     "@teaui/code": "workspace:*",
     "@teaui/core": "workspace:*",
     "@teaui/inspect": "workspace:*",
+    "@teaui/log-viewer": "workspace:*",
     "@teaui/subprocess": "workspace:*",
     "commander": "^14.0.3"
   },

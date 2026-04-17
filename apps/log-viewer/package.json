@@ -12,7 +12,8 @@
   "private": true,
   "dependencies": {
     "@teaui/core": "workspace:*",
-    "@teaui/inspect": "workspace:*"
+    "@teaui/inspect": "workspace:*",
+    "@teaui/log-viewer": "workspace:*"
   },
   "devDependencies": {
     "@teaui/shared": "workspace:*"

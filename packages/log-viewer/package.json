@@ -1,0 +1,33 @@
+{
+  "name": "@teaui/log-viewer",
+  "description": "Client library for sending logs to the TeaUI log-viewer app",
+  "author": "Colin T.A. Gray <colinta@colinta.com>",
+  "version": "1.11.8",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/colinta/teaui.git"
+  },
+  "homepage": "https://github.com/colinta/teaui",
+  "main": ".dist/index.js",
+  "types": ".dist/index.d.ts",
+  "files": [
+    ".dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "clean": "rm -rf .dist/",
+    "_build": "pnpm clean && pnpm tsc",
+    "build": "node ../../shared/check.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">= 18.12.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@teaui/shared": "workspace:*"
+  }
+}

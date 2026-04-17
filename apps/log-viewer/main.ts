@@ -15,21 +15,15 @@ import {
   type LogLine,
 } from '@teaui/core'
 
-import {
-  type FilterNode,
-  type ParseResult,
-  parseFilter,
-  matchFilter,
-} from './parser.js'
-import {LOG_VIEWER_SOCKET} from './protocol.js'
-import type {Message} from './protocol.js'
+import {type FilterNode, parseFilter, matchFilter} from './parser.js'
+import {DEFAULT_SOCKET_PATH, type Message, type Metadata} from './protocol.js'
 
 interceptConsoleLog()
 
 // ── Per-client state ────────────────────────────────────────────────────────
 
 interface LogEntry {
-  level: string
+  metadata: Metadata
   text: string
   line: LogLine
 }
@@ -63,7 +57,7 @@ const [screen] = await Screen.start(
 // ── Socket server ───────────────────────────────────────────────────────────
 
 try {
-  fs.unlinkSync(LOG_VIEWER_SOCKET)
+  fs.unlinkSync(DEFAULT_SOCKET_PATH)
 } catch {}
 
 const server = net.createServer(socket => {
@@ -82,7 +76,7 @@ const server = net.createServer(socket => {
         if (message.type === 'register') {
           state = addClient(socket, message.name)
         } else if (message.type === 'log' && state) {
-          addLogEntry(state, message.level, message.args)
+          addLogEntry(state, message.metadata, message.message)
         }
       } catch {}
     }
@@ -101,15 +95,15 @@ const server = net.createServer(socket => {
   })
 })
 
-server.listen(LOG_VIEWER_SOCKET, () => {
-  console.log('Listening on', LOG_VIEWER_SOCKET)
+server.listen(DEFAULT_SOCKET_PATH, () => {
+  console.log('Listening on', DEFAULT_SOCKET_PATH)
   screen.render()
 })
 
 process.on('exit', () => {
   server.close()
   try {
-    fs.unlinkSync(LOG_VIEWER_SOCKET)
+    fs.unlinkSync(DEFAULT_SOCKET_PATH)
   } catch {}
 })
 
@@ -194,17 +188,16 @@ function createClientTab(log: Log, filterInput: Input, legend: AutoLegend) {
 
 // ── Log entries ─────────────────────────────────────────────────────────────
 
-function addLogEntry(state: ClientState, level: string, args: any[]) {
-  const text = args.map(arg => `${arg}`).join(' ')
-  const line: LogLine = {level: level as LogLine['level'], args}
+function addLogEntry(state: ClientState, metadata: Metadata, message: string) {
+  const text = metadata.source ? `[${metadata.source}] ${message}` : message
+  const line: LogLine = {level: metadata.level, args: [text]}
 
-  const entry: LogEntry = {level, text, line}
+  const entry: LogEntry = {metadata, text, line}
   state.entries.push(entry)
 
   state.log.setLogs(
     state.entries
       .filter(e => !state.filter || matchFilter(state.filter, e.text))
-
       .map(e => e.line),
   )
 }
