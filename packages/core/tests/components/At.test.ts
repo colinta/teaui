@@ -3,7 +3,9 @@ import {testRender} from '../../lib/TestScreen.js'
 import {At} from '../../lib/components/At.js'
 import {Text} from '../../lib/components/Text.js'
 import {Box} from '../../lib/components/Box.js'
-import {Size} from '../../lib/geometry.js'
+import {Point, Size} from '../../lib/geometry.js'
+import {View} from '../../lib/View.js'
+import type {Viewport} from '../../lib/Viewport.js'
 import type {Location} from '../../lib/components/ZStack.js'
 
 describe('At', () => {
@@ -113,6 +115,28 @@ describe('At', () => {
       const t = testRender(makeAt('bottom-right'), {width: 10, height: 5})
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
+  })
+
+  it('constrains positioned children to the viewport size', () => {
+    class OversizedView extends View {
+      naturalSize(available: Size): Size {
+        return new Size(available.width, available.height + 2)
+      }
+
+      render(viewport: Viewport) {
+        viewport.write('X', new Point(0, viewport.contentSize.height - 1))
+      }
+    }
+
+    const t = testRender(
+      new At({
+        location: 'top-right',
+        child: new OversizedView(),
+      }),
+      {width: 5, height: 3},
+    )
+
+    expect(t.terminal.textContent()).toBe('\n\nX')
   })
 
   it('overlays multiple children like a ZStack', () => {

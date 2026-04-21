@@ -78,7 +78,9 @@ export class ZStack extends Container {
       for (const child of this.children) {
         if (!child.isVisible) continue
 
-        const childSize = child.naturalSize(viewport.contentSize)
+        const childSize = child
+          .naturalSize(viewport.contentSize)
+          .max(viewport.contentSize)
         const origin = computeOrigin(
           this.#location,
           viewport.contentSize,

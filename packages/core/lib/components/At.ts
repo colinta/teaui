@@ -192,7 +192,7 @@ export class At extends Container {
     const childrenSize = Size.zero.mutableCopy()
     for (const child of this.children) {
       if (!child.isVisible) continue
-      const childSize = child.naturalSize(layoutRect.size)
+      const childSize = child.naturalSize(layoutRect.size).max(layoutRect.size)
       childrenSize.width = Math.max(childrenSize.width, childSize.width)
       childrenSize.height = Math.max(childrenSize.height, childSize.height)
     }

@@ -3,7 +3,9 @@ import {testRender} from '../../lib/TestScreen.js'
 import {ZStack, type Location} from '../../lib/components/ZStack.js'
 import {Text} from '../../lib/components/Text.js'
 import {Box} from '../../lib/components/Box.js'
-import {Size} from '../../lib/geometry.js'
+import {Point, Size} from '../../lib/geometry.js'
+import {View} from '../../lib/View.js'
+import type {Viewport} from '../../lib/Viewport.js'
 
 describe('ZStack', () => {
   it('renders a single child', () => {
@@ -68,6 +70,28 @@ describe('ZStack', () => {
   it('renders empty with no children', () => {
     const t = testRender(new ZStack({}), {width: 5, height: 3})
     expect(t.terminal.textContent()).toBe('')
+  })
+
+  it('constrains aligned children to the viewport size', () => {
+    class OversizedView extends View {
+      naturalSize(available: Size): Size {
+        return new Size(available.width, available.height + 2)
+      }
+
+      render(viewport: Viewport) {
+        viewport.write('X', new Point(0, viewport.contentSize.height - 1))
+      }
+    }
+
+    const t = testRender(
+      new ZStack({
+        location: 'top-right',
+        child: new OversizedView(),
+      }),
+      {width: 5, height: 3},
+    )
+
+    expect(t.terminal.textContent()).toBe('\n\nX')
   })
 
   describe('location', () => {
