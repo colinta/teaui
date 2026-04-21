@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ImageView > centers the image in the viewport 1`] = `
+"
+
+    ▀▀"
+`;
+
+exports[`ImageView > handles load errors gracefully 1`] = `""`;
+
+exports[`ImageView > renders a 2x2 image after loading 1`] = `
+"
+
+    ▀▀"
+`;
+
+exports[`ImageView > renders a 4x4 image after loading 1`] = `
+"
+   ▀▀▀▀
+   ▀▀▀▀"
+`;
+
+exports[`ImageView > renders empty before image loads 1`] = `""`;
+
+exports[`ImageView > renders empty when no source 1`] = `""`;

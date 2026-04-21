@@ -22,6 +22,9 @@
     "vitest": "^3.2.4"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp"
+    ],
     "overrides": {
       "minimatch": "9.0.7",
       "serialize-javascript@<=7.0.2": ">=7.0.3",
