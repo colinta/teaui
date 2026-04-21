@@ -161,14 +161,29 @@ export class TextContainer extends Container {
   }
 
   add(child: View, at?: number) {
+    const oldIndex = this.#nodes.indexOf(child)
+    let index = at ?? this.#nodes.length
+    if (oldIndex === index) {
+      return
+    }
+
+    if (child.parent === this) {
+      this.#nodes.splice(oldIndex, 1)
+      if (oldIndex !== -1 && oldIndex < index) {
+        index -= 1
+      }
+    } else if (child.parent instanceof Container) {
+      child.parent.removeChild(child)
+    }
+
     if (child instanceof TextLiteral || child instanceof TextStyle) {
       child.parent = this
     }
 
-    this.#nodes.splice(at ?? this.#nodes.length, 0, child)
+    this.#nodes.splice(index, 0, child)
 
     if (this.screen) {
-      this.#invalidateNodes()
+      this.invalidateNodes()
     }
   }
 
@@ -182,7 +197,7 @@ export class TextContainer extends Container {
       this.#nodes.splice(index, 1)
 
       if (this.screen) {
-        this.#invalidateNodes()
+        this.invalidateNodes()
       }
     } else {
       super.removeChild(child)
@@ -191,7 +206,7 @@ export class TextContainer extends Container {
 
   didMount(screen: Screen) {
     super.didMount(screen)
-    this.#invalidateNodes()
+    this.invalidateNodes()
   }
 
   invalidateText() {
@@ -203,7 +218,7 @@ export class TextContainer extends Container {
         childIndex += 1
       } else {
         if (!(childView instanceof Text)) {
-          this.#invalidateNodes()
+          this.invalidateNodes()
           return
         }
 
@@ -213,7 +228,7 @@ export class TextContainer extends Container {
     }
   }
 
-  #invalidateNodes() {
+  invalidateNodes() {
     // ideally, we would not remove/add views that are in children and this.#nodes,
     // but in reality that turns out to be tedious, and it's hardly any trouble to
     // remove and re-add those views.
@@ -227,6 +242,8 @@ export class TextContainer extends Container {
         super.add(textView)
       }
     }
+
+    this.invalidateSize()
   }
 
   #nodesToChildren(): (string | View)[] {
@@ -399,7 +416,7 @@ export class TextProvider extends Container {
       retVal = {}
     }
 
-    retVal.style = this.#style
+    retVal.style = (retVal.style ?? Style.NONE).merge(this.#style)
 
     if (this.#alignment !== undefined) {
       retVal.alignment = this.#alignment
@@ -419,6 +436,20 @@ export class TextProvider extends Container {
   update(props: ProviderProps) {
     this.#update(props)
     super.update(props)
+    this.#invalidateTextContainers(this)
+    this.invalidateSize()
+  }
+
+  #invalidateTextContainers(container: Container) {
+    for (const child of container.children) {
+      if (child instanceof TextContainer) {
+        child.invalidateNodes()
+      }
+
+      if (child instanceof Container) {
+        this.#invalidateTextContainers(child)
+      }
+    }
   }
 
   #update(props: ProviderProps) {

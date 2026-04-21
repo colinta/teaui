@@ -1,47 +1,6 @@
-import React, {
-  useState,
-  useMemo,
-  useEffect,
-  useRef,
-  useReducer,
-  type Reducer,
-} from 'react'
-import {interceptConsoleLog, type Border} from '@teaui/core'
-import {
-  Accordion,
-  Box,
-  Button,
-  Checkbox,
-  Collapsible,
-  CollapsibleText,
-  ConsoleLog,
-  Digits,
-  Drawer,
-  Dropdown,
-  FontStyle,
-  type FontStyleValue,
-  H1,
-  H2,
-  H3,
-  H4,
-  H5,
-  H6,
-  Input,
-  Progress,
-  Scrollable,
-  Separator,
-  Slider,
-  Logo,
-  Spinner,
-  Stack,
-  ZStack,
-  Style,
-  Tabs,
-  Text,
-  run,
-  AutoLegend,
-} from '@teaui/react'
-import YAML from 'yaml'
+import React from 'react'
+import {interceptConsoleLog} from '@teaui/core'
+import {Box, Logo, At, Stack, ZStack, Tabs, run, AutoLegend} from '@teaui/react'
 import {BreadcrumbTab} from './breadcrumb.js'
 import {CalendarTab} from './calendar.js'
 import {LegendTab} from './legend.js'
@@ -59,7 +18,7 @@ import {CodeTab} from './code.js'
 
 function Demo() {
   return (
-    <ZStack flex={1} location="top-right">
+    <ZStack flex={1}>
       <Box border="rounded" flex={1}>
         <Stack.down flex={1}>
           <Tabs border flex={1}>
@@ -103,7 +62,9 @@ function Demo() {
           <AutoLegend />
         </Stack.down>
       </Box>
-      <Logo isAnimating />
+      <At location="top-right">
+        <Logo isAnimating />
+      </At>
     </ZStack>
   )
 }

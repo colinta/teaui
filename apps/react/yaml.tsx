@@ -125,6 +125,7 @@ config:
   border: rounded
   theme: default
   debug: false
+#test: foo
 tags: [tui, terminal, ui]
 `
 
