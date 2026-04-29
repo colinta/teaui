@@ -8,6 +8,9 @@
 /** Special character used by viewport.paint for background drawing. */
 export const BG_DRAW = '\x14'
 
+const WIDE_BLACK_SQUARE = '⬛︎'
+const WIDE_WHITE_SQUARE = '⬜︎'
+
 export interface AnsiLocation {
   start: number
   stop: number
@@ -31,6 +34,10 @@ export function charWidth(str: string): 0 | 1 | 2 {
 
   // Emoji support
   if (str.length > 1 && /^\p{Extended_Pictographic}/u.test(str)) {
+    if (str === WIDE_BLACK_SQUARE || str === WIDE_WHITE_SQUARE) {
+      return 2
+    }
+
     if (
       str === '▫️' ||
       str === '◻️' ||
