@@ -25,6 +25,12 @@ interface TabProps extends ContainerProps {
   title?: string
 }
 
+interface SeparatorMovement {
+  start: number
+  stop: number
+  pixelsPerMs: number
+}
+
 // tabs = new Tabs()
 // tabs.addTab('title', tab)
 // tabs.addTab(new Text({text: 'title', style: …}), tab)
@@ -34,6 +40,7 @@ export class Tabs extends Container {
   static Section: typeof Section
   #selectedTab = 0
   #separatorLocation: [number, number] | undefined
+  #separatorMovement: SeparatorMovement | undefined
   #separatorWidths: number[] = []
   #border: boolean = false
 
@@ -197,17 +204,21 @@ export class Tabs extends Container {
             : [start + width, stop + width, width],
       [0, 0, 0] as [number, number, number],
     )
-    const dx = dt / 20
+    const movement = this.#separatorMovementFor(start, stop)
+    const dx = movement.pixelsPerMs * dt
+    let didMove = false
     if (start < this.#separatorLocation[0]) {
       this.#separatorLocation[0] = Math.max(
         start,
         this.#separatorLocation[0] - dx,
       )
+      didMove = true
     } else if (start > this.#separatorLocation[0]) {
       this.#separatorLocation[0] = Math.min(
         start,
         this.#separatorLocation[0] + dx,
       )
+      didMove = true
     }
 
     if (stop > this.#separatorLocation[1]) {
@@ -215,12 +226,17 @@ export class Tabs extends Container {
         stop,
         this.#separatorLocation[1] + dx,
       )
+      didMove = true
     } else if (stop < this.#separatorLocation[1]) {
       this.#separatorLocation[1] = Math.max(
         stop,
         this.#separatorLocation[1] - dx,
       )
-    } else {
+      didMove = true
+    }
+
+    if (!didMove) {
+      this.#separatorMovement = undefined
       return false
     }
 
@@ -231,7 +247,37 @@ export class Tabs extends Container {
       )
     }
 
+    if (
+      this.#separatorLocation[0] === start &&
+      this.#separatorLocation[1] === stop
+    ) {
+      this.#separatorMovement = undefined
+    }
+
     return true
+  }
+
+  #separatorMovementFor(start: number, stop: number): SeparatorMovement {
+    if (
+      this.#separatorMovement?.start === start &&
+      this.#separatorMovement.stop === stop
+    ) {
+      return this.#separatorMovement
+    }
+
+    const maxDistance = Math.max(
+      Math.abs(start - this.#separatorLocation![0]),
+      Math.abs(stop - this.#separatorLocation![1]),
+    )
+    this.#separatorMovement = {
+      start,
+      stop,
+      pixelsPerMs: Math.max(
+        TAB_SEPARATOR_PIXELS_PER_MS,
+        maxDistance / TAB_SEPARATOR_MAX_DURATION_MS,
+      ),
+    }
+    return this.#separatorMovement
   }
 
   render(viewport: Viewport) {
@@ -501,3 +547,5 @@ Tabs.Section = Section
 
 const TAB_TITLE_PAD = 2
 const TAB_SEPARATOR_HEIGHT = 1
+const TAB_SEPARATOR_PIXELS_PER_MS = 1 / 20
+const TAB_SEPARATOR_MAX_DURATION_MS = 700

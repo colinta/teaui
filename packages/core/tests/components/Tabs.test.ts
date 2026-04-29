@@ -74,4 +74,23 @@ describe('Tabs', () => {
     t.tick(5000)
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
+
+  it('settles long separator animations within one second', () => {
+    const tabs = Tabs.create(
+      Array.from({length: 12}, (_, index) => [
+        `Tab ${index}`,
+        new Text({text: `Panel ${index}`}),
+      ]),
+      {border: true},
+    )
+    const t = testRender(tabs, {width: 100, height: 5})
+
+    tabs.select(11)
+    t.render()
+    t.tick(1000)
+    const afterOneSecond = t.terminal.textContent()
+
+    t.tick(5000)
+    expect(t.terminal.textContent()).toBe(afterOneSecond)
+  })
 })
