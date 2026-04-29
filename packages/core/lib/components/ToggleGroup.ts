@@ -1,5 +1,6 @@
 import * as unicode from '@teaui/term'
 import type {Viewport} from '../Viewport.js'
+import {Style} from '../Style.js'
 
 import {type Props as ViewProps, View} from '../View.js'
 import {Container} from '../Container.js'
@@ -266,9 +267,19 @@ export class ToggleGroup extends Container {
     }
 
     let offsetY = 1
-    const line = border.left + ' '.repeat(textWidth) + border.right
+    const backgroundStyle = this.#backgroundStyle(isSelected)
+    const fill = FILL.repeat(textWidth)
     for (let i = this.#sizeCache.height - 2 * BORDER.size; i-- > 0; ) {
-      viewport.write(line, Point.zero.offset(0, offsetY))
+      viewport.write(border.left, Point.zero.offset(0, offsetY))
+      viewport.write(
+        fill,
+        Point.zero.offset(BORDER.size, offsetY),
+        backgroundStyle,
+      )
+      viewport.write(
+        border.right,
+        Point.zero.offset(textWidth + BORDER.size, offsetY),
+      )
       offsetY += 1
     }
 
@@ -278,11 +289,30 @@ export class ToggleGroup extends Container {
         BORDER.size + this.#offAxisPadding,
       ),
       inner => {
-        inner.write(text, Point.zero, this.theme.text())
+        inner.write(text, Point.zero, this.#textStyle(isSelected))
       },
     )
   }
+
+  #backgroundStyle(isSelected: boolean): Style | undefined {
+    if (!isSelected) {
+      return undefined
+    }
+
+    return new Style({background: this.theme.dimBackgroundColor})
+  }
+
+  #textStyle(isSelected: boolean): Style {
+    const style = this.theme.text()
+    if (!isSelected) {
+      return style
+    }
+
+    return style.merge({background: this.theme.dimBackgroundColor})
+  }
 }
+
+const FILL = ' '
 
 const BORDER = {
   size: 1,

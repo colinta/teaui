@@ -75,6 +75,9 @@ describe('ToggleGroup', () => {
     })
     const t = testRender(tg, {width: 20, height: 3})
     expect(t.terminal.textContent()).toMatchSnapshot()
+    expect(t.terminal.styleOf('B')?.background).toEqual([67, 67, 67])
+    expect(t.terminal.styleAt(5, 1).background).toEqual([67, 67, 67])
+    expect(t.terminal.styleOf('A')?.background).not.toEqual([67, 67, 67])
   })
 
   it('shows unselected state', () => {
