@@ -8,7 +8,8 @@ b
 
 exports[`AutoLegend > snapshot: focus changes legend content 2`] = `
 "a
-b"
+b
+⌃a/↖ Line Start  ⌃e/↘ Line End  ⌥, Start  ⌥. End  ⌃z Undo  ⌃⇧z Redo"
 `;
 
 exports[`AutoLegend > snapshot: input with labeled HotKey 1`] = `
