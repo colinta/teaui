@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Toggle > rendering > renders off with the slider on the left 1`] = `
+"┏━┓──┐
+┗━┛──┘"
+`;
+
+exports[`Toggle > rendering > renders on with the slider on the right 1`] = `
+"┌──▗▄▖
+└──▝▀▘"
+`;
+
+exports[`Toggle > rendering > supports a height of 1 when off 1`] = `"⬜︎╶──╴"`;
+
+exports[`Toggle > rendering > supports a height of 1 when on 1`] = `"╶──╴⬛︎"`;

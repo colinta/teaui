@@ -13,6 +13,7 @@ import {
   Scrollable,
   Accordion,
   Tabs,
+  Toggle,
   ToggleGroup,
   Window,
   Container,
@@ -57,6 +58,12 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(<Components.Checkbox />)
       await flush()
       expect(window.children[0]).toBeInstanceOf(Checkbox)
+    })
+
+    it('Toggle renders a tui-toggle', async () => {
+      const {window} = renderToWindow(<Components.Toggle />)
+      await flush()
+      expect(window.children[0]).toBeInstanceOf(Toggle)
     })
 
     it('Separator renders a tui-separator', async () => {

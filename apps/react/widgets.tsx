@@ -3,7 +3,6 @@ import {interceptConsoleLog} from '@teaui/core'
 import {
   Accordion,
   Button,
-  Checkbox,
   Collapsible,
   CollapsibleText,
   H1,
@@ -20,12 +19,14 @@ import {
   Stack,
   Style,
   Text,
+  Toggle,
   run,
 } from '@teaui/react'
 
 export function WidgetsTab() {
   const [progressVal, setProgressVal] = useState(42)
   const [showSpinner, setShowSpinner] = useState(false)
+  const [showCompactSpinner, setShowCompactSpinner] = useState(true)
   const [progressLocation, cycleProgressLocation] = useReducer<
     Reducer<'left' | 'center' | 'right', void>
   >(location => {
@@ -97,20 +98,28 @@ export function WidgetsTab() {
 
       <Separator.horizontal pin="horizontal" />
 
-      {/* Spinner + Checkbox */}
+      {/* Spinner + Toggle */}
       <Stack.right pin="horizontal" gap={2}>
         <Stack.down>
           <Text>
             <Style bold>Spinner</Style>
           </Text>
-          <Stack.right gap={1}>
-            <Spinner isAnimating={showSpinner} padding={1} />
-            <Checkbox
-              title="Animate"
-              value={showSpinner}
-              onChange={setShowSpinner}
-            />
-          </Stack.right>
+          <Stack.down gap={1}>
+            <Stack.right gap={1}>
+              <Spinner isAnimating={showSpinner} padding={1} />
+              <Toggle value={showSpinner} onChange={setShowSpinner} />
+              <Text>Animate</Text>
+            </Stack.right>
+            <Stack.right gap={1}>
+              <Spinner isAnimating={showCompactSpinner} padding={1} />
+              <Toggle
+                height={1}
+                value={showCompactSpinner}
+                onChange={setShowCompactSpinner}
+              />
+              <Text>Compact</Text>
+            </Stack.right>
+          </Stack.down>
         </Stack.down>
 
         {/* Headers */}

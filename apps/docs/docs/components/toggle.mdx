@@ -1,0 +1,22 @@
+---
+title: Toggle
+---
+
+import Example from '@site/src/components/Example'
+
+# Toggle
+
+An iOS-style boolean switch. The slider animates between the left and right positions when toggled.
+
+<Example name="toggle" title="Toggle" />
+
+## Props
+
+| Prop       | Type                       | Default | Description         |
+| ---------- | -------------------------- | ------- | ------------------- |
+| `value`    | `boolean`                  | `false` | Toggle state        |
+| `onChange` | `(value: boolean) => void` | —       | Called when toggled |
+
+## Sizing
+
+`Toggle` has a natural size of `Size(6, 2)`. It also supports `height={1}` for a compact single-line rendering.

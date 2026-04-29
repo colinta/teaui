@@ -52,6 +52,7 @@ import {
   ScrollableList,
   Table,
   Tabs,
+  Toggle,
   ToggleGroup,
   Tree,
   View,
@@ -187,6 +188,9 @@ function createInstance(type: string, props: Props): any {
       return new Logo(props as any)
     case 'tui-zstack':
       return new ZStack(props as any)
+    case 'toggle':
+    case 'tui-toggle':
+      return new Toggle(props as any)
     case 'toggle-group':
     case 'tui-toggle-group':
       return new ToggleGroup(props as any)

@@ -40,6 +40,7 @@ import type {
   Tree as WrTree,
   Page as WrPage,
   Tabs as WrTabs,
+  Toggle as WrToggle,
   ToggleGroup as WrToggleGroup,
   Logo as WrLogo,
   ZStack as WrZStack,
@@ -110,6 +111,7 @@ export type SpinnerProps = Simplify<TUIView<typeof WrSpinner>>
 export type LogoProps = Simplify<TUIView<typeof WrLogo>>
 export type ZStackProps = Simplify<TUIContainer<typeof WrZStack>>
 export type AtProps = Simplify<TUIContainer<typeof WrAt>>
+export type ToggleProps = Simplify<TUIView<typeof WrToggle>>
 export type ToggleGroupProps = Simplify<TUIView<typeof WrToggleGroup>>
 
 // Table uses its own prop types since it's generic and TUIView doesn't work well with generics
@@ -184,6 +186,7 @@ declare module 'react' {
       'tui-at': WithRef<AtProps, WrAt>
       'tui-list': any
       'tui-table': any
+      'tui-toggle': WithRef<ToggleProps, WrToggle>
       'tui-toggle-group': WithRef<ToggleGroupProps, WrToggleGroup>
 
       'tui-tree': WithRef<ViewProps, WrTree<any>>
@@ -327,6 +330,11 @@ export const Canvas = forwardRef<WrCanvas, CanvasProps>(
 export const Checkbox = forwardRef<WrCheckbox, CheckboxProps>(
   function Checkbox(reactProps, ref): JSX.Element {
     return <tui-checkbox ref={ref} {...reactProps} />
+  },
+)
+export const Toggle = forwardRef<WrToggle, ToggleProps>(
+  function Toggle(reactProps, ref): JSX.Element {
+    return <tui-toggle ref={ref} {...reactProps} />
   },
 )
 export const CollapsibleText = forwardRef<

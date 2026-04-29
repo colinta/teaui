@@ -23,6 +23,18 @@ export class Spinner extends View {
     this.#update({isAnimating})
   }
 
+  get isAnimating() {
+    return this.#isAnimating
+  }
+  set isAnimating(value: boolean) {
+    if (value === this.#isAnimating) {
+      return
+    }
+
+    this.#isAnimating = value
+    this.invalidateRender()
+  }
+
   #update({isAnimating}: Props) {
     this.#isAnimating = isAnimating ?? true
   }

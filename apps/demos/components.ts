@@ -24,6 +24,7 @@ import {
   Spinner,
   Tabs,
   Text,
+  Toggle,
   ToggleGroup,
   Tree,
   type FontFamily,
@@ -308,6 +309,15 @@ const drawerView = Stack.down({
   ],
 })
 
+const spinner1 = new Spinner({
+  padding: 1,
+  isAnimating: false,
+})
+const spinner2 = new Spinner({
+  padding: 1,
+  isAnimating: true,
+})
+
 const contentView = Stack.right([
   Stack.down(
     [
@@ -338,10 +348,22 @@ const contentView = Stack.right([
         scrollable,
         Stack.down([
           Stack.right([
-            new Spinner({
-              padding: 1,
-              isAnimating: false,
-            }),
+            Stack.right([spinner1, spinner2]),
+            Stack.down([
+              new Toggle({
+                value: false,
+                onChange(value) {
+                  spinner1.isAnimating = value
+                },
+              }),
+              new Toggle({
+                height: 1,
+                value: true,
+                onChange(value) {
+                  spinner2.isAnimating = value
+                },
+              }),
+            ]),
             new ToggleGroup({
               titles: [bold('B'), italic('I'), underline('U'), strikeout('S')],
               multiple: true,

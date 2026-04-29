@@ -42,6 +42,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'components/button',
             'components/checkbox',
+            'components/toggle',
             'components/input',
             'components/slider',
             'components/dropdown',
