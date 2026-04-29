@@ -275,17 +275,14 @@ export class Buffer implements Terminal {
       const prevLine = this.#prev.get(y) ?? new Map<number, Char>()
       this.#prev.set(y, prevLine)
 
-      // Pre-compute paint rects applicable to this row
-      let rowPaintCell: Char | undefined
-      let rowPaintMinX = 0
-      let rowPaintMaxX = 0
+      // Pre-compute paint rects applicable to this row, newest first. There
+      // can be multiple disjoint paint rects on the same row (e.g. multiple
+      // themed calendars in a horizontal stack), so choose per-cell below.
+      const rowPaintRects: PaintRect[] = []
       for (let i = this.#paintRects.length - 1; i >= 0; i--) {
         const r = this.#paintRects[i]
         if (y >= r.minY && y < r.maxY) {
-          rowPaintCell = r.cell
-          rowPaintMinX = r.minX
-          rowPaintMaxX = r.maxX
-          break
+          rowPaintRects.push(r)
         }
       }
 
@@ -293,10 +290,7 @@ export class Buffer implements Terminal {
       let dx = 1
       for (let x = 0; x < this.size.width; x += dx) {
         const chrInfo =
-          line.get(x) ??
-          (rowPaintCell && x >= rowPaintMinX && x < rowPaintMaxX
-            ? rowPaintCell
-            : EMPTY_CELL)
+          line.get(x) ?? paintCellAt(rowPaintRects, x) ?? EMPTY_CELL
         const prevInfo = prevLine.get(x)
         dx = chrInfo.width
 
@@ -355,6 +349,14 @@ export class Buffer implements Terminal {
       }
     }
     return true
+  }
+}
+
+function paintCellAt(rects: PaintRect[], x: number): Char | undefined {
+  for (const r of rects) {
+    if (x >= r.minX && x < r.maxX) {
+      return r.cell
+    }
   }
 }
 

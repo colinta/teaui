@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Calendar} from '../../lib/components/Calendar.js'
+import {Stack} from '../../lib/components/Stack.js'
 
 function date(y: number, m: number, d: number): Date {
   return new Date(y, m - 1, d)
@@ -139,6 +140,38 @@ describe('Calendar', () => {
       expect(t.terminal.find('June')).toBeTruthy()
       expect(t.terminal.styleAt(30, 0).background).toBe('default')
       expect(t.terminal.styleAt(0, 10).background).toBe('default')
+    })
+
+    it('paints calendar gap backgrounds when multiple calendars share a row', () => {
+      const t = testRender(
+        Stack.right({
+          gap: 1,
+          children: [
+            new Calendar({
+              date: date(2026, 4, 29),
+              visibleDate: date(2026, 4, 1),
+              theme: 'blue',
+            }),
+            new Calendar({
+              date: date(2026, 4, 29),
+              visibleDate: date(2026, 4, 1),
+              theme: 'green',
+            }),
+            new Calendar({
+              date: date(2026, 4, 29),
+              visibleDate: date(2026, 4, 1),
+              theme: 'orange',
+            }),
+          ],
+        }),
+        {width: 68, height: 8, isFocused: false},
+      )
+
+      for (const x of [3, 26, 49]) {
+        expect(t.terminal.styleAt(x, 2).background).toEqual(
+          t.terminal.styleAt(x - 1, 2).background,
+        )
+      }
     })
   })
 
