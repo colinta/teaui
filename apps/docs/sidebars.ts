@@ -25,18 +25,6 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: '░ Organization',
-          collapsed: false,
-          items: [
-            'components/table',
-            'components/accordion',
-            'components/collapsible',
-            'components/collapsible-text',
-            'components/tree',
-          ],
-        },
-        {
-          type: 'category',
           label: '░ Input',
           collapsed: false,
           items: [
@@ -53,14 +41,24 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: '░ Organization',
+          collapsed: false,
+          items: [
+            'components/table',
+            'components/accordion',
+            'components/collapsible',
+            'components/collapsible-text',
+            'components/tree',
+          ],
+        },
+        {
+          type: 'category',
           label: '░ Layout',
           collapsed: false,
           items: [
             'components/container',
             'components/align',
             'components/box',
-            'components/drawer',
-            'components/tabs',
             'components/stack',
             'components/space',
             'components/scrollable',
@@ -72,7 +70,11 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: '░ Navigation',
           collapsed: false,
-          items: ['components/breadcrumb'],
+          items: [
+            'components/breadcrumb',
+            'components/tabs',
+            'components/drawer',
+          ],
         },
         {
           type: 'category',

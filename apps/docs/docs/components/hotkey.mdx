@@ -6,17 +6,17 @@ import Example from '@site/src/components/Example'
 
 # HotKey
 
-Registers a global keyboard shortcut. Wraps child content and triggers when the hot key is pressed.
+Registers a global keyboard shortcut. `HotKey` is non-visual; render any related label or instructions as sibling content.
 
 <Example name="hotkey" title="HotKey" />
 
 ## Props
 
-| Prop       | Type                        | Default | Description                             |
-| ---------- | --------------------------- | ------- | --------------------------------------- |
-| `hotKey`   | `HotKey`                    | —       | Key combination to listen for           |
-| `onPress`  | `(event: KeyEvent) => void` | —       | Called when the hot key is pressed      |
-| `children` | `ReactNode`                 | —       | Content (receives focus when triggered) |
+| Prop      | Type                        | Default | Description                        |
+| --------- | --------------------------- | ------- | ---------------------------------- |
+| `hotKey`  | `HotKey`                    | —       | Key combination to listen for      |
+| `label`   | `string`                    | —       | Label shown by `AutoLegend`        |
+| `onPress` | `(event: KeyEvent) => void` | —       | Called when the hot key is pressed |
 
 ### HotKey type
 
@@ -33,12 +33,18 @@ type HotKey = {
 <summary>Core API</summary>
 
 ```js
-import {HotKey, Text} from '@teaui/core'
+import {HotKey, Stack, Text} from '@teaui/core'
 
-new HotKey({
-  hotKey: {char: 'q', ctrl: true},
-  children: [new Text({text: 'Ctrl+Q'})],
-})
+Stack.down([
+  new HotKey({
+    hotKey: {char: 'q', ctrl: true},
+    label: 'Quit',
+    onPress() {
+      // Handle Ctrl+Q
+    },
+  }),
+  new Text({text: 'Ctrl+Q'}),
+])
 ```
 
 </details>

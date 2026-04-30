@@ -8,12 +8,12 @@ function App() {
   return (
     <Stack.down gap={1}>
       <Stack.right gap={1}>
+        <Text flex={1}>Airplane Mode</Text>
         <Toggle value={airplaneMode} onChange={setAirplaneMode} />
-        <Text>Airplane Mode</Text>
       </Stack.right>
       <Stack.right gap={1}>
+        <Text flex={1}>Wi-Fi</Text>
         <Toggle height={1} value={wifi} onChange={setWifi} />
-        <Text>Wi-Fi</Text>
       </Stack.right>
     </Stack.down>
   )
