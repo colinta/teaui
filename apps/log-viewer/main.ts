@@ -162,7 +162,7 @@ function removeClient(socket: net.Socket) {
 
 function createClientTab(log: Log, filterInput: Input, legend: AutoLegend) {
   const clearHotKey = new HotKey({
-    hotKey: {char: 'k', ctrl: true},
+    hotKey: 'C-k',
     label: 'Clear',
     onPress: () => {
       for (const state of clients.values()) {
