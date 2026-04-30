@@ -484,11 +484,7 @@ export class Screen {
     // this may be called again by renderModals, before the last modal renders
     this.preRender(this.rootView)
 
-    const size = this.rootView
-      .naturalSize(screenSize)
-      .min(screenSize)
-      .max(screenSize)
-    const viewport = new Viewport(this, this.#buffer, size)
+    const viewport = new Viewport(this, this.#buffer, screenSize)
     this.rootView.render(viewport)
     const rerenderView = this.#modalManager.renderModals(this, viewport)
     const needsRerender = this.commit()

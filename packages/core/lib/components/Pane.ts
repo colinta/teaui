@@ -107,18 +107,15 @@ export class Pane extends Container {
     return children.length > 0 ? children[children.length - 1] : undefined
   }
 
-  #ensurePaneState() {
+  #ensurePaneState(available: Size): [number, Size, number] {
     const browserCount = Math.max(0, this.children.length - 1)
     while (this.#browserPanes.length < browserCount) {
-      this.#browserPanes.push({width: 20, collapsed: false})
+      this.#browserPanes.push({width: -1, collapsed: false})
     }
     if (this.#browserPanes.length > browserCount) {
       this.#browserPanes.length = browserCount
     }
-  }
 
-  naturalSize(available: Size): Size {
-    this.#ensurePaneState()
     const borderInset = this.#border ? 2 : 0
     const innerAvailable = available.shrink(borderInset, borderInset)
 
@@ -127,7 +124,7 @@ export class Pane extends Container {
     for (let i = 0; i < browsers.length; i++) {
       const ns = browsers[i].naturalSize(innerAvailable)
       // Initialize widths from natural size on first layout
-      if (this.#browserPanes[i].width === 20) {
+      if (this.#browserPanes[i].width === -1) {
         this.#browserPanes[i].width = Math.max(
           MIN_PANE_WIDTH,
           Math.min(ns.width, Math.floor(innerAvailable.width / 3)),
@@ -137,6 +134,12 @@ export class Pane extends Container {
         (this.#browserPanes[i].collapsed ? 0 : this.#browserPanes[i].width) +
         SEPARATOR_WIDTH
     }
+
+    return [usedWidth, innerAvailable, borderInset]
+  }
+
+  naturalSize(available: Size): Size {
+    const [usedWidth, innerAvailable, borderInset] = this.#ensurePaneState(available)
 
     const detailNs = this.detailView?.naturalSize(
       innerAvailable.shrink(usedWidth, 0),
@@ -253,7 +256,7 @@ export class Pane extends Container {
       return super.render(viewport)
     }
 
-    this.#ensurePaneState()
+    this.#ensurePaneState(viewport.availableRect.size)
 
     this.#borderInset = this.#border ? 1 : 0
     const innerSize = viewport.contentSize.shrink(

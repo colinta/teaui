@@ -250,6 +250,8 @@ export class Drawer extends Container {
       return super.render(viewport)
     }
 
+    const [drawerSize] = this.#saveDrawerSize(viewport.contentSize)
+
     if (this.#hotKey) {
       viewport.registerHotKey(toHotKeyDef(this.#hotKey))
     }
@@ -257,8 +259,6 @@ export class Drawer extends Container {
     if (this.#currentDx !== this.#targetDx()) {
       viewport.registerTick()
     }
-
-    const [drawerSize] = this.#saveDrawerSize(viewport.contentSize)
 
     const _uiStyle = this.theme.ui({
       isHover: this.isHover,
@@ -310,10 +310,10 @@ export class Drawer extends Container {
     )
 
     const drawerRect = new Rect(
-      new Point(1, ~~this.#currentDx - this.#drawerSize.height),
+      new Point(1, ~~this.#currentDx - drawerSize.height),
       new Size(
         drawerButtonRect.size.width - DRAWER_BORDER,
-        this.#drawerSize.height,
+        drawerSize.height,
       ),
     )
 
@@ -347,7 +347,7 @@ export class Drawer extends Container {
       new Point(1, viewport.contentSize.height - this.#currentDx),
       new Size(
         drawerButtonRect.size.width - DRAWER_BORDER,
-        this.#drawerSize.height,
+        drawerSize.height,
       ),
     )
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
@@ -379,7 +379,7 @@ export class Drawer extends Container {
     const drawerRect = new Rect(
       new Point(viewport.contentSize.width - this.#currentDx, 1),
       new Size(
-        this.#drawerSize.width,
+        drawerSize.width,
         drawerButtonRect.size.height - DRAWER_BORDER,
       ),
     )
@@ -405,9 +405,9 @@ export class Drawer extends Container {
     )
 
     const drawerRect = new Rect(
-      new Point(this.#currentDx - this.#drawerSize.width, 1),
+      new Point(this.#currentDx - drawerSize.width, 1),
       new Size(
-        this.#drawerSize.width,
+        drawerSize.width,
         drawerButtonRect.size.height - DRAWER_BORDER,
       ),
     )
