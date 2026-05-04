@@ -7,7 +7,7 @@ function App() {
   return (
     <Stack.down>
       <HotKey
-        hotKey='C-n'
+        hotKey="C-n"
         label="Increment"
         onPress={() => setCount(c => c + 1)}
       />

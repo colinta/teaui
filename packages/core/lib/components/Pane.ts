@@ -139,7 +139,8 @@ export class Pane extends Container {
   }
 
   naturalSize(available: Size): Size {
-    const [usedWidth, innerAvailable, borderInset] = this.#ensurePaneState(available)
+    const [usedWidth, innerAvailable, borderInset] =
+      this.#ensurePaneState(available)
 
     const detailNs = this.detailView?.naturalSize(
       innerAvailable.shrink(usedWidth, 0),
