@@ -121,6 +121,7 @@ export {
   words,
   ansiLocations,
   removeAnsi,
+  isAnnoyingWidth,
   getLocale,
   setLocale,
 } from './unicode.js'

@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest'
 import {
   ansiLocations,
   charWidth,
+  isAnnoyingWidth,
   lineWidth,
   printableChars,
   removeAnsi,
@@ -39,6 +40,14 @@ describe('unicode', () => {
       expect(charWidth('◼︎')).toBe(1)
       expect(charWidth('▪️')).toBe(1)
       expect(charWidth('◼️')).toBe(1)
+    })
+  })
+
+  describe('isAnnoyingWidth', () => {
+    it('detects TeaUI glyphs with terminal-dependent width', () => {
+      expect(isAnnoyingWidth('⬜︎')).toBe(true)
+      expect(isAnnoyingWidth('⬛︎')).toBe(true)
+      expect(isAnnoyingWidth('X')).toBe(false)
     })
   })
 

@@ -81,6 +81,17 @@ describe('ScreenBuffer', () => {
       expect(out).toBe(`${SYNC_START}${moveTo(1, 0)}XY${SYNC_END}`)
     })
 
+    it('realigns the cursor after writing annoying-width characters', () => {
+      const buf = new ScreenBuffer(3, 1)
+      buf.write('⬜︎X', '')
+      const out = flush(buf)
+
+      expect(out).toBe(
+        `${SYNC_START}${moveTo(0, 0)}⬜︎${moveTo(2, 0)}X${SYNC_END}`,
+      )
+      expect(buf.cursorX).toBe(3)
+    })
+
     it('inserts moveTo between non-consecutive dirty cells', () => {
       const buf = new ScreenBuffer(10, 5)
       buf.write('ABCDE', '')

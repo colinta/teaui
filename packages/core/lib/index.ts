@@ -38,6 +38,7 @@ export {
   words,
   ansiLocations,
   removeAnsi,
+  isAnnoyingWidth,
   getLocale,
   setLocale,
 } from '@teaui/term'

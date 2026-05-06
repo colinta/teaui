@@ -314,6 +314,12 @@ export class Buffer implements Terminal {
           prevStyle = style
         }
         terminal.write(char)
+        if (
+          unicode.isAnnoyingWidth(char) &&
+          x + chrInfo.width < this.size.width
+        ) {
+          terminal.move(x + chrInfo.width, y)
+        }
         prevLine.set(x, chrInfo)
         if (chrInfo.width === 2) {
           prevLine.delete(x + 1)

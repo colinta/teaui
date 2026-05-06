@@ -1,8 +1,10 @@
 import {cursorTo, resetAll} from './ansi.js'
 import {syncStart, syncEnd} from './modern.js'
+import {charWidth, isAnnoyingWidth, printableChars} from './unicode.js'
 
 export interface Cell {
   char: string
+  width: 1 | 2
   style: string
 }
 
@@ -36,6 +38,7 @@ export class ScreenBuffer {
     return Array.from({length: this.height}, () =>
       Array.from({length: this.width}, () => ({
         char: EMPTY_CHAR,
+        width: 1,
         style: EMPTY_STYLE,
       })),
     )
@@ -47,10 +50,15 @@ export class ScreenBuffer {
   }
 
   write(text: string, style: string): void {
-    for (const char of text) {
+    for (const char of printableChars(text)) {
       if (char === '\n') {
         this._cursorX = 0
         this._cursorY++
+        continue
+      }
+
+      const width = charWidth(char)
+      if (width === 0) {
         continue
       }
 
@@ -60,16 +68,23 @@ export class ScreenBuffer {
         this._cursorY >= 0 &&
         this._cursorY < this.height
       ) {
-        this.back[this._cursorY][this._cursorX] = {char, style}
+        this.back[this._cursorY][this._cursorX] = {char, width, style}
+        if (width === 2 && this._cursorX + 1 < this.width) {
+          this.back[this._cursorY][this._cursorX + 1] = {
+            char: '',
+            width: 1,
+            style,
+          }
+        }
       }
-      this._cursorX++
+      this._cursorX += width
     }
   }
 
   clear(): void {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        this.back[y][x] = {char: EMPTY_CHAR, style: EMPTY_STYLE}
+        this.back[y][x] = {char: EMPTY_CHAR, width: 1, style: EMPTY_STYLE}
       }
     }
     this._cursorX = 0
@@ -101,7 +116,7 @@ export class ScreenBuffer {
         const f = this.front[y][x]
         const b = this.back[y][x]
 
-        if (f.char === b.char && f.style === b.style) {
+        if (f.char === b.char && f.width === b.width && f.style === b.style) {
           consecutive = false
           continue
         }
@@ -124,9 +139,12 @@ export class ScreenBuffer {
         }
 
         parts.push(b.char)
+        if (isAnnoyingWidth(b.char) && x + b.width < this.width) {
+          parts.push(cursorTo(x + b.width, y))
+        }
 
         // Sync front to back
-        this.front[y][x] = {char: b.char, style: b.style}
+        this.front[y][x] = {char: b.char, width: b.width, style: b.style}
       }
     }
 

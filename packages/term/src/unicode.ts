@@ -513,6 +513,14 @@ export function removeAnsi(input: string) {
   return input.replaceAll(ansiRegex(), '')
 }
 
+/**
+ * Not all terminals treat characters the same way. I only care about TeaUI
+ * characters here.
+ */
+export function isAnnoyingWidth(input: string) {
+  return input === WIDE_WHITE_SQUARE || input === WIDE_BLACK_SQUARE
+}
+
 // --- Combining character table ---
 
 const combiningTable: [number, number][] = [
