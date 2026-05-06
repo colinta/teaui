@@ -21,7 +21,7 @@ export * from './Drawer.js'
 export {Dropdown} from './Dropdown.js'
 export * from './Stack.js'
 export * from './Header.js'
-export * from './Input.js'
+export {Input, type Props as InputProps} from './Input.js'
 export * from './Geometry.js'
 export * from './Legend.js'
 export * from './AutoLegend.js'
@@ -38,7 +38,12 @@ export * from './Separator.js'
 export * from './Slider.js'
 export * from './Space.js'
 export * from './Spinner.js'
-export * from './Table.js'
+export {
+  Table,
+  type Column,
+  type SortDirection,
+  type Props as TableProps,
+} from './Table.js'
 export * from './Tabs.js'
 export * from './Text.js'
 export * from './Toggle.js'

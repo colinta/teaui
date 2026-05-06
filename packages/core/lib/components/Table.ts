@@ -28,7 +28,7 @@ export interface Column<TData> {
 
 export type SortDirection = 'asc' | 'desc'
 
-interface Props<TData> extends ViewProps {
+export interface Props<TData> extends ViewProps {
   data: TData[]
   columns: Column<TData>[]
   format: (key: string, row: TData) => string

@@ -103,7 +103,7 @@ export class ToggleGroup extends Container {
     this.#sizeCache = sizeCache
   }
 
-  naturalSize() {
+  naturalSize(_available: Size) {
     return this.#sizeCache
   }
 

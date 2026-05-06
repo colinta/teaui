@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
-import {Table, type Column} from '../../lib/components/Table.js'
+import {Table, type Column, type Props as TableProps} from '../../lib/components/Table.js'
 
 interface Row {
   name: string
@@ -26,7 +26,7 @@ function format(key: string, row: Row): string {
   return String(row[key as keyof Row])
 }
 
-function makeTable(overrides: Partial<Parameters<typeof Table<Row>>[0]> = {}) {
+function makeTable(overrides: Partial<TableProps<Row>> = {}) {
   return new Table<Row>({
     data: DATA,
     columns: COLUMNS,

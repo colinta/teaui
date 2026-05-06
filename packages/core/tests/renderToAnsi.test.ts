@@ -1,9 +1,9 @@
 import {describe, it, expect} from 'vitest'
-import {renderToAnsi} from '../lib/renderToAnsi'
-import {Text} from '../lib/components/Text'
-import {Button} from '../lib/components/Button'
-import {Stack} from '../lib/components/Stack'
-import {Checkbox} from '../lib/components/Checkbox'
+import {renderToAnsi} from '../lib/renderToAnsi.js'
+import {Text} from '../lib/components/Text.js'
+import {Button} from '../lib/components/Button.js'
+import {Stack} from '../lib/components/Stack.js'
+import {Checkbox} from '../lib/components/Checkbox.js'
 
 describe('renderToAnsi', () => {
   it('renders a Text component', () => {
@@ -19,7 +19,7 @@ describe('renderToAnsi', () => {
   })
 
   it('renders a Checkbox component', () => {
-    const view = new Checkbox({title: 'Enable', isChecked: true})
+    const view = new Checkbox({title: 'Enable', value: true})
     const output = renderToAnsi(view, {width: 30, height: 1})
     expect(output).toContain('Enable')
   })

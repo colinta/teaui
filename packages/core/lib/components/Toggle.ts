@@ -53,7 +53,7 @@ export class Toggle extends View {
     this.#onChange = onChange
   }
 
-  naturalSize(): Size {
+  naturalSize(_available: Size): Size {
     return TOGGLE_SIZE
   }
 

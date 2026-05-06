@@ -39,7 +39,7 @@ export class Spinner extends View {
     this.#isAnimating = isAnimating ?? true
   }
 
-  naturalSize() {
+  naturalSize(_available: Size) {
     return new Size(1, 1)
   }
 

@@ -509,7 +509,7 @@ export function ansiLocations(
 /**
  * Removes ANSI color/style sequences.
  */
-export function removeAnsi(input: string): string {
+export function removeAnsi(input: string) {
   return input.replaceAll(ansiRegex(), '')
 }
 

@@ -10,7 +10,7 @@ describe('Separator', () => {
       new Stack({
         children: [
           new Text({text: 'Above'}),
-          new Separator({}),
+          Separator.horizontal(),
           new Text({text: 'Below'}),
         ],
         direction: 'down',

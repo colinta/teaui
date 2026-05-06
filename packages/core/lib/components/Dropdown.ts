@@ -149,7 +149,7 @@ export class Dropdown<T, M extends boolean> extends View {
     this.invalidateSize()
   }
 
-  naturalSize(): Size {
+  naturalSize(_available: Size): Size {
     const size = new Size(unicode.stringSize(this.#titleLines()))
     return size.grow(8, 0)
   }

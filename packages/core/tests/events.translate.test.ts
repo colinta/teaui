@@ -30,6 +30,7 @@ function termMouse(
     y?: number
     ctrl?: boolean
     alt?: boolean
+    gui?: boolean
     shift?: boolean
   } = {},
 ): TermMouseEvent {
@@ -41,6 +42,7 @@ function termMouse(
     y: opts.y ?? 0,
     ctrl: opts.ctrl ?? false,
     alt: opts.alt ?? false,
+    gui: opts.gui ?? false,
     shift: opts.shift ?? false,
   }
 }

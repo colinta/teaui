@@ -190,7 +190,7 @@ export class Calendar extends View {
     return this.#displayMode
   }
 
-  naturalSize(): Size {
+  naturalSize(_available: Size): Size {
     return new Size(CALENDAR_WIDTH, CALENDAR_HEIGHT)
   }
 

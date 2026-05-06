@@ -43,7 +43,7 @@ export class HotKey extends View {
     return this.#label
   }
 
-  naturalSize(): Size {
+  naturalSize(_available: Size): Size {
     return Size.zero
   }
 

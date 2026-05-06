@@ -133,7 +133,7 @@ export class Digits extends View {
     this.#text = filtered
   }
 
-  naturalSize(): Size {
+  naturalSize(_available: Size): Size {
     const [width, height] = this.#digits.reduce(
       ([maxWidth, totalHeight, currentWidth], digit) => {
         if (digit === '\n') {

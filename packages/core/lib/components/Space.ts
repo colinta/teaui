@@ -30,7 +30,7 @@ export class Space extends View {
     this.background = background
   }
 
-  naturalSize(): Size {
+  naturalSize(_available: Size): Size {
     return Size.zero
   }
 

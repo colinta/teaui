@@ -129,7 +129,7 @@ export class Slider extends View {
     }
   }
 
-  naturalSize() {
+  naturalSize(_available: Size) {
     // try to have enough room for every value
     const min = Math.max(
       MIN,

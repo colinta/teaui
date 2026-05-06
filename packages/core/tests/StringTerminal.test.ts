@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {StringTerminal} from '../lib/StringTerminal'
+import {StringTerminal} from '../lib/StringTerminal.js'
 
 describe('StringTerminal', () => {
   it('stores cols and rows', () => {
