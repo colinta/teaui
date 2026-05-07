@@ -1,14 +1,14 @@
 # React template components
 
-Most components accept common view props: `theme`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`. Container components also accept `children`.
+Most components accept common view props: `purpose`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`. Container components also accept `children`.
 
 ## Styling
 
-- `theme` — sets default background colours for an intent: `primary`, `secondary`, `proceed`, `cancel`, `selected`, `plain`.
+- `purpose` — sets default background colours for an intent: `primary`, `secondary`, `proceed`, `cancel`, `selected`, `plain`.
 - `Style` — applies ANSI styles: `bold`, `dim`, `italic`, `strikeout`, `underline`, `inverse`, `foreground`, `background`.
 - Example:
   ```tsx
-  <Text theme="primary">
+  <Text purpose="primary">
     hello{' '}
     <Style bold foreground="yellow">
       world

@@ -1,6 +1,6 @@
 import {type Props as ContainerProps, Container} from '../Container.js'
 import {Style} from '../Style.js'
-import {Theme, type Purpose} from '../Theme.js'
+import {Palette, type Purpose} from '../Palette.js'
 import type {View} from '../View.js'
 import {Stack} from './Stack.js'
 import {Separator} from './Separator.js'
@@ -36,7 +36,7 @@ export class Notification extends Container {
     this.#stack = new Stack({direction: direction ?? 'down'})
 
     if (purpose) {
-      this.purpose = Theme[purpose]
+      this.purpose = Palette[purpose]
     }
 
     if (child) {
@@ -78,7 +78,7 @@ export class Notification extends Container {
     this.#syncTitle()
 
     if (purpose) {
-      this.purpose = Theme[purpose]
+      this.purpose = Palette[purpose]
     }
   }
 

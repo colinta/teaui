@@ -1,17 +1,17 @@
 ---
-title: Themes
+title: Palettes
 ---
 
-# Themes & Styling
+# Palettes & Styling
 
-TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout. All views also accept a 'theme' which has settings like textColor, brightTextColor, backgroundColor. If `theme` isn't defined, it will be inherited from the parent. There are predefined themes:
+TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout. All views also accept a `purpose` prop, which selects a `Palette` with shared colors like `textColor`, `highlightColor`, and `textBackgroundColor`. If `purpose` isn't defined, the palette is inherited from the parent. There are predefined palettes:
 
-- `Theme.plain` — default, muted colors
-- `Theme.primary` aka `Theme.blue` e.g. '#3B5EA7'
-- `Theme.secondary` aka `Theme.orange` e.g. '#D0851C'
-- `Theme.proceed` aka `Theme.green` e.g. '#4A7A5B'
-- `Theme.cancel` aka `Theme.red` e.g. '#A04A4C'
-- `Theme.selected` optional text styling
+- `Palette.plain` — default, muted colors
+- `Palette.primary` aka `Palette.blue` e.g. '#3B5EA7'
+- `Palette.secondary` aka `Palette.orange` e.g. '#D0851C'
+- `Palette.proceed` aka `Palette.green` e.g. '#4A7A5B'
+- `Palette.cancel` aka `Palette.red` e.g. '#A04A4C'
+- `Palette.selected` optional text styling
 
 ## Style Object
 
@@ -91,11 +91,11 @@ Apply styles/purpose via the `style/purpose` prop on `Text`:
 
 ```tsx
 import React from 'react'
-import {Style} from '@teaui/core'
+import {Palette, Style} from '@teaui/core'
 import {Text, run} from '@teaui/react'
 
 const highlight = new Style({foreground: 'yellow', bold: true})
-const purpose = Theme.primary
+const purpose = Palette.primary
 
 function App() {
   return (

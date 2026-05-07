@@ -15,12 +15,12 @@ An inline notification banner with a colored left accent bar and tinted backgrou
 | Prop        | Type                                                                         | Default  | Description                        |
 | ----------- | ---------------------------------------------------------------------------- | -------- | ---------------------------------- |
 | `title`     | `string`                                                                     | —        | Bold title shown above a separator |
-| `purpose`   | `'primary' \| 'secondary' \| 'proceed' \| 'cancel' \| 'selected' \| 'plain'` | —        | Color theme for the callout        |
+| `purpose`   | `'primary' \| 'secondary' \| 'proceed' \| 'cancel' \| 'selected' \| 'plain'` | —        | Color purpose for the callout      |
 | `direction` | `'up' \| 'down' \| 'left' \| 'right'`                                        | `'down'` | Layout direction for children      |
 | `children`  | `ReactNode`                                                                  | —        | Callout body content               |
 
 ## Appearance
 
-- Left accent bar using `▎` in the theme's highlight color
-- Background tinted with the theme's darken color
+- Left accent bar using `▎` in the palette's highlight color
+- Background tinted with the palette's darken color
 - Children (Text, Separator, etc.) automatically inherit the callout's background

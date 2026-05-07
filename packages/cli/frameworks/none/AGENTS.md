@@ -1,16 +1,16 @@
 # Core API components
 
-Most components use `new Component(props)`. Common view props: `theme`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`. Container components also accept `child?` / `children?`.
+Most components use `new Component(props)`. Common view props: `purpose`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`. Container components also accept `child?` / `children?`.
 
 ## Styling
 
-- `theme` — sets default background colours for an intent: `primary`, `secondary`, `proceed`, `cancel`, `selected`, `plain`.
+- `purpose` — sets default background colours for an intent: `primary`, `secondary`, `proceed`, `cancel`, `selected`, `plain`.
 - `Style` — ANSI styling is done with `new Style({...})`: `bold`, `dim`, `italic`, `strikeout`, `underline`, `inverse`, `foreground`, `background`.
 - Example:
   ```ts
   new Text({
     text: 'hello world',
-    theme: 'primary',
+    purpose: 'primary',
     style: new Style({bold: true, foreground: 'yellow'}),
   })
   ```

@@ -17,7 +17,8 @@ export interface Props extends ContainerProps {
    */
   dim?: boolean
   /**
-   * Style used for dimming. Defaults to theme.dimTextColor fg + theme.dimBackgroundColor bg.
+   * Style used for dimming. Defaults to purpose.dimTextColor fg +
+   * purpose.dimBackgroundColor bg.
    */
   dimStyle?: Style
   /**

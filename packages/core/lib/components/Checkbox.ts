@@ -11,7 +11,7 @@ import {
   hotKeyToString,
 } from '../events/index.js'
 import {type LegendItem} from '../types.js'
-import {childTheme} from '../UI.js'
+import {childPalette} from '../UI.js'
 import {Style} from '../Style.js'
 import {System} from '../System.js'
 
@@ -51,9 +51,9 @@ export class Checkbox extends Container {
     this.invalidateRender()
   }
 
-  childTheme(view: View) {
-    return childTheme(
-      super.childTheme(view),
+  childPalette(view: View) {
+    return childPalette(
+      super.childPalette(view),
       this.isPressed,
       this.isHover || this.#hasFocus,
     )

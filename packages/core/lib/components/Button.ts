@@ -13,7 +13,7 @@ import {
   toHotKeyDef,
   hotKeyToString,
 } from '../events/index.js'
-import {childTheme} from '../UI.js'
+import {childPalette} from '../UI.js'
 import type {View} from '../View.js'
 import {type Alignment, type LegendItem} from '../types.js'
 import {System} from '../System.js'
@@ -54,9 +54,9 @@ export class Button extends Container {
     super.update(props)
   }
 
-  childTheme(view: View) {
-    return childTheme(
-      super.childTheme(view),
+  childPalette(view: View) {
+    return childPalette(
+      super.childPalette(view),
       this.isPressed,
       this.isHover || this.#hasFocus,
     )

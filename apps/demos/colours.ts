@@ -9,7 +9,7 @@ import {
   Space,
   Stack,
   Text,
-  Theme,
+  Palette,
   type Color,
   type Purpose,
 } from '@teaui/core'
@@ -39,8 +39,8 @@ function setRGBFromHex(hex: string) {
   setRGB(red, green, blue)
 }
 
-function themeColorHex(theme: Theme, color: Color): `#${string}` {
-  const resolved = color === 'default' ? theme.textBackgroundColor : color
+function paletteColorHex(palette: Palette, color: Color): `#${string}` {
+  const resolved = color === 'default' ? palette.textBackgroundColor : color
   const hex = colorToHex(resolved)
   const [red, green, blue] = colors.hexToRGB(hex.replace(/\(.+\)$/, ''))
   return colors.RGBtoHex(red, green, blue)
@@ -113,16 +113,20 @@ const update = () => {
 }
 update()
 
-const themeColumns = [
-  {name: 'primary', purpose: 'primary', theme: Theme.primary},
-  {name: 'secondary', purpose: 'secondary', theme: Theme.secondary},
-  {name: 'proceed', purpose: 'proceed', theme: Theme.proceed},
-  {name: 'cancel', purpose: 'cancel', theme: Theme.cancel},
-  {name: 'selected', purpose: 'selected', theme: Theme.selected},
-  {name: 'plain', purpose: 'plain', theme: Theme.plain},
-] as const satisfies readonly {name: string; purpose: Purpose; theme: Theme}[]
+const paletteColumns = [
+  {name: 'primary', purpose: 'primary', palette: Palette.primary},
+  {name: 'secondary', purpose: 'secondary', palette: Palette.secondary},
+  {name: 'proceed', purpose: 'proceed', palette: Palette.proceed},
+  {name: 'cancel', purpose: 'cancel', palette: Palette.cancel},
+  {name: 'selected', purpose: 'selected', palette: Palette.selected},
+  {name: 'plain', purpose: 'plain', palette: Palette.plain},
+] as const satisfies readonly {
+  name: string
+  purpose: Purpose
+  palette: Palette
+}[]
 
-const themeRows = [
+const paletteRows = [
   {name: 'text', key: 'textColor'},
   {name: 'contrastText', key: 'contrastTextColor'},
   {name: 'dimText', key: 'dimTextColor'},
@@ -135,11 +139,11 @@ const themeRows = [
   {name: 'tableCheckedHighlight', key: 'tableCheckedHighlightColor'},
 ] as const
 
-function themeHeaderRow(start: number, end: number) {
+function paletteHeaderRow(start: number, end: number) {
   return Stack.right(
     [
       new Text({text: '', width: ROW_LABEL_WIDTH}),
-      ...themeColumns
+      ...paletteColumns
         .slice(start, end)
         .map(
           ({name}) =>
@@ -150,17 +154,17 @@ function themeHeaderRow(start: number, end: number) {
   )
 }
 
-function themeValueRow(
-  row: (typeof themeRows)[number],
+function paletteValueRow(
+  row: (typeof paletteRows)[number],
   start: number,
   end: number,
 ) {
   return Stack.right(
     [
       new Text({text: row.name, width: ROW_LABEL_WIDTH}),
-      ...themeColumns.slice(start, end).map(({purpose, theme}) => {
+      ...paletteColumns.slice(start, end).map(({purpose, palette}) => {
         const isBackground = row.name !== 'text' && !row.name.endsWith('Text')
-        const hex = themeColorHex(theme, (theme as any)[row.key] as Color)
+        const hex = paletteColorHex(palette, (palette as any)[row.key] as Color)
         return new Button({
           title: hex,
           width: CELL_WIDTH,
@@ -178,17 +182,17 @@ function themeValueRow(
   )
 }
 
-function themeGrid(start: number, end: number) {
+function paletteGrid(start: number, end: number) {
   return Stack.down(
     [
-      themeHeaderRow(start, end),
-      ...themeRows.map(row => themeValueRow(row, start, end)),
+      paletteHeaderRow(start, end),
+      ...paletteRows.map(row => paletteValueRow(row, start, end)),
     ],
     {fill: false},
   )
 }
 
-const builtInColors = Stack.right([themeGrid(0, 3), themeGrid(3, 6)], {
+const builtInColors = Stack.right([paletteGrid(0, 3), paletteGrid(3, 6)], {
   fill: false,
   gap: 4,
 })

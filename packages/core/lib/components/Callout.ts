@@ -1,7 +1,7 @@
 import type {Viewport} from '../Viewport.js'
 import {Point, Rect, Size} from '../geometry.js'
 import {Style} from '../Style.js'
-import {Theme} from '../Theme.js'
+import {Palette} from '../Palette.js'
 import {type Props as NotificationProps, Notification} from './Notification.js'
 
 export interface Props extends NotificationProps {}
@@ -10,7 +10,7 @@ export class Callout extends Notification {
   constructor(props: Props = {}) {
     super(props)
 
-    this.contentStack.purpose = this.#childTheme()
+    this.contentStack.purpose = this.#childPalette()
 
     this.addDirect(this.contentStack)
   }
@@ -43,13 +43,13 @@ export class Callout extends Notification {
   }
 
   /**
-   * Creates a derived theme for children where all background properties
-   * match the callout's background, so Separator, Text, etc. render with
-   * a consistent background color.
+   * Creates a derived purpose for children where all background properties match the
+   * callout's background, so Separator, Text, etc. render with a consistent
+   * background color.
    */
-  #childTheme(): Theme {
+  #childPalette(): Palette {
     const t = this.purpose
-    return new Theme({
+    return new Palette({
       text: t.textColor,
       contrastText: t.contrastTextColor,
       dimText: t.dimTextColor,
@@ -64,7 +64,7 @@ export class Callout extends Notification {
   }
 
   #updateStyles() {
-    this.contentStack.purpose = this.#childTheme()
+    this.contentStack.purpose = this.#childPalette()
   }
 
   naturalSize(available: Size): Size {

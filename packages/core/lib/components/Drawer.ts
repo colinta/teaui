@@ -12,7 +12,7 @@ import {
 } from '../events/index.js'
 import {type LegendItem} from '../types.js'
 import {Style} from '../Style.js'
-import {Theme} from '../Theme.js'
+import {Palette} from '../Palette.js'
 import {define} from '../util.js'
 import {System} from '../System.js'
 
@@ -237,12 +237,12 @@ export class Drawer extends Container {
     return [drawerSize, contentSize]
   }
 
-  childTheme(view: View) {
+  childPalette(view: View) {
     if (view === this.drawerView) {
       return this.purpose
     }
 
-    return this.parent?.childTheme(this) ?? Theme.plain
+    return this.parent?.childPalette(this) ?? Palette.plain
   }
 
   render(viewport: Viewport) {

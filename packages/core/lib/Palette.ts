@@ -32,7 +32,7 @@ interface Props {
   emoji?: boolean
 }
 
-export class Theme {
+export class Palette {
   textColor: Color
   contrastTextColor: Color
   dimTextColor: Color
@@ -45,7 +45,7 @@ export class Theme {
   tableCheckedHighlightColor: Color
   emoji: boolean
 
-  static plain = new Theme({
+  static plain = new Palette({
     controlBackground: '#4F4F4F(239)',
     textBackground: 'default',
     highlight: '#616161(241)',
@@ -53,7 +53,7 @@ export class Theme {
     tableChecked: '#3a2040',
     tableCheckedHighlight: '#4d2a55',
   })
-  static primary = new Theme({
+  static primary = new Palette({
     controlBackground: '#3B5EA7',
     textBackground: '#273F70',
     highlight: '#5A7AC2',
@@ -64,7 +64,7 @@ export class Theme {
     contrastText: '#5A7AC2',
     dimText: '#314F8C',
   })
-  static secondary = new Theme({
+  static secondary = new Palette({
     controlBackground: '#D0851C',
     textBackground: '#805211',
     highlight: '#D0924B',
@@ -75,7 +75,7 @@ export class Theme {
     contrastText: '#D0924B',
     dimText: '#A66A16',
   })
-  static proceed = new Theme({
+  static proceed = new Palette({
     controlBackground: '#4A7A5B',
     textBackground: '#2E4E3A',
     highlight: '#58A877',
@@ -86,7 +86,7 @@ export class Theme {
     contrastText: '#58A877',
     dimText: '#3D664C',
   })
-  static cancel = new Theme({
+  static cancel = new Palette({
     controlBackground: '#A04A4C',
     textBackground: '#5B282A',
     highlight: '#C46264',
@@ -97,7 +97,7 @@ export class Theme {
     contrastText: '#C46264',
     dimText: '#853D3F',
   })
-  static selected = new Theme({
+  static selected = new Palette({
     text: '#383838(236)',
     controlBackground: '#BDBDBD(250)',
     textBackground: '#BDBDBD(250)',
@@ -106,10 +106,10 @@ export class Theme {
     tableChecked: '#8fa1c8',
     tableCheckedHighlight: '#a7b8dc',
   })
-  static red = Theme.cancel
-  static green = Theme.proceed
-  static blue = Theme.primary
-  static orange = Theme.secondary
+  static red = Palette.cancel
+  static green = Palette.proceed
+  static blue = Palette.primary
+  static orange = Palette.secondary
 
   constructor({
     text,
@@ -132,9 +132,9 @@ export class Theme {
     this.textBackgroundColor = textBackground ?? controlBackground
     this.highlightColor = highlight
     this.darkenColor = darken
-    this.tableCheckedColor = tableChecked ?? Theme.plain.tableCheckedColor
+    this.tableCheckedColor = tableChecked ?? Palette.plain.tableCheckedColor
     this.tableCheckedHighlightColor =
-      tableCheckedHighlight ?? Theme.plain.tableCheckedHighlightColor
+      tableCheckedHighlight ?? Palette.plain.tableCheckedHighlightColor
     this.emoji = emoji ?? true
   }
 
@@ -174,7 +174,7 @@ export class Theme {
   }
 
   /**
-   * Creates a text style using the current theme.
+   * Creates a text style using the current purpose.
    *
    * Not all combinations are supported:
    * - isSelected and isPlaceholder revert to just isPlaceholder
@@ -235,8 +235,8 @@ export class Theme {
     })
   }
 
-  merge(props: Partial<Props>): Theme {
-    return new Theme({
+  merge(props: Partial<Props>): Palette {
+    return new Palette({
       text: props.text ?? this.textColor,
       contrastText: props.contrastText ?? this.contrastTextColor,
       dimText: props.dimText ?? this.dimTextColor,

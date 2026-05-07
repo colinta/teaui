@@ -15,7 +15,7 @@ import {
   Tabs,
   Toggle,
   ToggleGroup,
-  Theme,
+  Palette,
   Window,
   Container,
 } from '@teaui/core'
@@ -120,7 +120,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(<Components.Button purpose="primary" />)
       await flush()
       const btn = window.children[0] as Button
-      expect(btn.purpose).toBe(Theme.primary)
+      expect(btn.purpose).toBe(Palette.primary)
     })
 
     it('Stack renders with children', async () => {

@@ -1,8 +1,8 @@
 import type {Mutable} from './geometry.js'
 import type {Viewport} from './Viewport.js'
 import type {Screen} from './Screen.js'
-import type {Purpose} from './Theme.js'
-import {Theme} from './Theme.js'
+import type {Purpose} from './Palette.js'
+import {Palette} from './Palette.js'
 import {Container} from './Container.js'
 import {System} from './System.js'
 import {
@@ -35,7 +35,7 @@ export function parseFlexShorthand(flex: FlexShorthand): FlexSize {
 export type Pin = 'horizontal' | 'vertical'
 
 export interface Props {
-  purpose?: Theme | Purpose
+  purpose?: Palette | Purpose
   /**
    * A heading for this view. Container views (Box, Page, Alert, Drawer, etc.)
    * can read this from their children to display a section heading without
@@ -83,7 +83,7 @@ export abstract class View {
   debug: boolean = false
 
   #screen: Screen | undefined = undefined
-  #purpose: Theme | undefined
+  #purpose: Palette | undefined
   #prevSizeCache: Map<string, Size> = new Map()
   #viewportContentSize: Size = Size.zero
   #renderedContentSize: Size = Size.zero
@@ -161,7 +161,7 @@ export abstract class View {
     pin,
     debug,
   }: Props) {
-    this.#purpose = typeof purpose === 'string' ? Theme[purpose] : purpose
+    this.#purpose = typeof purpose === 'string' ? Palette[purpose] : purpose
     this.#heading = heading
     this.#x = x
     this.#y = y
@@ -199,15 +199,15 @@ export abstract class View {
     })
   }
 
-  get purpose(): Theme {
-    return this.#purpose ?? this.parent?.childTheme(this) ?? Theme.plain
+  get purpose(): Palette {
+    return this.#purpose ?? this.parent?.childPalette(this) ?? Palette.plain
   }
 
-  set purpose(value: Theme | Purpose | undefined) {
-    this.#purpose = typeof value === 'string' ? Theme[value] : value
+  set purpose(value: Palette | Purpose | undefined) {
+    this.#purpose = typeof value === 'string' ? Palette[value] : value
   }
 
-  childTheme(_view: View) {
+  childPalette(_view: View) {
     return this.purpose
   }
 

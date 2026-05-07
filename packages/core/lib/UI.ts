@@ -1,28 +1,32 @@
-import {Theme} from './Theme.js'
+import {Palette} from './Palette.js'
 
-export function childTheme(theme: Theme, isPressed = false, isHover = false) {
-  return new Theme({
+export function childPalette(
+  purpose: Palette,
+  isPressed = false,
+  isHover = false,
+) {
+  return new Palette({
     controlBackground: isPressed
-      ? theme.darkenColor
+      ? purpose.darkenColor
       : isHover
-        ? theme.highlightColor
-        : theme.controlBackgroundColor,
+        ? purpose.highlightColor
+        : purpose.controlBackgroundColor,
     textBackground: isPressed
-      ? theme.darkenColor
+      ? purpose.darkenColor
       : isHover
-        ? theme.highlightColor
-        : theme.controlBackgroundColor,
-    highlight: theme.highlightColor,
+        ? purpose.highlightColor
+        : purpose.controlBackgroundColor,
+    highlight: purpose.highlightColor,
     darken: isPressed
-      ? theme.darkenColor
+      ? purpose.darkenColor
       : isHover
-        ? theme.highlightColor
-        : theme.darkenColor,
-    text: theme.textColor,
-    contrastText: theme.contrastTextColor,
-    dimText: theme.dimTextColor,
-    tableChecked: theme.tableCheckedColor,
-    tableCheckedHighlight: theme.tableCheckedHighlightColor,
-    emoji: theme.emoji,
+        ? purpose.highlightColor
+        : purpose.darkenColor,
+    text: purpose.textColor,
+    contrastText: purpose.contrastTextColor,
+    dimText: purpose.dimTextColor,
+    tableChecked: purpose.tableCheckedColor,
+    tableCheckedHighlight: purpose.tableCheckedHighlightColor,
+    emoji: purpose.emoji,
   })
 }

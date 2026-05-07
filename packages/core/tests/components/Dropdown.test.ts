@@ -263,8 +263,8 @@ describe('Dropdown', () => {
         {width: 30, height: 3},
       )
 
-      // The Dropdown paints with theme.ui() then writes text with the same style.
-      // The text cells should carry foreground and background from the theme.
+      // The Dropdown paints with purpose.ui() then writes text with the same style.
+      // The text cells should carry foreground and background from the purpose.
       const style = t.terminal.styleOf('Apple')
       expect(style).not.toBeNull()
       expect(style!.foreground).toBeDefined()

@@ -450,7 +450,7 @@ describe('reconciler', () => {
     it('preserves inline text order when removing a keyed entry from the middle', async () => {
       function TestComp() {
         const [prefix, setPrefix] = useState('')
-        const showTheme = prefix === ''
+        const showPurpose = prefix === ''
 
         return (
           <tui-stack direction="down">
@@ -469,13 +469,13 @@ describe('reconciler', () => {
                 {'"rounded"'}
               </tui-style>
               {',\n    '}
-              {showTheme ? (
+              {showPurpose ? (
                 <>
-                  <tui-style key="theme" foreground="blue">
-                    {'"theme"'}
+                  <tui-style key="purpose" foreground="blue">
+                    {'"purpose"'}
                   </tui-style>
                   {': '}
-                  <tui-style key="theme-value" foreground="green">
+                  <tui-style key="purpose-value" foreground="green">
                     {'"default"'}
                   </tui-style>
                   {',\n    '}
@@ -506,7 +506,7 @@ describe('reconciler', () => {
       await flush()
       const t = testRender(window, {width: 40, height: 10})
 
-      expect(t.terminal.textContent()).toContain('"theme": "default",')
+      expect(t.terminal.textContent()).toContain('"purpose": "default",')
       expect(t.terminal.textContent()).toContain('"debug": false')
       expect(t.terminal.textContent()).toContain(
         '"tags": ["tui", "terminal", "ui"]',
@@ -515,7 +515,7 @@ describe('reconciler', () => {
       t.sendKey('#')
       await flush()
       t.render()
-      expect(t.terminal.textContent()).not.toContain('"theme": "default"')
+      expect(t.terminal.textContent()).not.toContain('"purpose": "default"')
       expect(t.terminal.textContent()).toContain('"border": "rounded",')
       expect(t.terminal.textContent()).toContain('"debug": false')
       expect(t.terminal.textContent()).toContain(
@@ -554,12 +554,12 @@ describe('reconciler', () => {
       expect(t.terminal.textContent()).not.toContain('}"tags"')
     })
 
-    it('keeps yaml demo output stable when commenting out theme', async () => {
+    it('keeps yaml demo output stable when commenting out purpose', async () => {
       const {window} = renderToWindow(<YamlTab />)
       await flush()
       const t = testRender(window, {width: 120, height: 24})
 
-      expect(t.terminal.textContent()).toContain('"theme": "default"')
+      expect(t.terminal.textContent()).toContain('"purpose": "default"')
       expect(t.terminal.textContent()).toContain('"debug": false')
 
       t.sendKey(',', {alt: true, shift: true})
@@ -572,7 +572,7 @@ describe('reconciler', () => {
       await flush()
       t.render()
 
-      expect(t.terminal.textContent()).not.toContain('"theme": "default"')
+      expect(t.terminal.textContent()).not.toContain('"purpose": "default"')
       expect(t.terminal.textContent()).toContain('"debug": false')
       expect(t.terminal.textContent()).toContain('"tags": [')
       expect(t.terminal.textContent()).toContain('"tui"')

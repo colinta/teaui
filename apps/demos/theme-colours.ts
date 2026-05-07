@@ -4,7 +4,7 @@ import {
   Space,
   Stack,
   Text,
-  Theme,
+  Palette,
   ToggleGroup,
   colorToHex,
   type Color,
@@ -14,12 +14,12 @@ import {
 
 import {demo} from './demo.js'
 
-type ThemeEntry = {
+type PaletteEntry = {
   section: 'UI' | 'Text'
   api: string
   styleSource: string
   description: string
-  resolveStyle: (theme: Theme) => Style
+  resolveStyle: (palette: Palette) => Style
 }
 
 const API_WIDTH = 30
@@ -29,8 +29,8 @@ const DESCRIPTION_WIDTH = 50
 const EXAMPLE_TEXT = 'Example'
 const SWATCH_PLACEHOLDER = '#000000'
 const SWATCH_PADDING = '  '
-const SECTION_STYLE = Theme.selected.ui()
-const HEADER_STYLE = Theme.plain.text({hasFocus: true})
+const SECTION_STYLE = Palette.selected.ui()
+const HEADER_STYLE = Palette.plain.text({hasFocus: true})
 
 const PURPOSES = [
   'plain',
@@ -41,77 +41,77 @@ const PURPOSES = [
   'selected',
 ] as const satisfies readonly Purpose[]
 
-const ENTRIES: ThemeEntry[] = [
+const ENTRIES: PaletteEntry[] = [
   {
     section: 'UI',
-    api: 'theme.ui()',
+    api: 'palette.ui()',
     styleSource: styleSource(['foreground: text', 'background: background']),
     description:
       'Default surface for buttons, dropdown triggers, and other interactive chrome.',
-    resolveStyle: theme => theme.ui(),
+    resolveStyle: palette => palette.ui(),
   },
   {
     section: 'UI',
-    api: 'theme.ui({\n  isOrnament: true,\n})',
+    api: 'palette.ui({\n  isOrnament: true,\n})',
     styleSource: styleSource(['foreground: darken', 'background: background']),
     description:
       'Decorative control chrome, like borders and caps that recede until hover or press.',
-    resolveStyle: theme => theme.ui({isOrnament: true}),
+    resolveStyle: palette => palette.ui({isOrnament: true}),
   },
   {
     section: 'UI',
-    api: 'theme.ui({\n  isHover: true,\n})',
+    api: 'palette.ui({\n  isHover: true,\n})',
     styleSource: styleSource(['foreground: text', 'background: highlight']),
     description: 'Hovered or focused control surface.',
-    resolveStyle: theme => theme.ui({isHover: true}),
+    resolveStyle: palette => palette.ui({isHover: true}),
   },
   {
     section: 'UI',
-    api: 'theme.ui({\n  isHover: true,\n  isOrnament: true,\n})',
+    api: 'palette.ui({\n  isHover: true,\n  isOrnament: true,\n})',
     styleSource: styleSource([
       'foreground: highlight',
       'background: highlight',
     ]),
     description:
       'Hovered ornament colour for button tops, borders, and other decorative chrome.',
-    resolveStyle: theme => theme.ui({isHover: true, isOrnament: true}),
+    resolveStyle: palette => palette.ui({isHover: true, isOrnament: true}),
   },
   {
     section: 'UI',
-    api: 'theme.ui({\n  isPressed: true,\n})',
+    api: 'palette.ui({\n  isPressed: true,\n})',
     styleSource: styleSource(['foreground: text', 'background: darken']),
     description: 'Pressed control surface.',
-    resolveStyle: theme => theme.ui({isPressed: true}),
+    resolveStyle: palette => palette.ui({isPressed: true}),
   },
   {
     section: 'UI',
-    api: 'theme.ui({\n  isPressed: true,\n  isOrnament: true,\n})',
+    api: 'palette.ui({\n  isPressed: true,\n  isOrnament: true,\n})',
     styleSource: styleSource(['foreground: darken', 'background: darken']),
     description:
       'Pressed ornament colour for borders and decorative control pieces.',
-    resolveStyle: theme => theme.ui({isPressed: true, isOrnament: true}),
+    resolveStyle: palette => palette.ui({isPressed: true, isOrnament: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text()',
+    api: 'palette.text()',
     styleSource: styleSource(['foreground: text', 'background: textBg']),
     description: 'Default readable text on text surfaces.',
-    resolveStyle: theme => theme.text(),
+    resolveStyle: palette => palette.text(),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  hasFocus: true,\n})',
+    api: 'palette.text({\n  hasFocus: true,\n})',
     styleSource: styleSource([
       'foreground: text',
       'background: textBg',
       'bold: true',
     ]),
     description: 'Focused text, used heavily in inputs and editable text.',
-    resolveStyle: theme => theme.text({hasFocus: true}),
+    resolveStyle: palette => palette.text({hasFocus: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  hasFocus: true,\n  isSelected: true,\n})',
+    api: 'palette.text({\n  hasFocus: true,\n  isSelected: true,\n})',
     styleSource: styleSource([
       'foreground: text',
       'background: textBg',
@@ -119,37 +119,37 @@ const ENTRIES: ThemeEntry[] = [
       'bold: true',
     ]),
     description: 'Focused text selection, rendered as an inverse highlight.',
-    resolveStyle: theme => theme.text({hasFocus: true, isSelected: true}),
+    resolveStyle: palette => palette.text({hasFocus: true, isSelected: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isSelected: true,\n})',
+    api: 'palette.text({\n  isSelected: true,\n})',
     styleSource: styleSource(['foreground: dimText', 'background: dimBg']),
     description: 'Unfocused selection with dimmed selected colours.',
-    resolveStyle: theme => theme.text({isSelected: true}),
+    resolveStyle: palette => palette.text({isSelected: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isHover: true,\n})',
+    api: 'palette.text({\n  isHover: true,\n})',
     styleSource: styleSource(['foreground: contrast', 'background: textBg']),
     description:
       'Hovered interactive text, like collapsible labels and drawer text.',
-    resolveStyle: theme => theme.text({isHover: true}),
+    resolveStyle: palette => palette.text({isHover: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isHover: true,\n  hasFocus: true,\n})',
+    api: 'palette.text({\n  isHover: true,\n  hasFocus: true,\n})',
     styleSource: styleSource([
       'foreground: contrast',
       'background: textBg',
       'bold: true',
     ]),
     description: 'Hovered text while the control is focused.',
-    resolveStyle: theme => theme.text({isHover: true, hasFocus: true}),
+    resolveStyle: palette => palette.text({isHover: true, hasFocus: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isHover: true,\n  hasFocus: true,\n  isSelected: true,\n})',
+    api: 'palette.text({\n  isHover: true,\n  hasFocus: true,\n  isSelected: true,\n})',
     styleSource: styleSource([
       'foreground: contrast',
       'background: textBg',
@@ -158,30 +158,30 @@ const ENTRIES: ThemeEntry[] = [
     ]),
     description:
       'Hovered focused selection, keeping the inverse selected treatment.',
-    resolveStyle: theme =>
-      theme.text({isHover: true, hasFocus: true, isSelected: true}),
+    resolveStyle: palette =>
+      palette.text({isHover: true, hasFocus: true, isSelected: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPressed: true,\n})',
+    api: 'palette.text({\n  isPressed: true,\n})',
     styleSource: styleSource(['foreground: highlight', 'background: textBg']),
     description: 'Pressed interactive text.',
-    resolveStyle: theme => theme.text({isPressed: true}),
+    resolveStyle: palette => palette.text({isPressed: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPressed: true,\n  hasFocus: true,\n})',
+    api: 'palette.text({\n  isPressed: true,\n  hasFocus: true,\n})',
     styleSource: styleSource([
       'foreground: highlight',
       'background: textBg',
       'bold: true',
     ]),
     description: 'Pressed text while the control is focused.',
-    resolveStyle: theme => theme.text({isPressed: true, hasFocus: true}),
+    resolveStyle: palette => palette.text({isPressed: true, hasFocus: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPressed: true,\n  hasFocus: true,\n  isSelected: true,\n})',
+    api: 'palette.text({\n  isPressed: true,\n  hasFocus: true,\n  isSelected: true,\n})',
     styleSource: styleSource([
       'foreground: highlight',
       'background: textBg',
@@ -189,41 +189,43 @@ const ENTRIES: ThemeEntry[] = [
       'bold: true',
     ]),
     description: 'Pressed focused selection.',
-    resolveStyle: theme =>
-      theme.text({isPressed: true, hasFocus: true, isSelected: true}),
+    resolveStyle: palette =>
+      palette.text({isPressed: true, hasFocus: true, isSelected: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPlaceholder: true,\n})',
+    api: 'palette.text({\n  isPlaceholder: true,\n})',
     styleSource: styleSource(['foreground: dimText', 'background: textBg']),
     description:
       'Placeholder text in inputs and other empty text-entry surfaces.',
-    resolveStyle: theme => theme.text({isPlaceholder: true}),
+    resolveStyle: palette => palette.text({isPlaceholder: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPlaceholder: true,\n  isHover: true,\n})',
+    api: 'palette.text({\n  isPlaceholder: true,\n  isHover: true,\n})',
     styleSource: styleSource(['foreground: dimText', 'background: dimBg']),
     description: 'Hovered placeholder text.',
-    resolveStyle: theme => theme.text({isPlaceholder: true, isHover: true}),
+    resolveStyle: palette => palette.text({isPlaceholder: true, isHover: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPlaceholder: true,\n  isPressed: true,\n})',
+    api: 'palette.text({\n  isPlaceholder: true,\n  isPressed: true,\n})',
     styleSource: styleSource(['foreground: text', 'background: textBg']),
     description: 'Pressed placeholder text.',
-    resolveStyle: theme => theme.text({isPlaceholder: true, isPressed: true}),
+    resolveStyle: palette =>
+      palette.text({isPlaceholder: true, isPressed: true}),
   },
   {
     section: 'Text',
-    api: 'theme.text({\n  isPlaceholder: true,\n  hasFocus: true,\n})',
+    api: 'palette.text({\n  isPlaceholder: true,\n  hasFocus: true,\n})',
     styleSource: styleSource([
       'foreground: dimText',
       'background: textBg',
       'bold: true',
     ]),
     description: 'Focused placeholder text, which becomes bold to show focus.',
-    resolveStyle: theme => theme.text({isPlaceholder: true, hasFocus: true}),
+    resolveStyle: palette =>
+      palette.text({isPlaceholder: true, hasFocus: true}),
   },
 ]
 
@@ -259,7 +261,7 @@ function buildSections() {
   const children = [] as Array<
     Text | ReturnType<typeof Stack.right> | Space | Separator
   >
-  let currentSection: ThemeEntry['section'] | undefined
+  let currentSection: PaletteEntry['section'] | undefined
 
   for (const [index, entry] of ENTRIES.entries()) {
     if (entry.section !== currentSection) {
@@ -287,7 +289,7 @@ function buildSections() {
   return children
 }
 
-function createRow(entry: ThemeEntry) {
+function createRow(entry: PaletteEntry) {
   const foregroundLabel = new Text({
     text: SWATCH_PLACEHOLDER,
     width: SWATCH_WIDTH,
@@ -316,8 +318,8 @@ function createRow(entry: ThemeEntry) {
       styleText,
       new Text({text: entry.description, width: DESCRIPTION_WIDTH, wrap: true}),
     ]),
-    update(theme: Theme) {
-      const style = entry.resolveStyle(theme)
+    update(palette: Palette) {
+      const style = entry.resolveStyle(palette)
       const foreground = style.foreground ?? 'default'
       const background = style.background ?? 'default'
 
@@ -351,27 +353,27 @@ function headerRow() {
 
 function refresh() {
   const purpose = PURPOSES[selectedPurpose.index]
-  const theme = themeForPurpose(purpose)
+  const palette = paletteForPurpose(purpose)
 
   for (const row of rowViews) {
-    row.update(theme)
+    row.update(palette)
   }
 }
 
-function themeForPurpose(purpose: (typeof PURPOSES)[number]) {
+function paletteForPurpose(purpose: (typeof PURPOSES)[number]) {
   switch (purpose) {
     case 'primary':
-      return Theme.primary
+      return Palette.primary
     case 'secondary':
-      return Theme.secondary
+      return Palette.secondary
     case 'proceed':
-      return Theme.proceed
+      return Palette.proceed
     case 'cancel':
-      return Theme.cancel
+      return Palette.cancel
     case 'selected':
-      return Theme.selected
+      return Palette.selected
     case 'plain':
-      return Theme.plain
+      return Palette.plain
   }
 }
 
