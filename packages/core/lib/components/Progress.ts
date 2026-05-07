@@ -118,8 +118,8 @@ export class Progress extends View {
       viewport.contentSize.height <= 1 ? 0 : 1,
     )
 
-    const textStyle = this.theme.text()
-    const controlStyle = this.theme.ui({isHover: true}).invert().merge({
+    const textStyle = this.purpose.text()
+    const controlStyle = this.purpose.ui({isHover: true}).invert().merge({
       background: textStyle.background,
     })
     const altTextStyle = new Style({

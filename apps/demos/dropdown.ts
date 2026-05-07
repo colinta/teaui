@@ -49,7 +49,7 @@ const choices: [string, number][] = [
 
 const dropdown = new Dropdown({
   multiple: true,
-  theme: 'proceed',
+  purpose: 'proceed',
   onSelect(value: any) {
     console.info(value)
   },
@@ -61,7 +61,7 @@ const dropdown = new Dropdown({
 const button = new Button({
   height: 3,
   padding: {left: 1, right: 1},
-  theme: 'primary',
+  purpose: 'primary',
   title: 'Launch',
   onClick() {
     const choices = [
@@ -77,7 +77,7 @@ demo(
   Stack.down({
     children: [
       new Dropdown({
-        theme: 'primary',
+        purpose: 'primary',
         onSelect(value: number) {
           dropdown.selected = [value]
         },
@@ -87,7 +87,7 @@ demo(
       }),
       new Space({height: 1}),
       new Dropdown({
-        theme: 'secondary',
+        purpose: 'secondary',
         onSelect(value: number) {
           dropdown.selected = [value]
         },
@@ -119,7 +119,7 @@ demo(
       new Space({height: 1}),
       new Dropdown({
         multiple: true,
-        theme: 'plain',
+        purpose: 'plain',
         title: 'Select many options…',
         onSelect(value: number[]) {
           dropdown.selected = value
@@ -130,7 +130,7 @@ demo(
       }),
       new Space({height: 1}),
       new Dropdown({
-        theme: 'cancel',
+        purpose: 'cancel',
         onSelect(value: number) {
           dropdown.selected = [value]
         },

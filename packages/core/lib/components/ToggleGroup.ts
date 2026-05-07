@@ -299,16 +299,16 @@ export class ToggleGroup extends Container {
       return undefined
     }
 
-    return new Style({background: this.theme.dimBackgroundColor})
+    return new Style({background: this.purpose.dimBackgroundColor})
   }
 
   #textStyle(isSelected: boolean): Style {
-    const style = this.theme.text()
+    const style = this.purpose.text()
     if (!isSelected) {
       return style
     }
 
-    return style.merge({background: this.theme.dimBackgroundColor})
+    return style.merge({background: this.purpose.dimBackgroundColor})
   }
 }
 

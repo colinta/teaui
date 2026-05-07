@@ -56,10 +56,10 @@ export function MoreTab() {
       </Text>
       <Stack.right gap={1}>
         <Button title="Default" />
-        <Button title="Primary" theme="primary" />
-        <Button title="Secondary" theme="secondary" />
+        <Button title="Primary" purpose="primary" />
+        <Button title="Secondary" purpose="secondary" />
         <Button title="Tall" height={3} />
-        <Button title="Primary Tall" height={3} theme="primary" />
+        <Button title="Primary Tall" height={3} purpose="primary" />
       </Stack.right>
 
       <Separator.horizontal />

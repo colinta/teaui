@@ -71,7 +71,7 @@ export class Canvas extends View {
       this.#draw(this)
     }
 
-    const style = this.theme.text()
+    const style = this.purpose.text()
 
     viewport.visibleRect.forEachPoint(pt => {
       const cellIndex = pt.y * this.#cellCols + pt.x

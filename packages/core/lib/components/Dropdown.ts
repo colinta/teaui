@@ -63,7 +63,7 @@ export class Dropdown<T, M extends boolean> extends View {
 
     this.#multiple = multiple ?? false
     this.dropdownSelector = new DropdownSelector({
-      theme: this.theme,
+      purpose: this.purpose,
       multiple: this.#multiple,
       choices: [],
       selected: [],
@@ -94,7 +94,7 @@ export class Dropdown<T, M extends boolean> extends View {
 
     this.choices = choices
     this.selected = selected as any
-    this.dropdownSelector.theme = this.theme
+    this.dropdownSelector.purpose = this.purpose
   }
 
   get choices(): Choices<T> {
@@ -173,7 +173,7 @@ export class Dropdown<T, M extends boolean> extends View {
 
     viewport.registerMouse(['mouse.move', 'mouse.button.left'])
     const lines = this.#titleLines()
-    const textStyle = this.theme.ui({
+    const textStyle = this.purpose.ui({
       isHover: this.isHover && !this.#showModal,
     })
 
@@ -275,7 +275,7 @@ class DropdownSelector<T> extends Container {
             new Space({flex: 1}),
             new Text({
               text: '├─┤',
-              style: new Style({background: this.theme.textBackgroundColor}),
+              style: new Style({background: this.purpose.textBackgroundColor}),
             }),
           ],
           {y: 1, width: 'shrink'},
@@ -380,7 +380,7 @@ class DropdownSelector<T> extends Container {
     const isSelected = [...this.#selected].some(index => index === row)
 
     const button = new Button({
-      theme: isSelected ? 'selected' : undefined,
+      purpose: isSelected ? 'selected' : undefined,
       border: 'none',
       align: 'left',
       onClick: () => {

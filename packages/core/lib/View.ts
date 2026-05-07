@@ -35,7 +35,7 @@ export function parseFlexShorthand(flex: FlexShorthand): FlexSize {
 export type Pin = 'horizontal' | 'vertical'
 
 export interface Props {
-  theme?: Theme | Purpose
+  purpose?: Theme | Purpose
   /**
    * A heading for this view. Container views (Box, Page, Alert, Drawer, etc.)
    * can read this from their children to display a section heading without
@@ -83,7 +83,7 @@ export abstract class View {
   debug: boolean = false
 
   #screen: Screen | undefined = undefined
-  #theme: Theme | undefined
+  #purpose: Theme | undefined
   #prevSizeCache: Map<string, Size> = new Map()
   #viewportContentSize: Size = Size.zero
   #renderedContentSize: Size = Size.zero
@@ -140,7 +140,7 @@ export abstract class View {
   }
 
   #update({
-    theme,
+    purpose,
     heading,
     x,
     y,
@@ -161,7 +161,7 @@ export abstract class View {
     pin,
     debug,
   }: Props) {
-    this.#theme = typeof theme === 'string' ? Theme[theme] : theme
+    this.#purpose = typeof purpose === 'string' ? Theme[purpose] : purpose
     this.#heading = heading
     this.#x = x
     this.#y = y
@@ -199,16 +199,16 @@ export abstract class View {
     })
   }
 
-  get theme(): Theme {
-    return this.#theme ?? this.parent?.childTheme(this) ?? Theme.plain
+  get purpose(): Theme {
+    return this.#purpose ?? this.parent?.childTheme(this) ?? Theme.plain
   }
 
-  set theme(value: Theme | undefined) {
-    this.#theme = value
+  set purpose(value: Theme | Purpose | undefined) {
+    this.#purpose = typeof value === 'string' ? Theme[value] : value
   }
 
   childTheme(_view: View) {
-    return this.theme
+    return this.purpose
   }
 
   get heading(): string | undefined {

@@ -15,7 +15,7 @@ export function DrawerTab() {
   return (
     <Drawer.left
       flex={1}
-      theme="secondary"
+      purpose="secondary"
       hotKey="C-o"
       drawer={
         <Stack.down maxWidth={35}>

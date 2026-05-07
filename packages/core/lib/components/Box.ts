@@ -165,11 +165,11 @@ export class Box extends ZStack {
     const topInnerY = headingHeight + this.#borderSizes.maxTop
     const bottomInnerY = topInnerY + innerHeight
 
-    const borderStyle = this.theme
+    const borderStyle = this.purpose
       .text({isHover: this.isHover})
-      .merge(new Style({background: this.theme.textBackgroundColor}))
+      .merge(new Style({background: this.purpose.textBackgroundColor}))
 
-    const innerStyle = new Style({background: this.theme.textBackgroundColor})
+    const innerStyle = new Style({background: this.purpose.textBackgroundColor})
     const innerOrigin = new Point(this.#borderSizes.maxLeft, topInnerY)
     if (innerHeight && innerMiddleWidth) {
       for (let y = 0; y < innerHeight; ++y) {
@@ -260,7 +260,7 @@ export class Box extends ZStack {
   }
 
   #headingStyle(): Style {
-    const textStyle = this.theme.text({isHover: this.isHover})
+    const textStyle = this.purpose.text({isHover: this.isHover})
     return new Style({bold: true, background: textStyle.background})
   }
 }

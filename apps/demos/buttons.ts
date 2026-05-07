@@ -18,7 +18,7 @@ demo(
           'flex1',
           new Button({
             height: 1,
-            theme: 'primary',
+            purpose: 'primary',
             title: `Launch ${8 - index}`,
           }),
         ]),
@@ -34,7 +34,7 @@ demo(
     new Button({
       height: 3,
       border: 'none',
-      theme: 'primary',
+      purpose: 'primary',
       title: 'Primary',
     }),
 
@@ -42,7 +42,7 @@ demo(
     new Button({
       height: 3,
       border: 'none',
-      theme: 'proceed',
+      purpose: 'proceed',
       title: 'Proceed',
     }),
 
@@ -50,7 +50,7 @@ demo(
     new Button({
       height: 3,
       border: 'none',
-      theme: 'cancel',
+      purpose: 'cancel',
       title: 'Cancel',
     }),
 
@@ -58,7 +58,7 @@ demo(
     new Button({
       height: 3,
       border: 'none',
-      theme: 'secondary',
+      purpose: 'secondary',
       title: 'Do it!',
     }),
 
@@ -69,8 +69,8 @@ demo(
     }),
 
     new Space({flex: 1}),
-    new Button({theme: 'plain', height: 3, title: 'Do it!'}),
-    new Button({theme: 'selected', height: 3, title: 'Do it!'}),
+    new Button({purpose: 'plain', height: 3, title: 'Do it!'}),
+    new Button({purpose: 'selected', height: 3, title: 'Do it!'}),
     new Space({flex: 1}),
     new Separator({
       direction: 'horizontal',

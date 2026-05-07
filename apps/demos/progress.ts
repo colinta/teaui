@@ -10,7 +10,7 @@ progressViews.push(
     width: 'fill',
     height: 5,
     value: 0,
-    theme: 'cancel',
+    purpose: 'cancel',
   }),
 )
 
@@ -20,7 +20,7 @@ progressViews.push(
     width: 'fill',
     height: 1,
     value: 0,
-    theme: 'primary',
+    purpose: 'primary',
   }),
 )
 
@@ -30,7 +30,7 @@ progressViews.push(
     width: 'fill',
     height: 2,
     value: 0,
-    theme: 'secondary',
+    purpose: 'secondary',
   }),
 )
 
@@ -40,7 +40,7 @@ progressViews.push(
     width: 5,
     height: 20,
     value: 0,
-    theme: 'proceed',
+    purpose: 'proceed',
   }),
 )
 
@@ -50,7 +50,7 @@ progressViews.push(
     width: 1,
     height: 20,
     value: 0,
-    theme: 'selected',
+    purpose: 'selected',
   }),
 )
 

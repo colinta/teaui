@@ -554,17 +554,17 @@ export class Input extends View {
 
     let isPlaceholder = !Boolean(this.#chars.length)
     let currentStyle = Style.NONE
-    const plainStyle = this.theme.text({
+    const plainStyle = this.purpose.text({
       isPlaceholder,
       hasFocus,
     })
-    const selectedStyle = this.theme.text({
+    const selectedStyle = this.purpose.text({
       isSelected: true,
       hasFocus,
     })
     const cursorStyle = plainStyle.merge({underline: true})
 
-    const nlStyle = this.theme.text({isPlaceholder: true})
+    const nlStyle = this.purpose.text({isPlaceholder: true})
 
     const fontMap = this.#font && FONTS[this.#font]
 

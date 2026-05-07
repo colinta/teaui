@@ -10,7 +10,7 @@ export class Callout extends Notification {
   constructor(props: Props = {}) {
     super(props)
 
-    this.contentStack.theme = this.#childTheme()
+    this.contentStack.purpose = this.#childTheme()
 
     this.addDirect(this.contentStack)
   }
@@ -23,21 +23,21 @@ export class Callout extends Notification {
 
   #backgroundStyle(): Style {
     return new Style({
-      foreground: this.theme.textColor,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.textColor,
+      background: this.purpose.darkenColor,
     })
   }
 
   #barStyle(): Style {
     return new Style({
-      foreground: this.theme.highlightColor,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.highlightColor,
+      background: this.purpose.darkenColor,
     })
   }
 
   #topBottomBarStyle(): Style {
     return new Style({
-      foreground: this.theme.highlightColor,
+      foreground: this.purpose.highlightColor,
       background: 'default',
     })
   }
@@ -48,7 +48,7 @@ export class Callout extends Notification {
    * a consistent background color.
    */
   #childTheme(): Theme {
-    const t = this.theme
+    const t = this.purpose
     return new Theme({
       text: t.textColor,
       contrastText: t.contrastTextColor,
@@ -64,7 +64,7 @@ export class Callout extends Notification {
   }
 
   #updateStyles() {
-    this.contentStack.theme = this.#childTheme()
+    this.contentStack.purpose = this.#childTheme()
   }
 
   naturalSize(available: Size): Size {

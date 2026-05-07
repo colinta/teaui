@@ -1,6 +1,10 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
-import {Table, type Column, type Props as TableProps} from '../../lib/components/Table.js'
+import {
+  Table,
+  type Column,
+  type Props as TableProps,
+} from '../../lib/components/Table.js'
 
 interface Row {
   name: string

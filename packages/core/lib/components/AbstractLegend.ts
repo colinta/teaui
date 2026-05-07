@@ -193,14 +193,14 @@ export abstract class AbstractLegend extends View {
     )
 
     const keyStyle = new Style({
-      foreground: this.theme.contrastTextColor,
+      foreground: this.purpose.contrastTextColor,
       bold: true,
     })
     const labelStyle = new Style({
-      foreground: this.theme.dimTextColor,
+      foreground: this.purpose.dimTextColor,
     })
     const sepStyle = new Style({
-      foreground: this.theme.dimTextColor,
+      foreground: this.purpose.dimTextColor,
     })
 
     const sepWidth = unicode.lineWidth(this.#separator)

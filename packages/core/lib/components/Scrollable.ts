@@ -410,15 +410,15 @@ export class Scrollable extends Container {
 
   #scrollbarStyle(): Style {
     return new Style({
-      foreground: this.theme.darkenColor,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.darkenColor,
+      background: this.purpose.darkenColor,
     })
   }
 
   #scrollbarThumbStyle(): Style {
     return new Style({
-      foreground: this.theme.highlightColor,
-      background: this.theme.highlightColor,
+      foreground: this.purpose.highlightColor,
+      background: this.purpose.highlightColor,
     })
   }
 

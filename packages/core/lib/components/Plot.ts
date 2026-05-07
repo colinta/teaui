@@ -60,7 +60,7 @@ export class Plot extends View {
   render(viewport: Viewport) {
     if (viewport.isEmpty || this.#charts.length === 0) return
 
-    const textStyle = this.theme.text()
+    const textStyle = this.purpose.text()
     const totalW = viewport.contentSize.width
     const totalH = viewport.contentSize.height
 

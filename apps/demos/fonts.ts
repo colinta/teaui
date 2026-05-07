@@ -20,7 +20,7 @@ const text = new Text({
 })
 
 const dropdown = new Dropdown({
-  theme: 'proceed',
+  purpose: 'proceed',
   onSelect(value: FontFamily) {
     text.font = value
   },

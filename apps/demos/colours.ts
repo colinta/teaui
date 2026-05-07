@@ -164,7 +164,7 @@ function themeValueRow(
         return new Button({
           title: hex,
           width: CELL_WIDTH,
-          theme: purpose,
+          purpose,
           border: 'none',
           foreground: isBackground ? undefined : hex,
           background: isBackground ? hex : undefined,
@@ -222,7 +222,7 @@ demo(
               },
             }),
             new Slider({
-              theme: 'green',
+              purpose: 'green',
               direction: 'vertical',
               range: [0, 255],
               value: rgb[1],
@@ -235,7 +235,7 @@ demo(
               },
             }),
             new Slider({
-              theme: 'blue',
+              purpose: 'blue',
               direction: 'vertical',
               range: [0, 255],
               value: rgb[2],

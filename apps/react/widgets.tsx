@@ -73,25 +73,25 @@ export function WidgetsTab() {
           value={progressVal}
           showPercent
           location={progressLocation}
-          theme="blue"
+          purpose="blue"
         />
         <Progress
           value={progressVal}
           showPercent
           location={progressLocation}
-          theme="green"
+          purpose="green"
         />
         <Progress
           value={progressVal}
           showPercent
           location={progressLocation}
-          theme="orange"
+          purpose="orange"
         />
         <Progress
           value={progressVal}
           showPercent
           location={progressLocation}
-          theme="red"
+          purpose="red"
           height={2}
         />
       </Stack.down>
@@ -164,7 +164,7 @@ export function WidgetsTab() {
         <Accordion.Section title="Section C">
           <Stack.down>
             <Text wrap>Section C even has a progress bar:</Text>
-            <Progress value={75} showPercent theme="green" />
+            <Progress value={75} showPercent purpose="green" />
           </Stack.down>
         </Accordion.Section>
       </Accordion>

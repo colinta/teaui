@@ -67,7 +67,7 @@ const deleteAlert = new Alert({
       children: [
         new Button({
           title: 'Delete',
-          theme: 'cancel',
+          purpose: 'cancel',
           onClick() {
             console.info('Deleted!')
             deleteAlert.dismiss()
@@ -75,7 +75,7 @@ const deleteAlert = new Alert({
         }),
         new Button({
           title: 'Cancel',
-          theme: 'plain',
+          purpose: 'plain',
           onClick() {
             deleteAlert.dismiss()
           },
@@ -100,7 +100,7 @@ const infoAlert = new Alert({
     new Space({height: 1}),
     new Button({
       title: 'OK',
-      theme: 'primary',
+      purpose: 'primary',
       onClick() {
         infoAlert.dismiss()
       },
@@ -120,7 +120,7 @@ const layout = new Scrollable({
       children: [
         new Button({
           title: 'Show Alert',
-          theme: 'cancel',
+          purpose: 'cancel',
           height: 3,
           onClick() {
             deleteAlert.presentFrom(layout)
@@ -128,7 +128,7 @@ const layout = new Scrollable({
         }),
         new Button({
           title: 'Show Info Alert',
-          theme: 'primary',
+          purpose: 'primary',
           height: 3,
           onClick() {
             infoAlert.presentFrom(layout)

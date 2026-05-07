@@ -93,7 +93,7 @@ describe('Calendar', () => {
         new Calendar({
           date: date(2026, 6, 15),
           visibleDate: date(2026, 6, 1),
-          theme: 'blue',
+          purpose: 'blue',
         }),
         {width: 22, height: 8},
       )
@@ -132,7 +132,7 @@ describe('Calendar', () => {
         new Calendar({
           date: date(2026, 6, 15),
           visibleDate: date(2026, 6, 1),
-          theme: 'blue',
+          purpose: 'blue',
         }),
         {width: 40, height: 20},
       )
@@ -150,17 +150,17 @@ describe('Calendar', () => {
             new Calendar({
               date: date(2026, 4, 29),
               visibleDate: date(2026, 4, 1),
-              theme: 'blue',
+              purpose: 'blue',
             }),
             new Calendar({
               date: date(2026, 4, 29),
               visibleDate: date(2026, 4, 1),
-              theme: 'green',
+              purpose: 'green',
             }),
             new Calendar({
               date: date(2026, 4, 29),
               visibleDate: date(2026, 4, 1),
-              theme: 'orange',
+              purpose: 'orange',
             }),
           ],
         }),

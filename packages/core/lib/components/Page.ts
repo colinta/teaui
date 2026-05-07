@@ -325,7 +325,7 @@ export class Page extends Container {
     sections: SectionLike[],
     contentY: number,
   ) {
-    const textStyle = this.theme.text()
+    const textStyle = this.purpose.text()
     const totalDotsWidth = sections.length * DOT_WIDTH
     const startX = Math.max(
       0,
@@ -384,15 +384,15 @@ export class Page extends Container {
   }
 
   #controlsBackground(): Style {
-    return new Style({background: this.theme.ui().background})
+    return new Style({background: this.purpose.ui().background})
   }
 
   #dotStyle(isActive: boolean, isHover: boolean): Style {
     if (isHover) {
-      const {foreground, background} = this.theme.ui({isHover: true})
+      const {foreground, background} = this.purpose.ui({isHover: true})
       return new Style({bold: true, foreground, background})
     }
-    const background = this.theme.ui().background
+    const background = this.purpose.ui().background
     if (isActive) {
       return new Style({bold: true, background})
     }

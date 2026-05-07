@@ -564,16 +564,16 @@ export class Table<TData> extends Container {
     const headerStyle = new Style({dim: true, bold: true})
     // Cursor row (not checked)
     const cursorStyle = new Style({
-      foreground: this.theme.textColor,
-      background: this.theme.highlightColor,
+      foreground: this.purpose.textColor,
+      background: this.purpose.highlightColor,
       bold: true,
     })
     const checkedRowStyle = new Style({
-      background: this.theme.tableCheckedColor,
+      background: this.purpose.tableCheckedColor,
     })
     const cursorCheckedStyle = new Style({
-      foreground: this.theme.textColor,
-      background: this.theme.tableCheckedHighlightColor,
+      foreground: this.purpose.textColor,
+      background: this.purpose.tableCheckedHighlightColor,
       bold: true,
     })
 

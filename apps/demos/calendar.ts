@@ -10,7 +10,7 @@ const statusText = new Text({
 const calendar = new Calendar({
   date: now,
   visibleDate: new Date(now.getFullYear(), now.getMonth(), 1),
-  theme: 'primary',
+  purpose: 'primary',
   onChangeVisible(date) {
     console.info(
       `Navigated to: ${date.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}`,
@@ -30,7 +30,7 @@ const calendarRange = new Calendar({
   date: now,
   visibleDate: new Date(now.getFullYear(), now.getMonth(), 1),
   selection: 'range',
-  theme: 'proceed',
+  purpose: 'proceed',
   onChangeVisible(date) {
     console.info(
       `Range calendar navigated to: ${date.toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}`,
@@ -47,7 +47,7 @@ const calendarMonday = new Calendar({
   date: now,
   visibleDate: new Date(now.getFullYear(), now.getMonth(), 1),
   firstDayOfWeek: 1,
-  theme: 'secondary',
+  purpose: 'secondary',
 })
 
 demo(

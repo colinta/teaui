@@ -77,8 +77,8 @@ export class BarChart<T> extends Chart<T> {
   renderChart(viewport: Viewport, layout: ChartLayout): void {
     if (viewport.isEmpty || this.data.length === 0) return
 
-    const style = this.chartStyle ?? this.theme.ui({isHover: true}).invert()
-    const emptyStyle = this.theme.text()
+    const style = this.chartStyle ?? this.purpose.ui({isHover: true}).invert()
+    const emptyStyle = this.purpose.text()
 
     const totalBarSlots = this.data.length
     const totalWidth = layout.width

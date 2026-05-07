@@ -45,7 +45,7 @@ export function CalendarTab() {
             visibleDate={visibleDate}
             onChangeVisible={setVisibleDate}
             onChange={d1 => setDate(d1)}
-            theme="blue"
+            purpose="blue"
           />
           <Text>
             Selected:{' '}
@@ -67,7 +67,7 @@ export function CalendarTab() {
               setRangeStart(d1)
               setRangeEnd(d2)
             }}
-            theme="green"
+            purpose="green"
           />
           <Text>
             Range:{' '}
@@ -88,7 +88,7 @@ export function CalendarTab() {
             date={date}
             onChange={d1 => setDate(d1)}
             firstDayOfWeek={1}
-            theme="orange"
+            purpose="orange"
           />
         </Stack.down>
       </Stack.right>

@@ -36,7 +36,7 @@ export class Notification extends Container {
     this.#stack = new Stack({direction: direction ?? 'down'})
 
     if (purpose) {
-      this.theme = Theme[purpose]
+      this.purpose = Theme[purpose]
     }
 
     if (child) {
@@ -78,7 +78,7 @@ export class Notification extends Container {
     this.#syncTitle()
 
     if (purpose) {
-      this.theme = Theme[purpose]
+      this.purpose = Theme[purpose]
     }
   }
 

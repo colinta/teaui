@@ -134,11 +134,11 @@ export class Button extends Container {
       viewport.registerHotKey(toHotKeyDef(this.#hotKey))
     }
 
-    let textStyle = this.theme.ui({
+    let textStyle = this.purpose.ui({
       isPressed: this.isPressed,
       isHover: this.isHover || hasFocus,
     })
-    let topsStyle = this.theme.ui({
+    let topsStyle = this.purpose.ui({
       isPressed: this.isPressed,
       isHover: this.isHover || hasFocus,
       isOrnament: true,
@@ -152,7 +152,7 @@ export class Button extends Container {
       topsStyle = topsStyle.merge({background: this.background})
     }
 
-    const useEmoji = this.theme.emoji
+    const useEmoji = this.purpose.emoji
     viewport.visibleRect.forEachPoint(pt => {
       if (useEmoji && pt.y === 0 && viewport.contentSize.height > 2) {
         viewport.write(BUTTON_TOP, pt, topsStyle)

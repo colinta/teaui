@@ -19,7 +19,7 @@ function App() {
       <Tabs.Section title="Home">
         <Drawer.left
           flex={1}
-          theme="orange"
+          purpose="orange"
           isOpen
           drawer={
             <Stack.down width={14}>
@@ -42,7 +42,7 @@ function App() {
                 <Stack.right gap={1}>
                   <Input value="Search…" flex={1} />
                   <Dropdown
-                    theme="green"
+                    purpose="green"
                     choices={[
                       ['React', 'react'],
                       ['Core', 'core'],
@@ -71,7 +71,7 @@ function App() {
                     <Style bold>9</Style>/10★
                   </Text>
                 </Stack.right>
-                <Button title="Get Started" height={3} theme="primary" />
+                <Button title="Get Started" height={3} purpose="primary" />
               </Stack.down>
             </Box>
           }

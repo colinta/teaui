@@ -63,7 +63,7 @@ export class Separator extends View {
       return
     }
 
-    const style = this.theme.text()
+    const style = this.purpose.text()
 
     if (this.#direction === 'vertical') {
       const [char] = BORDERS[this.#border],

@@ -56,14 +56,14 @@ const inspect2 = inspect(OBJ, true)
 
 const primary1 = new Button({
   height: 3,
-  theme: 'primary',
+  purpose: 'primary',
   title: 'Primary',
   onClick() {
     console.info('Clicked on «primary1»')
   },
 })
 const primary2 = new Button({
-  theme: 'primary',
+  purpose: 'primary',
   title: 'Primary',
   onClick() {
     console.info('Clicked on «primary2»')
@@ -84,22 +84,26 @@ const button2 = new Button({
 })
 
 const progress0 = new Progress({value: 0, showPercent: true})
-const progress1 = new Progress({theme: 'blue', value: 15, showPercent: true})
-const progress2 = new Progress({theme: 'orange', value: 46, showPercent: true})
+const progress1 = new Progress({purpose: 'blue', value: 15, showPercent: true})
+const progress2 = new Progress({
+  purpose: 'orange',
+  value: 46,
+  showPercent: true,
+})
 const progress3 = new Progress({
-  theme: 'red',
+  purpose: 'red',
   height: 2,
   value: 55,
   showPercent: true,
 })
 const progress4 = new Progress({
-  theme: 'green',
+  purpose: 'green',
   height: 3,
   value: 75,
   showPercent: true,
 })
 const progress5 = new Progress({
-  theme: 'plain',
+  purpose: 'plain',
   height: 4,
   value: 100,
   showPercent: true,
@@ -198,7 +202,7 @@ const wrapCheckbox = new Checkbox({
 })
 
 const fontSelect = new Dropdown({
-  theme: 'proceed',
+  purpose: 'proceed',
   onSelect(value: FontFamily) {
     titleInput.font = value
     storyInput.font = value
@@ -384,7 +388,7 @@ demo(
     [
       'flex1',
       new Drawer({
-        theme: 'secondary',
+        purpose: 'secondary',
         drawer: drawerView,
         content: contentView,
       }),

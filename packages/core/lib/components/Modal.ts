@@ -149,8 +149,8 @@ export class Modal extends Container {
       const style =
         this.#dimStyle ??
         new Style({
-          foreground: this.theme.dimTextColor,
-          background: this.theme.dimBackgroundColor,
+          foreground: this.purpose.dimTextColor,
+          background: this.purpose.dimBackgroundColor,
         })
       viewport.restyle(style)
     }

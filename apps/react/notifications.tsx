@@ -53,13 +53,13 @@ export function NotificationsTab() {
       </Text>
 
       <Stack.right pin="horizontal" gap={1}>
-        <Button theme="cancel" onClick={() => setShowDelete(true)}>
+        <Button purpose="cancel" onClick={() => setShowDelete(true)}>
           Delete Item
         </Button>
-        <Button theme="primary" onClick={() => setShowInfo(true)}>
+        <Button purpose="primary" onClick={() => setShowInfo(true)}>
           Show Info
         </Button>
-        <Button theme="green" onClick={() => setShowSuccess(true)}>
+        <Button purpose="green" onClick={() => setShowSuccess(true)}>
           Show Success
         </Button>
       </Stack.right>
@@ -74,7 +74,7 @@ export function NotificationsTab() {
         <Space height={1} />
         <Stack.right gap={1}>
           <Button
-            theme="cancel"
+            purpose="cancel"
             onClick={() => {
               console.info('Deleted!')
               setShowDelete(false)
@@ -82,7 +82,7 @@ export function NotificationsTab() {
           >
             Delete
           </Button>
-          <Button theme="plain" onClick={() => setShowDelete(false)}>
+          <Button purpose="plain" onClick={() => setShowDelete(false)}>
             Cancel
           </Button>
         </Stack.right>
@@ -96,7 +96,7 @@ export function NotificationsTab() {
       >
         <Text wrap>The operation completed successfully.</Text>
         <Space height={1} />
-        <Button theme="primary" onClick={() => setShowInfo(false)}>
+        <Button purpose="primary" onClick={() => setShowInfo(false)}>
           OK
         </Button>
       </Alert>
@@ -109,7 +109,7 @@ export function NotificationsTab() {
       >
         <Text wrap>Your changes have been saved and deployed.</Text>
         <Space height={1} />
-        <Button theme="green" onClick={() => setShowSuccess(false)}>
+        <Button purpose="green" onClick={() => setShowSuccess(false)}>
           Great!
         </Button>
       </Alert>

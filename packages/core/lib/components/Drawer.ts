@@ -239,7 +239,7 @@ export class Drawer extends Container {
 
   childTheme(view: View) {
     if (view === this.drawerView) {
-      return this.theme
+      return this.purpose
     }
 
     return this.parent?.childTheme(this) ?? Theme.plain
@@ -260,11 +260,11 @@ export class Drawer extends Container {
       viewport.registerTick()
     }
 
-    const _uiStyle = this.theme.ui({
+    const _uiStyle = this.purpose.ui({
       isHover: this.isHover,
       isPressed: this.isPressed,
     })
-    const textStyle = this.theme
+    const textStyle = this.purpose
       .text({
         isHover: this.isHover,
         isPressed: this.isPressed,
@@ -463,7 +463,7 @@ export class Drawer extends Container {
             )
           : drawerRect
 
-      viewport.paint(this.theme.text(), drawerRect)
+      viewport.paint(this.purpose.text(), drawerRect)
       viewport.clipped(contentDrawerRect, inside => {
         drawerView.render(inside)
       })
@@ -486,7 +486,7 @@ export class Drawer extends Container {
   #renderDrawerHeading(viewport: Viewport, heading: string, drawerRect: Rect) {
     const headingStyle = new Style({
       bold: true,
-      background: this.theme.text().background,
+      background: this.purpose.text().background,
     })
 
     let headingX: number

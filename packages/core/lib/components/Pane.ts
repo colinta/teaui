@@ -343,7 +343,7 @@ export class Pane extends Container {
     const isDragging = this.#dragSeparator === index
     const willCollapse = isDragging && this.#isInCollapseZone(index)
     const style =
-      isHover || isDragging ? this.theme.ui({isHover: true}) : Style.NONE
+      isHover || isDragging ? this.purpose.ui({isHover: true}) : Style.NONE
 
     const separatorRect = new Rect(
       new Point(x, 0),

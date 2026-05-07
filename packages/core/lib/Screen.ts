@@ -219,7 +219,7 @@ export class Screen {
         : await viewConstructor(program)
 
     if (opts.emoji !== undefined) {
-      rootView.theme = rootView.theme.merge({emoji: opts.emoji})
+      rootView.purpose = rootView.purpose.merge({emoji: opts.emoji})
     }
 
     const screen = new Screen(program, rootView)

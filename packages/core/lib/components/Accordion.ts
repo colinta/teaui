@@ -292,7 +292,7 @@ class Section extends Container {
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
-    const textStyle = this.theme.text()
+    const textStyle = this.purpose.text()
     const textSize = this.#titleView
       .naturalSize(viewport.contentSize)
       .mutableCopy()

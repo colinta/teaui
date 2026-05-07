@@ -196,63 +196,63 @@ export class Calendar extends View {
 
   get #hoverStyle(): Style {
     return new Style({
-      foreground: this.theme.text().foreground,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.text().foreground,
+      background: this.purpose.darkenColor,
     })
   }
 
   get #buttonHoverStyle(): Style {
-    return this.theme.ui({isHover: true})
+    return this.purpose.ui({isHover: true})
   }
 
   get #rangeGapStyle(): Style {
-    return new Style({background: this.theme.darkenColor})
+    return new Style({background: this.purpose.darkenColor})
   }
 
   get #weekdayStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.theme.highlightColor,
-      background: this.theme.text().background,
+      foreground: this.purpose.highlightColor,
+      background: this.purpose.text().background,
     })
   }
 
   get #rangeEndpointStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.theme.textColor,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.textColor,
+      background: this.purpose.darkenColor,
     })
   }
 
   get #inRangeStyle(): Style {
     return new Style({
-      foreground: this.theme.highlightColor,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.highlightColor,
+      background: this.purpose.darkenColor,
     })
   }
 
   get #todayStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.theme.contrastTextColor,
-      background: this.theme.text().background,
+      foreground: this.purpose.contrastTextColor,
+      background: this.purpose.text().background,
     })
   }
 
   get #cursorStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.theme.text().foreground,
-      background: this.theme.darkenColor,
+      foreground: this.purpose.text().foreground,
+      background: this.purpose.darkenColor,
     })
   }
 
   get #selectedStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.theme.textColor,
-      background: this.theme.highlightColor,
+      foreground: this.purpose.textColor,
+      background: this.purpose.highlightColor,
     })
   }
 
@@ -914,10 +914,10 @@ export class Calendar extends View {
     const monthName = this.#formatMonthTitle(this.#visibleDate)
     const yearStr = this.#formatYearTitle(this.#visibleDate)
 
-    const textStyle = this.theme.text()
-    const dimStyle = this.theme.text({isPlaceholder: true})
+    const textStyle = this.purpose.text()
+    const dimStyle = this.purpose.text({isPlaceholder: true})
     const hoverStyle = this.#hoverStyle
-    const headerStyle = this.theme.ui({isHover: false})
+    const headerStyle = this.purpose.ui({isHover: false})
     const selectedStyle = this.#selectedStyle
     const todayStyle = this.#todayStyle
     const inRangeStyle = this.#inRangeStyle
@@ -1072,8 +1072,8 @@ export class Calendar extends View {
   }
 
   #renderMonths(viewport: Viewport) {
-    const textStyle = this.theme.text()
-    const headerStyle = this.theme.ui({isHover: false})
+    const textStyle = this.purpose.text()
+    const headerStyle = this.purpose.ui({isHover: false})
     const currentMonth = this.#visibleDate.getMonth()
 
     viewport.paint(textStyle, this.#widgetRect(viewport))
@@ -1120,8 +1120,8 @@ export class Calendar extends View {
   }
 
   #renderYears(viewport: Viewport) {
-    const textStyle = this.theme.text()
-    const headerStyle = this.theme.ui({isHover: false})
+    const textStyle = this.purpose.text()
+    const headerStyle = this.purpose.ui({isHover: false})
     const currentYear = this.#visibleDate.getFullYear()
 
     viewport.paint(textStyle, this.#widgetRect(viewport))

@@ -6,7 +6,7 @@ function App() {
 
   return (
     <Stack.down>
-      <Button theme="cancel" onClick={() => setShowAlert(true)}>
+      <Button purpose="cancel" onClick={() => setShowAlert(true)}>
         Delete Item
       </Button>
       <Alert

@@ -399,7 +399,7 @@ export class Tabs extends Container {
 
     viewport.paint(
       new Style({
-        background: this.theme.ui().background,
+        background: this.purpose.ui().background,
       }),
       new Rect(
         [separatorStart, 0],

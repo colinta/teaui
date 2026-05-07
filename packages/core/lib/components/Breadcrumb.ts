@@ -351,7 +351,7 @@ export class Breadcrumb extends Container {
 
         const plainStyle = isHovered
           ? new Style({underline: true})
-          : this.theme.ui({})
+          : this.purpose.ui({})
         const text = isFirst ? ` 🏠 ${title} ` : ` ${title} `
         let x = seg.textX
         for (const ch of text) {
