@@ -5,6 +5,7 @@ import type {
   AlignRow as WrAlignRow,
   Alert as WrAlert,
   At as WrAt,
+  Badge as WrBadge,
   Box as WrBox,
   Breadcrumb as WrBreadcrumb,
   Button as WrButton,
@@ -70,6 +71,7 @@ type Simplify<T> = {[Key in keyof T]: T[Key]} & {}
 
 type WithRef<Props, T> = Props & {ref?: React.Ref<T>}
 
+export type BadgeProps = Simplify<TUIView<typeof WrBadge>>
 export type BreadcrumbProps = Simplify<TUIView<typeof WrBreadcrumb>>
 export type CalendarProps = Simplify<TUIView<typeof WrCalendar>>
 export type CanvasProps = Simplify<TUIView<typeof WrCanvas>>
@@ -153,6 +155,7 @@ declare module 'react' {
     interface IntrinsicElements {
       // views
       'tui-align': WithRef<AlignProps, WrAlign>
+      'tui-badge': WithRef<BadgeProps, WrBadge>
       'tui-align-row': WithRef<AlignRowProps, WrAlignRow>
       'tui-br': {}
       'tui-breadcrumb': WithRef<BreadcrumbProps, WrBreadcrumb>
@@ -309,6 +312,11 @@ export function Br(): JSX.Element {
   return <tui-br />
 }
 
+export const Badge = forwardRef<WrBadge, BadgeProps>(
+  function Badge(reactProps, ref): JSX.Element {
+    return <tui-badge ref={ref} {...reactProps} />
+  },
+)
 export const Breadcrumb = forwardRef<WrBreadcrumb, BreadcrumbProps>(
   function Breadcrumb(reactProps, ref): JSX.Element {
     return <tui-breadcrumb ref={ref} {...reactProps} />

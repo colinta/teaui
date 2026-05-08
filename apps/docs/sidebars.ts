@@ -14,6 +14,7 @@ const sidebars: SidebarsConfig = {
           label: '░ Display',
           collapsed: false,
           items: [
+            'components/badge',
             'components/text',
             'components/header',
             'components/digits',

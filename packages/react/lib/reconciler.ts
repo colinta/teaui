@@ -8,6 +8,7 @@ import {
   AlignRow,
   At,
   Alert,
+  Badge,
   Box,
   Breadcrumb,
   Button,
@@ -101,6 +102,9 @@ function createInstance(type: string, props: Props): any {
     case 'align':
     case 'tui-align':
       return new Align(props as any)
+    case 'badge':
+    case 'tui-badge':
+      return new Badge(props as any)
     case 'align-row':
     case 'tui-align-row':
       return new AlignRow(props as any)

@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {interceptConsoleLog, type Border} from '@teaui/core'
 import {
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -44,6 +45,23 @@ export function MoreTab() {
             <Text alignment="center">{name}</Text>
           </Box>
         ))}
+      </Stack.right>
+
+      <Separator.horizontal />
+
+      {/* Badges */}
+      <Text>
+        <Style bold foreground="cyan">
+          Badges
+        </Style>
+      </Text>
+      <Stack.right gap={1}>
+        <Badge text="default" />
+        <Badge text="primary" purpose="primary" />
+        <Badge text="secondary" purpose="secondary" />
+        <Badge text="proceed" purpose="proceed" />
+        <Badge text="cancel" purpose="cancel" />
+        <Badge text="selected" purpose="selected" />
       </Stack.right>
 
       <Separator.horizontal />

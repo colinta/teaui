@@ -1,0 +1,37 @@
+---
+title: Badge
+---
+
+import Example from '@site/src/components/Example'
+
+# Badge
+
+A compact inline label with colored caps. Useful for status indicators, tags, and category labels.
+
+The badge renders half-block characters (`▐` and `▌`) as caps that visually blend into the surrounding background, with the badge text drawn in a contrasting color on the palette's control background.
+
+<Example name="badge" title="Badge" />
+
+## Props
+
+| Prop      | Type                                                                         | Default | Description             |
+| --------- | ---------------------------------------------------------------------------- | ------- | ----------------------- |
+| `text`    | `string`                                                                     | `''`    | Badge label text        |
+| `purpose` | `'primary' \| 'secondary' \| 'proceed' \| 'cancel' \| 'selected' \| 'plain'` | —       | Color purpose for badge |
+
+## Appearance
+
+- Left cap `▐` and right cap `▌` drawn in the palette's `controlBackgroundColor` as foreground
+- Text drawn with `textColor` foreground on `controlBackgroundColor` background
+- Always 1 row tall, width is text length + 2 (for the caps)
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Badge} from '@teaui/core'
+
+new Badge({text: 'info', purpose: 'primary'})
+```
+
+</details>
