@@ -9,6 +9,7 @@ import {
 } from './AbstractLegend.js'
 import {HotKey} from './HotKey.js'
 import {hotKeyToString} from '../events/index.js'
+import { Size } from '../geometry.js'
 
 interface Props extends LegendProps {}
 
@@ -48,6 +49,14 @@ export class AutoLegend extends AbstractLegend {
     }
 
     return this.#cachedItems
+  }
+
+  naturalSize(available: Size): Size {
+    const size = super.naturalSize(available)
+    if (size.height === 0) {
+      return new Size(0, 1)
+    }
+    return size
   }
 
   #updateItems(focused: View | undefined) {
