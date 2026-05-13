@@ -3,13 +3,17 @@
 import {readFile, writeFile} from 'fs/promises'
 
 const MAIN_PACKAGE = 'packages/core/package.json'
-const DEPENDENT_PACKAGES = [
+const VERSIONED_PACKAGES = [
   'shared/package.json',
+  'packages/cli/package.json',
+  'packages/code/package.json',
   'packages/core/package.json',
-  'packages/term/package.json',
+  'packages/image/package.json',
+  'packages/inspect/package.json',
+  'packages/log-viewer/package.json',
   'packages/react/package.json',
   'packages/subprocess/package.json',
-  'packages/cli/package.json',
+  'packages/term/package.json',
 ]
 
 async function readPackageJson(filePath) {
@@ -37,20 +41,12 @@ function bumpVersion(version, type) {
   }
 }
 
-async function updateDependentPackages(newVersion, packageName) {
-  for (const packagePath of DEPENDENT_PACKAGES) {
+async function updatePackageVersions(newVersion) {
+  for (const packagePath of VERSIONED_PACKAGES) {
     const pkg = await readPackageJson(packagePath)
     pkg.version = newVersion
-
-    if (
-      pkg.dependencies &&
-      pkg.dependencies[packageName] &&
-      pkg.dependencies[packageName].startsWith('^')
-    ) {
-      pkg.dependencies[packageName] = `^${newVersion}`
-    }
     await writePackageJson(packagePath, pkg)
-    console.info(`Updated ${packagePath} to version ^${newVersion}`)
+    console.info(`Updated ${packagePath} to version ${newVersion}`)
   }
 }
 
@@ -68,12 +64,10 @@ async function main() {
     const currentVersion = mainPkg.version
     const newVersion = bumpVersion(currentVersion, bumpType)
 
-    mainPkg.version = newVersion
-    await writePackageJson(MAIN_PACKAGE, mainPkg)
     console.info(`Bumped version from ${currentVersion} to ${newVersion}`)
 
-    // Update dependent packages
-    await updateDependentPackages(newVersion, '@teaui/core')
+    // Update all versioned workspace packages
+    await updatePackageVersions(newVersion)
 
     console.info('Version bump completed successfully!')
   } catch (error) {

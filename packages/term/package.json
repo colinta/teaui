@@ -13,6 +13,7 @@
     }
   },
   "scripts": {
+    "prepublishOnly": "pnpm build",
     "_build": "pnpm clean && tsc",
     "build": "node ../../shared/check.js",
     "clean": "rm -rf .dist/",

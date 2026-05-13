@@ -6,6 +6,7 @@
     "react": "pnpm -C apps/react demo",
     "react:dev": "pnpm -C apps/react dev",
     "publish": "pnpm -r publish --access public",
+    "publish:ci": "pnpm -r publish --access public --no-git-checks",
     "bump": "node shared/bump.js",
     "clean": "rm -rf packages/*/.dist apps/*/.dist",
     "format": "oxfmt"

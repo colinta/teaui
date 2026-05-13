@@ -24,8 +24,6 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm build",
-    "postpublish": "pnpm run gittag",
-    "gittag": "git tag $(node -e 'process.stdout.write(require(\"./package\").version)')",
     "clean": "rm -rf .dist/",
     "_build": "pnpm clean && pnpm tsc",
     "build": "node ../../shared/check.js",

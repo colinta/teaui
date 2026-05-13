@@ -9,7 +9,7 @@ import {
 } from './AbstractLegend.js'
 import {HotKey} from './HotKey.js'
 import {hotKeyToString} from '../events/index.js'
-import { Size } from '../geometry.js'
+import {Size} from '../geometry.js'
 
 interface Props extends LegendProps {}
 
