@@ -3,6 +3,7 @@
   "description": "Client library for sending logs to the TeaUI log-viewer app",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
   "version": "1.11.9",
+  "private": true,
   "license": "MIT",
   "type": "module",
   "repository": {
