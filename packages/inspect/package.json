@@ -18,5 +18,8 @@
   },
   "devDependencies": {
     "@teaui/shared": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

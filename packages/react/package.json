@@ -56,5 +56,8 @@
     "@teaui/shared": "workspace:*",
     "@types/react": "^18.2.39",
     "@types/react-reconciler": "^0.28.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

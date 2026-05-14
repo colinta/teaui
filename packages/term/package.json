@@ -35,5 +35,8 @@
   "files": [
     ".dist"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }
