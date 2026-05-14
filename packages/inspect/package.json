@@ -2,7 +2,7 @@
   "name": "@teaui/inspect",
   "description": "Colorized object inspection for terminal output",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
-  "version": "1.11.9",
+  "version": "1.11.10",
   "license": "MIT",
   "type": "module",
   "main": ".dist/index.js",
