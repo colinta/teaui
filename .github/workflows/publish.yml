@@ -22,10 +22,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter './packages/*' --workspace-concurrency=1 -r --if-present build
-      - run: npm publish --workspaces --access public --provenance
+      - run: ci:prepublish:build
+      - run: pnpm run ci:publish
