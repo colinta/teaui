@@ -7,7 +7,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git://github.com/colinta/teaui.git"
+    "url": "https://github.com/colinta/teaui"
   },
   "homepage": "https://github.com/colinta/teaui",
   "exports": {
