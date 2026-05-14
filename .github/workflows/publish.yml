@@ -27,4 +27,5 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run publish:ci
+      - run: pnpm --filter './packages/*' --workspace-concurrency=1 -r --if-present build
+      - run: npm publish --workspaces --access public --provenance
