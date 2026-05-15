@@ -4,7 +4,7 @@
   "description": "CLI for @teaui packages",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
   "contributors": [],
-  "version": "1.12.14",
+  "version": "1.13.14",
   "license": "MIT",
   "preferGlobal": false,
   "repository": {

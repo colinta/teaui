@@ -24,6 +24,22 @@ describe('Input', () => {
       const t = testRender(new Input({value: ''}), {width: 20, height: 1})
       expect(t.terminal.textContent()).toBeDefined()
     })
+
+    it('toggles invisible characters with alt+click', () => {
+      const t = testRender(
+        new Input({value: '\tline1\nline2', multiline: true}),
+        {width: 20, height: 3},
+      )
+      expect(t.terminal.textContent()).toBe('⭾ line1⤦\nline2')
+
+      t.sendMouse('mouse.button.down', {x: 0, y: 0}, {alt: true})
+      t.sendMouse('mouse.button.up', {x: 0, y: 0}, {alt: true})
+      expect(t.terminal.textContent()).toBe('  line1\nline2')
+
+      t.sendMouse('mouse.button.down', {x: 0, y: 0}, {alt: true})
+      t.sendMouse('mouse.button.up', {x: 0, y: 0}, {alt: true})
+      expect(t.terminal.textContent()).toBe('⭾ line1⤦\nline2')
+    })
   })
 
   describe('typing', () => {

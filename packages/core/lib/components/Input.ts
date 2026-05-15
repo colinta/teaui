@@ -49,6 +49,7 @@ export type Props = StyleProps & TextProps & ViewProps
 
 const NL_SIGIL = '⤦'
 const TAB_SIGIL = '⭾ '
+const TAB_SPACES = '  '
 
 /**
  * Text input. Supports selection, word movement via alt+←→, single and multiline
@@ -76,6 +77,7 @@ export class Input extends View {
   #font: FontFamily = 'default'
   #format?: (text: string) => string
   #formatStyles: Style[] = []
+  #showInvisibles: boolean = true
   #onChange?: (value: string) => void
   #onSubmit?: (value: string) => void
 
@@ -307,7 +309,11 @@ export class Input extends View {
       {key: 'A-.', label: 'End'},
     )
     if (this.#multiline) {
-      items.push({key: 'C-]', label: 'Indent'}, {key: 'C-[', label: 'Dedent'})
+      items.push(
+        {key: 'C-]', label: 'Indent'},
+        {key: 'C-[', label: 'Dedent'},
+        {key: 'A-click', label: 'Toggle Invisibles'},
+      )
     }
     items.push({key: 'C-z', label: 'Undo'}, {key: 'C-S-z', label: 'Redo'})
     return items
@@ -481,6 +487,10 @@ export class Input extends View {
   receiveMouse(event: MouseEvent, system: System) {
     if (event.name === 'mouse.button.down') {
       system.requestFocus()
+      if (event.alt) {
+        this.#showInvisibles = !this.#showInvisibles
+        this.invalidateRender()
+      }
     }
   }
 
@@ -630,7 +640,7 @@ export class Input extends View {
             const inNewline =
               char === NL_SIGIL && scanTextPosition.x + charWidth === width
             const inTab = isTabSigil(char)
-            const isDimSigil = inNewline || inTab
+            const isDimSigil = this.#showInvisibles && (inNewline || inTab)
 
             // Look up the format style for this character.
             const formatStyle =
@@ -689,16 +699,17 @@ export class Input extends View {
             }
 
             if (!drawEllipses && char === '\t') {
-              // Render tab as two-char sigil
+              // Render tab as a two-cell marker, or as spaces when hidden.
               const offset = scanTextPosition.offset(
                 -cursorVisible.x,
                 -cursorVisible.y,
               )
-              viewport.write(TAB_SIGIL[0], offset)
-              viewport.write(TAB_SIGIL[1], offset.offset(1, 0))
+              const tabText = this.#showInvisibles ? TAB_SIGIL : TAB_SPACES
+              viewport.write(tabText[0], offset)
+              viewport.write(tabText[1], offset.offset(1, 0))
             } else {
               viewport.write(
-                drawEllipses ? '…' : char,
+                drawEllipses ? '…' : this.#displayChar(char),
                 scanTextPosition.offset(-cursorVisible.x, -cursorVisible.y),
               )
             }
@@ -731,6 +742,13 @@ export class Input extends View {
         }
       }
     })
+  }
+
+  #displayChar(char: string) {
+    if (!this.#showInvisibles && char === NL_SIGIL) {
+      return ' '
+    }
+    return char
   }
 
   /**
