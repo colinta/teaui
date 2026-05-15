@@ -55,7 +55,7 @@ describe('StringTerminal', () => {
     const term = new StringTerminal({cols: 10, rows: 1})
     term.move(0, 0)
     term.write('\u001b[1mHi\u001b[0m')
-    const out = term.output.replace(/\u001b\[0m$/, '')
+    const out = term.output.replace(/\x1b\[0m$/, '')
     // 'H' has \u001b[1m, 'i' has nothing, then \u001b[0m goes on next char
     expect(out.startsWith('\u001b[1mH')).toBe(true)
   })

@@ -148,7 +148,7 @@ export class Style {
   }
 
   static fromSGR(ansi: string, prevStyle: Style): Style {
-    let match = ansi.match(/^\u001b\[([\d;]*)m$/)
+    let match = ansi.match(/^\x1b\[([\d;]*)m$/)
     if (!match) {
       return Style.NONE
     }

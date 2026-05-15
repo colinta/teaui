@@ -57,7 +57,7 @@ function getBackgroundColorCommand() {
 }
 
 function parseBackgroundResponse(response: string): string | undefined {
-  const match = response.match(/\u001b\]4;-2;rgb:(\w{2})\w*\/(\w{2})\w*\/(\w{2})/)
+  const match = response.match(/\x1b\]4;-2;rgb:(\w{2})\w*\/(\w{2})\w*\/(\w{2})/)
   if (match) {
     return match[1] + match[2] + match[3]
   }

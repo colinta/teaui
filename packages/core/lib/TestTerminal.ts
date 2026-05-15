@@ -98,7 +98,7 @@ export class TestTerminal implements SGRTerminal {
    * correctly turn attributes off rather than copying the current state.
    */
   #parseAccumulatedSGR(sgr: string): Style {
-    const sequences = sgr.match(/\u001b\[[\d;]*m/g) ?? []
+    const sequences = sgr.match(/\x1b\[[\d;]*m/g) ?? []
     let style = this.#currentStyle
     for (const seq of sequences) {
       if (seq === '\u001b[0m' || seq === '\u001b[m') {

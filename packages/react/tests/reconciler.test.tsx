@@ -1,5 +1,5 @@
 import {describe, it, expect, vi} from 'vitest'
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import {
   Box,
   Checkbox,
