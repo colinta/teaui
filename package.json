@@ -14,7 +14,6 @@
     "bump": "node shared/bump.js",
     "clean": "rm -rf packages/*/.dist apps/*/.dist",
     "format": "oxfmt && oxlint --fix",
-    "prepare": "husky",
     "check": "oxfmt --check && oxlint"
   },
   "devDependencies": {
