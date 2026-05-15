@@ -5,6 +5,7 @@ import {
   type Column,
   type Props as TableProps,
 } from '../../lib/components/Table.js'
+import {Text} from '../../lib/components/Text.js'
 
 interface Row {
   name: string
@@ -57,6 +58,18 @@ describe('Table', () => {
     it('renders header, separator, and data rows', () => {
       const t = testRender(makeTable(), {width: 30, height: 8})
       expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders child views for data rows when provided', () => {
+      const table = makeTable()
+      table.add(new Text({text: 'Custom Alice'}))
+      table.add(new Text({text: 'Custom Bob'}))
+
+      const t = testRender(table, {width: 30, height: 5})
+
+      expect(t.terminal.textContent()).toContain('Custom Alice')
+      expect(t.terminal.textContent()).toContain('Custom Bob')
+      expect(t.terminal.textContent()).not.toContain('Chicago')
     })
 
     it('shows ascending sort indicator after column title', () => {

@@ -1,4 +1,5 @@
 import React, {forwardRef, useCallback, useMemo, useState} from 'react'
+import {isMouseClicked} from '@teaui/core'
 import type {
   Accordion as WrAccordion,
   Align as WrAlign,
@@ -691,10 +692,19 @@ function TreeItems<T>({
 
         return (
           <React.Fragment key={path}>
-            <tui-stack direction="right">
-              <tui-text>{line}</tui-text>
-              {render(item)}
-            </tui-stack>
+            <tui-mouse
+              mouse="mouse.button.left"
+              onMouse={event => {
+                if (hasChildren && isMouseClicked(event)) {
+                  toggle(path)
+                }
+              }}
+            >
+              <tui-stack direction="right">
+                <tui-text>{line}</tui-text>
+                {render(item)}
+              </tui-stack>
+            </tui-mouse>
             {isExpanded && hasChildren && children && (
               <TreeItems
                 items={children}
@@ -728,8 +738,11 @@ export function Tree<T>(reactProps: TreeProps<T>): JSX.Element {
   const toggle = useCallback((path: string) => {
     setExpanded(prev => {
       const next = new Set(prev)
-      if (next.has(path)) next.delete(path)
-      else next.add(path)
+      if (next.has(path)) {
+        next.delete(path)
+      } else {
+        next.add(path)
+      }
       return next
     })
   }, [])
@@ -1087,19 +1100,17 @@ export function Table<TData>(reactProps: ReactTableProps<TData>): JSX.Element {
     )
   }
 
-  // Virtualized mode: React renders only visible rows
-  // We use the format-based Table for the header/chrome, and render items
-  // as children that the Table can lay out
-  // For now: use Geometry to measure, then render the visible slice
+  // Virtualized mode: React renders only visible rows.
+  // Geometry measures available space so we can pass the visible slice through
+  // the reconciler while the core Table renders the header/chrome and handles
+  // row highlighting.
   const [bodyHeight, setBodyHeight] = useState(20)
 
   const handleLayout = useCallback((size: {width: number; height: number}) => {
-    // Table uses 2 rows for header + separator
-    const newBodyHeight = Math.max(0, size.height - 2)
-    setBodyHeight(newBodyHeight)
+    // Table uses 2 rows for header + separator.
+    setBodyHeight(Math.max(0, size.height - 2))
   }, [])
 
-  // Calculate visible range (matching the core Table's scroll logic)
   const selectedIndex = props.selectedIndex ?? 0
   const scrollOffset = useMemo(() => {
     const halfHeight = Math.floor(bodyHeight / 2)
@@ -1119,14 +1130,26 @@ export function Table<TData>(reactProps: ReactTableProps<TData>): JSX.Element {
 
   const visibleStart = scrollOffset
   const visibleEnd = Math.min(data.length, scrollOffset + bodyHeight)
+  const visibleData = data.slice(visibleStart, visibleEnd)
 
-  // Use format as a pass-through since the core Table still renders cells
-  // We pass both format (for the core) and render the items as children
+  // Use format as a pass-through since child rows provide the row content.
   const formatFn = format ?? (() => '')
 
   return (
     <tui-geometry onLayout={handleLayout}>
-      <tui-table data={data} columns={columns} format={formatFn} {...props} />
+      <tui-table
+        data={data}
+        columns={columns}
+        format={formatFn}
+        childOffset={visibleStart}
+        {...props}
+      >
+        {visibleData.map((item, index) => (
+          <React.Fragment key={visibleStart + index}>
+            {renderItem(item, visibleStart + index)}
+          </React.Fragment>
+        ))}
+      </tui-table>
     </tui-geometry>
   )
 }

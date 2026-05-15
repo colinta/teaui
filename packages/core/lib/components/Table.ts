@@ -4,7 +4,7 @@ import type {Viewport} from '../Viewport.js'
 import {type Props as ViewProps} from '../View.js'
 import {Container} from '../Container.js'
 import {Style} from '../Style.js'
-import {Point, Size} from '../geometry.js'
+import {Point, Rect, Size} from '../geometry.js'
 import {
   type MouseEvent,
   type KeyEvent,
@@ -66,6 +66,8 @@ export interface Props<TData> extends ViewProps {
    * Notification fired when the set of selected items changes.
    */
   onSelectionChange?: (selectedItems: Set<TData>) => void
+  /** Index in `data` represented by the first Container child row. */
+  childOffset?: number
 }
 
 /**
@@ -94,6 +96,7 @@ export class Table<TData> extends Container {
   #showSelected: boolean | undefined = undefined
   #onSelectionChange: Props<TData>['onSelectionChange']
   #selectedItems: Set<TData> = new Set()
+  #childOffset: number = 0
   get #isShowSelected(): boolean {
     return this.#showSelected ?? this.#isSelectable
   }
@@ -129,6 +132,7 @@ export class Table<TData> extends Container {
     isSelectable,
     showSelected,
     onSelectionChange,
+    childOffset,
   }: Partial<Props<TData>>) {
     if (showRowNumbers !== undefined) {
       this.#showRowNumbers = showRowNumbers
@@ -141,6 +145,9 @@ export class Table<TData> extends Container {
     }
     if (onSelectionChange !== undefined) {
       this.#onSelectionChange = onSelectionChange
+    }
+    if (childOffset !== undefined) {
+      this.#childOffset = childOffset
     }
     const dataChanged = data !== undefined && data !== this.#sourceData
     const sortChanged =
@@ -718,6 +725,19 @@ export class Table<TData> extends Container {
         cellX += numColWidth
         viewport.write(COLUMN_SEPARATOR, new Point(cellX, y), effectiveSepStyle)
         cellX += 3
+      }
+
+      const childIndex = rowIndex - this.#childOffset
+      const child = this.children[childIndex]
+      if (child) {
+        const childWidth = Math.max(0, width - cellX - 1)
+        if (childWidth > 0) {
+          viewport.clipped(
+            new Rect(new Point(cellX, y), new Size(childWidth, 1)),
+            childViewport => child.render(childViewport),
+          )
+        }
+        continue
       }
 
       for (let j = 0; j < this.#columns.length; j++) {

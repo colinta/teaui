@@ -16,6 +16,7 @@ import {
   Palette,
   Window,
   Container,
+  testRender,
 } from '@teaui/core'
 import {TextContainer, TextLiteral} from '../lib/components/TextReact'
 import {render} from '../lib/reconciler'
@@ -218,6 +219,44 @@ describe('component wrappers', () => {
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(Tabs)
+    })
+
+    it('Tree toggles child rows on click', async () => {
+      const {window} = renderToWindow(
+        <Components.Tree
+          title="Tree"
+          data={[{name: 'Parent', children: [{name: 'Child'}]}]}
+          getChildren={item => item.children}
+          render={item => <Components.Text>{item.name}</Components.Text>}
+        />,
+      )
+      await flush()
+      const t = testRender(window, {width: 20, height: 4})
+      expect(t.terminal.textContent()).toContain('Parent')
+      expect(t.terminal.textContent()).not.toContain('Child')
+
+      t.sendMouse('mouse.button.down', {x: 1, y: 1})
+      t.sendMouse('mouse.button.up', {x: 1, y: 1})
+      await flush()
+      t.render()
+
+      expect(t.terminal.textContent()).toContain('Child')
+    })
+
+    it('Table renders renderItem rows', async () => {
+      const rows = [{name: 'Alice'}, {name: 'Bob'}]
+      const {window} = renderToWindow(
+        <Components.Table
+          data={rows}
+          columns={[{key: 'name', title: 'Name'}]}
+          renderItem={row => <Components.Text>{row.name}</Components.Text>}
+        />,
+      )
+      await flush()
+      const t = testRender(window, {width: 20, height: 5})
+
+      expect(t.terminal.textContent()).toContain('Alice')
+      expect(t.terminal.textContent()).toContain('Bob')
     })
 
     describe('Drawer', () => {
