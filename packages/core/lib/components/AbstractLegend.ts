@@ -205,7 +205,7 @@ export abstract class AbstractLegend extends View {
 
     const sepWidth = unicode.lineWidth(this.#separator)
     const multiRow = rows.length > 1
-    const colWidth = multiRow ? maxKeyWidth + 1 + maxLabelWidth : 0
+    const _colWidth = multiRow ? maxKeyWidth + 1 + maxLabelWidth : 0
 
     for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
       if (rowIdx >= viewport.contentSize.height) break

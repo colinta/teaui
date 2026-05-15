@@ -11,17 +11,9 @@
  */
 
 import * as fs from 'node:fs'
-import {
-  Terminal,
-  isMouseEvent,
-  isKeyEvent,
-  cursorTo,
-  fgColor,
-  bgColor,
-  resetAll,
-} from '../src/index.js'
+import {Terminal, isMouseEvent, isKeyEvent} from '../src/index.js'
 
-import type {MouseEvent, Color} from '../src/index.js'
+import type {MouseEvent} from '../src/index.js'
 
 // --- Log file (truncated on startup) ---
 fs.writeFileSync('mouse-events.log', '')

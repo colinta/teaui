@@ -1,6 +1,6 @@
 import {Style} from '../../Style.js'
 import {Viewport} from '../../Viewport.js'
-import {View} from '../../View.js'
+
 import {type Props as ContainerProps, Container} from '../../Container.js'
 import {Point, Size, Rect} from '../../geometry.js'
 import type {MouseEvent} from '../../events/index.js'

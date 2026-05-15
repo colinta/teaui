@@ -45,9 +45,8 @@ describe('ScreenController', () => {
   })
 
   it('exitFullscreen restores state', () => {
-    const {screen, getOutput} = makeController()
+    const {screen} = makeController()
     screen.enterFullscreen({hideCursor: true, mouse: true})
-    const enterOutput = getOutput()
     // Clear for exit check
     let exitOutput = ''
     ;(screen as any).write = (s: string) => {

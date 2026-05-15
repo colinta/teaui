@@ -1,6 +1,6 @@
 import type {Viewport} from '../Viewport.js'
 import type {Dimension, Props as ViewProps} from '../View.js'
-import type {Color} from '../Color.js'
+
 import {Style} from '../Style.js'
 import {View} from '../View.js'
 import {Size} from '../geometry.js'

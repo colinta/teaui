@@ -14,7 +14,7 @@ describe('Geometry', () => {
 
   it('calls onLayout with content size', () => {
     let layoutSize: Size | null = null
-    const t = testRender(
+    testRender(
       new Geometry({
         onLayout(size) {
           layoutSize = size

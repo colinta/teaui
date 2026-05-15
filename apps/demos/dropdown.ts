@@ -1,11 +1,4 @@
-import {
-  Button,
-  ConsoleLog,
-  Dropdown,
-  Stack,
-  Separator,
-  Space,
-} from '@teaui/core'
+import {Button, Dropdown, Stack, Separator, Space} from '@teaui/core'
 
 import {demo} from './demo.js'
 

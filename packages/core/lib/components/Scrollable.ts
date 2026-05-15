@@ -1,6 +1,6 @@
 import type {Viewport} from '../Viewport.js'
 import {type Props as ContainerProps, Container} from '../Container.js'
-import {type Props as ViewProps, View} from '../View.js'
+import {View} from '../View.js'
 import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
 import {Style} from '../Style.js'
@@ -381,9 +381,6 @@ export class Scrollable extends Container {
     if (offsetX === 0 && offsetY === 0) {
       return
     }
-
-    const tooWide = this.#contentSize.width > this.contentSize.width
-    const tooTall = this.#contentSize.height > this.contentSize.height
 
     let {x, y} = this.#contentOffset
     const maxX = this.#maxOffsetX()

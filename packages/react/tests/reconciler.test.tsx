@@ -1,14 +1,12 @@
-import {describe, it, expect, vi, beforeEach} from 'vitest'
-import React, {useState, useRef, useCallback} from 'react'
+import {describe, it, expect, vi} from 'vitest'
+import React, {useState, useRef} from 'react'
 import {
   Box,
-  Button,
   Checkbox,
   Stack,
   Separator,
   Space,
   Window,
-  View,
   Container,
   testRender,
 } from '@teaui/core'
@@ -233,11 +231,8 @@ describe('reconciler', () => {
     })
 
     it('adds text nodes to TextContainers', async () => {
-      let setShow: (s: boolean) => void
-
       function TestComp() {
         const [show, _setShow] = useState(true)
-        setShow = _setShow
         return (
           <tui-stack direction="down">
             {show && 'hello'}
@@ -263,7 +258,6 @@ describe('reconciler', () => {
       let capturedRef: any = null
 
       function TestComp() {
-        const ref = useRef<any>(null)
         // Use callback ref to capture the instance
         return (
           <tui-box

@@ -2,7 +2,7 @@ import * as unicode from '@teaui/term'
 import type {Viewport} from '../Viewport.js'
 import {Style} from '../Style.js'
 
-import {type Props as ViewProps, View} from '../View.js'
+import {type Props as ViewProps} from '../View.js'
 import {Container} from '../Container.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {
@@ -107,7 +107,7 @@ export class ToggleGroup extends Container {
     return this.#sizeCache
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
+  receiveMouse(event: MouseEvent, _system: System) {
     let x = 0
     if (this.#direction === 'horizontal') {
       if (event.position.y >= this.#sizeCache.height) {
@@ -164,12 +164,12 @@ export class ToggleGroup extends Container {
       }
     } else {
       let y = 0
-      for (const [index, [text, size]] of this.#titlesCache.entries()) {
+      for (const [_index, [_text, size]] of this.#titlesCache.entries()) {
         const rect = new Rect(
           [0, y],
           [this.#sizeCache.width, size.height + 2 + 2 * this.#padding],
         ).offset(BORDER.size, 0)
-        viewport.clipped(rect, inner => {
+        viewport.clipped(rect, _inner => {
           // this.#renderGroupVertical(
           //   inner,
           //   text,

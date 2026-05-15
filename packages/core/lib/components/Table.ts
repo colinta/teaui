@@ -1,10 +1,10 @@
 import * as unicode from '@teaui/term'
 
 import type {Viewport} from '../Viewport.js'
-import {type Props as ViewProps, View} from '../View.js'
+import {type Props as ViewProps} from '../View.js'
 import {Container} from '../Container.js'
 import {Style} from '../Style.js'
-import {Rect, Point, Size} from '../geometry.js'
+import {Point, Size} from '../geometry.js'
 import {
   type MouseEvent,
   type KeyEvent,
@@ -15,7 +15,7 @@ import {
 } from '../events/index.js'
 import {System} from '../System.js'
 
-export interface Column<TData> {
+export interface Column<_TData> {
   key: string
   title: string
   width?: number | 'auto'

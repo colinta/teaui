@@ -552,7 +552,7 @@ export class Input extends View {
       lines = this.#wrappedLines
     }
 
-    let isPlaceholder = !Boolean(this.#chars.length)
+    let isPlaceholder = !this.#chars.length
     let currentStyle = Style.NONE
     const plainStyle = this.purpose.text({
       isPlaceholder,
@@ -562,7 +562,6 @@ export class Input extends View {
       isSelected: true,
       hasFocus,
     })
-    const cursorStyle = plainStyle.merge({underline: true})
 
     const nlStyle = this.purpose.text({isPlaceholder: true})
 
@@ -795,65 +794,6 @@ export class Input extends View {
   }
 
   /**
-   * Returns the cursor offset that points to the character at the desired screen
-   * position, taking into account character widths.
-   */
-  #toOffset(position: Point, visibleWidth: number): number {
-    if (this.#wrap) {
-      let y = 0,
-        index = 0
-      let x = 0
-      for (const [chars] of this.#printableLines) {
-        if (y) {
-          y += 1
-        }
-        x = 0
-        for (const char of chars) {
-          if (position.isEqual(x, y)) {
-            return index
-          }
-
-          const charWidth = unicode.charWidth(char)
-          if (x + charWidth >= visibleWidth) {
-            x = 0
-            y += 1
-            index += 1
-          } else {
-            x += charWidth
-            index += 1
-          }
-        }
-      }
-
-      return index
-    } else {
-      if (position.y >= this.#printableLines.length) {
-        return this.#chars.length
-      }
-
-      let y = 0,
-        index = 0
-      for (const [chars, width] of this.#printableLines) {
-        if (y === position.y) {
-          let x = 0
-          for (const char of chars) {
-            x += unicode.charWidth(char)
-            if (x > position.x) {
-              return index
-            }
-            index += 1
-          }
-          return index
-        }
-        y += 1
-        index += chars.length + 1
-      }
-
-      return this.#chars.length
-    }
-  }
-
-  /**
    * Determine the position of the cursor, relative to the viewport, based on the
    * text and viewport sizes.
    *
@@ -1012,7 +952,6 @@ export class Input extends View {
     if (cursorPosition.y === 0) {
       dest = 0
     } else {
-      const [targetChars, targetWidth] = this.#wrappedLines[cursorPosition.y]
       dest = this.#wrappedLines
         .slice(0, cursorPosition.y)
         .reduce((dest, [chars]) => {
@@ -1038,8 +977,6 @@ export class Input extends View {
     if (cursorPosition.y === this.#wrappedLines.length - 1) {
       dest = this.#chars.length
     } else {
-      const [targetChars, targetWidth] =
-        this.#wrappedLines[cursorPosition.y + 1]
       dest =
         this.#wrappedLines
           .slice(0, cursorPosition.y + 1)

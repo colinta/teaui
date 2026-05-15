@@ -53,11 +53,11 @@ export class iTerm2 {
 }
 
 function getBackgroundColorCommand() {
-  return '\x1b]4;-2;?\x07'
+  return '\u001b]4;-2;?\x07'
 }
 
 function parseBackgroundResponse(response: string): string | undefined {
-  const match = response.match(/\x1b\]4;-2;rgb:(\w{2})\w*\/(\w{2})\w*\/(\w{2})/)
+  const match = response.match(/\u001b\]4;-2;rgb:(\w{2})\w*\/(\w{2})\w*\/(\w{2})/)
   if (match) {
     return match[1] + match[2] + match[3]
   }
@@ -67,5 +67,5 @@ function parseBackgroundResponse(response: string): string | undefined {
  * @param rgb should not include the '#' symbol
  */
 function setBackgroundCommand(rgb: string): string {
-  return `\x1b]Ph${rgb.replace('#', '')}\x1b\\`
+  return `\u001b]Ph${rgb.replace('#', '')}\u001b\\`
 }

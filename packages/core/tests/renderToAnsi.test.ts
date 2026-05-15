@@ -28,7 +28,7 @@ describe('renderToAnsi', () => {
     const view = new Button({title: 'Test'})
     const output = renderToAnsi(view, {width: 20, height: 3})
     // Should contain cursor positioning and/or SGR codes
-    expect(output).toMatch(/\x1b\[/)
+    expect(output).toMatch(/\u001b\[/)
   })
 
   it('renders a Stack with children', () => {

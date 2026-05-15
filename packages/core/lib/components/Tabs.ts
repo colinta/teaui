@@ -164,7 +164,7 @@ export class Tabs extends Container {
 
   naturalSize(available: Size) {
     const remainingSize = available.mutableCopy()
-    const tabTitleSize = this.tabTitles.reduce((size, tab, index) => {
+    const tabTitleSize = this.tabTitles.reduce((size, tab) => {
       const tabSize = tab.naturalSize(remainingSize).mutableCopy()
       size.width += tabSize.width
       size.height = Math.max(size.height, tabSize.height)
@@ -196,7 +196,7 @@ export class Tabs extends Container {
     }
 
     const [start, stop] = this.#separatorWidths.reduce(
-      ([start, stop, prev], width, index) =>
+      ([start, stop, _prev], width, index) =>
         index === this.#selectedTab
           ? [start, stop + width, 0]
           : index > this.#selectedTab

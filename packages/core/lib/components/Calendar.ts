@@ -290,17 +290,6 @@ export class Calendar extends View {
     this.invalidateRender()
   }
 
-  #navigateYear(delta: number) {
-    const d = new Date(
-      this.#visibleDate.getFullYear() + delta,
-      this.#visibleDate.getMonth(),
-      1,
-    )
-    this.#visibleDate = d
-    this.#onChangeVisible?.(d)
-    this.invalidateRender()
-  }
-
   #syncVisibleDate(date: Date) {
     if (
       date.getMonth() !== this.#visibleDate.getMonth() ||
@@ -398,7 +387,7 @@ export class Calendar extends View {
   }
 
   #shiftSelectBy(days: number) {
-    if (!this.#shiftSelecting) {
+    if (!this.#shiftSelecting || !this.#rangeStart) {
       this.#rangeStart = new Date(this.#cursorDate)
     }
 
@@ -406,6 +395,16 @@ export class Calendar extends View {
     this.#shiftSelecting = true
     this.#rangeEnd = new Date(this.#cursorDate)
     this.#rangeNextSelection = 'start'
+
+    const start =
+      this.#rangeStart.getTime() <= this.#rangeEnd.getTime()
+        ? this.#rangeStart
+        : this.#rangeEnd
+    const end =
+      this.#rangeStart.getTime() <= this.#rangeEnd.getTime()
+        ? this.#rangeEnd
+        : this.#rangeStart
+    this.#onChange?.(start, end)
   }
 
   #selectMonth(month: number) {

@@ -4,7 +4,6 @@ import {Alert} from '../../lib/components/Alert.js'
 import {Text} from '../../lib/components/Text.js'
 import {Button} from '../../lib/components/Button.js'
 import {Stack} from '../../lib/components/Stack.js'
-import {Space} from '../../lib/components/Space.js'
 
 describe('Alert', () => {
   describe('presentFrom', () => {

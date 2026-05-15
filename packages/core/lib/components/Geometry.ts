@@ -1,5 +1,5 @@
 import type {Viewport} from '../Viewport.js'
-import {type Props as ViewProps} from '../View.js'
+
 import {Container, type Props as ContainerProps} from '../Container.js'
 import {Size} from '../geometry.js'
 

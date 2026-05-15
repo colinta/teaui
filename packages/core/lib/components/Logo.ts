@@ -70,7 +70,7 @@ function steamToString(particles: Particle[]): string {
   // Build a dot grid
   const grid: boolean[][] = []
   for (let r = 0; r < STEAM_DOT_ROWS; r++) {
-    grid[r] = new Array(STEAM_DOT_COLS).fill(false)
+    grid[r] = Array.from({length: STEAM_DOT_COLS}, () => false)
   }
   for (const p of particles) {
     if (p.x >= 0 && p.x < STEAM_DOT_COLS && p.y >= 0 && p.y < STEAM_DOT_ROWS) {

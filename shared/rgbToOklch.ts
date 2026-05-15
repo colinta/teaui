@@ -119,7 +119,7 @@ for (const [name, colour] of Object.entries(colours)) {
     .map(c => parseInt(c, 16) * 17)
   const oklch = rgb2oklch(rgb)
 
-  function contrastedGray([l, c, h]) {
+  function contrastedGray([l, _c, _h]) {
     const textL =
       l < 50
         ? 95 - l * 0.3 // l=0 → 95, l=50 → 80

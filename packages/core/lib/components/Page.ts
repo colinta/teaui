@@ -7,7 +7,6 @@ import {
   type MouseEvent,
   type KeyEvent,
   isMouseClicked,
-  isMouseEnter,
   isMouseExit,
   isMouseWheel,
 } from '../events/index.js'
@@ -44,7 +43,6 @@ export class Page extends Container {
   // Dot layout (computed during render, used for mouse hit-testing)
   #dotRects: Rect[] = []
   #hoveredDot = -1
-  #dotsY = 0
 
   static create(
     sections: ([string, View] | Section)[],
@@ -365,7 +363,6 @@ export class Page extends Container {
 
     // Render dots and store rects for hit-testing
     this.#dotRects = []
-    this.#dotsY = dotsY
     for (let i = 0; i < sections.length; i++) {
       const dotX = startX + i * DOT_WIDTH
       const dotChar = i === this.#activeIndex ? DOT_ACTIVE : DOT_INACTIVE

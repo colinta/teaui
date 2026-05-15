@@ -4,7 +4,6 @@ import {
   Screen,
   Box,
   Text,
-  Input,
   Stack,
   Window,
   Style,

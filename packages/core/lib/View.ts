@@ -505,20 +505,20 @@ export abstract class View {
   /**
    * Called before being added to the parent View
    */
-  willMoveTo(parent: View) {}
+  willMoveTo(_parent: View) {}
   /**
    * Called after being removed from the parent View
    */
-  didMoveFrom(parent: View) {}
+  didMoveFrom(_parent: View) {}
   /**
    * Called after being added to a Screen
    */
-  didMount(screen: Screen) {}
+  didMount(_screen: Screen) {}
   /**
    * Called after being removed from a Screen (even when about to be moved to a new
    * screen).
    */
-  didUnmount(screen: Screen) {}
+  didUnmount(_screen: Screen) {}
   /**
    * Called when this view gains keyboard focus. Only called on views that call
    * `viewport.registerFocus()` in their render method.
@@ -572,16 +572,16 @@ export abstract class View {
    * To register for this event, call `viewport.registerFocus()`, which returns `true`
    * if the current view has the keyboard focus.
    */
-  receiveKey(event: KeyEvent) {}
+  receiveKey(_event: KeyEvent) {}
   /**
    * Called when text is pasted from the clipboard (bracketed paste).
    * Only dispatched to the currently focused view.
    */
-  receivePaste(text: string) {}
+  receivePaste(_text: string) {}
   /**
    * To register for this event, call `viewport.registerMouse()`
    */
-  receiveMouse(event: MouseEvent, system: System) {
+  receiveMouse(event: MouseEvent, _system: System) {
     if (isMousePressStart(event)) {
       this.#isPressed = true
     } else if (isMousePressExit(event)) {
@@ -601,7 +601,7 @@ export abstract class View {
    *
    * To register for this event, call `viewport.registerTick()`
    */
-  receiveTick(dt: number): boolean {
+  receiveTick(_dt: number): boolean {
     return false
   }
 }

@@ -90,18 +90,18 @@ export class TestTerminal implements SGRTerminal {
 
   /**
    * Parse accumulated SGR sequences into a Style.
-   * Multiple SGR codes may have been concatenated (e.g. "\x1b[1m\x1b[38;5;196m").
-   * A reset (\x1b[0m) clears everything.
+   * Multiple SGR codes may have been concatenated (e.g. "\u001b[1m\u001b[38;5;196m").
+   * A reset (\u001b[0m) clears everything.
    *
    * Note: Style.fromSGR's prevStyle param is used as the "reset target" — e.g.
    * code 22 (!bold) resets to prevStyle.bold. We pass Style.NONE so resets
    * correctly turn attributes off rather than copying the current state.
    */
   #parseAccumulatedSGR(sgr: string): Style {
-    const sequences = sgr.match(/\x1b\[[\d;]*m/g) ?? []
+    const sequences = sgr.match(/\u001b\[[\d;]*m/g) ?? []
     let style = this.#currentStyle
     for (const seq of sequences) {
-      if (seq === '\x1b[0m' || seq === '\x1b[m') {
+      if (seq === '\u001b[0m' || seq === '\u001b[m') {
         style = Style.NONE
       } else {
         style = style.merge(Style.fromSGR(seq, Style.NONE))

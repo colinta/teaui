@@ -239,11 +239,3 @@ export class FocusManager {
     this.#currentFocusView = this.#focusRing[0]
   }
 }
-
-function findView(parent: View, prevFocus: View): boolean {
-  if (parent === prevFocus) {
-    return true
-  }
-
-  return parent.children.some(child => findView(child, prevFocus))
-}

@@ -214,7 +214,9 @@ function renderAnsiToHtmlFragment(ansi: string): string {
 async function buildExamples() {
   mkdirSync(EXAMPLES_OUTPUT_DIR, {recursive: true})
 
-  const files = readdirSync(EXAMPLES_DIR).filter(f => /\.example\.tsx$/.test(f))
+  const files = readdirSync(EXAMPLES_DIR).filter(f =>
+    f.endsWith('.example.tsx'),
+  )
 
   if (files.length === 0) {
     return

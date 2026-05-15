@@ -11,7 +11,7 @@ describe('codeHighlighter', () => {
     const format = codeHighlighter('javascript')
     const result = format('const x = 1')
     // Should contain ANSI escape sequences
-    expect(result).toMatch(/\x1b\[/)
+    expect(result).toMatch(new RegExp(String.raw`\u001b\[`))
     // Should still contain the original text
     expect(result).toContain('const')
     expect(result).toContain('x')
@@ -31,7 +31,7 @@ describe('codeHighlighter', () => {
     const format = codeHighlighter()
     const result = format('function foo() { return 42; }')
     // Should still contain ANSI codes from auto-detection
-    expect(result).toMatch(/\x1b\[/)
+    expect(result).toMatch(new RegExp(String.raw`\u001b\[`))
   })
 
   it('works with Input format prop', () => {

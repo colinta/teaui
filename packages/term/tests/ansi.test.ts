@@ -27,7 +27,6 @@ import {
   fgReset,
   bgColor,
   bgReset,
-  hslToRgb,
   textAttr,
   textAttrOff,
   resetAll,

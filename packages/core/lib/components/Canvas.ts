@@ -1,7 +1,7 @@
 import type {Viewport} from '../Viewport.js'
 import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
-import {Point, Size} from '../geometry.js'
+import {Size} from '../geometry.js'
 
 // Braille bit mapping for (px % 2, py % 4)
 // Each terminal cell is a 2×4 pixel grid

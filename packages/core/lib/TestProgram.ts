@@ -54,7 +54,7 @@ export class TestProgram implements Program {
     }
   }
 
-  onResize(listener: () => void): () => void {
+  onResize(_listener: () => void): () => void {
     // No resize in tests — return no-op unsubscribe
     return () => {}
   }

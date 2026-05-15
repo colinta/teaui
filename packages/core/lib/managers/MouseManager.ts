@@ -131,7 +131,7 @@ export class MouseManager {
     }
 
     const ancestors = new Set<View>([view])
-    for (let parent = view.parent; !!parent; parent = parent!.parent) {
+    for (let parent = view.parent; parent; parent = parent!.parent) {
       ancestors.add(parent)
     }
 
@@ -371,22 +371,5 @@ export class MouseManager {
       const system = unboundSystem.bind(listener.view)
       this.#sendMouse(systemEvent, 'mouse.move.exit', listener, system)
     }
-  }
-}
-
-function checkEventNames(
-  systemEvent: SystemMouseEvent,
-): MouseEventListenerName[] {
-  switch (systemEvent.name) {
-    case 'mouse.move.in':
-      return ['mouse.move']
-    case 'mouse.button.down':
-    case 'mouse.button.up':
-      return [`mouse.button.${systemEvent.button}`, 'mouse.button.all']
-    case 'mouse.wheel.up':
-    case 'mouse.wheel.down':
-    case 'mouse.wheel.left':
-    case 'mouse.wheel.right':
-      return ['mouse.wheel']
   }
 }

@@ -2,7 +2,6 @@ import React, {useState, useCallback} from 'react'
 import {interceptConsoleLog} from '@teaui/core'
 import {
   Box,
-  Br,
   Breadcrumb,
   Button,
   Scrollable,

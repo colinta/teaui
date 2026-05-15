@@ -447,7 +447,7 @@ function toInset(args: InsetArgs): [number, number, number, number] {
       const [a, b, c, d] = numbers
       switch (numbers.length) {
         case 4:
-          return [a, a, b, c]
+          return [a, b, c, d]
         case 3:
           return [a, b, c, b]
         case 2:

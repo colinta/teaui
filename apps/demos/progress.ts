@@ -1,4 +1,4 @@
-import {Button, Stack, Progress, Text} from '@teaui/core'
+import {Button, Stack, Progress} from '@teaui/core'
 
 import {demo} from './demo.js'
 

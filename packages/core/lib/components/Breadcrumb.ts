@@ -242,7 +242,7 @@ export class Breadcrumb extends Container {
     return segments
   }
 
-  naturalSize(available: Size): Size {
+  naturalSize(_available: Size): Size {
     if (this.#items.length === 0) {
       return new Size(0, 1)
     }

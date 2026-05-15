@@ -349,12 +349,12 @@ describe('Canvas', () => {
 
     it('dimensions update on re-render with different size', () => {
       const canvas = new Canvas()
-      const t = testRender(canvas, {width: 5, height: 3})
+      testRender(canvas, {width: 5, height: 3})
       expect(canvas.pixelWidth).toBe(10)
       expect(canvas.pixelHeight).toBe(12)
 
       // Re-render at new size by creating a new test harness
-      const t2 = testRender(canvas, {width: 8, height: 4})
+      testRender(canvas, {width: 8, height: 4})
       expect(canvas.pixelWidth).toBe(16)
       expect(canvas.pixelHeight).toBe(16)
     })
@@ -419,7 +419,7 @@ describe('Canvas', () => {
           c.line(0, 0, c.pixelWidth - 1, 0) // horizontal top
         },
       })
-      const t = testRender(canvas, {width: 3, height: 1})
+      testRender(canvas, {width: 3, height: 1})
       // All top pixels should be set
       for (let x = 0; x < 6; x++) {
         expect(canvas.isSet(x, 0)).toBe(true)
@@ -450,7 +450,7 @@ describe('Canvas', () => {
       })
       expect(canvas.isSet(0, 0)).toBe(true)
 
-      canvas.withContext(2, 2, c => {
+      canvas.withContext(2, 2, _c => {
         // draw nothing
       })
       expect(canvas.isSet(0, 0)).toBe(false)

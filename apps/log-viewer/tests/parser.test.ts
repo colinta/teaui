@@ -1,10 +1,5 @@
 import {describe, test, expect} from 'vitest'
-import {
-  parseFilter,
-  matchFilter,
-  type FilterNode,
-  type ParseResult,
-} from '../parser.js'
+import {parseFilter, matchFilter, type FilterNode} from '../parser.js'
 
 function parse(filter: string): FilterNode | undefined {
   const result = parseFilter(filter)

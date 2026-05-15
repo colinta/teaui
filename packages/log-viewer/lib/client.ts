@@ -1,7 +1,7 @@
 import net from 'node:net'
 
 import {DEFAULT_SOCKET_PATH} from './protocol.js'
-import type {Level, LogMessage, Metadata} from './protocol.js'
+import type {LogMessage} from './protocol.js'
 
 const RECONNECT_INTERVAL = 2000
 

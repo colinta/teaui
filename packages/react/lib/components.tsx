@@ -37,7 +37,6 @@ import type {
   Slider as WrSlider,
   Space as WrSpace,
   Spinner as WrSpinner,
-  ScrollableList as WrList,
   Tree as WrTree,
   Page as WrPage,
   Tabs as WrTabs,
@@ -48,7 +47,6 @@ import type {
   Column,
   SortDirection,
   ViewProps,
-  Location,
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
 

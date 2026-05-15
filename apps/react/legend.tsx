@@ -1,5 +1,5 @@
 import React from 'react'
-import {interceptConsoleLog, type Border, type LegendItem} from '@teaui/core'
+import {interceptConsoleLog} from '@teaui/core'
 import {Legend, Scrollable, Separator, Style, Text, run} from '@teaui/react'
 
 export function LegendTab() {

@@ -1,4 +1,3 @@
-import {ConsoleLog} from './components/Log.js'
 import {inspect} from '@teaui/inspect'
 import {removeAnsi} from '@teaui/term'
 
@@ -23,7 +22,7 @@ export function interceptConsoleLog(logListener: Listener = appendLog) {
     }
   })
 
-  process.on('exit', code => {
+  process.on('exit', _code => {
     flushLogs()
   })
 }

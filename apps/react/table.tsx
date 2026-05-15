@@ -219,7 +219,6 @@ export function TableDemo() {
   const [sortKey, setSortKey] = useState('name')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [selected, setSelected] = useState<Person | null>(null)
-  const [showRowNumbers, setShowRowNumbers] = useState(true)
 
   const handleSort = useCallback((key: string, direction: SortDirection) => {
     setSortKey(key)

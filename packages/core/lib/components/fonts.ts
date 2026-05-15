@@ -7,19 +7,19 @@ function createFont(
 ): Font {
   const font: Font = new Map()
   let letterCode = 'A'.charCodeAt(0)
-  for (const c of [...capitals]) {
+  for (const c of capitals) {
     const letter = String.fromCharCode(letterCode++)
     font.set(letter, c)
   }
 
   letterCode = 'a'.charCodeAt(0)
-  for (const c of [...lowercase]) {
+  for (const c of lowercase) {
     const letter = String.fromCharCode(letterCode++)
     font.set(letter, c)
   }
 
   letterCode = '0'.charCodeAt(0)
-  for (const c of [...digits]) {
+  for (const c of digits) {
     const letter = String.fromCharCode(letterCode++)
     font.set(letter, c)
   }

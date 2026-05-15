@@ -1,6 +1,6 @@
 import type {Viewport} from '../Viewport.js'
 import type {Container} from '../Container.js'
-import type {View} from '../View.js'
+
 import {Point, Rect, Size} from '../geometry.js'
 import {type Props as NotificationProps, Notification} from './Notification.js'
 import {Box} from './Box.js'

@@ -1,4 +1,4 @@
-import {Box, Stack, Tabs, Text, Style, Scrollable} from '@teaui/core'
+import {Stack, Tabs, Text, Style, Scrollable} from '@teaui/core'
 import {CodeView} from '@teaui/code'
 
 import {demo} from './demo.js'

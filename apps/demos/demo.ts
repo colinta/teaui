@@ -45,7 +45,7 @@ export async function demo(
     height: typeof showConsoleLog === 'number' ? showConsoleLog : 10,
   })
   const [screen] = await Screen.start(
-    async program => {
+    async _program => {
       // await iTerm2.setBackground(program, [23, 23, 23])
 
       return new Window({

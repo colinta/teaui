@@ -83,7 +83,6 @@ describe('Stack', () => {
 
     it('shift+tab moves focus backwards', () => {
       let val1 = ''
-      let val2 = ''
       const input1 = new Input({
         value: 'first',
         onChange(v) {
@@ -92,9 +91,7 @@ describe('Stack', () => {
       })
       const input2 = new Input({
         value: 'second',
-        onChange(v) {
-          val2 = v
-        },
+        onChange(_v) {},
       })
       const t = testRender(
         new Stack({children: [input1, input2], direction: 'down'}),

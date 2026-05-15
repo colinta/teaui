@@ -194,7 +194,7 @@ export const colorize: Colorize = {
     }
 
     input = input.replaceAll(/\n/g, '⤦')
-    input = input.replaceAll(/\x1b/g, '␛')
+    input = input.replaceAll(/\u001b/g, '␛')
 
     return green(quote.concat(input, quote))
   },

@@ -30,8 +30,8 @@ export class Buffer implements Terminal {
   #prevDirtyRows: Set<number> = new Set()
   #mergeCache: Map<Style, Map<Style, Style>> = new Map()
 
-  setForeground(fg: Color): void {}
-  setBackground(bg: Color): void {}
+  setForeground(_fg: Color): void {}
+  setBackground(_bg: Color): void {}
 
   resize(size: Size) {
     if (size.width !== this.size.width || size.height !== this.size.height) {
@@ -197,19 +197,6 @@ export class Buffer implements Terminal {
       const r = this.#paintRects[i]
       if (x >= r.minX && x < r.maxX && y >= r.minY && y < r.maxY) {
         return r.style
-      }
-    }
-    return undefined
-  }
-
-  /**
-   * Returns a pre-allocated Char for coordinates in a paint rect.
-   */
-  #paintCellAt(x: number, y: number): Char | undefined {
-    for (let i = this.#paintRects.length - 1; i >= 0; i--) {
-      const r = this.#paintRects[i]
-      if (x >= r.minX && x < r.maxX && y >= r.minY && y < r.maxY) {
-        return r.cell
       }
     }
     return undefined

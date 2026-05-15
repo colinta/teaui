@@ -56,7 +56,7 @@ import {
  *   of `alignment`)
  * - The last nodes are turned into `TextLiteral`-s as well.
  */
-namespace TextReact {}
+namespace _TextReact {}
 // yeah I don't care about this namespace I just needed something to attach the JSDoc to
 
 const DEFAULTS = {
@@ -91,7 +91,7 @@ export class TextLiteral extends View {
     let style: Style | undefined
     for (
       let ancestorView: Container | undefined = this.parent;
-      Boolean(ancestorView);
+      ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
       if (ancestorView instanceof TextStyle) {
@@ -125,7 +125,7 @@ export class TextLiteral extends View {
     let textContainer: TextContainer | undefined
     for (
       let ancestorView: Container | undefined = this.parent;
-      Boolean(ancestorView);
+      ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
       if (ancestorView instanceof TextContainer) {
@@ -305,7 +305,7 @@ export class TextContainer extends Container {
     let textProvider: TextProvider | undefined
     for (
       let ancestorView = this.parent;
-      Boolean(ancestorView);
+      ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
       if (ancestorView instanceof TextProvider) {
@@ -384,7 +384,7 @@ export class TextProvider extends Container {
     let parentStyle: Style | undefined
     for (
       let ancestorView = this.parent;
-      Boolean(ancestorView);
+      ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
       if (ancestorView instanceof TextProvider) {
@@ -400,7 +400,7 @@ export class TextProvider extends Container {
     let parentProvider: TextProvider | undefined
     for (
       let ancestorView = this.parent;
-      Boolean(ancestorView);
+      ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
       if (ancestorView instanceof TextProvider) {
@@ -482,7 +482,7 @@ export class TextStyle extends TextProvider {
   #invalidateTextContainer() {
     for (
       let ancestorView: Container | undefined = this.parent;
-      Boolean(ancestorView);
+      ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
       if (ancestorView instanceof TextContainer) {

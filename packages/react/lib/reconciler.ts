@@ -382,15 +382,15 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       props: Props,
       _rootWindow: Window,
       _hostContext: HostContext,
-      _internalInstanceHandle: Object,
+      _internalInstanceHandle: object,
     ) {
       if ('children' in props) {
-        const {children, ...remainder} = props
+        const {children: _children, ...remainder} = props
         props = remainder
       }
 
       if ('child' in props) {
-        const {child, ...remainder} = props
+        const {child: _child, ...remainder} = props
         props = remainder
       }
 
@@ -427,9 +427,9 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     removeChildFromContainer(container: Window, child: View) {
       removeChild(container, child)
     },
-    detachDeletedInstance(node: View) {},
+    detachDeletedInstance(_node: View) {},
 
-    finalizeInitialChildren(instance: View) {
+    finalizeInitialChildren(_instance: View) {
       return false
     },
     prepareForCommit() {
@@ -443,7 +443,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       _instance: View,
       _type: string,
       _newProps: Props,
-      _internalInstanceHandle: Object,
+      _internalInstanceHandle: object,
     ) {
       // not needed as long as finalizeInitialChildren returns `false`
     },
@@ -459,7 +459,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     resetTextContent(instance: TextLiteral) {
       instance.text = ''
     },
-    shouldSetTextContent(type: string, _props: Props) {
+    shouldSetTextContent(_type: string, _props: Props) {
       return false
     },
 
@@ -502,9 +502,9 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       _type: string,
       _oldProps: Props,
       newProps: Props,
-      _internalInstanceHandle: Object,
+      _internalInstanceHandle: object,
     ) {
-      const {children, ...updates} = newProps as any
+      const {children: _children, ...updates} = newProps as any
       // if (children !== undefined && node instanceof TextLiteral) {
       //   updates.text = childrenToText(children)
       // }

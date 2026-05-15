@@ -574,12 +574,18 @@ describe('Calendar', () => {
 
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(11)
+      expect(rangeStart!.getDate()).toBe(10)
+      expect(rangeEnd!.getDate()).toBe(11)
 
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(12)
+      expect(rangeStart!.getDate()).toBe(10)
+      expect(rangeEnd!.getDate()).toBe(12)
 
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(13)
+      expect(rangeStart!.getDate()).toBe(10)
+      expect(rangeEnd!.getDate()).toBe(13)
     })
 
     it('shift+left starts and extends range backwards', () => {
@@ -598,9 +604,13 @@ describe('Calendar', () => {
 
       t.sendKey('left', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(9)
+      expect(rangeStart!.getDate()).toBe(9)
+      expect(rangeEnd!.getDate()).toBe(10)
 
       t.sendKey('left', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(8)
+      expect(rangeStart!.getDate()).toBe(8)
+      expect(rangeEnd!.getDate()).toBe(10)
     })
 
     it('shift+down extends range by a week', () => {
@@ -635,12 +645,18 @@ describe('Calendar', () => {
       t.sendKey('right', {shift: true})
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(12)
+      expect(rangeStart!.getDate()).toBe(10)
+      expect(rangeEnd!.getDate()).toBe(12)
 
       t.sendKey('right')
       expect(cal.cursorDate.getDate()).toBe(13)
+      expect(rangeStart!.getDate()).toBe(10)
+      expect(rangeEnd!.getDate()).toBe(12)
 
       t.sendKey('right', {shift: true})
       expect(cal.cursorDate.getDate()).toBe(14)
+      expect(rangeStart!.getDate()).toBe(13)
+      expect(rangeEnd!.getDate()).toBe(14)
     })
   })
 

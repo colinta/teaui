@@ -133,7 +133,7 @@ export class Modal extends Container {
     this.#onDismiss = value
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
+  receiveMouse(event: MouseEvent, _system: System) {
     if (this.#dismissOnClick && isMouseClicked(event)) {
       this.#onDismiss?.()
     }

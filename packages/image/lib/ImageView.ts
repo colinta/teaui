@@ -30,7 +30,6 @@ export type Props = ImageProps & ViewProps
  */
 export class ImageView extends View {
   #source: string | Buffer = ''
-  #fit: 'contain' | 'cover' | 'stretch' = 'contain'
 
   /** The loaded & resized image data */
   #image: ImageData | undefined
@@ -53,10 +52,9 @@ export class ImageView extends View {
     super.update(props)
   }
 
-  #update({source, fit}: ImageProps) {
+  #update({source}: ImageProps) {
     const sourceChanged = source !== this.#source
     this.#source = source ?? ''
-    this.#fit = fit ?? 'contain'
 
     if (sourceChanged) {
       this.#image = undefined
@@ -160,7 +158,7 @@ export class ImageView extends View {
 
       // Trigger re-render now that image data is available
       this.invalidateSize()
-    } catch (error) {
+    } catch {
       this.#image = undefined
       this.#cells = []
       this.#renderedSize = Size.zero

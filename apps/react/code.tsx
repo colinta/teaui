@@ -1,16 +1,6 @@
 import React, {useState} from 'react'
 import {interceptConsoleLog} from '@teaui/core'
-import {
-  Box,
-  Dropdown,
-  Input,
-  Scrollable,
-  Stack,
-  Style,
-  Tabs,
-  Text,
-  run,
-} from '@teaui/react'
+import {Box, Dropdown, Scrollable, Stack, Style, Text, run} from '@teaui/react'
 import {Code} from '@teaui/code/react'
 
 // ── Sample Code ──────────────────────────────────────────────────────────────

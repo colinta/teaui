@@ -1,4 +1,4 @@
-import type {Color, TextAttribute} from './types.js'
+import type {Color} from './types.js'
 import {
   fgColor,
   fgReset,

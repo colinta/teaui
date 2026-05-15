@@ -1,7 +1,6 @@
 import React, {useState, useRef} from 'react'
 import {
   Calendar,
-  Scrollable,
   Stack,
   Style,
   Text,

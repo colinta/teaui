@@ -120,7 +120,7 @@ export function match(
   lookup?: [number, number, number][] | undefined,
 ): number {
   if (typeof r1 === 'string') {
-    const colorName = r1.replace(/[\- ]/g, '').toLowerCase()
+    const colorName = r1.replace(/[- ]/g, '').toLowerCase()
     if (colorNames[colorName] != null) {
       return colorNames[colorName]
     }

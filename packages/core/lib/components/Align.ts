@@ -2,7 +2,7 @@ import * as unicode from '@teaui/term'
 
 import type {Viewport} from '../Viewport.js'
 import {type Props as ContainerProps, Container} from '../Container.js'
-import {type Props as ViewProps, View} from '../View.js'
+import {View} from '../View.js'
 import {Point, Rect, Size} from '../geometry.js'
 import {Style} from '../Style.js'
 import {type Direction} from '../types.js'
@@ -310,7 +310,6 @@ export class Align extends Container {
 
   #naturalSizeColumns(available: Size): Size {
     const colWidths = this.#columnWidths(available)
-    const sepWidth = this.#separatorWidth
 
     let width = 0
     let height = 0

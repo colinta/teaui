@@ -1,5 +1,5 @@
 import {execSync} from 'child_process'
-import {resolve, dirname} from 'path'
+import {dirname} from 'path'
 import {fileURLToPath} from 'url'
 import {getWorkspaceBuildOrder} from '../../shared/check.js'
 

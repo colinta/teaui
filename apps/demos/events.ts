@@ -38,11 +38,4 @@ class Mouse extends View {
   }
 }
 
-demo(
-  Stack.down([
-    new Keys(),
-    // new Mouse(),
-    new ConsoleLog({flex: 1}),
-  ]),
-  false,
-)
+demo(Stack.down([new Keys(), new Mouse(), new ConsoleLog({flex: 1})]), false)
