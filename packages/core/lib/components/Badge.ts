@@ -72,5 +72,5 @@ export class Badge extends View {
   }
 }
 
-const LEFT_CAP = '▐'
-const RIGHT_CAP = '▌'
+const LEFT_CAP = '\ue0b6'
+const RIGHT_CAP = '\ue0b4'
