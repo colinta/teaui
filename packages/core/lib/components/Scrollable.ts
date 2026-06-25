@@ -1,6 +1,5 @@
 import type {Viewport} from '../Viewport.js'
-import {type Props as ContainerProps, Container} from '../Container.js'
-import {View} from '../View.js'
+import type {Props as ContainerProps} from '../Container.js'
 import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
 import {Style} from '../Style.js'
@@ -9,13 +8,12 @@ import {Stack} from './Stack.js'
 
 interface Props extends ContainerProps {
   /**
-   * Layout direction for children. Scrollable manages an internal Stack,
-   * so children are laid out in this direction.
+   * Layout direction for children.
    * @default 'down'
    */
   direction?: Direction
   /**
-   * Gap between children (passed to internal Stack).
+   * Gap between children.
    * @default 0
    */
   gap?: number
@@ -72,15 +70,13 @@ interface ContentOffset {
 }
 
 /**
- * Scrollable manages an internal Stack for layout and adds scroll offset,
- * scrollbar rendering, and mouse wheel handling on top.
+ * Scrollable uses Stack layout and adds scroll offset, scrollbar rendering,
+ * and mouse wheel handling on top.
  *
- * Children added to the Scrollable are delegated to the internal Stack.
  * Use `direction` to control layout (default: 'down'), or the static
  * constructors `Scrollable.down()`, `Scrollable.right()`, etc.
  */
-export class Scrollable extends Container {
-  #stack: Stack
+export class Scrollable extends Stack {
   #scrollable: 'both' | 'horizontal' | 'vertical' = 'both'
   #showScrollbars: boolean | 'horizontal' | 'vertical' = true
   #scrollHeight: number = 1
@@ -123,54 +119,21 @@ export class Scrollable extends Container {
   }
 
   constructor({children, child, direction, gap, ...props}: Props) {
-    super(props)
-
-    this.#stack = new Stack({direction: direction ?? 'down', gap})
-    // Add the Stack as the actual child of the Container
-    super.add(this.#stack)
+    super({children, child, direction: direction ?? 'down', gap, ...props})
 
     this.#contentOffset = {x: 0, y: 0}
     this.#update(props)
-
-    // Add user children to the internal Stack
-    if (child) {
-      this.#stack.add(child)
-    }
-    if (children) {
-      for (const c of children) {
-        this.#stack.add(c)
-      }
-    }
   }
 
   update({children, child, direction, gap, ...props}: Props) {
     this.#update(props)
-
-    if (direction !== undefined) {
-      this.#stack.direction = direction
-    }
-    if (gap !== undefined) {
-      this.#stack.gap = gap
-    }
-
-    // Delegate child management to the internal Stack
-    if (child !== undefined || children !== undefined) {
-      const allChildren: View[] = []
-      if (children) {
-        allChildren.push(...children)
-      }
-      if (child) {
-        allChildren.push(child)
-      }
-
-      this.#stack.update({
-        direction: direction ?? this.#stack.direction,
-        gap: gap ?? this.#stack.gap,
-        children: allChildren,
-      })
-    }
-
-    super.update(props)
+    super.update({
+      children,
+      child,
+      direction: direction ?? this.direction,
+      gap: gap ?? this.gap,
+      ...props,
+    })
   }
 
   #update({
@@ -191,31 +154,8 @@ export class Scrollable extends Container {
     }
   }
 
-  /**
-   * Children are delegated to the internal Stack.
-   */
-  add(child: View, at?: number) {
-    this.#stack.add(child, at)
-  }
-
-  removeChild(child: View) {
-    this.#stack.removeChild(child)
-  }
-
-  removeAllChildren() {
-    this.#stack.removeAllChildren()
-  }
-
-  /**
-   * Returns the children of the internal Stack (the user's children),
-   * not the Scrollable's direct children (which is just the Stack).
-   */
-  get children(): View[] {
-    return this.#stack.children
-  }
-
   naturalSize(available: Size): Size {
-    const size = this.#stack.naturalSize(available).mutableCopy()
+    const size = super.naturalSize(available).mutableCopy()
     size.width = Math.min(size.width, available.width)
     size.height = Math.min(size.height, available.height)
     return size
@@ -468,7 +408,7 @@ export class Scrollable extends Container {
       contentSize.height =
         this.#contentSizeOverride.height ?? viewport.contentSize.height
     } else {
-      const stackSize = this.#stack.naturalSize(viewport.contentSize)
+      const stackSize = super.naturalSize(viewport.contentSize)
       contentSize.width = stackSize.width
       contentSize.height = stackSize.height
     }
@@ -516,7 +456,7 @@ export class Scrollable extends Container {
     )
     viewport.clipped(scrollableArea, contentViewport => {
       contentViewport.clipped(outside, inside => {
-        this.#stack.render(inside)
+        super.render(inside)
       })
     })
 

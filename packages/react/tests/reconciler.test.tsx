@@ -4,6 +4,7 @@ import {
   Box,
   Checkbox,
   Stack,
+  Scrollable,
   Separator,
   Space,
   Window,
@@ -250,6 +251,40 @@ describe('reconciler', () => {
       expect(tc.nodes.length).toBe(2)
       expect((tc.nodes[0] as TextLiteral).text).toBe('hello')
       expect((tc.nodes[1] as TextLiteral).text).toBe(' world')
+    })
+
+    it('removes replaced children from Scrollable', async () => {
+      let setHasEntry: (hasEntry: boolean) => void
+
+      function TestComp() {
+        const [hasEntry, _setHasEntry] = useState(false)
+        setHasEntry = _setHasEntry
+
+        return (
+          <tui-scrollable>
+            {hasEntry ? (
+              <tui-stack direction="down">
+                <tui-text>entry</tui-text>
+              </tui-stack>
+            ) : (
+              <tui-text>No entries scanned yet.</tui-text>
+            )}
+          </tui-scrollable>
+        )
+      }
+
+      const {window} = renderToWindow(<TestComp />)
+      await flush()
+      const scrollable = window.children[0] as Container
+      expect(scrollable).toBeInstanceOf(Scrollable)
+      expect(scrollable.children.length).toBe(1)
+
+      setHasEntry!(true)
+      await flush()
+      expect(scrollable.children.length).toBe(1)
+
+      const rendered = testRender(window, {width: 80, height: 4})
+      expect(rendered.terminal.textContent()).toBe('entry')
     })
   })
 
