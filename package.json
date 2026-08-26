@@ -4,6 +4,7 @@
     "packages/*"
   ],
   "scripts": {
+    "test": "pnpm vitest run",
     "docs": "pnpm -C apps/docs start",
     "demo": "pnpm -C apps/demos demo",
     "log-viewer": "pnpm -C apps/log-viewer demo",

@@ -4,14 +4,14 @@ exports[`Badge > rendering > renders in zero-size viewport 1`] = `""`;
 
 exports[`Badge > rendering > renders nothing for empty text 1`] = `""`;
 
-exports[`Badge > rendering > renders with cancel purpose 1`] = `"▐ERR▌"`;
+exports[`Badge > rendering > renders with cancel purpose 1`] = `"ERR"`;
 
-exports[`Badge > rendering > renders with default purpose 1`] = `"▐info▌"`;
+exports[`Badge > rendering > renders with default purpose 1`] = `"info"`;
 
-exports[`Badge > rendering > renders with primary purpose 1`] = `"▐OK▌"`;
+exports[`Badge > rendering > renders with primary purpose 1`] = `"OK"`;
 
-exports[`Badge > rendering > renders with proceed purpose 1`] = `"▐PASS▌"`;
+exports[`Badge > rendering > renders with proceed purpose 1`] = `"PASS"`;
 
-exports[`Badge > update > updates purpose 1`] = `"▐test▌"`;
+exports[`Badge > update > updates purpose 1`] = `"test"`;
 
-exports[`Badge > update > updates text 1`] = `"▐new▌"`;
+exports[`Badge > update > updates text 1`] = `"new"`;

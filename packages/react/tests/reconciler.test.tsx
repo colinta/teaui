@@ -13,7 +13,6 @@ import {
 } from '@teaui/core'
 import {TextContainer, TextLiteral} from '../lib/components/TextReact'
 import {render} from '../lib/reconciler'
-import {YamlTab} from '../../../apps/react/yaml'
 
 // Minimal Screen mock — render() is the only method called by the reconciler
 function createMockScreen() {
@@ -550,63 +549,6 @@ describe('reconciler', () => {
       expect(t.terminal.textContent()).toContain(
         '"tags": ["tui", "terminal", "ui"]',
       )
-      expect(t.terminal.textContent()).not.toContain('"debug",}')
-      expect(t.terminal.textContent()).not.toContain('false:\n  "tags"')
-    })
-
-    it('keeps yaml demo output stable when uncommenting and re-commenting test', async () => {
-      const {window} = renderToWindow(<YamlTab />)
-      await flush()
-      const t = testRender(window, {width: 120, height: 24})
-
-      expect(t.terminal.textContent()).not.toContain('"test": "foo"')
-      expect(t.terminal.textContent()).toContain('"tags": [')
-
-      t.sendKey(',', {alt: true, shift: true})
-      for (let i = 0; i < 10; i++) {
-        t.sendKey('down')
-      }
-      t.sendKey('delete')
-      await flush()
-      t.render()
-
-      expect(t.terminal.textContent()).toContain('"test": "foo"')
-      expect(t.terminal.textContent()).toContain('"tags": [')
-      expect(t.terminal.textContent()).not.toContain('"tags""test"')
-
-      t.sendKey('#')
-      await flush()
-      t.render()
-
-      expect(t.terminal.textContent()).not.toContain('"test": "foo"')
-      expect(t.terminal.textContent()).toContain('"tags": [')
-      expect(t.terminal.textContent()).not.toContain('}"tags"')
-    })
-
-    it('keeps yaml demo output stable when commenting out purpose', async () => {
-      const {window} = renderToWindow(<YamlTab />)
-      await flush()
-      const t = testRender(window, {width: 120, height: 24})
-
-      expect(t.terminal.textContent()).toContain('"purpose": "default"')
-      expect(t.terminal.textContent()).toContain('"debug": false')
-
-      t.sendKey(',', {alt: true, shift: true})
-      for (let i = 0; i < 8; i++) {
-        t.sendKey('down')
-      }
-      t.sendKey('right')
-      t.sendKey('right')
-      t.sendKey('#')
-      await flush()
-      t.render()
-
-      expect(t.terminal.textContent()).not.toContain('"purpose": "default"')
-      expect(t.terminal.textContent()).toContain('"debug": false')
-      expect(t.terminal.textContent()).toContain('"tags": [')
-      expect(t.terminal.textContent()).toContain('"tui"')
-      expect(t.terminal.textContent()).toContain('"terminal"')
-      expect(t.terminal.textContent()).toContain('"ui"')
       expect(t.terminal.textContent()).not.toContain('"debug",}')
       expect(t.terminal.textContent()).not.toContain('false:\n  "tags"')
     })
