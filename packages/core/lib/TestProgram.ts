@@ -9,6 +9,7 @@ import {TestTerminal} from './TestTerminal.js'
 export class TestProgram implements Program {
   #terminal: TestTerminal
   #eventListener?: (event: SystemEvent) => void
+  #resizeListener?: () => void
 
   constructor({cols, rows}: {cols: number; rows: number}) {
     this.#terminal = new TestTerminal({cols, rows})
@@ -54,9 +55,11 @@ export class TestProgram implements Program {
     }
   }
 
-  onResize(_listener: () => void): () => void {
-    // No resize in tests — return no-op unsubscribe
-    return () => {}
+  onResize(listener: () => void): () => void {
+    this.#resizeListener = listener
+    return () => {
+      this.#resizeListener = undefined
+    }
   }
 
   /**
@@ -64,5 +67,10 @@ export class TestProgram implements Program {
    */
   sendEvent(event: SystemEvent): void {
     this.#eventListener?.(event)
+  }
+
+  /** Trigger the resize lifecycle without changing the configured test size. */
+  sendResize(): void {
+    this.#resizeListener?.()
   }
 }

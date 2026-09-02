@@ -85,6 +85,12 @@ export {CursorController} from './cursor.js'
 
 // Input
 export {parseInput, InputReader} from './input.js'
+export {TerminalResponseRouter} from './response.js'
+export type {
+  TerminalResponseMatch,
+  TerminalResponseMatcher,
+  TerminalResponseRouteOptions,
+} from './response.js'
 
 // Screen
 export {ScreenController, detectColorSupport} from './screen.js'
@@ -135,3 +141,9 @@ export {parseStyleDescriptor} from './sgr.js'
 
 // Terminal (main class)
 export {Terminal} from './terminal.js'
+export {
+  ApplicationTerminal,
+  FullscreenTerminal,
+  InlineTerminal,
+} from './application.js'
+export type {InlineRegion, InlineTerminalOptions} from './application.js'

@@ -1,5 +1,6 @@
 import type {
   Color,
+  CursorPosition,
   ScreenSize,
   ColorSupport,
   TerminalOptions,
@@ -13,6 +14,10 @@ import * as ansi from './ansi.js'
 import {CursorController} from './cursor.js'
 import {ScreenController, detectColorSupport} from './screen.js'
 import {InputReader} from './input.js'
+import type {
+  TerminalResponseMatcher,
+  TerminalResponseRouteOptions,
+} from './response.js'
 import {StyleBuilder} from './style.js'
 import {ScreenBuffer} from './buffer.js'
 import {itermImage, kittyImage, detectImageProtocol} from './image.js'
@@ -29,8 +34,11 @@ export class Terminal {
 
   private styleOpen: string[] = []
   private wasRawMode: boolean = false
+  private inputStarted: boolean = false
+  private rawModeManaged: boolean = false
   private resizeCleanup: (() => void) | null = null
   private writeBuffer: string[] | null = null
+  private cursorPositionWaiters: Array<(position: CursorPosition) => void> = []
 
   constructor(options: TerminalOptions = {}) {
     const stdout = options.stdout ?? process.stdout
@@ -45,6 +53,9 @@ export class Terminal {
     this.cursorCtrl = new CursorController(write)
     this.screenCtrl = new ScreenController(write)
     this.inputReader = new InputReader()
+    this.inputReader.onResponse(matchCursorPositionResponse, position =>
+      this.cursorPositionWaiters.shift()?.(position),
+    )
 
     if (this.useBuffer) {
       const {columns, rows} = this.size
@@ -239,6 +250,12 @@ export class Terminal {
     return this
   }
 
+  /** Clear rows from the current line and return to the first cleared row. */
+  clearRows(height: number): this {
+    this.screenCtrl.clearRows(height)
+    return this
+  }
+
   /**
    * Flush the screen buffer — diffs against the previous frame and writes
    * only changed cells. Uses synchronized output to prevent tearing.
@@ -251,22 +268,62 @@ export class Terminal {
     return this
   }
 
-  enterFullscreen(options?: FullscreenOptions): this {
-    this.screenCtrl.enterFullscreen(options)
-    if (this.input) {
-      this.inputReader.attach(this.input)
-      // Enable raw mode so we get character-by-character input
-      const stream = this.input as any
-      if (typeof stream.isTTY !== 'undefined' && stream.isTTY) {
-        if (typeof stream.setRawMode === 'function') {
-          this.wasRawMode = stream.isRaw ?? false
-          stream.setRawMode(true)
-        }
-        if (typeof stream.resume === 'function') {
-          stream.resume()
-        }
+  /**
+   * Attach the input reader and enable character-by-character input without
+   * changing the active terminal display buffer or terminal protocols.
+   */
+  startInput(): this {
+    if (this.inputStarted || !this.input) return this
+
+    this.inputReader.attach(this.input)
+    this.inputStarted = true
+
+    const stream = this.input as any
+    if (typeof stream.isTTY !== 'undefined' && stream.isTTY) {
+      if (typeof stream.setRawMode === 'function') {
+        this.wasRawMode = stream.isRaw ?? false
+        stream.setRawMode(true)
+        this.rawModeManaged = true
+      }
+      if (typeof stream.resume === 'function') {
+        stream.resume()
       }
     }
+
+    return this
+  }
+
+  /** Restore the input stream state captured by `startInput()`. */
+  stopInput(): this {
+    if (!this.inputStarted) return this
+
+    this.inputReader.detach()
+    if (this.rawModeManaged && this.input) {
+      const stream = this.input as any
+      stream.setRawMode(this.wasRawMode)
+      this.rawModeManaged = false
+    }
+    this.inputStarted = false
+
+    return this
+  }
+
+  /** Enable interactive terminal protocols without changing the display buffer. */
+  enterApplication(options?: FullscreenOptions): this {
+    this.screenCtrl.enterApplication(options)
+    return this
+  }
+
+  /** Disable the interactive terminal protocols enabled by `enterApplication()`. */
+  exitApplication(): this {
+    this.screenCtrl.exitApplication()
+    return this
+  }
+
+  enterFullscreen(options?: FullscreenOptions): this {
+    this.screenCtrl.enterFullscreen(options)
+    this.startInput()
+
     // Resize buffer to match screen and track future resizes
     if (this.screenBuffer) {
       const {columns, rows} = this.size
@@ -279,17 +336,16 @@ export class Terminal {
   }
 
   exitFullscreen(): this {
-    this.screenCtrl.exitFullscreen()
-    this.inputReader.detach()
-    if (this.resizeCleanup) {
-      this.resizeCleanup()
-      this.resizeCleanup = null
-    }
-    // Restore raw mode to previous state
-    if (this.input) {
-      const stream = this.input as any
-      if (typeof stream.setRawMode === 'function') {
-        stream.setRawMode(this.wasRawMode)
+    try {
+      this.screenCtrl.exitFullscreen()
+    } finally {
+      try {
+        this.stopInput()
+      } finally {
+        if (this.resizeCleanup) {
+          this.resizeCleanup()
+          this.resizeCleanup = null
+        }
       }
     }
     return this
@@ -299,6 +355,96 @@ export class Terminal {
 
   onInput(cb: (event: InputEvent) => void): () => void {
     return this.inputReader.onInput(cb)
+  }
+
+  /**
+   * Route a terminal response away from ordinary keyboard and mouse input.
+   * Matchers may retain possible responses across multiple input chunks.
+   */
+  onResponse<T>(
+    matcher: TerminalResponseMatcher<T>,
+    listener: (value: T, raw: Buffer) => void,
+    options?: TerminalResponseRouteOptions,
+  ): () => void {
+    return this.inputReader.onResponse(matcher, listener, options)
+  }
+
+  /**
+   * Reserve up to the terminal's physical height in the normal screen buffer.
+   * Returns the zero-based origin after any scrolling, or `null` when cursor
+   * position reporting is unavailable.
+   *
+   * Input must already be attached with `startInput()`.
+   */
+  async reserveRows(
+    height: number,
+    timeoutMs: number = DEFAULT_CURSOR_POSITION_TIMEOUT_MS,
+    isCancelled?: () => boolean,
+  ): Promise<CursorPosition | null> {
+    if (!Number.isInteger(height) || height <= 0) {
+      throw new RangeError('Reserved row height must be a positive integer')
+    }
+
+    const effectiveHeight = Math.min(height, this.size.rows)
+    const position = await this.queryCursorPosition(timeoutMs)
+    if (isCancelled?.()) return null
+    if (!position) {
+      // Without a position, conservatively start on a fresh line. The rows are
+      // still usable for keyboard-only rendering, but their physical origin
+      // cannot be reported for mouse-coordinate translation.
+      this.screenCtrl.reserveRows(effectiveHeight, {advanceToFreshLine: true})
+      this.flushWrites()
+      return null
+    }
+
+    this.screenCtrl.reserveRows(effectiveHeight, {
+      advanceToFreshLine: position.x > 0,
+    })
+    // Reservation must reach the terminal before the follow-up query, even
+    // when ordinary rendering uses the write buffer.
+    this.flushWrites()
+    return this.queryCursorPosition(timeoutMs)
+  }
+
+  /**
+   * Query the terminal's physical cursor position. Coordinates are zero-based.
+   * Returns `null` when the terminal does not respond before the timeout.
+   *
+   * Input must already be attached with `startInput()`. Cursor-position
+   * responses that arrive after a timeout are still consumed instead of being
+   * emitted as keyboard input.
+   */
+  queryCursorPosition(
+    timeoutMs: number = DEFAULT_CURSOR_POSITION_TIMEOUT_MS,
+  ): Promise<CursorPosition | null> {
+    if (!Number.isFinite(timeoutMs) || timeoutMs < 0) {
+      throw new RangeError('Cursor position timeout must be non-negative')
+    }
+
+    return new Promise((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout> | undefined
+      const waiter = (position: CursorPosition) => {
+        if (timer) clearTimeout(timer)
+        resolve(position)
+      }
+      this.cursorPositionWaiters.push(waiter)
+
+      timer = setTimeout(() => {
+        const index = this.cursorPositionWaiters.indexOf(waiter)
+        if (index !== -1) this.cursorPositionWaiters.splice(index, 1)
+        resolve(null)
+      }, timeoutMs)
+
+      try {
+        // Queries must not wait for a buffered render to be flushed.
+        this.output.write(CURSOR_POSITION_QUERY)
+      } catch (error) {
+        clearTimeout(timer)
+        const index = this.cursorPositionWaiters.indexOf(waiter)
+        if (index !== -1) this.cursorPositionWaiters.splice(index, 1)
+        reject(error)
+      }
+    })
   }
 
   /**
@@ -393,4 +539,69 @@ export class Terminal {
   style(): StyleBuilder {
     return new StyleBuilder()
   }
+}
+
+const CURSOR_POSITION_QUERY = `${ansi.CSI}6n`
+const CURSOR_POSITION_RESPONSE_PREFIX = Buffer.from(ansi.CSI)
+const DEFAULT_CURSOR_POSITION_TIMEOUT_MS = 100
+const ZERO = '0'.charCodeAt(0)
+const NINE = '9'.charCodeAt(0)
+const SEMICOLON = ';'.charCodeAt(0)
+const RESPONSE_END = 'R'.charCodeAt(0)
+
+function matchCursorPositionResponse(
+  candidate: Buffer,
+): ReturnType<TerminalResponseMatcher<CursorPosition>> {
+  const prefixLength = Math.min(
+    candidate.length,
+    CURSOR_POSITION_RESPONSE_PREFIX.length,
+  )
+  for (let index = 0; index < prefixLength; index++) {
+    if (candidate[index] !== CURSOR_POSITION_RESPONSE_PREFIX[index]) {
+      return {status: 'none'}
+    }
+  }
+  if (candidate.length < CURSOR_POSITION_RESPONSE_PREFIX.length) {
+    return {status: 'partial'}
+  }
+
+  let index = CURSOR_POSITION_RESPONSE_PREFIX.length
+  const rowStart = index
+  while (index < candidate.length && isDigit(candidate[index])) index++
+  if (index === rowStart) {
+    return index === candidate.length ? {status: 'partial'} : {status: 'none'}
+  }
+  if (index === candidate.length) return {status: 'partial'}
+  if (candidate[index] !== SEMICOLON) return {status: 'none'}
+
+  const rowEnd = index
+  index++
+  const columnStart = index
+  while (index < candidate.length && isDigit(candidate[index])) index++
+  if (index === columnStart) {
+    return index === candidate.length ? {status: 'partial'} : {status: 'none'}
+  }
+  if (index === candidate.length) return {status: 'partial'}
+  if (candidate[index] !== RESPONSE_END) return {status: 'none'}
+
+  const row = Number(candidate.toString('ascii', rowStart, rowEnd))
+  const column = Number(candidate.toString('ascii', columnStart, index))
+  if (
+    !Number.isSafeInteger(row) ||
+    row <= 0 ||
+    !Number.isSafeInteger(column) ||
+    column <= 0
+  ) {
+    return {status: 'none'}
+  }
+
+  return {
+    status: 'match',
+    length: index + 1,
+    value: {x: column - 1, y: row - 1},
+  }
+}
+
+function isDigit(byte: number): boolean {
+  return byte >= ZERO && byte <= NINE
 }

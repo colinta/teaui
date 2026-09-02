@@ -7,6 +7,11 @@ import type {
   PasteEvent,
   FocusEvent,
 } from './types.js'
+import {
+  TerminalResponseRouter,
+  type TerminalResponseMatcher,
+  type TerminalResponseRouteOptions,
+} from './response.js'
 
 const ESC = 0x1b
 
@@ -378,16 +383,19 @@ export class InputReader {
   private listeners: Array<(event: InputEvent) => void> = []
   private dataHandler: ((data: Buffer) => void) | null = null
   private stream: NodeJS.ReadableStream | null = null
+  private responseRouter = new TerminalResponseRouter(data => {
+    const events = parseInput(data)
+    for (const event of events) {
+      for (const listener of this.listeners) {
+        listener(event)
+      }
+    }
+  })
 
   attach(stream: NodeJS.ReadableStream): void {
     this.stream = stream
     this.dataHandler = (data: Buffer) => {
-      const events = parseInput(data)
-      for (const event of events) {
-        for (const listener of this.listeners) {
-          listener(event)
-        }
-      }
+      this.responseRouter.push(data)
     }
     stream.on('data', this.dataHandler)
   }
@@ -395,6 +403,7 @@ export class InputReader {
   detach(): void {
     if (this.stream && this.dataHandler) {
       this.stream.removeListener('data', this.dataHandler)
+      this.responseRouter.flush()
       this.dataHandler = null
       this.stream = null
     }
@@ -406,5 +415,13 @@ export class InputReader {
       const idx = this.listeners.indexOf(cb)
       if (idx !== -1) this.listeners.splice(idx, 1)
     }
+  }
+
+  onResponse<T>(
+    matcher: TerminalResponseMatcher<T>,
+    listener: (value: T, raw: Buffer) => void,
+    options?: TerminalResponseRouteOptions,
+  ): () => void {
+    return this.responseRouter.onResponse(matcher, listener, options)
   }
 }

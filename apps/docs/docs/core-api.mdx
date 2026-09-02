@@ -57,6 +57,57 @@ import {Screen, Text} from '@teaui/core'
 Screen.start(new Text({text: 'Hello!'}))
 ```
 
+#### Fullscreen and inline display
+
+Fullscreen display remains the default. It uses the alternate terminal buffer and
+restores the normal buffer when the screen stops.
+
+For an interactive view that occupies a fixed-height region in normal terminal
+scrollback, pass an inline display:
+
+```js
+const [screen] = await Screen.start(new Text({text: 'Interactive output'}), {
+  display: {
+    mode: 'inline',
+    height: 9,
+    clearOnExit: true,
+  },
+})
+```
+
+`height` must be a positive integer. TeaUI uses the full terminal width and
+clamps the effective height when the terminal is shorter, restoring the
+configured height when it grows again. Views always receive local coordinates
+starting at `(0, 0)`.
+
+`clearOnExit` defaults to `true`, which erases only the reserved inline rows and
+places the cursor at the start of that region. Set it to `false` to preserve the
+last frame and place the shell below it.
+
+Inline display does not mean cooked input: TeaUI still uses raw input and enables
+keyboard, paste, focus, and supported mouse protocols while the screen is
+active. It does not enter the alternate buffer. If the terminal does not answer
+a standard cursor-position query, keyboard and paste input continue to work,
+but mouse input is disabled because TeaUI cannot safely translate its physical
+row.
+
+TeaUI restores terminal state for normal `stop()`/`exit()` calls and startup
+failures. Applications that install handlers for external process signals such
+as `SIGTERM` remain responsible for calling `screen.stop()` from those handlers.
+Calling `stop()` repeatedly is safe.
+
+Run the interactive acceptance demo from the repository root:
+
+```sh
+pnpm demo inline-list
+pnpm demo inline-list -- --preserve
+pnpm demo inline-list -- --repeat-stop
+```
+
+The demo header reports configured→effective rows and current columns. Resize
+the terminal below and above nine rows, then exercise keyboard input, paste,
+clicking, dragging, and wheel scrolling before exiting.
+
 ### Updating Views
 
 Call `view.update(newProps)` to change a view's properties. This triggers a re-render.

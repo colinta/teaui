@@ -5,7 +5,16 @@
     "correctness": "error"
   },
   "rules": {
-    "no-control-regex": "off"
+    "no-control-regex": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
+      }
+    ]
   },
   "env": {
     "builtin": true

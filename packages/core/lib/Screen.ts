@@ -1,10 +1,13 @@
 import {
+  type ApplicationTerminal,
+  FullscreenTerminal,
+  InlineTerminal,
   Terminal as TermTerminal,
-  cursorTo,
   isKeyEvent,
   isMouseEvent,
   isPasteEvent,
   isFocusEvent,
+  type InlineRegion,
   type InputEvent as TermInputEvent,
 } from '@teaui/term'
 
@@ -40,10 +43,25 @@ import {UnboundSystem} from './System.js'
  * Translates low-level terminal input into SystemEvents that Screen can consume.
  */
 export class TerminalProgram implements Program {
-  #terminal: TermTerminal
+  #terminal: ApplicationTerminal
+  readonly display: ResolvedScreenDisplay
 
-  constructor() {
-    this.#terminal = new TermTerminal()
+  constructor(display: ScreenDisplay = {mode: 'fullscreen'}) {
+    if (display.mode === 'inline') {
+      const terminal = new InlineTerminal({
+        height: display.height,
+        clearOnExit: display.clearOnExit,
+      })
+      this.#terminal = terminal
+      this.display = {
+        mode: 'inline',
+        region: terminal.region,
+        clearOnExit: terminal.clearOnExit,
+      }
+    } else {
+      this.#terminal = new FullscreenTerminal()
+      this.display = {mode: 'fullscreen'}
+    }
     this.#terminal.enableWriteBuffer()
   }
 
@@ -62,7 +80,7 @@ export class TerminalProgram implements Program {
   }
 
   move(x: number, y: number): void {
-    this.#terminal.write(cursorTo(x, y))
+    this.#terminal.moveTo(x, y)
   }
 
   write(str: string): void {
@@ -75,18 +93,12 @@ export class TerminalProgram implements Program {
 
   // --- Lifecycle ---
 
-  setup(): void {
-    this.#terminal.enterFullscreen({
-      mouse: true,
-      hideCursor: true,
-      focusEvents: true,
-    })
-    this.#terminal.clear()
+  setup(): void | Promise<void> {
+    return this.#terminal.setup()
   }
 
   teardown(): void {
-    this.#terminal.clear()
-    this.#terminal.exitFullscreen()
+    this.#terminal.teardown()
   }
 
   // --- Events ---
@@ -153,9 +165,25 @@ export type ProgramViewConstructor<T extends View> = (
 
 type ScreenKeyListener = (char: string, key: KeyEvent) => void
 
+export type ScreenDisplay =
+  | {mode: 'fullscreen'}
+  | {
+      mode: 'inline'
+      height: number
+      clearOnExit?: boolean
+    }
+
+export type {InlineRegion}
+
+export type ResolvedScreenDisplay =
+  | {mode: 'fullscreen'}
+  | {mode: 'inline'; region: InlineRegion; clearOnExit: boolean}
+
 export interface ScreenOptions {
   quitChar?: 'C-c' | 'C-q' | '' | undefined | false
   emoji?: boolean
+  /** Defaults to fullscreen. Inline displays clear their reserved rows on exit by default. */
+  display?: ScreenDisplay
 }
 
 export type ScreenEventUnsubscribe = () => void
@@ -171,6 +199,8 @@ export class Screen {
   #cleanupEvents?: () => void
   #cleanupResize?: () => void
   #isFocused: boolean
+  #isRunning = false
+  #didStop = false
 
   rootView: View
 
@@ -210,32 +240,42 @@ export class Screen {
       ...opts,
     }
 
-    const program = new TerminalProgram()
-    program.setup()
+    const program = new TerminalProgram(opts.display)
 
-    const rootView =
-      viewConstructor instanceof View
-        ? viewConstructor
-        : await viewConstructor(program)
+    try {
+      await program.setup()
 
-    if (opts.emoji !== undefined) {
-      rootView.purpose = rootView.purpose.merge({emoji: opts.emoji})
-    }
+      const rootView =
+        viewConstructor instanceof View
+          ? viewConstructor
+          : await viewConstructor(program)
 
-    const screen = new Screen(program, rootView)
-    screen.onExit(() => {
-      program.teardown()
-    })
+      if (opts.emoji !== undefined) {
+        rootView.purpose = rootView.purpose.merge({emoji: opts.emoji})
+      }
 
-    if (opts.quitChar) {
-      screen.key(opts.quitChar, () => {
-        screen.exit()
+      const screen = new Screen(program, rootView)
+      screen.onExit(() => {
+        program.teardown()
       })
+
+      if (opts.quitChar) {
+        screen.key(opts.quitChar, () => {
+          screen.exit()
+        })
+      }
+
+      screen.start()
+
+      return [screen, program, rootView]
+    } catch (error) {
+      try {
+        program.teardown()
+      } catch {
+        // Preserve the startup error after making a best effort to restore the terminal.
+      }
+      throw error
     }
-
-    screen.start()
-
-    return [screen, program, rootView]
   }
 
   constructor(
@@ -278,6 +318,7 @@ export class Screen {
    * copy of the implementation of Screen.start.
    */
   start() {
+    this.#isRunning = true
     this.rootView.moveToScreen(this)
 
     this.#cleanupEvents = this.#program.onEvents(event => {
@@ -285,6 +326,7 @@ export class Screen {
         for (const {pattern, fn} of this.#keyListeners) {
           if (matchKeyPattern(pattern, event)) {
             fn(event.char, event)
+            if (!this.#isRunning) return
           }
         }
       }
@@ -293,6 +335,9 @@ export class Screen {
     })
 
     this.#cleanupResize = this.#program.onResize(() => {
+      // A resize can move an inline region without changing its logical size.
+      // Always discard the physical-frame diff so every logical cell repaints.
+      this.#buffer.invalidate()
       this.trigger({type: 'resize'})
     })
 
@@ -303,6 +348,9 @@ export class Screen {
    * Puts the screen back in normal terminal mode, restores the normal buffer
    */
   stop() {
+    if (this.#didStop) return
+    this.#didStop = true
+    this.#isRunning = false
     this.#tickManager.stop()
     this.rootView.moveToScreen(undefined)
     this.#cleanupEvents?.()
@@ -318,9 +366,15 @@ export class Screen {
    */
   exit() {
     this.stop()
-    setTimeout(() => {
-      process.exit(0)
-    }, 0)
+
+    const exitProcess = () => process.exit(0)
+    if (process.stdout.writable && !process.stdout.writableEnded) {
+      // Teardown may have queued cursor movement and erase sequences. Wait for
+      // stdout to process them before forcing the process to exit.
+      process.stdout.write('', exitProcess)
+    } else {
+      setTimeout(exitProcess, 0)
+    }
   }
 
   trigger(event: SystemEvent) {

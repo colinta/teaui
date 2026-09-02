@@ -44,10 +44,10 @@ export interface LegendItem {
  */
 export interface Program extends SGRTerminal {
   /**
-   * Prepare the terminal for fullscreen app mode (e.g. enter alt buffer,
+   * Prepare the terminal for application mode (e.g. configure the display,
    * enable mouse, hide cursor). Called once before the first render.
    */
-  setup(): void
+  setup(): void | Promise<void>
 
   /**
    * Restore the terminal to its original state (e.g. exit alt buffer,
