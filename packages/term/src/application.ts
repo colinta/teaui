@@ -11,12 +11,12 @@ export interface InlineRegion {
   originKnown: boolean
   /** Height currently available for layout and rendering. */
   height: number
-  /** Configured height, restored when the terminal has enough rows. */
+  /** Configured or dynamically resolved height before terminal-row clamping. */
   configuredHeight: number
 }
 
 export interface InlineTerminalOptions extends TerminalOptions {
-  height: number
+  height: number | ((available: ScreenSize) => number)
   clearOnExit?: boolean
 }
 
@@ -68,6 +68,7 @@ export class InlineTerminal extends ApplicationTerminal {
   readonly region: InlineRegion
   readonly clearOnExit: boolean
 
+  #height: number | ((available: ScreenSize) => number)
   #isActive = false
   #isReserved = false
   #isReserving = false
@@ -80,17 +81,18 @@ export class InlineTerminal extends ApplicationTerminal {
   #session = 0
 
   constructor({height, clearOnExit, ...options}: InlineTerminalOptions) {
-    if (!Number.isInteger(height) || height <= 0) {
-      throw new RangeError('Inline display height must be a positive integer')
-    }
+    if (typeof height === 'number') validateInlineHeight(height)
 
     super(options)
+    this.#height = height
     this.#lastSize = this.size
+    const configuredHeight =
+      typeof height === 'number' ? height : this.size.rows
     this.region = {
       originY: 0,
       originKnown: false,
-      height: Math.min(height, this.size.rows),
-      configuredHeight: height,
+      height: Math.min(configuredHeight, this.size.rows),
+      configuredHeight,
     }
     this.clearOnExit = clearOnExit ?? true
   }
@@ -164,6 +166,7 @@ export class InlineTerminal extends ApplicationTerminal {
 
     try {
       this.startInput()
+      this.#updateConfiguredHeight(this.size)
       const origin = await this.#reserveConfiguredRows(session)
       if (!this.#isCurrentSession(session)) return
 
@@ -234,12 +237,20 @@ export class InlineTerminal extends ApplicationTerminal {
         const session = this.#session
 
         try {
+          const previousHeight = this.region.configuredHeight
+          const previousRegionHeight = this.region.height
+          this.#updateConfiguredHeight(size)
+          const heightChanged = this.region.configuredHeight !== previousHeight
           const origin =
-            size.rows === previousSize.rows
+            size.rows === previousSize.rows && !heightChanged
               ? await this.queryCursorPosition()
               : await this.#reserveConfiguredRows(session)
           if (!this.#isCurrentSession(session)) return
           this.#setRegion(origin)
+          if (this.region.height < previousRegionHeight) {
+            this.moveTo(0, 0)
+            this.clearRows(Math.min(previousRegionHeight, size.rows))
+          }
           this.#setMouseEnabled(this.region.originKnown)
           this.flushWrites()
         } catch {
@@ -294,6 +305,17 @@ export class InlineTerminal extends ApplicationTerminal {
     return this.#isActive && session === this.#session
   }
 
+  #resolveHeight(size: ScreenSize): number {
+    const height =
+      typeof this.#height === 'function' ? this.#height(size) : this.#height
+    validateInlineHeight(height)
+    return height
+  }
+
+  #updateConfiguredHeight(size: ScreenSize): void {
+    this.region.configuredHeight = this.#resolveHeight(size)
+  }
+
   #setRegion(origin: {y: number} | null): void {
     this.region.height = Math.min(this.region.configuredHeight, this.size.rows)
     if (origin) {
@@ -312,6 +334,12 @@ export class InlineTerminal extends ApplicationTerminal {
     this.exitApplication()
     this.enterApplication({mouse: enabled, hideCursor: true, focusEvents: true})
     this.#mouseEnabled = enabled
+  }
+}
+
+function validateInlineHeight(height: number): void {
+  if (!Number.isInteger(height) || height <= 0) {
+    throw new RangeError('Inline display height must be a positive integer')
   }
 }
 

@@ -44,12 +44,19 @@ import {UnboundSystem} from './System.js'
  */
 export class TerminalProgram implements Program {
   #terminal: ApplicationTerminal
+  #naturalHeightView?: View
+  #usesNaturalHeight = false
   readonly display: ResolvedScreenDisplay
 
   constructor(display: ScreenDisplay = {mode: 'fullscreen'}) {
     if (display.mode === 'inline') {
+      const height = display.height
+      this.#usesNaturalHeight = height === 'natural'
       const terminal = new InlineTerminal({
-        height: display.height,
+        height:
+          height === 'natural'
+            ? ({columns, rows}) => this.#naturalHeight(columns, rows)
+            : height,
         clearOnExit: display.clearOnExit,
       })
       this.#terminal = terminal
@@ -94,6 +101,14 @@ export class TerminalProgram implements Program {
   // --- Lifecycle ---
 
   setup(): void | Promise<void> {
+    if (this.#usesNaturalHeight) return
+    return this.#terminal.setup()
+  }
+
+  /** Complete deferred inline setup once the root view is available to measure. */
+  setupRootView(rootView: View): void | Promise<void> {
+    if (!this.#usesNaturalHeight) return
+    this.#naturalHeightView = rootView
     return this.#terminal.setup()
   }
 
@@ -148,6 +163,13 @@ export class TerminalProgram implements Program {
   onceRawData(fn: (...args: any[]) => void): void {
     this.#terminal.onceRawData(fn)
   }
+
+  #naturalHeight(columns: number, rows: number): number {
+    const height =
+      this.#naturalHeightView?.naturalSize(new Size(columns, rows)).height ??
+      rows
+    return Math.max(1, Math.min(rows, Math.ceil(height)))
+  }
 }
 
 // --- ViewConstructor type ---
@@ -169,7 +191,8 @@ export type ScreenDisplay =
   | {mode: 'fullscreen'}
   | {
       mode: 'inline'
-      height: number
+      /** `'natural'` sizes the region to the root view's natural height. */
+      height: number | 'natural'
       clearOnExit?: boolean
     }
 
@@ -253,6 +276,8 @@ export class Screen {
       if (opts.emoji !== undefined) {
         rootView.purpose = rootView.purpose.merge({emoji: opts.emoji})
       }
+
+      await program.setupRootView(rootView)
 
       const screen = new Screen(program, rootView)
       screen.onExit(() => {

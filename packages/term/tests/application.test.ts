@@ -133,6 +133,59 @@ describe('application terminals', () => {
     unsubscribe()
   })
 
+  it('recomputes a dynamic height when the terminal is resized', async () => {
+    const output = makeOutput()
+    const height = vi.fn(({columns}: {columns: number}) =>
+      columns >= 80 ? 3 : 6,
+    )
+    const terminal = new InlineTerminal({
+      stdout: output.stream as NodeJS.WriteStream,
+      stdin: makeInput(),
+      height,
+    })
+    vi.spyOn(terminal, 'startInput').mockReturnValue(terminal)
+    const reserveRows = vi
+      .spyOn(terminal, 'reserveRows')
+      .mockResolvedValueOnce({x: 0, y: 12})
+      .mockResolvedValueOnce({x: 0, y: 8})
+      .mockResolvedValueOnce({x: 0, y: 10})
+    const clearRows = vi.spyOn(terminal, 'clearRows').mockReturnValue(terminal)
+    vi.spyOn(terminal, 'enterApplication').mockReturnValue(terminal)
+    vi.spyOn(terminal, 'flushWrites').mockReturnValue(terminal)
+
+    await terminal.setup()
+    expect(terminal.rows).toBe(3)
+    expect(reserveRows).toHaveBeenLastCalledWith(
+      3,
+      undefined,
+      expect.any(Function),
+    )
+
+    const onResize = vi.fn()
+    const unsubscribe = terminal.onResize(onResize)
+    output.stream.columns = 40
+    process.stdout.emit('resize')
+    await vi.waitFor(() => expect(onResize).toHaveBeenCalledOnce())
+
+    expect(height).toHaveBeenLastCalledWith({columns: 40, rows: 24})
+    expect(terminal.rows).toBe(6)
+    expect(reserveRows).toHaveBeenLastCalledWith(
+      6,
+      undefined,
+      expect.any(Function),
+    )
+    expect(clearRows).not.toHaveBeenCalled()
+
+    output.stream.columns = 80
+    process.stdout.emit('resize')
+    await vi.waitFor(() => expect(onResize).toHaveBeenCalledTimes(2))
+
+    expect(terminal.rows).toBe(3)
+    expect(clearRows).toHaveBeenCalledWith(6)
+
+    unsubscribe()
+  })
+
   it('refreshes the origin without reserving rows on width-only resize', async () => {
     const output = makeOutput()
     const terminal = new InlineTerminal({

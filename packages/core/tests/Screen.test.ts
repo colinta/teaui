@@ -149,6 +149,74 @@ describe('TerminalProgram display options', () => {
     })
   })
 
+  test("uses the root view natural height when inline height is 'natural'", async () => {
+    const program = new TerminalProgram({mode: 'inline', height: 'natural'})
+    const reserveRows = vi
+      .spyOn(program.terminal, 'reserveRows')
+      .mockResolvedValue({x: 0, y: 12})
+    vi.spyOn(program.terminal, 'startInput').mockReturnValue(program.terminal)
+    vi.spyOn(program.terminal, 'enterApplication').mockReturnValue(
+      program.terminal,
+    )
+    vi.spyOn(program.terminal, 'flushWrites').mockReturnValue(program.terminal)
+
+    await program.setup()
+    expect(reserveRows).not.toHaveBeenCalled()
+
+    await program.setupRootView(new Text({text: 'first\nsecond'}))
+
+    expect(program.display).toEqual({
+      mode: 'inline',
+      region: {
+        originY: 12,
+        originKnown: true,
+        height: 2,
+        configuredHeight: 2,
+      },
+      clearOnExit: true,
+    })
+    expect(reserveRows).toHaveBeenCalledWith(2, undefined, expect.any(Function))
+
+    vi.spyOn(program.terminal, 'exitApplication').mockReturnValue(
+      program.terminal,
+    )
+    vi.spyOn(program.terminal, 'clearRows').mockReturnValue(program.terminal)
+    vi.spyOn(program.terminal, 'stopInput').mockReturnValue(program.terminal)
+    program.teardown()
+  })
+
+  test('clamps a natural inline height to the physical terminal', async () => {
+    const program = new TerminalProgram({mode: 'inline', height: 'natural'})
+    vi.spyOn(program.terminal, 'reserveRows').mockResolvedValue({x: 0, y: 0})
+    vi.spyOn(program.terminal, 'startInput').mockReturnValue(program.terminal)
+    vi.spyOn(program.terminal, 'enterApplication').mockReturnValue(
+      program.terminal,
+    )
+    vi.spyOn(program.terminal, 'flushWrites').mockReturnValue(program.terminal)
+    const lines = Array.from(
+      {length: program.terminal.size.rows + 10},
+      (_, index) => `line ${index}`,
+    ).join('\n')
+
+    await program.setupRootView(new Text({text: lines}))
+
+    expect(program.rows).toBe(program.terminal.size.rows)
+    expect(program.display).toEqual(
+      expect.objectContaining({
+        region: expect.objectContaining({
+          configuredHeight: program.terminal.size.rows,
+        }),
+      }),
+    )
+
+    vi.spyOn(program.terminal, 'exitApplication').mockReturnValue(
+      program.terminal,
+    )
+    vi.spyOn(program.terminal, 'clearRows').mockReturnValue(program.terminal)
+    vi.spyOn(program.terminal, 'stopInput').mockReturnValue(program.terminal)
+    program.teardown()
+  })
+
   test('allows preserving an inline display on exit', () => {
     const program = new TerminalProgram({
       mode: 'inline',

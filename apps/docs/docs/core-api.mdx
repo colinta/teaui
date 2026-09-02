@@ -59,11 +59,11 @@ Screen.start(new Text({text: 'Hello!'}))
 
 #### Fullscreen and inline display
 
-Fullscreen display remains the default. It uses the alternate terminal buffer and
+Fullscreen display is the default presentation mode. It uses the alternate terminal buffer and
 restores the normal buffer when the screen stops.
 
 For an interactive view that occupies a fixed-height region in normal terminal
-scrollback, pass an inline display:
+scrollback, you can use an `inline` mode:
 
 ```js
 const [screen] = await Screen.start(new Text({text: 'Interactive output'}), {
@@ -75,42 +75,38 @@ const [screen] = await Screen.start(new Text({text: 'Interactive output'}), {
 })
 ```
 
-`height` must be a positive integer. TeaUI uses the full terminal width and
-clamps the effective height when the terminal is shorter, restoring the
-configured height when it grows again. Views always receive local coordinates
-starting at `(0, 0)`.
+`height` can be a positive integer or `'natural'`. With `'natural'`, TeaUI uses
+the root view's `naturalSize().height`, with one row as the minimum and the
+terminal's physical height as the maximum.
 
-`clearOnExit` defaults to `true`, which erases only the reserved inline rows and
+```js
+await Screen.start(new Text({text: 'Fits\nits content'}), {
+  display: {mode: 'inline', height: 'natural'},
+})
+```
+
+Natural height is recalculated when the terminal is resized, so wrapped content
+can grow or shrink with the available width.
+
+`clearOnExit` defaults to `true`, which erases the reserved inline rows and
 places the cursor at the start of that region. Set it to `false` to preserve the
 last frame and place the shell below it.
 
-Inline display does not mean cooked input: TeaUI still uses raw input and enables
-keyboard, paste, focus, and supported mouse protocols while the screen is
-active. It does not enter the alternate buffer. If the terminal does not answer
-a standard cursor-position query, keyboard and paste input continue to work,
-but mouse input is disabled because TeaUI cannot safely translate its physical
-row.
+Inline display supports keyboard, paste, focus, and supported mouse protocols
+while the screen is active. It does not enter the alternate buffer. If the
+terminal does not answer a standard cursor-position query, keyboard and paste
+input continue to work, but mouse input is disabled because TeaUI cannot safely
+translate its physical row.
 
-TeaUI restores terminal state for normal `stop()`/`exit()` calls and startup
-failures. Applications that install handlers for external process signals such
-as `SIGTERM` remain responsible for calling `screen.stop()` from those handlers.
-Calling `stop()` repeatedly is safe.
-
-Run the interactive acceptance demo from the repository root:
-
-```sh
-pnpm demo inline-list
-pnpm demo inline-list -- --preserve
-pnpm demo inline-list -- --repeat-stop
-```
-
-The demo header reports configured→effective rows and current columns. Resize
-the terminal below and above nine rows, then exercise keyboard input, paste,
-clicking, dragging, and wheel scrolling before exiting.
+TeaUI restores terminal state. Applications that install handlers for external
+process signals such as `SIGTERM` remain responsible for calling `screen.stop()`
+from those handlers. Calling `stop()` repeatedly is safe.
 
 ### Updating Views
 
-Call `view.update(newProps)` to change a view's properties. This triggers a re-render.
+Call `view.update(newProps)` to change a view's properties. This triggers a
+re-render. Components use `this.invalidateRender()` and `this.invalidateSize()`
+to inform the runtime that a redraw/reflow is needed.
 
 ```js
 const text = new Text({text: 'Hello'})
@@ -130,7 +126,7 @@ Mouse events are automatic for views that render in the viewport.
 
 ## When to Use Core API
 
-- **Simple scripts** — quick terminal UIs without React
+- **Object oriented code** — some people like OOP, I dunno
 - **Extending TeaUI** — building custom views
 - **Understanding internals** — the React API maps directly to these views
 
