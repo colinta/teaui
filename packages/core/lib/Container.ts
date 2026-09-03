@@ -47,9 +47,10 @@ export abstract class Container extends View {
 
     if (children.length) {
       const childrenSet = new Set(children)
-      for (const child of this.#children) {
+      for (let index = this.#children.length - 1; index >= 0; index--) {
+        const child = this.#children[index]
         if (!childrenSet.has(child)) {
-          this.#removeChild(child)
+          this.removeChild(child)
         }
       }
 
@@ -106,9 +107,11 @@ export abstract class Container extends View {
       child.willMoveTo(this)
 
       if (child.parent && child.parent instanceof Container) {
-        const index = child.parent.#children.indexOf(child)
+        const previousParent = child.parent
+        const index = previousParent.#children.indexOf(child)
         if (~index) {
-          child.parent.#children.splice(index, 1)
+          previousParent.#children.splice(index, 1)
+          previousParent.invalidateSize()
         }
       }
     }
@@ -139,8 +142,8 @@ export abstract class Container extends View {
   }
 
   removeAllChildren() {
-    for (const child of this.#children) {
-      this.removeChild(child)
+    while (this.#children.length) {
+      this.removeChild(this.#children[this.#children.length - 1])
     }
   }
 
@@ -155,6 +158,7 @@ export abstract class Container extends View {
       this.#children.splice(index, 1)
 
       this.#removeChild(child)
+      this.invalidateSize()
     }
   }
 

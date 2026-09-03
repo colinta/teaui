@@ -23,6 +23,14 @@ export interface InlineTerminalOptions extends TerminalOptions {
 export abstract class ApplicationTerminal extends Terminal {
   abstract setup(): void | Promise<void>
   abstract teardown(): void
+
+  get isUpdatingRegion(): boolean {
+    return false
+  }
+
+  refreshHeight(): Promise<boolean> {
+    return Promise.resolve(false)
+  }
 }
 
 export class FullscreenTerminal extends ApplicationTerminal {
@@ -77,11 +85,14 @@ export class InlineTerminal extends ApplicationTerminal {
   #resizeRunning = false
   #pendingSize?: ScreenSize
   #lastSize: ScreenSize
-  #reservationQueue = Promise.resolve()
+  #regionUpdateQueue = Promise.resolve()
+  #regionUpdateRunning = false
   #session = 0
 
   constructor({height, clearOnExit, ...options}: InlineTerminalOptions) {
-    if (typeof height === 'number') validateInlineHeight(height)
+    if (typeof height === 'number') {
+      validateInlineHeight(height)
+    }
 
     super(options)
     this.#height = height
@@ -99,6 +110,10 @@ export class InlineTerminal extends ApplicationTerminal {
 
   override get rows(): number {
     return this.region.height
+  }
+
+  override get isUpdatingRegion(): boolean {
+    return this.#regionUpdateRunning
   }
 
   override moveTo(x: number, y: number): this {
@@ -166,21 +181,24 @@ export class InlineTerminal extends ApplicationTerminal {
 
     try {
       this.startInput()
-      this.#updateConfiguredHeight(this.size)
-      const origin = await this.#reserveConfiguredRows(session)
-      if (!this.#isCurrentSession(session)) return
+      await this.#queueRegionUpdate(async () => {
+        if (!this.#isCurrentSession(session)) return
+        this.#updateConfiguredHeight(this.size)
+        const origin = await this.#reserveConfiguredRows(session)
+        if (!this.#isCurrentSession(session)) return
 
-      this.#isReserved = true
-      this.#setRegion(origin)
-      this.#lastSize = this.size
+        this.#isReserved = true
+        this.#setRegion(origin)
+        this.#lastSize = this.size
 
-      this.#mouseEnabled = this.region.originKnown
-      this.enterApplication({
-        mouse: this.#mouseEnabled,
-        hideCursor: true,
-        focusEvents: true,
+        this.#mouseEnabled = this.region.originKnown
+        this.enterApplication({
+          mouse: this.#mouseEnabled,
+          hideCursor: true,
+          focusEvents: true,
+        })
+        this.flushWrites()
       })
-      this.flushWrites()
     } catch (error) {
       if (this.#isCurrentSession(session)) {
         try {
@@ -191,6 +209,35 @@ export class InlineTerminal extends ApplicationTerminal {
       }
       throw error
     }
+  }
+
+  /** Re-resolve a dynamic height and update the reserved region if it changed. */
+  override refreshHeight(): Promise<boolean> {
+    if (!this.#isActive) return Promise.resolve(false)
+    const session = this.#session
+
+    return this.#queueRegionUpdate(async () => {
+      if (!this.#isCurrentSession(session)) return false
+      const size = this.size
+      const previousHeight = this.region.configuredHeight
+      const previousRegionHeight = this.region.height
+      this.#updateConfiguredHeight(size)
+      if (this.region.configuredHeight === previousHeight) return false
+
+      try {
+        const origin = await this.#reserveConfiguredRows(session)
+        if (!this.#isCurrentSession(session)) return false
+        this.#setRegion(origin)
+        this.#clearShrunkRegion(previousRegionHeight, size.rows)
+        this.#setMouseEnabled(this.region.originKnown)
+        this.flushWrites()
+      } catch {
+        if (!this.#isCurrentSession(session)) return false
+        this.#recoverRegionUpdate()
+      }
+
+      return this.region.height !== previousRegionHeight
+    })
   }
 
   teardown(): void {
@@ -236,38 +283,28 @@ export class InlineTerminal extends ApplicationTerminal {
         this.#lastSize = size
         const session = this.#session
 
-        try {
-          const previousHeight = this.region.configuredHeight
-          const previousRegionHeight = this.region.height
-          this.#updateConfiguredHeight(size)
-          const heightChanged = this.region.configuredHeight !== previousHeight
-          const origin =
-            size.rows === previousSize.rows && !heightChanged
-              ? await this.queryCursorPosition()
-              : await this.#reserveConfiguredRows(session)
+        await this.#queueRegionUpdate(async () => {
           if (!this.#isCurrentSession(session)) return
-          this.#setRegion(origin)
-          if (this.region.height < previousRegionHeight) {
-            this.moveTo(0, 0)
-            this.clearRows(Math.min(previousRegionHeight, size.rows))
-          }
-          this.#setMouseEnabled(this.region.originKnown)
-          this.flushWrites()
-        } catch {
-          if (!this.#isCurrentSession(session)) return
-          this.region.height = Math.min(
-            this.region.configuredHeight,
-            this.size.rows,
-          )
-          this.region.originKnown = false
           try {
-            this.saveCursor()
-            this.#setMouseEnabled(false)
+            const previousHeight = this.region.configuredHeight
+            const previousRegionHeight = this.region.height
+            this.#updateConfiguredHeight(size)
+            const heightChanged =
+              this.region.configuredHeight !== previousHeight
+            const origin =
+              size.rows === previousSize.rows && !heightChanged
+                ? await this.queryCursorPosition()
+                : await this.#reserveConfiguredRows(session)
+            if (!this.#isCurrentSession(session)) return
+            this.#setRegion(origin)
+            this.#clearShrunkRegion(previousRegionHeight, size.rows)
+            this.#setMouseEnabled(this.region.originKnown)
             this.flushWrites()
           } catch {
-            // The output stream is already failing; retain keyboard cleanup.
+            if (!this.#isCurrentSession(session)) return
+            this.#recoverRegionUpdate()
           }
-        }
+        })
         listener()
       }
     } finally {
@@ -276,17 +313,7 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   async #reserveConfiguredRows(session: number) {
-    const previousReservation = this.#reservationQueue
-    let finishReservation: () => void = () => {}
-    this.#reservationQueue = new Promise(resolve => {
-      finishReservation = resolve
-    })
-
-    await previousReservation
-    if (!this.#isCurrentSession(session)) {
-      finishReservation()
-      return null
-    }
+    if (!this.#isCurrentSession(session)) return null
 
     this.#isReserving = true
     try {
@@ -297,7 +324,23 @@ export class InlineTerminal extends ApplicationTerminal {
       )
     } finally {
       this.#isReserving = false
-      finishReservation()
+    }
+  }
+
+  async #queueRegionUpdate<T>(update: () => Promise<T>): Promise<T> {
+    const previousUpdate = this.#regionUpdateQueue
+    let finishUpdate: () => void = () => {}
+    this.#regionUpdateQueue = new Promise(resolve => {
+      finishUpdate = resolve
+    })
+
+    await previousUpdate
+    this.#regionUpdateRunning = true
+    try {
+      return await update()
+    } finally {
+      this.#regionUpdateRunning = false
+      finishUpdate()
     }
   }
 
@@ -326,6 +369,24 @@ export class InlineTerminal extends ApplicationTerminal {
       // Reservation leaves the cursor at the logical origin. Preserve it as a
       // relative drawing anchor when absolute coordinates are unavailable.
       this.saveCursor()
+    }
+  }
+
+  #clearShrunkRegion(previousHeight: number, terminalRows: number): void {
+    if (this.region.height >= previousHeight) return
+    this.moveTo(0, 0)
+    this.clearRows(Math.min(previousHeight, terminalRows))
+  }
+
+  #recoverRegionUpdate(): void {
+    this.region.height = Math.min(this.region.configuredHeight, this.size.rows)
+    this.region.originKnown = false
+    try {
+      this.saveCursor()
+      this.#setMouseEnabled(false)
+      this.flushWrites()
+    } catch {
+      // The output stream is already failing; retain keyboard cleanup.
     }
   }
 

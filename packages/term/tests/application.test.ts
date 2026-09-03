@@ -186,6 +186,43 @@ describe('application terminals', () => {
     unsubscribe()
   })
 
+  it('refreshes a dynamic height without a terminal resize', async () => {
+    const output = makeOutput()
+    let resolvedHeight = 2
+    const terminal = new InlineTerminal({
+      stdout: output.stream as NodeJS.WriteStream,
+      stdin: makeInput(),
+      height: () => resolvedHeight,
+    })
+    vi.spyOn(terminal, 'startInput').mockReturnValue(terminal)
+    const reserveRows = vi
+      .spyOn(terminal, 'reserveRows')
+      .mockResolvedValue({x: 0, y: 12})
+    const clearRows = vi.spyOn(terminal, 'clearRows').mockReturnValue(terminal)
+    vi.spyOn(terminal, 'enterApplication').mockReturnValue(terminal)
+    vi.spyOn(terminal, 'flushWrites').mockReturnValue(terminal)
+
+    await terminal.setup()
+    reserveRows.mockClear()
+
+    expect(await terminal.refreshHeight()).toBe(false)
+    expect(reserveRows).not.toHaveBeenCalled()
+
+    resolvedHeight = 5
+    expect(await terminal.refreshHeight()).toBe(true)
+    expect(terminal.rows).toBe(5)
+    expect(reserveRows).toHaveBeenLastCalledWith(
+      5,
+      undefined,
+      expect.any(Function),
+    )
+
+    resolvedHeight = 3
+    expect(await terminal.refreshHeight()).toBe(true)
+    expect(terminal.rows).toBe(3)
+    expect(clearRows).toHaveBeenCalledWith(5)
+  })
+
   it('refreshes the origin without reserving rows on width-only resize', async () => {
     const output = makeOutput()
     const terminal = new InlineTerminal({

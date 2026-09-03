@@ -1,4 +1,5 @@
 import {describe, it, expect} from 'vitest'
+import {Size} from '../../lib/geometry.js'
 import {testRender} from '../../lib/TestScreen.js'
 import {Stack} from '../../lib/components/Stack.js'
 import {Text} from '../../lib/components/Text.js'
@@ -19,6 +20,22 @@ describe('Stack', () => {
         {width: 10, height: 3},
       )
       expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('invalidates its natural size when removing a child', () => {
+      const first = new Text({text: 'First'})
+      const second = new Text({text: 'Second'})
+      const third = new Text({text: 'Third'})
+      const stack = Stack.down([first, second, third])
+      const available = new Size(20, 10)
+
+      expect(stack.naturalSize(available).height).toBe(3)
+      stack.removeChild(second)
+      expect(stack.naturalSize(available).height).toBe(2)
+
+      stack.removeAllChildren()
+      expect(stack.children).toEqual([])
+      expect(stack.naturalSize(available).height).toBe(0)
     })
 
     it('renders single child', () => {

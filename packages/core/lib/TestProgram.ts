@@ -45,6 +45,12 @@ export class TestProgram implements Program {
 
   setup(): void {}
   teardown(): void {}
+  async refreshHeight() {
+    return false
+  }
+  get isUpdatingRegion(): boolean {
+    return false
+  }
 
   // --- Events ---
 

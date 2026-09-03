@@ -36,7 +36,23 @@ export interface LegendItem {
   label: string
 }
 
-// --- Program interface: abstract terminal program for Screen ---
+export type ScreenDisplay =
+  | {mode: 'fullscreen'}
+  | {
+      mode: 'inline'
+      /** `'natural'` sizes the region to the root view's natural height. */
+      height: number | 'natural'
+      clearOnExit?: boolean
+    }
+
+export interface ScreenOptions {
+  quitChar?: 'C-c' | 'C-q' | '' | undefined | false
+  emoji?: boolean
+  /** Defaults to fullscreen. Inline displays clear their reserved rows on exit by default. */
+  display?: ScreenDisplay
+}
+
+export type Unsubscribe = () => void
 
 /**
  * The abstract interface that Screen depends on. Any terminal backend
@@ -54,6 +70,16 @@ export interface Program extends SGRTerminal {
    * show cursor). Called when the screen stops.
    */
   teardown(): void
+
+  /**
+   * Returns whether the terminal is currently updating its region (e.g. resizing).
+   */
+  get isUpdatingRegion(): boolean
+
+  /**
+   * Refresh the terminal height. Returns whether the height changed.
+   */
+  refreshHeight(): Promise<boolean>
 
   /**
    * Subscribe to system events (key, mouse, paste, focus/blur).

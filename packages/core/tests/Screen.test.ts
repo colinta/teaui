@@ -1,9 +1,11 @@
 import type {InputEvent as TermInputEvent} from '@teaui/term'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 import type {SystemEvent} from '../lib/events/index.js'
+import {Input} from '../lib/components/Input.js'
 import {Text} from '../lib/components/Text.js'
 import {Window} from '../lib/components/Window.js'
-import {Screen, TerminalProgram} from '../lib/Screen.js'
+import {Screen} from '../lib/Screen.js'
+import {TerminalProgram} from '../lib/TerminalProgram.js'
 import {TestProgram} from '../lib/TestProgram.js'
 
 afterEach(() => {
@@ -181,6 +183,62 @@ describe('TerminalProgram display options', () => {
       program.terminal,
     )
     vi.spyOn(program.terminal, 'clearRows').mockReturnValue(program.terminal)
+    vi.spyOn(program.terminal, 'stopInput').mockReturnValue(program.terminal)
+    program.teardown()
+  })
+
+  test('updates natural inline height when the root size changes', async () => {
+    const program = new TerminalProgram({mode: 'inline', height: 'natural'})
+    let finishReservation: (origin: {x: number; y: number}) => void = () => {}
+    const reserveRows = vi
+      .spyOn(program.terminal, 'reserveRows')
+      .mockResolvedValueOnce({x: 0, y: 12})
+      .mockImplementationOnce(
+        () =>
+          new Promise(resolve => {
+            finishReservation = resolve
+          }),
+      )
+      .mockResolvedValue({x: 0, y: 12})
+    vi.spyOn(program.terminal, 'startInput').mockReturnValue(program.terminal)
+    vi.spyOn(program.terminal, 'enterApplication').mockReturnValue(
+      program.terminal,
+    )
+    vi.spyOn(program.terminal, 'flushWrites').mockReturnValue(program.terminal)
+    const clearRows = vi
+      .spyOn(program.terminal, 'clearRows')
+      .mockReturnValue(program.terminal)
+    const input = new Input({value: 'first', multiline: true})
+
+    await program.setupRootView(input)
+    const screen = new Screen(program, input)
+    screen.start()
+    reserveRows.mockClear()
+    const flush = vi.spyOn(program, 'flush')
+
+    input.value = 'first\nsecond\nthird'
+    await vi.waitFor(() => expect(program.isUpdatingRegion).toBe(true))
+    input.value = 'first\nsecond\nthird\nfourth'
+    screen.render()
+    expect(flush).not.toHaveBeenCalled()
+
+    finishReservation({x: 0, y: 12})
+    await vi.waitFor(() => expect(program.rows).toBe(4))
+    expect(flush).toHaveBeenCalled()
+    expect(reserveRows).toHaveBeenLastCalledWith(
+      4,
+      undefined,
+      expect.any(Function),
+    )
+
+    input.value = 'first'
+    await vi.waitFor(() => expect(program.rows).toBe(1))
+    expect(clearRows).toHaveBeenCalledWith(4)
+
+    screen.stop()
+    vi.spyOn(program.terminal, 'exitApplication').mockReturnValue(
+      program.terminal,
+    )
     vi.spyOn(program.terminal, 'stopInput').mockReturnValue(program.terminal)
     program.teardown()
   })

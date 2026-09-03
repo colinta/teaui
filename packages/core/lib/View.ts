@@ -279,7 +279,11 @@ export abstract class View {
   invalidateSize() {
     this.#prevSizeCache = new Map()
     if (this.#invalidateParent) {
-      this.parent?.invalidateSize()
+      if (this.parent) {
+        this.parent.invalidateSize()
+      } else {
+        this.#screen?.viewNaturalSizeDidChange(this)
+      }
     }
     this.invalidateRender()
   }

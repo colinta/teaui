@@ -1,7 +1,6 @@
 import type {Screen} from '../Screen.js'
-import type {ScreenEventUnsubscribe} from '../Screen.js'
 import type {View} from '../View.js'
-import {type LegendItem} from '../types.js'
+import {type LegendItem, type Unsubscribe} from '../types.js'
 import {
   AbstractLegend,
   type Props as LegendProps,
@@ -21,7 +20,7 @@ interface Props extends LegendProps {}
  * Subscribes to focusChange events on the screen and updates when focus changes.
  */
 export class AutoLegend extends AbstractLegend {
-  #unsubscribe?: ScreenEventUnsubscribe
+  #unsubscribe?: Unsubscribe
   #cachedItems: ComputedItem[] | undefined
 
   constructor(props: Props = {}) {

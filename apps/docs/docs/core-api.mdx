@@ -85,8 +85,8 @@ await Screen.start(new Text({text: 'Fits\nits content'}), {
 })
 ```
 
-Natural height is recalculated when the terminal is resized, so wrapped content
-can grow or shrink with the available width.
+Natural height is recalculated when the root view invalidates its size or the
+terminal is resized, so edited and wrapped content can grow or shrink.
 
 `clearOnExit` defaults to `true`, which erases the reserved inline rows and
 places the cursor at the start of that region. Set it to `false` to preserve the

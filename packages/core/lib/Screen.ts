@@ -1,19 +1,6 @@
-import {
-  type ApplicationTerminal,
-  FullscreenTerminal,
-  InlineTerminal,
-  Terminal as TermTerminal,
-  isKeyEvent,
-  isMouseEvent,
-  isPasteEvent,
-  isFocusEvent,
-  type InlineRegion,
-  type InputEvent as TermInputEvent,
-} from '@teaui/term'
-
 import type {Rect, Point} from './geometry.js'
 import {Size} from './geometry.js'
-import {type Program} from './types.js'
+import {type Program, type ScreenOptions, type Unsubscribe} from './types.js'
 import {View} from './View.js'
 import {Viewport} from './Viewport.js'
 import {Buffer} from './Buffer.js'
@@ -24,10 +11,7 @@ import type {
   SystemEvent,
   SystemMouseEvent,
 } from './events/index.js'
-import {
-  translateTermKeyEvent,
-  translateTermMouseEvent,
-} from './events/translate.js'
+import {TerminalProgram} from './TerminalProgram.js'
 import {FocusManager} from './managers/FocusManager.js'
 import type {Modal} from './components/Modal.js'
 import {ModalManager} from './managers/ModalManager.js'
@@ -35,144 +19,6 @@ import {MouseManager} from './managers/MouseManager.js'
 import {TickManager} from './managers/TickManager.js'
 import {Window} from './components/Window.js'
 import {UnboundSystem} from './System.js'
-
-// --- TerminalProgram: adapter wrapping @teaui/term's Terminal ---
-
-/**
- * Wraps @teaui/term's Terminal for use by Screen and the public API.
- * Translates low-level terminal input into SystemEvents that Screen can consume.
- */
-export class TerminalProgram implements Program {
-  #terminal: ApplicationTerminal
-  #naturalHeightView?: View
-  #usesNaturalHeight = false
-  readonly display: ResolvedScreenDisplay
-
-  constructor(display: ScreenDisplay = {mode: 'fullscreen'}) {
-    if (display.mode === 'inline') {
-      const height = display.height
-      this.#usesNaturalHeight = height === 'natural'
-      const terminal = new InlineTerminal({
-        height:
-          height === 'natural'
-            ? ({columns, rows}) => this.#naturalHeight(columns, rows)
-            : height,
-        clearOnExit: display.clearOnExit,
-      })
-      this.#terminal = terminal
-      this.display = {
-        mode: 'inline',
-        region: terminal.region,
-        clearOnExit: terminal.clearOnExit,
-      }
-    } else {
-      this.#terminal = new FullscreenTerminal()
-      this.display = {mode: 'fullscreen'}
-    }
-    this.#terminal.enableWriteBuffer()
-  }
-
-  get terminal(): TermTerminal {
-    return this.#terminal
-  }
-
-  // --- SGRTerminal interface ---
-
-  get cols(): number {
-    return this.#terminal.cols
-  }
-
-  get rows(): number {
-    return this.#terminal.rows
-  }
-
-  move(x: number, y: number): void {
-    this.#terminal.moveTo(x, y)
-  }
-
-  write(str: string): void {
-    this.#terminal.write(str)
-  }
-
-  flush(): void {
-    this.#terminal.flushWrites()
-  }
-
-  // --- Lifecycle ---
-
-  setup(): void | Promise<void> {
-    if (this.#usesNaturalHeight) return
-    return this.#terminal.setup()
-  }
-
-  /** Complete deferred inline setup once the root view is available to measure. */
-  setupRootView(rootView: View): void | Promise<void> {
-    if (!this.#usesNaturalHeight) return
-    this.#naturalHeightView = rootView
-    return this.#terminal.setup()
-  }
-
-  teardown(): void {
-    this.#terminal.teardown()
-  }
-
-  // --- Events ---
-
-  /**
-   * Subscribe to translated system events from terminal input.
-   * Returns an unsubscribe function.
-   */
-  onEvents(listener: (event: SystemEvent) => void): () => void {
-    return this.#terminal.onInput((event: TermInputEvent) => {
-      if (isFocusEvent(event)) {
-        listener({type: event.focused ? 'focus' : 'blur'})
-        return
-      }
-
-      if (isKeyEvent(event)) {
-        listener(translateTermKeyEvent(event))
-        return
-      }
-
-      if (isPasteEvent(event)) {
-        listener({type: 'paste', text: event.text})
-        return
-      }
-
-      if (isMouseEvent(event)) {
-        const mouseEvent = translateTermMouseEvent(event)
-        if (mouseEvent) {
-          listener(mouseEvent)
-        }
-        return
-      }
-    })
-  }
-
-  /**
-   * Subscribe to terminal resize events.
-   * Returns an unsubscribe function.
-   */
-  onResize(listener: () => void): () => void {
-    return this.#terminal.onResize(() => listener())
-  }
-
-  /**
-   * Listen for raw data once (for iTerm2 proprietary escape sequences, etc.)
-   */
-  onceRawData(fn: (...args: any[]) => void): void {
-    this.#terminal.onceRawData(fn)
-  }
-
-  #naturalHeight(columns: number, rows: number): number {
-    const height =
-      this.#naturalHeightView?.naturalSize(new Size(columns, rows)).height ??
-      rows
-    return Math.max(1, Math.min(rows, Math.ceil(height)))
-  }
-}
-
-// --- ViewConstructor type ---
 
 type ViewConstructor<T extends View> = (
   program: TerminalProgram,
@@ -187,29 +33,7 @@ export type ProgramViewConstructor<T extends View> = (
 
 type ScreenKeyListener = (char: string, key: KeyEvent) => void
 
-export type ScreenDisplay =
-  | {mode: 'fullscreen'}
-  | {
-      mode: 'inline'
-      /** `'natural'` sizes the region to the root view's natural height. */
-      height: number | 'natural'
-      clearOnExit?: boolean
-    }
-
-export type {InlineRegion}
-
-export type ResolvedScreenDisplay =
-  | {mode: 'fullscreen'}
-  | {mode: 'inline'; region: InlineRegion; clearOnExit: boolean}
-
-export interface ScreenOptions {
-  quitChar?: 'C-c' | 'C-q' | '' | undefined | false
-  emoji?: boolean
-  /** Defaults to fullscreen. Inline displays clear their reserved rows on exit by default. */
-  display?: ScreenDisplay
-}
-
-export type ScreenEventUnsubscribe = () => void
+type NaturalSizeRefreshState = 'idle' | 'refreshing' | 'refreshing-dirty'
 
 interface ScreenEventMap {
   focusChange: (view: View | undefined) => void
@@ -224,6 +48,8 @@ export class Screen {
   #isFocused: boolean
   #isRunning = false
   #didStop = false
+  #naturalSizeRefreshState: NaturalSizeRefreshState = 'idle'
+  #renderRequestedDuringRegionUpdate = false
 
   rootView: View
 
@@ -464,7 +290,7 @@ export class Screen {
   on<K extends keyof ScreenEventMap>(
     event: K,
     listener: ScreenEventMap[K],
-  ): ScreenEventUnsubscribe {
+  ): Unsubscribe {
     this.#eventListeners[event].add(listener)
     return () => {
       this.#eventListeners[event].delete(listener)
@@ -556,7 +382,53 @@ export class Screen {
     this.#tickManager.needsRender()
   }
 
+  viewNaturalSizeDidChange(view: View): void {
+    if (view !== this.rootView || !this.#isRunning) return
+    if (this.#naturalSizeRefreshState !== 'idle') {
+      this.#naturalSizeRefreshState = 'refreshing-dirty'
+      return
+    }
+
+    this.#naturalSizeRefreshState = 'refreshing'
+    void this.#refreshNaturalHeight().catch(error => {
+      queueMicrotask(() => {
+        throw error
+      })
+    })
+  }
+
+  async #refreshNaturalHeight(): Promise<void> {
+    try {
+      while (this.#isRunning) {
+        this.#naturalSizeRefreshState = 'refreshing'
+        const didChangeHeight = await this.#program.refreshHeight()
+        if (this.#isRunning) {
+          if (didChangeHeight) {
+            this.#buffer.invalidate()
+            this.render()
+          } else if (this.#renderRequestedDuringRegionUpdate) {
+            this.render()
+          }
+        }
+
+        if (!this.#isNaturalSizeRefreshDirty()) return
+      }
+    } finally {
+      this.#naturalSizeRefreshState = 'idle'
+    }
+  }
+
+  #isNaturalSizeRefreshDirty(): boolean {
+    return this.#naturalSizeRefreshState === 'refreshing-dirty'
+  }
+
   render() {
+    if (this.#program.isUpdatingRegion) {
+      this.#renderRequestedDuringRegionUpdate = true
+      return
+    }
+    this.#renderRequestedDuringRegionUpdate = false
+
     const screenSize = new Size(this.#program.cols, this.#program.rows)
     this.#buffer.resize(screenSize)
 
