@@ -2,7 +2,7 @@
   "name": "@teaui/shared",
   "private": true,
   "main": "main.js",
-  "version": "1.15.14",
+  "version": "1.16.14",
   "type": "module",
   "files": [
     "main.js",
