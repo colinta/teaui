@@ -251,6 +251,10 @@ export class Table<TData> extends Container {
   receiveMouse(event: MouseEvent, system: System) {
     super.receiveMouse(event, system)
 
+    if (event.name === 'mouse.button.down') {
+      system.requestFocus()
+    }
+
     // During drag-select, pin the viewport and suppress scroll
     if (this.#dragSelectState !== undefined) {
       if (isMouseDragging(event)) {
@@ -550,12 +554,32 @@ export class Table<TData> extends Container {
     }
   }
 
+  #cursorStyle(hasFocus: boolean): Style {
+    return new Style({
+      foreground: this.purpose.textColor,
+      background: hasFocus
+        ? this.purpose.highlightColor
+        : this.purpose.dimBackgroundColor,
+      bold: hasFocus,
+    })
+  }
+
+  #cursorCheckedStyle(hasFocus: boolean): Style {
+    return new Style({
+      foreground: this.purpose.textColor,
+      background: hasFocus
+        ? this.purpose.tableCheckedHighlightColor
+        : this.purpose.tableCheckedColor,
+      bold: hasFocus,
+    })
+  }
+
   render(viewport: Viewport) {
     if (viewport.isEmpty) {
       return super.render(viewport)
     }
 
-    viewport.registerFocus({isDefault: true})
+    const hasFocus = viewport.registerFocus({isDefault: true})
     viewport.registerMouse(['mouse.button.left', 'mouse.wheel'])
 
     const width = viewport.contentSize.width
@@ -570,19 +594,11 @@ export class Table<TData> extends Container {
     const dimStyle = new Style({dim: true})
     const headerStyle = new Style({dim: true, bold: true})
     // Cursor row (not checked)
-    const cursorStyle = new Style({
-      foreground: this.purpose.textColor,
-      background: this.purpose.highlightColor,
-      bold: true,
-    })
+    const cursorStyle = this.#cursorStyle(hasFocus)
     const checkedRowStyle = new Style({
       background: this.purpose.tableCheckedColor,
     })
-    const cursorCheckedStyle = new Style({
-      foreground: this.purpose.textColor,
-      background: this.purpose.tableCheckedHighlightColor,
-      bold: true,
-    })
+    const cursorCheckedStyle = this.#cursorCheckedStyle(hasFocus)
 
     // Header row
     let headerX = INDENT
@@ -697,9 +713,15 @@ export class Table<TData> extends Container {
       }
       if (isSelected) {
         const selectionStyle = isChecked ? cursorCheckedStyle : cursorStyle
-        viewport.write(SELECTION_MARKER, new Point(0, y), selectionStyle)
+        const selectionMarker = hasFocus
+          ? SELECTION_MARKER_FOCUSED
+          : SELECTION_MARKER_UNFOCUSED
+        const selectionMarkerEnd = hasFocus
+          ? SELECTION_MARKER_END_FOCUSED
+          : SELECTION_MARKER_END_UNFOCUSED
+        viewport.write(selectionMarker, new Point(0, y), selectionStyle)
         viewport.write(
-          SELECTION_MARKER_END,
+          selectionMarkerEnd,
           new Point(width - 1, y),
           selectionStyle,
         )
@@ -761,8 +783,10 @@ export class Table<TData> extends Container {
   }
 }
 
-const SELECTION_MARKER = '▶'
-const SELECTION_MARKER_END = '◀'
+const SELECTION_MARKER_FOCUSED = '▶'
+const SELECTION_MARKER_UNFOCUSED = '▷'
+const SELECTION_MARKER_END_FOCUSED = '◀'
+const SELECTION_MARKER_END_UNFOCUSED = '◁'
 const COLUMN_SEPARATOR = ' │ '
 const HORIZONTAL_LINE = '─'
 const SORT_ASC = '▲'

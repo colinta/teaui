@@ -98,6 +98,31 @@ describe('Table', () => {
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
+    it('dims the selected row and shows outlined markers when unfocused', () => {
+      const t = testRender(makeTable(), {width: 30, height: 8})
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
+      expect(t.terminal.styleAt(1, 2).background).toEqual([97, 97, 97])
+      expect(t.terminal.styleAt(1, 2).bold).toBe(true)
+
+      t.sendKey('tab')
+      expect(t.terminal.textAtRow(2)).toBe('▷Alice    │    30 │ New York ◁')
+      expect(t.terminal.styleAt(1, 2).background).toEqual([67, 67, 67])
+      expect(t.terminal.styleAt(1, 2).bold).toBeFalsy()
+    })
+
+    it('is focusable by mouse when not selectable', () => {
+      const t = testRender(makeTable(), {width: 30, height: 8})
+      t.sendKey('tab')
+      expect(t.terminal.textAtRow(2)).toBe('▷Alice    │    30 │ New York ◁')
+
+      t.sendMouse('mouse.button.down', {x: 5, y: 2})
+      expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
+
+      t.sendMouse('mouse.button.up', {x: 5, y: 2})
+      t.sendKey('down')
+      expect(t.terminal.textAtRow(3)).toBe('▶Bob      │    25 │ Chicago  ◀')
+    })
+
     it('moves selection with arrow keys', () => {
       const t = testRender(makeTable(), {width: 30, height: 8})
       expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
@@ -334,6 +359,22 @@ describe('Table', () => {
       expect(t.terminal.textAtRow(2)).toBe(
         '▶[ ] │ Alice    │    30 │ New York◀',
       )
+    })
+
+    it('dims a checked cursor row when unfocused', () => {
+      const t = testRender(
+        makeTable({isSelectable: true, showSelected: true, selectedIndex: 0}),
+        {width: 35, height: 8},
+      )
+      t.sendKey('space')
+      expect(t.terminal.styleAt(1, 2).background).toEqual([77, 42, 85])
+
+      t.sendKey('tab')
+      expect(t.terminal.textAtRow(2)).toBe(
+        '▷[✕] │ Alice    │    30 │ New York◁',
+      )
+      expect(t.terminal.styleAt(1, 2).background).toEqual([58, 32, 64])
+      expect(t.terminal.styleAt(1, 2).bold).toBeFalsy()
     })
 
     it('multiple rows can be selected', () => {
