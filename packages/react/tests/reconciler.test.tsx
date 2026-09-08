@@ -285,6 +285,67 @@ describe('reconciler', () => {
       const rendered = testRender(window, {width: 80, height: 4})
       expect(rendered.terminal.textContent()).toBe('entry')
     })
+
+    it('removes replaced views from containers that proxy their children', async () => {
+      let setRow: (row: string | null) => void
+
+      function TestComp() {
+        const [row, _setRow] = useState<string | null>('first')
+        setRow = _setRow
+
+        return (
+          <tui-alert visible={row !== null} title="Edit row">
+            {row ? (
+              <tui-stack key={row} direction="down">
+                <tui-text>{row}</tui-text>
+              </tui-stack>
+            ) : null}
+          </tui-alert>
+        )
+      }
+
+      const {window} = renderToWindow(<TestComp />)
+      await flush()
+      const rendered = testRender(window, {width: 40, height: 8})
+      expect(rendered.terminal.textContent()).toContain('first')
+
+      setRow!(null)
+      await flush()
+      rendered.render()
+      expect(rendered.terminal.textContent()).not.toContain('first')
+
+      setRow!('second')
+      await flush()
+      rendered.render()
+      expect(rendered.terminal.textContent()).not.toContain('first')
+      expect(rendered.terminal.textContent()).toContain('second')
+    })
+
+    it('removes text from containers that proxy their children', async () => {
+      let setText: (text: string | null) => void
+
+      function TestComp() {
+        const [text, _setText] = useState<string | null>('first')
+        setText = _setText
+        return <tui-callout>{text}</tui-callout>
+      }
+
+      const {window} = renderToWindow(<TestComp />)
+      await flush()
+      const rendered = testRender(window, {width: 40, height: 3})
+      expect(rendered.terminal.textContent()).toContain('first')
+
+      setText!(null)
+      await flush()
+      rendered.render()
+      expect(rendered.terminal.textContent()).not.toContain('first')
+
+      setText!('second')
+      await flush()
+      rendered.render()
+      expect(rendered.terminal.textContent()).not.toContain('first')
+      expect(rendered.terminal.textContent()).toContain('second')
+    })
   })
 
   describe('getPublicInstance (refs)', () => {

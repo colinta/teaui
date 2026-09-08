@@ -275,28 +275,37 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     screen.render()
   }
 
-  function removeFromTextContainer(container: Container, child: View) {
-    // find TextContainer with child in it, and remove.
+  function removeFromTextContainer(child: View): boolean {
     // TextContainer.add() puts TextLiterals/TextStyles into #nodes (accessed
     // via .nodes), NOT into .children (which holds generated Text views).
-    // So we check child.parent === node rather than node.children.includes(child).
-    for (const node of container.children) {
-      if (node instanceof TextContainer && child.parent === node) {
-        node.removeChild(child)
-        if (node.children.length === 0) {
-          container.removeChild(node)
-        }
-        return
-      }
+    // Follow the physical parent instead of searching the React parent. Some
+    // core containers (for example Notification) proxy their React children
+    // into an internal layout container.
+    const textContainer = child.parent
+    if (!(textContainer instanceof TextContainer)) {
+      return false
     }
+
+    const parent = textContainer.parent
+    textContainer.removeChild(child)
+    if (textContainer.nodes.length === 0 && parent instanceof Container) {
+      parent.removeChild(textContainer)
+    }
+    return true
   }
 
   function removeChild(container: Container, child: View) {
-    if (child.parent === container) {
-      container.removeChild(child)
-    } else if (child instanceof TextLiteral || child instanceof TextStyle) {
-      removeFromTextContainer(container, child)
+    if (
+      (child instanceof TextLiteral || child instanceof TextStyle) &&
+      removeFromTextContainer(child)
+    ) {
+      return
     }
+
+    // Call the logical React parent's implementation even when it differs
+    // from child.parent. Proxy containers override removeChild() to forward
+    // this operation to their internal child container.
+    container.removeChild(child)
   }
 
   function appendChild(parentInstance: Container, child: View, before?: View) {
