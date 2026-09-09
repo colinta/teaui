@@ -620,6 +620,19 @@ describe('Input', () => {
   })
 
   describe('focus', () => {
+    it('uses a dim background only while focused', () => {
+      const t = testRender(new Input({value: 'hello'}), {
+        width: 10,
+        height: 1,
+      })
+      expect(t.terminal.styleAt(0, 0).background).toEqual([67, 67, 67])
+      expect(t.terminal.styleAt(9, 0).background).toEqual([67, 67, 67])
+
+      t.sendKey('tab')
+      expect(t.terminal.styleAt(0, 0).background).toBeUndefined()
+      expect(t.terminal.styleAt(9, 0).background).toBeUndefined()
+    })
+
     it('plain tab changes focus, not inserted', () => {
       const input = new Input({value: 'hello'})
       const t = testRender(input, {width: 30, height: 1})

@@ -494,6 +494,16 @@ export class Input extends View {
     }
   }
 
+  #focusedBackgroundStyle(): Style {
+    return new Style({background: this.purpose.dimBackgroundColor})
+  }
+
+  #withFocusBackground(style: Style, hasFocus: boolean): Style {
+    return style.merge({
+      background: hasFocus ? this.purpose.dimBackgroundColor : null,
+    })
+  }
+
   render(viewport: Viewport) {
     // Register focus before the isEmpty check — Input should participate in the
     // focus ring even when clipped to zero size (e.g. inside a Scrollable that
@@ -508,6 +518,7 @@ export class Input extends View {
 
     if (hasFocus) {
       viewport.registerTick()
+      viewport.paint(this.#focusedBackgroundStyle())
     }
     viewport.registerMouse('mouse.button.left')
 
@@ -564,16 +575,19 @@ export class Input extends View {
 
     let isPlaceholder = !this.#chars.length
     let currentStyle = Style.NONE
-    const plainStyle = this.purpose.text({
-      isPlaceholder,
+    const plainStyle = this.#withFocusBackground(
+      this.purpose.text({isPlaceholder, hasFocus}),
       hasFocus,
-    })
-    const selectedStyle = this.purpose.text({
-      isSelected: true,
+    )
+    const selectedStyle = this.#withFocusBackground(
+      this.purpose.text({isSelected: true, hasFocus}),
       hasFocus,
-    })
+    )
 
-    const nlStyle = this.purpose.text({isPlaceholder: true})
+    const nlStyle = this.#withFocusBackground(
+      this.purpose.text({isPlaceholder: true}),
+      hasFocus,
+    )
 
     const fontMap = this.#font && FONTS[this.#font]
 
