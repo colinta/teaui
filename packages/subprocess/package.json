@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@teaui/core": "workspace:*",
-    "node-pty": "^1.1.0",
+    "node-pty": "1.2.0-beta.15",
     "@xterm/headless": "^5.5.0"
   },
   "peerDependencies": {

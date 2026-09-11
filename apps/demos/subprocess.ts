@@ -30,8 +30,8 @@ async function main() {
       })
 
       const left = new SubprocessView({
-        command: 'npx',
-        args: ['tsx', path.resolve(__dirname, 'components.js')],
+        command: process.execPath,
+        args: [path.resolve(__dirname, 'components.js')],
         onExit: code => {
           console.info(`Left child exited with code ${code}`)
         },
@@ -45,8 +45,8 @@ async function main() {
       })
 
       const right = new SubprocessView({
-        command: 'npx',
-        args: ['tsx', path.resolve(__dirname, 'inputs.js')],
+        command: process.execPath,
+        args: [path.resolve(__dirname, 'inputs.js')],
         onExit: code => {
           console.info(`Right child exited with code ${code}`)
         },
