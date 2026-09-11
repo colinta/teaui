@@ -120,7 +120,8 @@ export class Collapsible extends Container {
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
-    const textStyle = this.purpose.text({
+    const textStyle = this.purpose.ui({
+      variant: 'flat',
       isPressed: this.isPressed,
       isHover: this.isHover,
     })

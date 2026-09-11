@@ -6,15 +6,13 @@ exports[`Legend > maps compound keys like up/down 1`] = `"↑/↓ navigate"`;
 
 exports[`Legend > maps modifier+key arrays 1`] = `"⌃/C quit"`;
 
-exports[`Legend > maps named keys to sigils 1`] = `"⤦ select  ␛ cancel  ⇥ switch"`;
+exports[`Legend > maps named keys to sigils 1`] = `"⤦ select   ␛ cancel   ⇥ switch"`;
 
-exports[`Legend > renders in a stack 1`] = `"q quit  ? help"`;
+exports[`Legend > renders in a stack 1`] = `"q quit   ? help"`;
 
-exports[`Legend > renders items inline 1`] = `"q quit  ? help"`;
-
-exports[`Legend > uses custom separator 1`] = `"q quit • ? help"`;
+exports[`Legend > renders items inline with three spaces between items 1`] = `"q quit   ? help"`;
 
 exports[`Legend > wraps to multiple rows when items exceed width 1`] = `
-"q quit    ? help    ⤦ select
+"q quit   ? help   ⤦ select
 ␛ cancel"
 `;

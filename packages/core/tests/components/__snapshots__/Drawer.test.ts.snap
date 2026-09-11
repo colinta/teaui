@@ -29,8 +29,8 @@ exports[`Drawer > content behind drawer does not bleed through > right drawer co
 
 exports[`Drawer > content behind drawer does not bleed through > top drawer covers background content 1`] = `
 "│AB                │
-╮∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ╭
-│──────────────────│"
+│∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ │
+╰──────────────────╯"
 `;
 
 exports[`Drawer > heading > does not render heading when drawer is closed 1`] = `
@@ -78,6 +78,6 @@ exports[`Drawer > heading > renders heading on right drawer top border 1`] = `
 
 exports[`Drawer > heading > renders heading on top drawer 1`] = `
 "│  Tools                     │
-╮∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ╭
-│────────────────────────────│"
+│∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ ∧ │
+╰────────────────────────────╯"
 `;

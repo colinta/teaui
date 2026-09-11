@@ -4,7 +4,7 @@ import {Legend} from '../../lib/components/Legend.js'
 import {Stack} from '../../lib/components/Stack.js'
 
 describe('Legend', () => {
-  it('renders items inline', () => {
+  it('renders items inline with three spaces between items', () => {
     const t = testRender(
       new Legend({
         items: [
@@ -47,20 +47,6 @@ describe('Legend', () => {
         items: [{key: ['up', 'down'], label: 'navigate'}],
       }),
       {width: 20, height: 1},
-    )
-    expect(t.terminal.textContent()).toMatchSnapshot()
-  })
-
-  it('uses custom separator', () => {
-    const t = testRender(
-      new Legend({
-        items: [
-          {key: 'q', label: 'quit'},
-          {key: '?', label: 'help'},
-        ],
-        separator: ' • ',
-      }),
-      {width: 30, height: 1},
     )
     expect(t.terminal.textContent()).toMatchSnapshot()
   })

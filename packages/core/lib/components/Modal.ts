@@ -17,8 +17,8 @@ export interface Props extends ContainerProps {
    */
   dim?: boolean
   /**
-   * Style used for dimming. Defaults to purpose.dimTextColor fg +
-   * purpose.dimBackgroundColor bg.
+   * Style used for dimming. Defaults to purpose.scrimTextColor fg +
+   * purpose.scrimBackgroundColor bg.
    */
   dimStyle?: Style
   /**
@@ -150,8 +150,8 @@ export class Modal extends Container {
       const style =
         this.#dimStyle ??
         new Style({
-          foreground: this.purpose.dimTextColor,
-          background: this.purpose.dimBackgroundColor,
+          foreground: this.purpose.scrimTextColor,
+          background: this.purpose.scrimBackgroundColor,
         })
       viewport.restyle(style)
     }

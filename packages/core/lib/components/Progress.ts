@@ -50,11 +50,12 @@ export class Progress extends View {
     return this.#value
   }
   set value(value: number) {
-    this.#value = value
-    if (value !== this.#value) {
-      this.#value = value
-      this.invalidateRender()
+    if (value === this.#value) {
+      return
     }
+
+    this.#value = value
+    this.invalidateRender()
   }
 
   naturalSize(available: Size) {

@@ -8,7 +8,7 @@ demo(
     padding: 1,
     child: Stack.down({
       children: [
-        new Text({text: 'Legend — Inline (default separator)'}),
+        new Text({text: 'Legend — Inline'}),
 
         new Legend({
           items: [
@@ -18,19 +18,6 @@ demo(
             {key: '?', label: 'help'},
             {key: 'escape', label: 'cancel'},
           ],
-        }),
-
-        Separator.horizontal(),
-        new Text({text: 'Legend — With bullet separator'}),
-
-        new Legend({
-          items: [
-            {key: ['up', 'down'], label: 'navigate'},
-            {key: 'enter', label: 'select'},
-            {key: 'q', label: 'quit'},
-            {key: '?', label: 'more'},
-          ],
-          separator: ' • ',
         }),
 
         Separator.horizontal(),

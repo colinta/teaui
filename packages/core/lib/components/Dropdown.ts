@@ -162,7 +162,14 @@ export class Dropdown<T, M extends boolean> extends View {
     }
   }
 
+  receiveKey(event: import('../events/index.js').KeyEvent) {
+    if (event.name === 'return' || event.name === 'enter') {
+      this.#showModal = true
+    }
+  }
+
   render(viewport: Viewport) {
+    const hasFocus = viewport.registerFocus({isDefault: false})
     if (viewport.isEmpty) {
       return
     }
@@ -174,7 +181,10 @@ export class Dropdown<T, M extends boolean> extends View {
     viewport.registerMouse(['mouse.move', 'mouse.button.left'])
     const lines = this.#titleLines()
     const textStyle = this.purpose.ui({
+      variant: 'raised',
+      isPressed: this.isPressed || this.#showModal,
       isHover: this.isHover && !this.#showModal,
+      hasFocus,
     })
 
     viewport.paint(textStyle)
@@ -275,7 +285,9 @@ class DropdownSelector<T> extends Container {
             new Space({flex: 1}),
             new Text({
               text: '├─┤',
-              style: new Style({background: this.purpose.textBackgroundColor}),
+              style: new Style({
+                background: this.purpose.flatBackgroundColor,
+              }),
             }),
           ],
           {y: 1, width: 'shrink'},

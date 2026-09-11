@@ -16,7 +16,7 @@ import {
 
 import {demo} from './demo.js'
 
-const ROW_LABEL_WIDTH = 22
+const ROW_LABEL_WIDTH = 28
 const CELL_WIDTH = 9
 
 function pad(num: number) {
@@ -40,7 +40,7 @@ function setRGBFromHex(hex: string) {
 }
 
 function paletteColorHex(palette: Palette, color: Color): `#${string}` {
-  const resolved = color === 'default' ? palette.textBackgroundColor : color
+  const resolved = color === 'default' ? palette.flatBackgroundColor : color
   const hex = colorToHex(resolved)
   const [red, green, blue] = colors.hexToRGB(hex.replace(/\(.+\)$/, ''))
   return colors.RGBtoHex(red, green, blue)
@@ -128,41 +128,48 @@ const paletteColumns = [
 
 const paletteRows = [
   {name: 'text', key: 'textColor'},
-  {name: 'contrastText', key: 'contrastTextColor'},
-  {name: 'dimText', key: 'dimTextColor'},
-  {name: 'dimBackground', key: 'dimBackgroundColor'},
-  {name: 'controlBackground', key: 'controlBackgroundColor'},
-  {name: 'textBackground', key: 'textBackgroundColor'},
-  {name: 'highlight', key: 'highlightColor'},
-  {name: 'darken', key: 'darkenColor'},
-  {name: 'tableChecked', key: 'tableCheckedColor'},
-  {name: 'tableCheckedHighlight', key: 'tableCheckedHighlightColor'},
+  {name: 'mutedText', key: 'mutedTextColor'},
+  {name: 'placeholderText', key: 'placeholderTextColor'},
+  {name: 'accentText', key: 'accentTextColor'},
+  {name: 'flatBackground', key: 'flatBackgroundColor'},
+  {name: 'raisedBackground', key: 'raisedBackgroundColor'},
+  {name: 'hoverBackground', key: 'hoverBackgroundColor'},
+  {name: 'focusBackground', key: 'focusBackgroundColor'},
+  {name: 'pressedBackground', key: 'pressedBackgroundColor'},
+  {name: 'selectionText', key: 'selectionTextColor'},
+  {name: 'selectionBackground', key: 'selectionBackgroundColor'},
+  {name: 'inactiveSelectionText', key: 'inactiveSelectionTextColor'},
+  {
+    name: 'inactiveSelectionBackground',
+    key: 'inactiveSelectionBackgroundColor',
+  },
+  {name: 'scrimText', key: 'scrimTextColor'},
+  {name: 'scrimBackground', key: 'scrimBackgroundColor'},
+  {name: 'checkedBackground', key: 'checkedBackgroundColor'},
+  {
+    name: 'checkedSelectionBackground',
+    key: 'checkedSelectionBackgroundColor',
+  },
 ] as const
 
-function paletteHeaderRow(start: number, end: number) {
+function paletteHeaderRow() {
   return Stack.right(
     [
       new Text({text: '', width: ROW_LABEL_WIDTH}),
-      ...paletteColumns
-        .slice(start, end)
-        .map(
-          ({name}) =>
-            new Text({text: name, width: CELL_WIDTH, alignment: 'center'}),
-        ),
+      ...paletteColumns.map(
+        ({name}) =>
+          new Text({text: name, width: CELL_WIDTH, alignment: 'center'}),
+      ),
     ],
     {fill: false, gap: 1},
   )
 }
 
-function paletteValueRow(
-  row: (typeof paletteRows)[number],
-  start: number,
-  end: number,
-) {
+function paletteValueRow(row: (typeof paletteRows)[number]) {
   return Stack.right(
     [
       new Text({text: row.name, width: ROW_LABEL_WIDTH}),
-      ...paletteColumns.slice(start, end).map(({purpose, palette}) => {
+      ...paletteColumns.map(({purpose, palette}) => {
         const isBackground = row.name !== 'text' && !row.name.endsWith('Text')
         const hex = paletteColorHex(palette, (palette as any)[row.key] as Color)
         return new Button({
@@ -182,20 +189,10 @@ function paletteValueRow(
   )
 }
 
-function paletteGrid(start: number, end: number) {
-  return Stack.down(
-    [
-      paletteHeaderRow(start, end),
-      ...paletteRows.map(row => paletteValueRow(row, start, end)),
-    ],
-    {fill: false},
-  )
-}
-
-const builtInColors = Stack.right([paletteGrid(0, 3), paletteGrid(3, 6)], {
-  fill: false,
-  gap: 4,
-})
+const builtInColors = Stack.down(
+  [paletteHeaderRow(), ...paletteRows.map(paletteValueRow)],
+  {fill: false},
+)
 
 demo(
   Stack.down([

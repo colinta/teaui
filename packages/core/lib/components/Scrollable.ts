@@ -347,15 +347,15 @@ export class Scrollable extends Stack {
 
   #scrollbarStyle(): Style {
     return new Style({
-      foreground: this.purpose.darkenColor,
-      background: this.purpose.darkenColor,
+      foreground: this.purpose.pressedBackgroundColor,
+      background: this.purpose.pressedBackgroundColor,
     })
   }
 
   #scrollbarThumbStyle(): Style {
     return new Style({
-      foreground: this.purpose.highlightColor,
-      background: this.purpose.highlightColor,
+      foreground: this.purpose.hoverBackgroundColor,
+      background: this.purpose.hoverBackgroundColor,
     })
   }
 

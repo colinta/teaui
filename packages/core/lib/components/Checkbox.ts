@@ -119,8 +119,10 @@ export class Checkbox extends Container {
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
     const uiStyle = this.purpose.ui({
+      variant: 'raised',
       isPressed: this.isPressed,
-      isHover: this.isHover || hasFocus,
+      isHover: this.isHover,
+      hasFocus,
     })
 
     viewport.paint(uiStyle)

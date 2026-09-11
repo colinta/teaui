@@ -15,18 +15,18 @@ import {
 import {demo} from './demo.js'
 
 type PaletteEntry = {
-  section: 'UI' | 'Text'
+  section: string
+  state: string
   api: string
-  styleSource: string
   description: string
   resolveStyle: (palette: Palette) => Style
 }
 
-const API_WIDTH = 30
+const STATE_WIDTH = 24
+const API_WIDTH = 52
 const SWATCH_WIDTH = 18
-const STYLE_WIDTH = 28
-const DESCRIPTION_WIDTH = 50
-const EXAMPLE_TEXT = 'Example'
+const FLAGS_WIDTH = 18
+const DESCRIPTION_WIDTH = 48
 const SWATCH_PLACEHOLDER = '#000000'
 const SWATCH_PADDING = '  '
 const SECTION_STYLE = Palette.selected.ui()
@@ -43,196 +43,149 @@ const PURPOSES = [
 
 const ENTRIES: PaletteEntry[] = [
   {
-    section: 'UI',
+    section: 'Flat UI',
+    state: 'Rest',
     api: 'palette.ui()',
-    styleSource: styleSource(['foreground: text', 'background: background']),
-    description:
-      'Default surface for buttons, dropdown triggers, and other interactive chrome.',
+    description: 'The default: controls that blend into their parent surface.',
     resolveStyle: palette => palette.ui(),
   },
   {
-    section: 'UI',
-    api: 'palette.ui({\n  isOrnament: true,\n})',
-    styleSource: styleSource(['foreground: darken', 'background: background']),
-    description:
-      'Decorative control chrome, like borders and caps that recede until hover or press.',
-    resolveStyle: palette => palette.ui({isOrnament: true}),
-  },
-  {
-    section: 'UI',
-    api: 'palette.ui({\n  isHover: true,\n})',
-    styleSource: styleSource(['foreground: text', 'background: highlight']),
-    description: 'Hovered or focused control surface.',
+    section: 'Flat UI',
+    state: 'Hover',
+    api: 'palette.ui({isHover: true})',
+    description: 'Pointer hover. This is intentionally lighter than rest.',
     resolveStyle: palette => palette.ui({isHover: true}),
   },
   {
-    section: 'UI',
-    api: 'palette.ui({\n  isHover: true,\n  isOrnament: true,\n})',
-    styleSource: styleSource([
-      'foreground: highlight',
-      'background: highlight',
-    ]),
-    description:
-      'Hovered ornament colour for button tops, borders, and other decorative chrome.',
-    resolveStyle: palette => palette.ui({isHover: true, isOrnament: true}),
+    section: 'Flat UI',
+    state: 'Focus',
+    api: 'palette.ui({hasFocus: true})',
+    description: 'Keyboard focus. This is intentionally darker than rest.',
+    resolveStyle: palette => palette.ui({hasFocus: true}),
   },
   {
-    section: 'UI',
-    api: 'palette.ui({\n  isPressed: true,\n})',
-    styleSource: styleSource(['foreground: text', 'background: darken']),
-    description: 'Pressed control surface.',
+    section: 'Flat UI',
+    state: 'Pressed',
+    api: 'palette.ui({isPressed: true})',
+    description: 'Transient pointer or keyboard press; highest precedence.',
     resolveStyle: palette => palette.ui({isPressed: true}),
   },
   {
-    section: 'UI',
-    api: 'palette.ui({\n  isPressed: true,\n  isOrnament: true,\n})',
-    styleSource: styleSource(['foreground: darken', 'background: darken']),
-    description:
-      'Pressed ornament colour for borders and decorative control pieces.',
-    resolveStyle: palette => palette.ui({isPressed: true, isOrnament: true}),
+    section: 'Raised UI',
+    state: 'Rest',
+    api: "palette.ui({variant: 'raised'})",
+    description: 'Buttons, dropdowns, and controls raised above the surface.',
+    resolveStyle: palette => palette.ui({variant: 'raised'}),
+  },
+  {
+    section: 'Raised UI',
+    state: 'Hover',
+    api: "palette.ui({variant: 'raised', isHover: true})",
+    description: 'Raised controls use the same lighter hover state.',
+    resolveStyle: palette => palette.ui({variant: 'raised', isHover: true}),
+  },
+  {
+    section: 'Raised UI',
+    state: 'Focus',
+    api: "palette.ui({variant: 'raised', hasFocus: true})",
+    description: 'A distinct dark focus color, separate from hover.',
+    resolveStyle: palette => palette.ui({variant: 'raised', hasFocus: true}),
+  },
+  {
+    section: 'Raised UI',
+    state: 'Pressed',
+    api: "palette.ui({variant: 'raised', isPressed: true})",
+    description: 'Raised-control pressed state.',
+    resolveStyle: palette => palette.ui({variant: 'raised', isPressed: true}),
+  },
+  {
+    section: 'UI content',
+    state: 'Placeholder',
+    api: 'palette.ui({isPlaceholder: true})',
+    description: 'Readable placeholder text on a resting input surface.',
+    resolveStyle: palette => palette.ui({isPlaceholder: true}),
+  },
+  {
+    section: 'UI content',
+    state: 'Focused placeholder',
+    api: 'palette.ui({isPlaceholder: true, hasFocus: true})',
+    description: 'Placeholder text on the darker focus surface.',
+    resolveStyle: palette => palette.ui({isPlaceholder: true, hasFocus: true}),
+  },
+  {
+    section: 'UI content',
+    state: 'Inactive selection',
+    api: 'palette.ui({isSelected: true})',
+    description: 'Selection retained after a control loses focus.',
+    resolveStyle: palette => palette.ui({isSelected: true}),
+  },
+  {
+    section: 'UI content',
+    state: 'Active selection',
+    api: 'palette.ui({isSelected: true, hasFocus: true})',
+    description: 'Selection in the focused control.',
+    resolveStyle: palette => palette.ui({isSelected: true, hasFocus: true}),
+  },
+  {
+    section: 'Ornaments',
+    state: 'Rest',
+    api: "palette.ui({variant: 'raised', isOrnament: true})",
+    description: 'Receding button caps, borders, and decorative chrome.',
+    resolveStyle: palette => palette.ui({variant: 'raised', isOrnament: true}),
+  },
+  {
+    section: 'Ornaments',
+    state: 'Interactive',
+    api: "palette.ui({variant: 'raised', isOrnament: true, isHover: true})",
+    description: 'Ornaments disappear into the active background.',
+    resolveStyle: palette =>
+      palette.ui({variant: 'raised', isOrnament: true, isHover: true}),
   },
   {
     section: 'Text',
+    state: 'Default',
     api: 'palette.text()',
-    styleSource: styleSource(['foreground: text', 'background: textBg']),
-    description: 'Default readable text on text surfaces.',
+    description: 'Readable text on the passive surface.',
     resolveStyle: palette => palette.text(),
   },
   {
     section: 'Text',
-    api: 'palette.text({\n  hasFocus: true,\n})',
-    styleSource: styleSource([
-      'foreground: text',
-      'background: textBg',
-      'bold: true',
-    ]),
-    description: 'Focused text, used heavily in inputs and editable text.',
-    resolveStyle: palette => palette.text({hasFocus: true}),
+    state: 'Muted',
+    api: "palette.text({tone: 'muted'})",
+    description: 'Secondary labels and lower-emphasis content.',
+    resolveStyle: palette => palette.text({tone: 'muted'}),
   },
   {
     section: 'Text',
-    api: 'palette.text({\n  hasFocus: true,\n  isSelected: true,\n})',
-    styleSource: styleSource([
-      'foreground: text',
-      'background: textBg',
-      'inverse: true',
-      'bold: true',
-    ]),
-    description: 'Focused text selection, rendered as an inverse highlight.',
-    resolveStyle: palette => palette.text({hasFocus: true, isSelected: true}),
+    state: 'Placeholder',
+    api: "palette.text({tone: 'placeholder'})",
+    description: 'Placeholder text on a passive surface.',
+    resolveStyle: palette => palette.text({tone: 'placeholder'}),
   },
   {
     section: 'Text',
-    api: 'palette.text({\n  isSelected: true,\n})',
-    styleSource: styleSource(['foreground: dimText', 'background: dimBg']),
-    description: 'Unfocused selection with dimmed selected colours.',
+    state: 'Accent',
+    api: "palette.text({tone: 'accent'})",
+    description: 'Decorative emphasis that does not imply interaction state.',
+    resolveStyle: palette => palette.text({tone: 'accent'}),
+  },
+  {
+    section: 'Text',
+    state: 'Inactive selection',
+    api: 'palette.text({isSelected: true})',
+    description: 'Selected text outside the focused control.',
     resolveStyle: palette => palette.text({isSelected: true}),
   },
   {
     section: 'Text',
-    api: 'palette.text({\n  isHover: true,\n})',
-    styleSource: styleSource(['foreground: contrast', 'background: textBg']),
-    description:
-      'Hovered interactive text, like collapsible labels and drawer text.',
-    resolveStyle: palette => palette.text({isHover: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isHover: true,\n  hasFocus: true,\n})',
-    styleSource: styleSource([
-      'foreground: contrast',
-      'background: textBg',
-      'bold: true',
-    ]),
-    description: 'Hovered text while the control is focused.',
-    resolveStyle: palette => palette.text({isHover: true, hasFocus: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isHover: true,\n  hasFocus: true,\n  isSelected: true,\n})',
-    styleSource: styleSource([
-      'foreground: contrast',
-      'background: textBg',
-      'inverse: true',
-      'bold: true',
-    ]),
-    description:
-      'Hovered focused selection, keeping the inverse selected treatment.',
-    resolveStyle: palette =>
-      palette.text({isHover: true, hasFocus: true, isSelected: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPressed: true,\n})',
-    styleSource: styleSource(['foreground: highlight', 'background: textBg']),
-    description: 'Pressed interactive text.',
-    resolveStyle: palette => palette.text({isPressed: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPressed: true,\n  hasFocus: true,\n})',
-    styleSource: styleSource([
-      'foreground: highlight',
-      'background: textBg',
-      'bold: true',
-    ]),
-    description: 'Pressed text while the control is focused.',
-    resolveStyle: palette => palette.text({isPressed: true, hasFocus: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPressed: true,\n  hasFocus: true,\n  isSelected: true,\n})',
-    styleSource: styleSource([
-      'foreground: highlight',
-      'background: textBg',
-      'inverse: true',
-      'bold: true',
-    ]),
-    description: 'Pressed focused selection.',
-    resolveStyle: palette =>
-      palette.text({isPressed: true, hasFocus: true, isSelected: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPlaceholder: true,\n})',
-    styleSource: styleSource(['foreground: dimText', 'background: textBg']),
-    description:
-      'Placeholder text in inputs and other empty text-entry surfaces.',
-    resolveStyle: palette => palette.text({isPlaceholder: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPlaceholder: true,\n  isHover: true,\n})',
-    styleSource: styleSource(['foreground: dimText', 'background: dimBg']),
-    description: 'Hovered placeholder text.',
-    resolveStyle: palette => palette.text({isPlaceholder: true, isHover: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPlaceholder: true,\n  isPressed: true,\n})',
-    styleSource: styleSource(['foreground: text', 'background: textBg']),
-    description: 'Pressed placeholder text.',
-    resolveStyle: palette =>
-      palette.text({isPlaceholder: true, isPressed: true}),
-  },
-  {
-    section: 'Text',
-    api: 'palette.text({\n  isPlaceholder: true,\n  hasFocus: true,\n})',
-    styleSource: styleSource([
-      'foreground: dimText',
-      'background: textBg',
-      'bold: true',
-    ]),
-    description: 'Focused placeholder text, which becomes bold to show focus.',
-    resolveStyle: palette =>
-      palette.text({isPlaceholder: true, hasFocus: true}),
+    state: 'Active selection',
+    api: 'palette.text({isSelected: true, hasFocus: true})',
+    description: 'Selected text in the focused control.',
+    resolveStyle: palette => palette.text({isSelected: true, hasFocus: true}),
   },
 ]
 
-const selectedPurpose = {
-  index: 0,
-}
-
+const selectedPurpose = {index: 0}
 const rowViews = ENTRIES.map(createRow)
 const selector = new ToggleGroup({
   titles: PURPOSES.map(formatPurpose),
@@ -252,16 +205,16 @@ demo(
       new Space({height: 1}),
       new Separator({direction: 'horizontal'}),
       new Space({height: 1}),
-      ['flex1', Scrollable.down({children: buildSections()})],
+      ['flex1', Scrollable.down({children: buildRows()})],
     ],
   }),
 )
 
-function buildSections() {
+function buildRows() {
   const children = [] as Array<
     Text | ReturnType<typeof Stack.right> | Space | Separator
   >
-  let currentSection: PaletteEntry['section'] | undefined
+  let currentSection: string | undefined
 
   for (const [index, entry] of ENTRIES.entries()) {
     if (entry.section !== currentSection) {
@@ -271,12 +224,7 @@ function buildSections() {
         children.push(new Space({height: 1}))
       }
       currentSection = entry.section
-      children.push(
-        new Text({
-          text: entry.section,
-          style: SECTION_STYLE,
-        }),
-      )
+      children.push(new Text({text: entry.section, style: SECTION_STYLE}))
       children.push(new Space({height: 1}))
       children.push(headerRow())
       children.push(new Space({height: 1}))
@@ -290,98 +238,74 @@ function buildSections() {
 }
 
 function createRow(entry: PaletteEntry) {
-  const foregroundLabel = new Text({
-    text: SWATCH_PLACEHOLDER,
-    width: SWATCH_WIDTH,
-    alignment: 'center',
-  })
-  const backgroundLabel = new Text({
-    text: SWATCH_PLACEHOLDER,
-    width: SWATCH_WIDTH,
-    alignment: 'center',
-  })
-  const example = new Text({
-    text: EXAMPLE_TEXT,
-    width: SWATCH_WIDTH,
-    alignment: 'center',
-  })
-  const styleText = new Text({
-    text: entry.styleSource,
-    width: STYLE_WIDTH,
-    wrap: true,
-  })
+  const foregroundLabel = swatch()
+  const backgroundLabel = swatch()
+  const flagsLabel = new Text({text: '', width: FLAGS_WIDTH})
 
   return {
     view: Stack.right([
-      new Text({text: entry.api, width: API_WIDTH}),
-      Stack.down({children: [foregroundLabel, backgroundLabel, example]}),
-      styleText,
+      new Text({text: entry.state, width: STATE_WIDTH}),
+      new Text({text: entry.api, width: API_WIDTH, wrap: true}),
+      foregroundLabel,
+      backgroundLabel,
+      flagsLabel,
       new Text({text: entry.description, width: DESCRIPTION_WIDTH, wrap: true}),
     ]),
     update(palette: Palette) {
       const style = entry.resolveStyle(palette)
-      const foreground = style.foreground ?? 'default'
-      const background = style.background ?? 'default'
-
-      foregroundLabel.text = paddedSwatchText(colorLabel(foreground))
+      foregroundLabel.text = paddedSwatchText(colorLabel(style.foreground))
       foregroundLabel.style = style
-      backgroundLabel.text = paddedSwatchText(colorLabel(background))
+      backgroundLabel.text = paddedSwatchText(colorLabel(style.background))
       backgroundLabel.style = style
-      example.text = paddedSwatchText(EXAMPLE_TEXT)
-      example.style = style
+      flagsLabel.text = styleFlags(style)
     },
   }
 }
 
+function swatch() {
+  return new Text({
+    text: SWATCH_PLACEHOLDER,
+    width: SWATCH_WIDTH,
+    alignment: 'center',
+  })
+}
+
 function headerRow() {
   return Stack.right([
+    new Text({text: 'State', width: STATE_WIDTH, style: HEADER_STYLE}),
     new Text({text: 'API', width: API_WIDTH, style: HEADER_STYLE}),
     new Text({
-      text: 'Colours',
+      text: 'Foreground',
       width: SWATCH_WIDTH,
       alignment: 'center',
       style: HEADER_STYLE,
     }),
     new Text({
-      text: 'Style',
-      width: STYLE_WIDTH,
+      text: 'Background',
+      width: SWATCH_WIDTH,
+      alignment: 'center',
       style: HEADER_STYLE,
     }),
+    new Text({text: 'Flags', width: FLAGS_WIDTH, style: HEADER_STYLE}),
     new Text({text: 'Use', width: DESCRIPTION_WIDTH, style: HEADER_STYLE}),
   ])
 }
 
 function refresh() {
-  const purpose = PURPOSES[selectedPurpose.index]
-  const palette = paletteForPurpose(purpose)
-
-  for (const row of rowViews) {
-    row.update(palette)
-  }
+  const palette = paletteForPurpose(PURPOSES[selectedPurpose.index])
+  for (const row of rowViews) row.update(palette)
 }
 
 function paletteForPurpose(purpose: (typeof PURPOSES)[number]) {
-  switch (purpose) {
-    case 'primary':
-      return Palette.primary
-    case 'secondary':
-      return Palette.secondary
-    case 'proceed':
-      return Palette.proceed
-    case 'cancel':
-      return Palette.cancel
-    case 'selected':
-      return Palette.selected
-    case 'plain':
-      return Palette.plain
-  }
+  return Palette[purpose]
 }
 
 function formatPurpose(purpose: string) {
   return purpose[0].toUpperCase() + purpose.slice(1)
 }
 
-function colorLabel(color: Color) {
+function colorLabel(color: Color | undefined) {
+  if (color === undefined || color === 'default') return 'default'
   return colorToHex(color).replace(/\(.+\)$/, '')
 }
 
@@ -389,6 +313,14 @@ function paddedSwatchText(text: string) {
   return `${SWATCH_PADDING}${text}${SWATCH_PADDING}`
 }
 
-function styleSource(lines: string[]) {
-  return `Style({\n  ${lines.join('\n  ')}\n})`
+function styleFlags(style: Style) {
+  return [
+    style.bold && 'bold',
+    style.dim && 'dim',
+    style.italic && 'italic',
+    style.underline && 'underline',
+    style.inverse && 'inverse',
+  ]
+    .filter(Boolean)
+    .join(', ')
 }

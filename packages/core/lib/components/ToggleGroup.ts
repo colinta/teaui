@@ -299,7 +299,7 @@ export class ToggleGroup extends Container {
       return undefined
     }
 
-    return new Style({background: this.purpose.dimBackgroundColor})
+    return new Style({background: this.purpose.selectionBackgroundColor})
   }
 
   #textStyle(isSelected: boolean): Style {
@@ -308,7 +308,10 @@ export class ToggleGroup extends Container {
       return style
     }
 
-    return style.merge({background: this.purpose.dimBackgroundColor})
+    return style.merge({
+      foreground: this.purpose.selectionTextColor,
+      background: this.purpose.selectionBackgroundColor,
+    })
   }
 }
 

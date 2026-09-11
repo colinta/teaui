@@ -43,14 +43,14 @@ export class Badge extends View {
 
   #capStyle(): Style {
     return new Style({
-      foreground: this.purpose.controlBackgroundColor,
+      foreground: this.purpose.raisedBackgroundColor,
     })
   }
 
   #textStyle(): Style {
     return new Style({
       foreground: this.purpose.textColor,
-      background: this.purpose.controlBackgroundColor,
+      background: this.purpose.raisedBackgroundColor,
     })
   }
 

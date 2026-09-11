@@ -66,6 +66,30 @@ describe('Dropdown', () => {
     })
   })
 
+  describe('focus', () => {
+    it('uses a distinct keyboard-focus background', () => {
+      const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
+        width: 30,
+        height: 3,
+      })
+      expect(t.terminal.styleAt(0, 0).background).toEqual([79, 79, 79])
+
+      t.sendKey('tab')
+      expect(t.terminal.styleAt(0, 0).background).toEqual([63, 63, 63])
+    })
+
+    it('opens from the keyboard', () => {
+      const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
+        width: 30,
+        height: 12,
+      })
+      t.sendKey('tab')
+      t.sendKey('return')
+
+      expect(t.terminal.textContent()).toContain('Apple')
+    })
+  })
+
   describe('opening dropdown', () => {
     it('shows choices on click', () => {
       const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {

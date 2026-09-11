@@ -22,20 +22,6 @@ export function LegendTab() {
       <Separator.horizontal />
       <Text>
         <Style bold foreground="cyan">
-          Bullet Separator
-        </Style>
-      </Text>
-      <Legend
-        items={[
-          {key: 's', label: 'stop'},
-          {key: 'r', label: 'reset'},
-          {key: 'q', label: 'quit'},
-        ]}
-        separator=" • "
-      />
-      <Separator.horizontal />
-      <Text>
-        <Style bold foreground="cyan">
           Modifier Keys
         </Style>
       </Text>

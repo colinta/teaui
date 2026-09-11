@@ -106,7 +106,7 @@ describe('Table', () => {
 
       t.sendKey('tab')
       expect(t.terminal.textAtRow(2)).toBe('▷Alice    │    30 │ New York ◁')
-      expect(t.terminal.styleAt(1, 2).background).toEqual([67, 67, 67])
+      expect(t.terminal.styleAt(1, 2).background).toEqual([63, 63, 63])
       expect(t.terminal.styleAt(1, 2).bold).toBeFalsy()
     })
 

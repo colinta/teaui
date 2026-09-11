@@ -24,20 +24,20 @@ export class Callout extends Notification {
   #backgroundStyle(): Style {
     return new Style({
       foreground: this.purpose.textColor,
-      background: this.purpose.darkenColor,
+      background: this.purpose.pressedBackgroundColor,
     })
   }
 
   #barStyle(): Style {
     return new Style({
-      foreground: this.purpose.highlightColor,
-      background: this.purpose.darkenColor,
+      foreground: this.purpose.hoverBackgroundColor,
+      background: this.purpose.pressedBackgroundColor,
     })
   }
 
   #topBottomBarStyle(): Style {
     return new Style({
-      foreground: this.purpose.highlightColor,
+      foreground: this.purpose.hoverBackgroundColor,
       background: 'default',
     })
   }
@@ -51,15 +51,22 @@ export class Callout extends Notification {
     const t = this.purpose
     return new Palette({
       text: t.textColor,
-      contrastText: t.contrastTextColor,
-      dimText: t.dimTextColor,
-      dimBackground: t.darkenColor,
-      controlBackground: t.darkenColor,
-      textBackground: t.textBackgroundColor,
-      highlight: t.highlightColor,
-      darken: t.darkenColor,
-      tableChecked: t.tableCheckedColor,
-      tableCheckedHighlight: t.tableCheckedHighlightColor,
+      mutedText: t.mutedTextColor,
+      placeholderText: t.placeholderTextColor,
+      accentText: t.accentTextColor,
+      flatBackground: t.pressedBackgroundColor,
+      raisedBackground: t.pressedBackgroundColor,
+      hoverBackground: t.hoverBackgroundColor,
+      focusBackground: t.focusBackgroundColor,
+      pressedBackground: t.pressedBackgroundColor,
+      selectionText: t.selectionTextColor,
+      selectionBackground: t.selectionBackgroundColor,
+      inactiveSelectionText: t.inactiveSelectionTextColor,
+      inactiveSelectionBackground: t.inactiveSelectionBackgroundColor,
+      scrimText: t.scrimTextColor,
+      scrimBackground: t.scrimBackgroundColor,
+      checkedBackground: t.checkedBackgroundColor,
+      checkedSelectionBackground: t.checkedSelectionBackgroundColor,
     })
   }
 

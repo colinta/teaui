@@ -260,22 +260,12 @@ export class Drawer extends Container {
       viewport.registerTick()
     }
 
-    const _uiStyle = this.purpose.ui({
+    const textStyle = this.purpose.ui({
+      variant: 'flat',
       isHover: this.isHover,
       isPressed: this.isPressed,
     })
-    const textStyle = this.purpose
-      .text({
-        isHover: this.isHover,
-        isPressed: this.isPressed,
-      })
-      .merge({foreground: _uiStyle.foreground})
-    const uiStyle =
-      this.isHover || this.isPressed
-        ? _uiStyle
-        : _uiStyle.merge({
-            background: textStyle.background,
-          })
+    const uiStyle = textStyle
 
     switch (this.#location) {
       case 'top':
@@ -547,15 +537,15 @@ export class Drawer extends Container {
         let drawer: [string, string, string]
         if (point.x === 0) {
           if (this.isHover) {
-            drawer = ['╮', '│', '│']
+            drawer = ['│', '│', '╰']
           } else {
-            drawer = ['╮', '│', '']
+            drawer = ['│', '╰', '']
           }
         } else if (point.x === maxX) {
           if (this.isHover) {
-            drawer = ['╭', '│', '│']
+            drawer = ['│', '│', '╯']
           } else {
-            drawer = ['╭', '│', '']
+            drawer = ['│', '╯', '']
           }
         } else {
           let chevron: string

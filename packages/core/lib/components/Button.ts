@@ -135,12 +135,16 @@ export class Button extends Container {
     }
 
     let textStyle = this.purpose.ui({
+      variant: 'raised',
       isPressed: this.isPressed,
-      isHover: this.isHover || hasFocus,
+      isHover: this.isHover,
+      hasFocus,
     })
     let topsStyle = this.purpose.ui({
+      variant: 'raised',
       isPressed: this.isPressed,
-      isHover: this.isHover || hasFocus,
+      isHover: this.isHover,
+      hasFocus,
       isOrnament: true,
     })
     if (this.#foreground) {

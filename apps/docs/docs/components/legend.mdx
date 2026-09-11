@@ -22,8 +22,7 @@ strings (`'Ctrl+C'`).
 
 <Example name="legend" title="Legend" />
 
-`Legend` also supports a custom `separator` prop when you want a delimiter other
-than the default double-space.
+Legend items are always separated by three spaces.
 
 ## AutoLegend
 
@@ -35,16 +34,13 @@ than the default double-space.
 
 ### Legend
 
-| Prop        | Type           | Default | Description              |
-| ----------- | -------------- | ------- | ------------------------ |
-| `items`     | `LegendItem[]` | `[]`    | Array of key/label pairs |
-| `separator` | `string`       | `'  '`  | Delimiter between items  |
+| Prop    | Type           | Default | Description              |
+| ------- | -------------- | ------- | ------------------------ |
+| `items` | `LegendItem[]` | `[]`    | Array of key/label pairs |
 
 ### AutoLegend
 
-| Prop        | Type     | Default | Description                            |
-| ----------- | -------- | ------- | -------------------------------------- |
-| `separator` | `string` | `'  '`  | Delimiter between auto-generated items |
+`AutoLegend` has no component-specific props.
 
 ### LegendItem
 
@@ -81,4 +77,4 @@ Plain strings (e.g. `'q'`, `'?'`, `'1-9'`) are rendered as-is.
 ## Wrapping
 
 When items don't fit on a single line, Legend automatically wraps to multiple
-rows with column-aligned keys and labels.
+rows.

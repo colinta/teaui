@@ -20,6 +20,16 @@ describe('Progress', () => {
     expect(t.terminal.textContent()).toMatchSnapshot()
   })
 
+  it('rerenders when its value changes', () => {
+    const progress = new Progress({value: 0})
+    const t = testRender(progress, {width: 20, height: 1})
+
+    progress.value = 100
+    t.tick(16)
+
+    expect(t.terminal.textContent()).toBe('████████████████████')
+  })
+
   describe('showPercent', () => {
     it('shows percent centered by default', () => {
       const t = testRender(new Progress({value: 50, showPercent: true}), {

@@ -197,7 +197,7 @@ export class Calendar extends View {
   get #hoverStyle(): Style {
     return new Style({
       foreground: this.purpose.text().foreground,
-      background: this.purpose.darkenColor,
+      background: this.purpose.pressedBackgroundColor,
     })
   }
 
@@ -206,13 +206,13 @@ export class Calendar extends View {
   }
 
   get #rangeGapStyle(): Style {
-    return new Style({background: this.purpose.darkenColor})
+    return new Style({background: this.purpose.pressedBackgroundColor})
   }
 
   get #weekdayStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.purpose.highlightColor,
+      foreground: this.purpose.hoverBackgroundColor,
       background: this.purpose.text().background,
     })
   }
@@ -221,21 +221,21 @@ export class Calendar extends View {
     return new Style({
       bold: true,
       foreground: this.purpose.textColor,
-      background: this.purpose.darkenColor,
+      background: this.purpose.pressedBackgroundColor,
     })
   }
 
   get #inRangeStyle(): Style {
     return new Style({
-      foreground: this.purpose.highlightColor,
-      background: this.purpose.darkenColor,
+      foreground: this.purpose.hoverBackgroundColor,
+      background: this.purpose.pressedBackgroundColor,
     })
   }
 
   get #todayStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.purpose.contrastTextColor,
+      foreground: this.purpose.accentTextColor,
       background: this.purpose.text().background,
     })
   }
@@ -244,15 +244,15 @@ export class Calendar extends View {
     return new Style({
       bold: true,
       foreground: this.purpose.text().foreground,
-      background: this.purpose.darkenColor,
+      background: this.purpose.focusBackgroundColor,
     })
   }
 
   get #selectedStyle(): Style {
     return new Style({
       bold: true,
-      foreground: this.purpose.textColor,
-      background: this.purpose.highlightColor,
+      foreground: this.purpose.selectionTextColor,
+      background: this.purpose.selectionBackgroundColor,
     })
   }
 
@@ -914,9 +914,9 @@ export class Calendar extends View {
     const yearStr = this.#formatYearTitle(this.#visibleDate)
 
     const textStyle = this.purpose.text()
-    const dimStyle = this.purpose.text({isPlaceholder: true})
+    const dimStyle = this.purpose.text({tone: 'muted'})
     const hoverStyle = this.#hoverStyle
-    const headerStyle = this.purpose.ui({isHover: false})
+    const headerStyle = this.purpose.ui({variant: 'raised'})
     const selectedStyle = this.#selectedStyle
     const todayStyle = this.#todayStyle
     const inRangeStyle = this.#inRangeStyle
@@ -1072,7 +1072,7 @@ export class Calendar extends View {
 
   #renderMonths(viewport: Viewport) {
     const textStyle = this.purpose.text()
-    const headerStyle = this.purpose.ui({isHover: false})
+    const headerStyle = this.purpose.ui({variant: 'raised'})
     const currentMonth = this.#visibleDate.getMonth()
 
     viewport.paint(textStyle, this.#widgetRect(viewport))
@@ -1120,7 +1120,7 @@ export class Calendar extends View {
 
   #renderYears(viewport: Viewport) {
     const textStyle = this.purpose.text()
-    const headerStyle = this.purpose.ui({isHover: false})
+    const headerStyle = this.purpose.ui({variant: 'raised'})
     const currentYear = this.#visibleDate.getFullYear()
 
     viewport.paint(textStyle, this.#widgetRect(viewport))

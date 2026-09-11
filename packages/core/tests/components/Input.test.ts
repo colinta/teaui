@@ -1,5 +1,6 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
+import {Box} from '../../lib/components/Box.js'
 import {Input} from '../../lib/components/Input.js'
 
 describe('Input', () => {
@@ -18,6 +19,14 @@ describe('Input', () => {
         {width: 20, height: 1},
       )
       expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('renders wrapped single-line input across visual lines', () => {
+      const t = testRender(new Input({value: 'abcdefghij', wrap: true}), {
+        width: 5,
+        height: 3,
+      })
+      expect(t.terminal.textContent()).toBe('abcde\nfghij')
     })
 
     it('renders empty input without crashing', () => {
@@ -620,17 +629,91 @@ describe('Input', () => {
   })
 
   describe('focus', () => {
-    it('uses a dim background only while focused', () => {
-      const t = testRender(new Input({value: 'hello'}), {
+    it('only draws a single-line background on the first line', () => {
+      const singleLine = testRender(
+        new Input({value: 'hello', purpose: 'primary'}),
+        {width: 10, height: 3},
+      )
+      expect(singleLine.terminal.styleAt(0, 0).background).toBeDefined()
+      expect(singleLine.terminal.styleAt(0, 1).background).toBe('default')
+      expect(singleLine.terminal.styleAt(0, 2).background).toBe('default')
+
+      const multiline = testRender(
+        new Input({value: 'hello', purpose: 'primary', multiline: true}),
+        {width: 10, height: 3},
+      )
+      expect(multiline.terminal.styleAt(0, 1).background).toEqual(
+        multiline.terminal.styleAt(0, 0).background,
+      )
+      expect(multiline.terminal.styleAt(0, 2).background).toEqual(
+        multiline.terminal.styleAt(0, 0).background,
+      )
+    })
+
+    it('uses distinct flat UI backgrounds for focus and rest', () => {
+      const t = testRender(new Input({value: 'hello', purpose: 'primary'}), {
         width: 10,
         height: 1,
       })
-      expect(t.terminal.styleAt(0, 0).background).toEqual([67, 67, 67])
-      expect(t.terminal.styleAt(9, 0).background).toEqual([67, 67, 67])
+      expect(t.terminal.styleAt(0, 0)).toMatchObject({
+        foreground: [226, 226, 226],
+        background: [33, 54, 95],
+        bold: true,
+      })
+      expect(t.terminal.styleAt(9, 0).background).toEqual([33, 54, 95])
 
       t.sendKey('tab')
-      expect(t.terminal.styleAt(0, 0).background).toBeUndefined()
-      expect(t.terminal.styleAt(9, 0).background).toBeUndefined()
+      expect(t.terminal.styleAt(0, 0)).toMatchObject({
+        foreground: [226, 226, 226],
+        background: [39, 63, 112],
+      })
+      expect(t.terminal.styleAt(0, 0).bold).not.toBe(true)
+      expect(t.terminal.styleAt(9, 0).background).toEqual([39, 63, 112])
+    })
+
+    it('inherits the parent surface as its resting background', () => {
+      const t = testRender(
+        new Box({
+          border: 'single',
+          purpose: 'primary',
+          child: new Input({value: 'hello'}),
+        }),
+        {width: 10, height: 3},
+      )
+      t.sendKey('tab')
+
+      expect(t.terminal.styleAt(1, 1).background).toEqual([39, 63, 112])
+      expect(t.terminal.styleAt(0, 0).background).toEqual([39, 63, 112])
+    })
+
+    it('uses the lighter hover background separately from focus', () => {
+      const t = testRender(new Input({value: 'hello', purpose: 'primary'}), {
+        width: 10,
+        height: 1,
+      })
+      t.sendKey('tab')
+      t.sendMouse('mouse.move', {x: 0, y: 0})
+
+      expect(t.terminal.styleAt(0, 0).background).toEqual([90, 122, 194])
+    })
+
+    it('keeps placeholder text visible on resting and focused surfaces', () => {
+      const t = testRender(
+        new Input({placeholder: 'Type here', purpose: 'primary'}),
+        {width: 10, height: 1},
+      )
+
+      expect(t.terminal.styleAt(0, 0)).toMatchObject({
+        foreground: [143, 166, 211],
+        background: [33, 54, 95],
+        bold: true,
+      })
+
+      t.sendKey('tab')
+      expect(t.terminal.styleAt(0, 0)).toMatchObject({
+        foreground: [143, 166, 211],
+        background: [39, 63, 112],
+      })
     })
 
     it('plain tab changes focus, not inserted', () => {

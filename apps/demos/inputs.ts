@@ -1,4 +1,12 @@
-import {AutoLegend, Box, Stack, Input, Space, Scrollable} from '@teaui/core'
+import {
+  AutoLegend,
+  Box,
+  Stack,
+  Input,
+  Space,
+  Scrollable,
+  type Purpose,
+} from '@teaui/core'
 import {codeHighlighter} from '@teaui/code'
 
 import {demo} from './demo.js'
@@ -63,19 +71,52 @@ function box(input: Input) {
   })
 }
 
+function themedBox(purpose: Purpose) {
+  return new Box({
+    border: 'single',
+    purpose,
+    title: purpose,
+    child: Stack.down([
+      new Input({value: `${purpose} input`}),
+      new Input({placeholder: `${purpose} placeholder`}),
+    ]),
+  })
+}
+
 demo(
   Stack.down([
     [
       'flex1',
-      Scrollable.down({
+      Stack.right({
+        height: 'fill',
         children: [
-          //
-          box(singleLine),
-          box(emptySingleLine),
-          box(wrapLine),
-          box(codeInput),
-          box(restrictedLine),
-          box(restrictedMultiLine),
+          [
+            'flex1',
+            Scrollable.down({
+              children: [
+                //
+                box(singleLine),
+                box(emptySingleLine),
+                box(wrapLine),
+                box(codeInput),
+                box(restrictedLine),
+                box(restrictedMultiLine),
+              ],
+            }),
+          ],
+          [
+            'flex1',
+            Scrollable.down({
+              children: [
+                themedBox('plain'),
+                themedBox('primary'),
+                themedBox('secondary'),
+                themedBox('proceed'),
+                themedBox('cancel'),
+                themedBox('selected'),
+              ],
+            }),
+          ],
         ],
       }),
     ],

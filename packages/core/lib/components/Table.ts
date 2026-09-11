@@ -556,10 +556,12 @@ export class Table<TData> extends Container {
 
   #cursorStyle(hasFocus: boolean): Style {
     return new Style({
-      foreground: this.purpose.textColor,
+      foreground: hasFocus
+        ? this.purpose.selectionTextColor
+        : this.purpose.inactiveSelectionTextColor,
       background: hasFocus
-        ? this.purpose.highlightColor
-        : this.purpose.dimBackgroundColor,
+        ? this.purpose.selectionBackgroundColor
+        : this.purpose.inactiveSelectionBackgroundColor,
       bold: hasFocus,
     })
   }
@@ -568,8 +570,8 @@ export class Table<TData> extends Container {
     return new Style({
       foreground: this.purpose.textColor,
       background: hasFocus
-        ? this.purpose.tableCheckedHighlightColor
-        : this.purpose.tableCheckedColor,
+        ? this.purpose.checkedSelectionBackgroundColor
+        : this.purpose.checkedBackgroundColor,
       bold: hasFocus,
     })
   }
@@ -596,7 +598,7 @@ export class Table<TData> extends Container {
     // Cursor row (not checked)
     const cursorStyle = this.#cursorStyle(hasFocus)
     const checkedRowStyle = new Style({
-      background: this.purpose.tableCheckedColor,
+      background: this.purpose.checkedBackgroundColor,
     })
     const cursorCheckedStyle = this.#cursorCheckedStyle(hasFocus)
 

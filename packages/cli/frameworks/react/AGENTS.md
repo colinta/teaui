@@ -48,7 +48,7 @@ Most components accept common view props: `purpose`, `heading`, `x/y`, `width/he
 - `Space` — empty spacer. Props: `background?` (+ use `width` / `height`).
 - `Separator` — divider line. Props: `direction`, `padding?`, `border?`. Helpers: `.horizontal/.vertical`.
 - `Breadcrumb` — clickable breadcrumb trail. Props: `items`, `isActive?`, `palette?`.
-- `Legend` — key legend / shortcut help. Props: `items`, `separator?`.
+- `Legend` — key legend / shortcut help. Props: `items`.
 - `HotKey` — catches a specific shortcut around children. Props: `children`, `hotKey`, `onPress?`.
 - `Keyboard` — fallback key handler. Props: `children`, `onKey?`.
 - `Mouse` — fallback mouse handler. Props: `children`, `mouse?`, `onMouse?`.

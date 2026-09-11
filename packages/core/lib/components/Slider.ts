@@ -586,13 +586,17 @@ export class Slider extends View {
     this.#contentSize = viewport.contentSize
 
     const sliderStyle = this.purpose.ui({
-      isHover: this.#isHoverSlider || hasFocus,
+      variant: 'raised',
+      isHover: this.#isHoverSlider,
+      hasFocus,
     })
     const decreaseButtonStyle = this.purpose.ui({
+      variant: 'raised',
       isPressed: this.#isPressingDecrease,
       isHover: this.#isHoverDecrease,
     })
     const increaseButtonStyle = this.purpose.ui({
+      variant: 'raised',
       isPressed: this.#isPressingIncrease,
       isHover: this.#isHoverIncrease,
     })

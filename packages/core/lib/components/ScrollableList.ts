@@ -431,12 +431,12 @@ export class ScrollableList<T> extends Container {
           new Style(
             inRange
               ? {
-                  foreground: this.purpose.highlightColor,
-                  background: this.purpose.highlightColor,
+                  foreground: this.purpose.hoverBackgroundColor,
+                  background: this.purpose.hoverBackgroundColor,
                 }
               : {
-                  foreground: this.purpose.darkenColor,
-                  background: this.purpose.darkenColor,
+                  foreground: this.purpose.pressedBackgroundColor,
+                  background: this.purpose.pressedBackgroundColor,
                 },
           ),
         )

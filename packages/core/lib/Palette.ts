@@ -1,6 +1,11 @@
 import type {Color} from './Color.js'
 import {Style} from './Style.js'
 
+const DEFAULT_TEXT = 'default'
+const DEFAULT_MUTED_TEXT = '#808080(239)'
+const DEFAULT_SCRIM_TEXT = '#808080(239)'
+const DEFAULT_SCRIM_BACKGROUND = '#434343(238)'
+
 export type Purpose =
   | 'primary' // aka blue
   | 'blue'
@@ -13,98 +18,148 @@ export type Purpose =
   | 'selected'
   | 'plain'
 
-const defaultText = 'default'
-const defaultContrastText = '#FFF(16)'
-const defaultDimText = '#808080(239)'
-const defaultDimBackground = '#434343(238)'
+export type UIState = {
+  variant?: 'flat' | 'raised'
+  isPressed?: boolean
+  isHover?: boolean
+  hasFocus?: boolean
+  isOrnament?: boolean
+  isSelected?: boolean
+  isPlaceholder?: boolean
+}
 
-interface Props {
+export type TextTone = 'default' | 'muted' | 'placeholder' | 'accent'
+
+export type TextState = {
+  tone?: TextTone
+  isSelected?: boolean
+  hasFocus?: boolean
+}
+
+export interface PaletteProps {
   text?: Color
-  dimText?: Color
-  dimBackground?: Color
-  contrastText?: Color
-  controlBackground: Color
-  textBackground?: Color
-  highlight: Color
-  darken: Color
-  tableChecked?: Color
-  tableCheckedHighlight?: Color
+  mutedText?: Color
+  placeholderText?: Color
+  accentText?: Color
+  flatBackground?: Color
+  raisedBackground: Color
+  hoverBackground: Color
+  focusBackground: Color
+  pressedBackground: Color
+  selectionText?: Color
+  selectionBackground?: Color
+  inactiveSelectionText?: Color
+  inactiveSelectionBackground?: Color
+  scrimText?: Color
+  scrimBackground?: Color
+  checkedBackground?: Color
+  checkedSelectionBackground?: Color
   emoji?: boolean
 }
 
+/**
+ * Semantic colors for passive surfaces, controls, interaction states, and text.
+ *
+ * `ui()` resolves interactive states using this precedence:
+ * pressed > focus > hover > rest.
+ *
+ * Flat controls are the default and rest on `flatBackgroundColor` so they
+ * blend into a parent surface. Raised controls opt into
+ * `raisedBackgroundColor`.
+ */
 export class Palette {
   textColor: Color
-  contrastTextColor: Color
-  dimTextColor: Color
-  dimBackgroundColor: Color
-  controlBackgroundColor: Color
-  textBackgroundColor: Color
-  highlightColor: Color
-  darkenColor: Color
-  tableCheckedColor: Color
-  tableCheckedHighlightColor: Color
+  mutedTextColor: Color
+  placeholderTextColor: Color
+  accentTextColor: Color
+  flatBackgroundColor: Color
+  raisedBackgroundColor: Color
+  hoverBackgroundColor: Color
+  focusBackgroundColor: Color
+  pressedBackgroundColor: Color
+  selectionTextColor: Color
+  selectionBackgroundColor: Color
+  inactiveSelectionTextColor: Color
+  inactiveSelectionBackgroundColor: Color
+  scrimTextColor: Color
+  scrimBackgroundColor: Color
+  checkedBackgroundColor: Color
+  checkedSelectionBackgroundColor: Color
   emoji: boolean
 
   static plain = new Palette({
-    controlBackground: '#4F4F4F(239)',
-    textBackground: 'default',
-    highlight: '#616161(241)',
-    darken: '#3F3F3F(237)',
-    tableChecked: '#3a2040',
-    tableCheckedHighlight: '#4d2a55',
+    raisedBackground: '#4F4F4F(239)',
+    flatBackground: 'default',
+    hoverBackground: '#616161(241)',
+    focusBackground: '#3F3F3F(237)',
+    pressedBackground: '#303030(236)',
+    placeholderText: '#A0A0A0(247)',
+    checkedBackground: '#3a2040',
+    checkedSelectionBackground: '#4d2a55',
   })
   static primary = new Palette({
-    controlBackground: '#3B5EA7',
-    textBackground: '#273F70',
-    highlight: '#5A7AC2',
-    darken: '#314F8C',
-    tableChecked: '#6b4a1d',
-    tableCheckedHighlight: '#8a5f24',
+    raisedBackground: '#3B5EA7',
+    flatBackground: '#273F70',
+    hoverBackground: '#5A7AC2',
+    focusBackground: '#21365F',
+    pressedBackground: '#1B2C4E',
+    checkedBackground: '#6b4a1d',
+    checkedSelectionBackground: '#8a5f24',
     text: '#E2E2E2(253)',
-    contrastText: '#5A7AC2',
-    dimText: '#314F8C',
+    accentText: '#5A7AC2',
+    mutedText: '#738CC1',
+    placeholderText: '#8FA6D3',
   })
   static secondary = new Palette({
-    controlBackground: '#D0851C',
-    textBackground: '#805211',
-    highlight: '#D0924B',
-    darken: '#A66A16',
-    tableChecked: '#234a7a',
-    tableCheckedHighlight: '#2e629f',
+    raisedBackground: '#D0851C',
+    flatBackground: '#805211',
+    hoverBackground: '#D0924B',
+    focusBackground: '#6D460E',
+    pressedBackground: '#5A390C',
+    checkedBackground: '#234a7a',
+    checkedSelectionBackground: '#2e629f',
     text: '#E2E2E2(253)',
-    contrastText: '#D0924B',
-    dimText: '#A66A16',
+    accentText: '#D0924B',
+    mutedText: '#D9AC6C',
+    placeholderText: '#F2D09B',
   })
   static proceed = new Palette({
-    controlBackground: '#4A7A5B',
-    textBackground: '#2E4E3A',
-    highlight: '#58A877',
-    darken: '#3D664C',
-    tableChecked: '#5a3a70',
-    tableCheckedHighlight: '#71498d',
+    raisedBackground: '#4A7A5B',
+    flatBackground: '#2E4E3A',
+    hoverBackground: '#58A877',
+    focusBackground: '#274231',
+    pressedBackground: '#203729',
+    checkedBackground: '#5a3a70',
+    checkedSelectionBackground: '#71498d',
     text: '#E2E2E2(253)',
-    contrastText: '#58A877',
-    dimText: '#3D664C',
+    accentText: '#58A877',
+    mutedText: '#7FB491',
+    placeholderText: '#9BC5AA',
   })
   static cancel = new Palette({
-    controlBackground: '#A04A4C',
-    textBackground: '#5B282A',
-    highlight: '#C46264',
-    darken: '#853D3F',
-    tableChecked: '#1f5b63',
-    tableCheckedHighlight: '#2b737d',
+    raisedBackground: '#A04A4C',
+    flatBackground: '#5B282A',
+    hoverBackground: '#C46264',
+    focusBackground: '#4D2224',
+    pressedBackground: '#401C1D',
+    checkedBackground: '#1f5b63',
+    checkedSelectionBackground: '#2b737d',
     text: '#E2E2E2(253)',
-    contrastText: '#C46264',
-    dimText: '#853D3F',
+    accentText: '#C46264',
+    mutedText: '#C98284',
+    placeholderText: '#D9A0A1',
   })
   static selected = new Palette({
     text: '#383838(236)',
-    controlBackground: '#BDBDBD(250)',
-    textBackground: '#BDBDBD(250)',
-    highlight: '#E6E6E6(254)',
-    darken: '#7F7F7F(243)',
-    tableChecked: '#8fa1c8',
-    tableCheckedHighlight: '#a7b8dc',
+    mutedText: '#5A5A5A(240)',
+    placeholderText: '#666666(241)',
+    raisedBackground: '#BDBDBD(250)',
+    flatBackground: '#BDBDBD(250)',
+    hoverBackground: '#E6E6E6(254)',
+    focusBackground: '#A1A1A1(247)',
+    pressedBackground: '#8E8E8E(245)',
+    checkedBackground: '#8fa1c8',
+    checkedSelectionBackground: '#a7b8dc',
   })
   static red = Palette.cancel
   static green = Palette.proceed
@@ -113,141 +168,157 @@ export class Palette {
 
   constructor({
     text,
-    contrastText,
-    dimText,
-    dimBackground,
-    controlBackground,
-    textBackground,
-    highlight,
-    darken,
-    tableChecked,
-    tableCheckedHighlight,
+    mutedText,
+    placeholderText,
+    accentText,
+    flatBackground,
+    raisedBackground,
+    hoverBackground,
+    focusBackground,
+    pressedBackground,
+    selectionText,
+    selectionBackground,
+    inactiveSelectionText,
+    inactiveSelectionBackground,
+    scrimText,
+    scrimBackground,
+    checkedBackground,
+    checkedSelectionBackground,
     emoji,
-  }: Props) {
-    this.textColor = text ?? defaultText
-    this.contrastTextColor = contrastText ?? defaultContrastText
-    this.dimTextColor = dimText ?? defaultDimText
-    this.dimBackgroundColor = dimBackground ?? defaultDimBackground
-    this.controlBackgroundColor = controlBackground
-    this.textBackgroundColor = textBackground ?? controlBackground
-    this.highlightColor = highlight
-    this.darkenColor = darken
-    this.tableCheckedColor = tableChecked ?? Palette.plain.tableCheckedColor
-    this.tableCheckedHighlightColor =
-      tableCheckedHighlight ?? Palette.plain.tableCheckedHighlightColor
+  }: PaletteProps) {
+    this.textColor = text ?? DEFAULT_TEXT
+    this.mutedTextColor = mutedText ?? DEFAULT_MUTED_TEXT
+    this.placeholderTextColor = placeholderText ?? this.mutedTextColor
+    this.accentTextColor = accentText ?? this.textColor
+    this.flatBackgroundColor = flatBackground ?? raisedBackground
+    this.raisedBackgroundColor = raisedBackground
+    this.hoverBackgroundColor = hoverBackground
+    this.focusBackgroundColor = focusBackground
+    this.pressedBackgroundColor = pressedBackground
+    this.selectionTextColor = selectionText ?? this.textColor
+    this.selectionBackgroundColor = selectionBackground ?? hoverBackground
+    this.inactiveSelectionTextColor =
+      inactiveSelectionText ?? this.mutedTextColor
+    this.inactiveSelectionBackgroundColor =
+      inactiveSelectionBackground ?? focusBackground
+    this.scrimTextColor = scrimText ?? DEFAULT_SCRIM_TEXT
+    this.scrimBackgroundColor = scrimBackground ?? DEFAULT_SCRIM_BACKGROUND
+    this.checkedBackgroundColor =
+      checkedBackground ?? Palette.plain.checkedBackgroundColor
+    this.checkedSelectionBackgroundColor =
+      checkedSelectionBackground ??
+      Palette.plain.checkedSelectionBackgroundColor
     this.emoji = emoji ?? true
   }
 
-  /**
-   * "Ornament" is meant to draw decorative characters that disappear on hover/press
-   */
   ui({
-    isPressed,
-    isHover,
-    isOrnament,
-  }: {
-    isPressed?: boolean
-    isHover?: boolean
-    isOrnament?: boolean
-  } = {}): Style {
-    if (isPressed) {
-      return new Style({
-        foreground: isOrnament ? this.darkenColor : this.textColor,
-        background: this.darkenColor,
-      })
-    } else if (isHover) {
-      return new Style({
-        foreground: isOrnament ? this.highlightColor : this.textColor,
-        background: this.highlightColor,
-      })
-    } else if (isOrnament) {
-      return new Style({
-        foreground: this.darkenColor,
-        background: this.controlBackgroundColor,
-      })
-    } else {
-      return new Style({
-        foreground: this.textColor,
-        background: this.controlBackgroundColor,
-      })
-    }
-  }
+    variant = 'flat',
+    isPressed = false,
+    isHover = false,
+    hasFocus = false,
+    isOrnament = false,
+    isSelected = false,
+    isPlaceholder = false,
+  }: UIState = {}): Style {
+    const background = isPressed
+      ? this.pressedBackgroundColor
+      : hasFocus
+        ? this.focusBackgroundColor
+        : isHover
+          ? this.hoverBackgroundColor
+          : variant === 'raised'
+            ? this.raisedBackgroundColor
+            : this.flatBackgroundColor
 
-  /**
-   * Creates a text style using the current purpose.
-   *
-   * Not all combinations are supported:
-   * - isSelected and isPlaceholder revert to just isPlaceholder
-   */
-  text({
-    isPressed,
-    isHover,
-    isSelected,
-    isPlaceholder,
-    hasFocus,
-  }: {
-    isPressed?: boolean
-    isHover?: boolean
-    isSelected?: boolean
-    isPlaceholder?: boolean
-    hasFocus?: boolean
-  } = {}): Style {
-    if (isPlaceholder) {
+    if (isOrnament) {
       return new Style({
-        foreground: isPressed ? this.textColor : this.dimTextColor,
-        background: isHover
-          ? this.dimBackgroundColor
-          : this.textBackgroundColor,
-        bold: hasFocus,
+        foreground:
+          isPressed || hasFocus || isHover
+            ? background
+            : this.pressedBackgroundColor,
+        background,
       })
     }
 
-    if (isPressed) {
+    if (isSelected) {
       return new Style({
-        foreground: this.highlightColor,
-        background: this.textBackgroundColor,
-        inverse: hasFocus && isSelected,
-        bold: hasFocus,
-      })
-    }
-
-    if (isHover) {
-      return new Style({
-        foreground: this.contrastTextColor,
-        background: this.textBackgroundColor,
-        inverse: hasFocus && isSelected,
-        bold: hasFocus,
-      })
-    }
-
-    if (isSelected && !hasFocus) {
-      return new Style({
-        foreground: this.dimTextColor,
-        background: this.dimBackgroundColor,
+        foreground: hasFocus
+          ? this.selectionTextColor
+          : this.inactiveSelectionTextColor,
+        background: hasFocus
+          ? this.selectionBackgroundColor
+          : this.inactiveSelectionBackgroundColor,
       })
     }
 
     return new Style({
-      foreground: this.textColor,
-      background: this.textBackgroundColor,
-      inverse: hasFocus && isSelected,
+      foreground: isPlaceholder ? this.placeholderTextColor : this.textColor,
+      background,
+    })
+  }
+
+  text({
+    tone = 'default',
+    isSelected = false,
+    hasFocus = false,
+  }: TextState = {}): Style {
+    if (isSelected) {
+      return new Style({
+        foreground: hasFocus
+          ? this.selectionTextColor
+          : this.inactiveSelectionTextColor,
+        background: hasFocus
+          ? this.selectionBackgroundColor
+          : this.inactiveSelectionBackgroundColor,
+        bold: hasFocus,
+      })
+    }
+
+    return new Style({
+      foreground: this.#textColor(tone),
+      background: this.flatBackgroundColor,
       bold: hasFocus,
     })
   }
 
-  merge(props: Partial<Props>): Palette {
+  #textColor(tone: TextTone): Color {
+    switch (tone) {
+      case 'muted':
+        return this.mutedTextColor
+      case 'placeholder':
+        return this.placeholderTextColor
+      case 'accent':
+        return this.accentTextColor
+      case 'default':
+        return this.textColor
+    }
+  }
+
+  merge(props: Partial<PaletteProps>): Palette {
     return new Palette({
       text: props.text ?? this.textColor,
-      contrastText: props.contrastText ?? this.contrastTextColor,
-      dimText: props.dimText ?? this.dimTextColor,
-      dimBackground: props.dimBackground ?? this.dimBackgroundColor,
-      controlBackground: props.controlBackground ?? this.controlBackgroundColor,
-      textBackground: props.textBackground ?? this.textBackgroundColor,
-      highlight: props.highlight ?? this.highlightColor,
-      darken: props.darken ?? this.darkenColor,
-      tableChecked: props.tableChecked ?? this.tableCheckedColor,
-      tableCheckedHighlight:
-        props.tableCheckedHighlight ?? this.tableCheckedHighlightColor,
+      mutedText: props.mutedText ?? this.mutedTextColor,
+      placeholderText: props.placeholderText ?? this.placeholderTextColor,
+      accentText: props.accentText ?? this.accentTextColor,
+      flatBackground: props.flatBackground ?? this.flatBackgroundColor,
+      raisedBackground: props.raisedBackground ?? this.raisedBackgroundColor,
+      hoverBackground: props.hoverBackground ?? this.hoverBackgroundColor,
+      focusBackground: props.focusBackground ?? this.focusBackgroundColor,
+      pressedBackground: props.pressedBackground ?? this.pressedBackgroundColor,
+      selectionText: props.selectionText ?? this.selectionTextColor,
+      selectionBackground:
+        props.selectionBackground ?? this.selectionBackgroundColor,
+      inactiveSelectionText:
+        props.inactiveSelectionText ?? this.inactiveSelectionTextColor,
+      inactiveSelectionBackground:
+        props.inactiveSelectionBackground ??
+        this.inactiveSelectionBackgroundColor,
+      scrimText: props.scrimText ?? this.scrimTextColor,
+      scrimBackground: props.scrimBackground ?? this.scrimBackgroundColor,
+      checkedBackground: props.checkedBackground ?? this.checkedBackgroundColor,
+      checkedSelectionBackground:
+        props.checkedSelectionBackground ??
+        this.checkedSelectionBackgroundColor,
       emoji: props.emoji ?? this.emoji,
     })
   }

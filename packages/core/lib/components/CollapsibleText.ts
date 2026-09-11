@@ -101,7 +101,7 @@ export class CollapsibleText extends View {
         viewport.write(
           this.#isCollapsed ? '► ' : '▼ ',
           Point.zero,
-          this.purpose.text({isPressed: this.isPressed}),
+          this.purpose.ui({variant: 'flat', isPressed: this.isPressed}),
         )
         offsetX = 2
       }

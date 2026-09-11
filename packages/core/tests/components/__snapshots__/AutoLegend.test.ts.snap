@@ -3,28 +3,29 @@
 exports[`AutoLegend > snapshot: focus changes legend content 1`] = `
 "a
 b
-⌃a/↖ Line Start  ⌃e/↘ Line End  ⌥, Start  ⌥. End  ⌃] Indent  ⌃[ Dedent  ⌃z Undo  ⌃⇧z Redo"
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start   ⌥. End   ⌃] Indent   ⌃[ Dedent   ⌥click Toggle Invisibles   ⌃z Undo"
 `;
 
 exports[`AutoLegend > snapshot: focus changes legend content 2`] = `
 "a
 b
-⌃a/↖ Line Start  ⌃e/↘ Line End  ⌥, Start  ⌥. End  ⌃z Undo  ⌃⇧z Redo"
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start   ⌥. End   ⌃z Undo   ⌃⇧z Redo"
 `;
 
 exports[`AutoLegend > snapshot: input with labeled HotKey 1`] = `
 "┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                                      │
 └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-⌃a/↖ Line Start  ⌃e/↘ Line End  ⌥, Start  ⌥. End  ⌃z Undo  ⌃⇧z Redo  ⌃x Quit"
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start   ⌥. End   ⌃z Undo   ⌃⇧z Redo   ⌃x Quit"
 `;
 
 exports[`AutoLegend > snapshot: multiline input legend 1`] = `
 "hello
-⌃a/↖ Line Start  ⌃e/↘ Line End  ⌥, Start  ⌥. End  ⌃] Indent  ⌃[ Dedent  ⌃z Undo  ⌃⇧z Redo"
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start   ⌥. End   ⌃] Indent   ⌃[ Dedent   ⌥click Toggle Invisibles   ⌃z Undo
+⌃⇧z Redo"
 `;
 
 exports[`AutoLegend > snapshot: single-line input legend 1`] = `
 "hello
-⌃a/↖ Line Start  ⌃e/↘ Line End  ⌥, Start  ⌥. End  ⌃z Undo  ⌃⇧z Redo"
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start   ⌥. End   ⌃z Undo   ⌃⇧z Redo"
 `;

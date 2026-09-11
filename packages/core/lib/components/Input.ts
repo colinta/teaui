@@ -6,7 +6,7 @@ import type {Viewport} from '../Viewport.js'
 import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
 import {Style} from '../Style.js'
-import {Point, Size} from '../geometry.js'
+import {Point, Rect, Size} from '../geometry.js'
 import {System} from '../System.js'
 import {type FontFamily, type LegendItem} from '../types.js'
 import {FONTS} from './fonts.js'
@@ -485,6 +485,8 @@ export class Input extends View {
   }
 
   receiveMouse(event: MouseEvent, system: System) {
+    super.receiveMouse(event, system)
+
     if (event.name === 'mouse.button.down') {
       system.requestFocus()
       if (event.alt) {
@@ -494,14 +496,25 @@ export class Input extends View {
     }
   }
 
-  #focusedBackgroundStyle(): Style {
-    return new Style({background: this.purpose.dimBackgroundColor})
-  }
-
-  #withFocusBackground(style: Style, hasFocus: boolean): Style {
-    return style.merge({
-      background: hasFocus ? this.purpose.dimBackgroundColor : null,
-    })
+  #inputStyle({
+    isPlaceholder = false,
+    isSelected = false,
+    hasFocus = false,
+  }: {
+    isPlaceholder?: boolean
+    isSelected?: boolean
+    hasFocus?: boolean
+  } = {}): Style {
+    return this.purpose
+      .ui({
+        variant: 'flat',
+        isPressed: this.isPressed,
+        isHover: this.isHover,
+        hasFocus,
+        isPlaceholder,
+        isSelected,
+      })
+      .merge({bold: hasFocus})
   }
 
   render(viewport: Viewport) {
@@ -514,13 +527,33 @@ export class Input extends View {
       return
     }
 
+    const renderHeight = this.#multiline
+      ? viewport.contentSize.height
+      : Math.min(
+          viewport.contentSize.height,
+          this.naturalSize(viewport.contentSize).height,
+        )
+    viewport.clipped(
+      new Rect(Point.zero, new Size(viewport.contentSize.width, renderHeight)),
+      inside => this.#renderInside(inside, hasFocus),
+    )
+  }
+
+  #renderInside(viewport: Viewport, hasFocus: boolean) {
     const visibleSize = viewport.contentSize
 
     if (hasFocus) {
       viewport.registerTick()
-      viewport.paint(this.#focusedBackgroundStyle())
     }
-    viewport.registerMouse('mouse.button.left')
+    viewport.registerMouse(['mouse.button.left', 'mouse.move'])
+    viewport.paint(
+      this.purpose.ui({
+        variant: 'flat',
+        isPressed: this.isPressed,
+        isHover: this.isHover,
+        hasFocus,
+      }),
+    )
 
     // cursorEnd: the location of the cursor relative to the text
     // (ie if the text had been drawn at 0,0, cursorEnd is the screen location of
@@ -575,19 +608,9 @@ export class Input extends View {
 
     let isPlaceholder = !this.#chars.length
     let currentStyle = Style.NONE
-    const plainStyle = this.#withFocusBackground(
-      this.purpose.text({isPlaceholder, hasFocus}),
-      hasFocus,
-    )
-    const selectedStyle = this.#withFocusBackground(
-      this.purpose.text({isSelected: true, hasFocus}),
-      hasFocus,
-    )
-
-    const nlStyle = this.#withFocusBackground(
-      this.purpose.text({isPlaceholder: true}),
-      hasFocus,
-    )
+    const plainStyle = this.#inputStyle({isPlaceholder, hasFocus})
+    const selectedStyle = this.#inputStyle({isSelected: true, hasFocus})
+    const nlStyle = this.#inputStyle({isPlaceholder: true, hasFocus})
 
     const fontMap = this.#font && FONTS[this.#font]
 

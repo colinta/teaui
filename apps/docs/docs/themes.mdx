@@ -4,7 +4,7 @@ title: Palettes
 
 # Palettes & Styling
 
-TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout. All views also accept a `purpose` prop, which selects a `Palette` with shared colors like `textColor`, `highlightColor`, and `textBackgroundColor`. If `purpose` isn't defined, the palette is inherited from the parent. There are predefined palettes:
+TeaUI uses a `Style` object for colors and text decoration, plus component-specific props for borders and layout. All views also accept a `purpose` prop, which selects a `Palette` with semantic colors for surfaces, text, interaction states, selections, and overlays. If `purpose` isn't defined, the palette is inherited from the parent. There are predefined palettes:
 
 - `Palette.plain` — default, muted colors
 - `Palette.primary` aka `Palette.blue` e.g. '#3B5EA7'
@@ -12,6 +12,49 @@ TeaUI uses a `Style` object for colors and text decoration, plus component-speci
 - `Palette.proceed` aka `Palette.green` e.g. '#4A7A5B'
 - `Palette.cancel` aka `Palette.red` e.g. '#A04A4C'
 - `Palette.selected` optional text styling
+
+## Semantic colors
+
+| Role                   | Property                                                         |
+| ---------------------- | ---------------------------------------------------------------- |
+| Resting flat control   | `flatBackgroundColor`                                            |
+| Resting raised control | `raisedBackgroundColor`                                          |
+| Pointer hover          | `hoverBackgroundColor`                                           |
+| Keyboard focus         | `focusBackgroundColor`                                           |
+| Pointer/key press      | `pressedBackgroundColor`                                         |
+| Primary text           | `textColor`                                                      |
+| Secondary text         | `mutedTextColor`                                                 |
+| Placeholder text       | `placeholderTextColor`                                           |
+| Decorative accent text | `accentTextColor`                                                |
+| Active selection       | `selectionTextColor`, `selectionBackgroundColor`                 |
+| Inactive selection     | `inactiveSelectionTextColor`, `inactiveSelectionBackgroundColor` |
+| Modal scrim            | `scrimTextColor`, `scrimBackgroundColor`                         |
+| Checked rows           | `checkedBackgroundColor`, `checkedSelectionBackgroundColor`      |
+
+Use `variant: 'flat'` (the default) for controls that blend into their parent, such as `Input` and `CollapsibleText`, and `variant: 'raised'` for controls that stand apart, such as buttons and dropdowns.
+
+Interaction-state precedence is pressed, focus, hover, then rest:
+
+```ts
+palette.ui() // flat control at rest
+palette.ui({isHover: true})
+palette.ui({hasFocus: true})
+palette.ui({isPressed: true})
+palette.ui({isPlaceholder: true})
+palette.ui({variant: 'raised'}) // button or dropdown at rest
+```
+
+Use `palette.text()` for passive text surfaces and choose a semantic tone rather than an interaction state:
+
+```ts
+palette.text()
+palette.text({tone: 'muted'})
+palette.text({tone: 'placeholder'})
+palette.text({tone: 'accent'})
+palette.text({isSelected: true, hasFocus: true})
+```
+
+Focus and hover are deliberately separate: hover backgrounds are lighter, while focus backgrounds are darker. Components should pass `hasFocus` to `ui()` rather than treating focus as hover.
 
 ## Style Object
 
