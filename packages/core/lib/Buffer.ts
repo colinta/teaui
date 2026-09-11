@@ -53,14 +53,20 @@ export class Buffer implements Terminal {
    * Writes the string at the cursor from left to write. Exits on newline (no default
    * wrapping behavior).
    */
-  writeChar(char: string, x: number, y: number, style: Style) {
+  writeChar(
+    char: string,
+    x: number,
+    y: number,
+    style: Style,
+    knownWidth?: 1 | 2,
+  ) {
     x = ~~x
     y = ~~y
     if (char === '\n') {
       return
     }
 
-    const width = unicode.charWidth(char)
+    const width = knownWidth ?? unicode.charWidth(char)
     if (width === 0) {
       return
     }

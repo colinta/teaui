@@ -156,7 +156,7 @@ export class Text extends View {
   }
 
   render(viewport: Viewport) {
-    if (viewport.isEmpty) {
+    if (viewport.isEmpty || viewport.visibleRect.isEmpty) {
       return
     }
 
@@ -189,6 +189,12 @@ export class Text extends View {
               ? ~~((viewport.contentSize.width - lineWidth) / 2)
               : viewport.contentSize.width - lineWidth
         point.x = offsetX
+        if (!this.#wrap && !line.includes('\u001b')) {
+          viewport.write(line, point)
+          point.y += 1
+          continue
+        }
+
         for (const char of unicode.printableChars(line)) {
           const charWidth = unicode.charWidth(char)
           if (charWidth === 0) {
@@ -216,8 +222,8 @@ export class Text extends View {
           }
 
           point.x += charWidth
-          // do not early exit when point.x >= maxX. 'line' may contain ANSI codes that
-          // need to be picked up by mergePen.
+          // ANSI style changes may carry into later lines, so styled text must
+          // continue parsing after the visible range.
         }
 
         point.y += 1

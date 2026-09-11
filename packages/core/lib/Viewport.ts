@@ -227,6 +227,39 @@ export class Viewport {
     }
   }
 
+  /** Writes one known-width printable cell without parsing the input. */
+  writeCell(
+    input: string,
+    x: number,
+    y: number,
+    style?: Style,
+    width: 1 | 2 = 1,
+  ) {
+    if (
+      x < this.#visibleRect.minX() ||
+      x + width > this.#visibleRect.maxX() ||
+      y < this.#visibleRect.minY() ||
+      y >= this.#visibleRect.maxY()
+    ) {
+      return
+    }
+
+    this.#terminal.writeChar(
+      input,
+      this.#offset.x + x,
+      this.#offset.y + y,
+      style ?? this.#style,
+      width,
+    )
+    if (this.#currentRender?.screen === this.#screen) {
+      this.#screen.checkMouse(
+        this.#currentRender,
+        this.#offset.x + x,
+        this.#offset.y + y,
+      )
+    }
+  }
+
   /**
    * Does not support newlines (no default wrapping behavior),
    * always prints left-to-right.
@@ -241,6 +274,29 @@ export class Viewport {
     }
 
     style ??= this.#style
+    if (ASCII_PRINTABLE.test(input)) {
+      const start = Math.max(0, Math.ceil(minX - to.x))
+      const end = Math.min(input.length, Math.ceil(maxX - to.x))
+      for (let index = start; index < end; index++) {
+        const x = to.x + index
+        this.#terminal.writeChar(
+          input.charAt(index),
+          this.#offset.x + x,
+          this.#offset.y + to.y,
+          style,
+          1,
+        )
+        if (this.#currentRender?.screen === this.#screen) {
+          this.#screen.checkMouse(
+            this.#currentRender,
+            this.#offset.x + x,
+            this.#offset.y + to.y,
+          )
+        }
+      }
+      return
+    }
+
     const startingStyle = style
     let x = to.x,
       y = to.y
@@ -250,7 +306,7 @@ export class Viewport {
       }
 
       if (x >= maxX) {
-        continue
+        break
       }
 
       const width = unicode.charWidth(char)
@@ -458,6 +514,8 @@ export class Viewport {
     this.#visibleRect = prevVisibleRect
   }
 }
+
+const ASCII_PRINTABLE = /^[\x20-\x7e]*$/
 
 class Pen {
   #setter: (style?: Style) => void

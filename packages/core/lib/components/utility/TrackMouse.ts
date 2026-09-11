@@ -46,7 +46,7 @@ export class TrackMouse extends Container {
           cx % 10 === 0
             ? (['0', '⠁', '⠉', '⠋', '⠛', '⠟', '⠿', '⡿', '⣿'][cx / 10] ?? 'X')
             : `${cx % 10}`
-        viewport.write(char, new Point(x, 0))
+        viewport.writeCell(char, x, 0)
       }
       for (let y = 1; y < maxY; ++y) {
         const cy = y - 1
@@ -55,7 +55,7 @@ export class TrackMouse extends Container {
           cy % 10 === 0
             ? (['0', '⠁', '⠉', '⠋', '⠛', '⠟', '⠿', '⡿', '⣿'][cy / 10] ?? 'X')
             : `${cy % 10}`
-        viewport.write(char, new Point(0, y))
+        viewport.writeCell(char, 0, y)
       }
       pen.replacePen(Style.NONE)
 

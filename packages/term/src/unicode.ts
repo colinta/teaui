@@ -10,6 +10,8 @@ export const BG_DRAW = '\x14'
 
 const WIDE_BLACK_SQUARE = '⬛︎'
 const WIDE_WHITE_SQUARE = '⬜︎'
+const ASCII_PRINTABLE_MIN = 0x20
+const ASCII_PRINTABLE_MAX = 0x7e
 
 export interface AnsiLocation {
   start: number
@@ -24,11 +26,18 @@ export interface AnsiLocation {
  * characters take 2 cells. ANSI codes (\x1b[...) return 0.
  */
 export function charWidth(str: string): 0 | 1 | 2 {
+  if (str.length === 1) {
+    const code = str.charCodeAt(0)
+    if (code >= ASCII_PRINTABLE_MIN && code <= ASCII_PRINTABLE_MAX) {
+      return 1
+    }
+  }
+
   if (str === BG_DRAW) {
     return 1
   }
 
-  if (!str.length || ansiRegex().test(str)) {
+  if (!str.length || ANSI_TEST_REGEX.test(str)) {
     return 0
   }
 
@@ -465,14 +474,15 @@ export function printableChars(str: string): string[] {
  * Copied from https://github.com/chalk/ansi-regex/blob/main/index.js
  */
 function ansiRegex(): RegExp {
-  const ST = '(?:\\u0007|\\u001B\\u005C|\\u009C)'
-  const pattern = [
-    `[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ST})`,
-    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
-  ].join('|')
-
-  return new RegExp(pattern, 'g')
+  return new RegExp(ANSI_PATTERN, 'g')
 }
+
+const ANSI_STRING_TERMINATOR = '(?:\\u0007|\\u001B\\u005C|\\u009C)'
+const ANSI_PATTERN = [
+  `[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ANSI_STRING_TERMINATOR})`,
+  '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
+].join('|')
+const ANSI_TEST_REGEX = new RegExp(ANSI_PATTERN)
 
 /**
  * Returns an array of ranges indicating where the string includes ANSI sequences.

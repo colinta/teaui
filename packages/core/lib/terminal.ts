@@ -1,7 +1,13 @@
 import type {Style} from './Style.js'
 
 export interface Terminal {
-  writeChar(char: string, x: number, y: number, style: Style): void
+  writeChar(
+    char: string,
+    x: number,
+    y: number,
+    style: Style,
+    width?: 1 | 2,
+  ): void
   restyleChar(x: number, y: number, style: Style): void
   writeMeta(str: string): void
   paintRect(
