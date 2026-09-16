@@ -41,7 +41,12 @@ export function charWidth(str: string): 0 | 1 | 2 {
     return 0
   }
 
-  // Emoji support
+  // Emoji support. Country flags are pairs of regional indicators, which are
+  // emoji graphemes but do not have the Extended_Pictographic property.
+  if (REGIONAL_INDICATOR_FLAG_REGEX.test(str)) {
+    return 2
+  }
+
   if (str.length > 1 && /^\p{Extended_Pictographic}/u.test(str)) {
     if (str === WIDE_BLACK_SQUARE || str === WIDE_WHITE_SQUARE) {
       return 2
@@ -483,6 +488,7 @@ const ANSI_PATTERN = [
   '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
 ].join('|')
 const ANSI_TEST_REGEX = new RegExp(ANSI_PATTERN)
+const REGIONAL_INDICATOR_FLAG_REGEX = /^\p{Regional_Indicator}{2}$/u
 
 /**
  * Returns an array of ranges indicating where the string includes ANSI sequences.

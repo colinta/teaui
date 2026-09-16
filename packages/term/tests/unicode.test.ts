@@ -25,6 +25,22 @@ describe('unicode', () => {
       expect(charWidth(RED)).toBe(0)
     })
 
+    it('measures every regional-indicator flag as double-width', () => {
+      const regionalIndicators = Array.from({length: 26}, (_, index) =>
+        String.fromCodePoint(0x1f1e6 + index),
+      )
+
+      for (const first of regionalIndicators) {
+        for (const second of regionalIndicators) {
+          expect(charWidth(first + second)).toBe(2)
+        }
+      }
+    })
+
+    it('measures clock emoji as double-width', () => {
+      expect(charWidth('🕛')).toBe(2)
+    })
+
     it('measures combining marks as zero width', () => {
       expect(charWidth('\u0301')).toBe(0)
     })
