@@ -54,11 +54,17 @@ export interface ScreenOptions {
 
 export type Unsubscribe = () => void
 
+/** The input side of a Program, independent of rendering or transport lifecycle. */
+export interface EventSource {
+  /** Subscribe to system events. Returns a function that detaches this listener. */
+  onEvents(listener: (event: SystemEvent) => void): Unsubscribe
+}
+
 /**
  * The abstract interface that Screen depends on. Any terminal backend
  * (real terminal, test harness, web adapter, etc.) can implement this.
  */
-export interface Program extends SGRTerminal {
+export interface Program extends SGRTerminal, EventSource {
   /**
    * Prepare the terminal for application mode (e.g. configure the display,
    * enable mouse, hide cursor). Called once before the first render.
@@ -80,12 +86,6 @@ export interface Program extends SGRTerminal {
    * Refresh the terminal height. Returns whether the height changed.
    */
   refreshHeight(): Promise<boolean>
-
-  /**
-   * Subscribe to system events (key, mouse, paste, focus/blur).
-   * Returns an unsubscribe function.
-   */
-  onEvents(listener: (event: SystemEvent) => void): () => void
 
   /**
    * Subscribe to terminal resize events.

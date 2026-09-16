@@ -104,31 +104,61 @@ describe('Screen lifecycle', () => {
     screen.stop()
   })
 
-  test('waits for queued stdout teardown writes before exiting', () => {
-    let didFlushStdout: (() => void) | undefined
-    vi.spyOn(process.stdout, 'write').mockImplementation(((
-      _chunk: unknown,
-      callback?: () => void,
-    ) => {
-      didFlushStdout = callback
-      return true
-    }) as typeof process.stdout.write)
-    const exit = vi
-      .spyOn(process, 'exit')
-      .mockImplementation((() => undefined) as never)
-    const screen = new Screen(
-      new TestProgram({cols: 10, rows: 5}),
-      new Window(),
-    )
+  test('does not render from an exit callback after terminal teardown', () => {
+    const program = new TestProgram({cols: 10, rows: 5})
+    const screen = new Screen(program, new Text({text: 'rendered'}))
+    let didTeardown = false
+    screen.onExit(() => {
+      didTeardown = true
+    })
+    screen.onExit(() => {
+      expect(didTeardown).toBe(true)
+      screen.render()
+    })
+    screen.start()
+    const flush = vi.spyOn(program, 'flush')
 
-    screen.exit()
+    screen.stop()
 
-    expect(exit).not.toHaveBeenCalled()
-    expect(didFlushStdout).toBeTypeOf('function')
-
-    didFlushStdout?.()
-    expect(exit).toHaveBeenCalledWith(0)
+    expect(flush).not.toHaveBeenCalled()
   })
+
+  test.each([false, true])(
+    'waits for stdout before exiting (cleanup fails: %s)',
+    cleanupFails => {
+      const warning = vi
+        .spyOn(process, 'emitWarning')
+        .mockImplementation(() => {})
+      let didFlushStdout: (() => void) | undefined
+      vi.spyOn(process.stdout, 'write').mockImplementation(((
+        _chunk: unknown,
+        callback?: () => void,
+      ) => {
+        didFlushStdout = callback
+        return true
+      }) as typeof process.stdout.write)
+      const exit = vi
+        .spyOn(process, 'exit')
+        .mockImplementation((() => undefined) as never)
+      const screen = new Screen(
+        new TestProgram({cols: 10, rows: 5}),
+        new Window(),
+      )
+
+      if (cleanupFails)
+        screen.onExit(() => {
+          throw new Error('cleanup failed')
+        })
+      expect(() => screen.exit()).not.toThrow()
+
+      expect(warning).toHaveBeenCalledTimes(cleanupFails ? 1 : 0)
+      expect(exit).not.toHaveBeenCalled()
+      expect(didFlushStdout).toBeTypeOf('function')
+
+      didFlushStdout?.()
+      expect(exit).toHaveBeenCalledWith(0)
+    },
+  )
 })
 
 describe('TerminalProgram display options', () => {

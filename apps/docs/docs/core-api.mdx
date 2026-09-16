@@ -100,7 +100,19 @@ translate its physical row.
 
 TeaUI restores terminal state. Applications that install handlers for external
 process signals such as `SIGTERM` remain responsible for calling `screen.stop()`
-from those handlers. Calling `stop()` repeatedly is safe.
+from those handlers.
+
+#### Additional event sources
+
+`screen.addEventSource(source)` accepts any `EventSource` implementing
+`onEvents(listener) → unsubscribe`.
+
+```js
+const detach = screen.addEventSource(source)
+// Later: detach() — this doesn't close or stop the source itself.
+```
+
+The [Remote control](/docs/remote-control) WebSocket server is one such source.
 
 ### Updating Views
 

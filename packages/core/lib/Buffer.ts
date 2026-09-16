@@ -2,7 +2,7 @@ import * as unicode from '@teaui/term'
 
 import type {Terminal, SGRTerminal} from './terminal.js'
 import type {Color} from './Color.js'
-import {BG_DRAW} from './ansi.js'
+import {BG_DRAW, RESET} from './ansi.js'
 import {Style} from './Style.js'
 import {Size} from './geometry.js'
 
@@ -47,6 +47,36 @@ export class Buffer implements Terminal {
    */
   invalidate() {
     this.#prev = new Map()
+  }
+
+  /**
+   * Serialize the cells held in #prev as ANSI. Pending canvas writes are excluded; an empty or
+   * invalidated buffer returns empty text.
+   */
+  snapshot(): string {
+    const {width, height} = this.size
+    if (!this.#prev.size || !width || !height) return ''
+    const lines: string[] = []
+    for (let y = 0; y < height; y++) {
+      const row = this.#prev.get(y)
+      const output: string[] = [RESET]
+      let previousStyle = Style.NONE
+      for (let x = 0; x < width; ) {
+        const cell = row?.get(x) ?? EMPTY_CELL
+        // Wide-glyph continuation cells are not extra characters. A glyph that
+        // crosses the right edge contributes only its in-bounds blank cell.
+        const clipped = x + cell.width > width
+        if (!previousStyle.isEqual(cell.style)) {
+          output.push(cell.style.toSGR(previousStyle))
+          previousStyle = cell.style
+        }
+        output.push(clipped || cell.char === BG_DRAW ? ' ' : cell.char)
+        x += clipped ? 1 : cell.width
+      }
+      output.push(RESET)
+      lines.push(output.join(''))
+    }
+    return lines.join('\n')
   }
 
   /**

@@ -1,6 +1,11 @@
 import type {Rect, Point} from './geometry.js'
 import {Size} from './geometry.js'
-import {type Program, type ScreenOptions, type Unsubscribe} from './types.js'
+import {
+  type EventSource,
+  type Program,
+  type ScreenOptions,
+  type Unsubscribe,
+} from './types.js'
 import {View} from './View.js'
 import {Viewport} from './Viewport.js'
 import {Buffer} from './Buffer.js'
@@ -41,10 +46,9 @@ interface ScreenEventMap {
 
 export class Screen {
   #program: Program
-  #onExit?: () => void
+  #onExit: (() => void)[] = []
   #keyListeners: {pattern: string; fn: ScreenKeyListener}[] = []
-  #cleanupEvents?: () => void
-  #cleanupResize?: () => void
+  #cleanupEvents = new Set<Unsubscribe>()
   #isFocused: boolean
   #isRunning = false
   #didStop = false
@@ -141,15 +145,7 @@ export class Screen {
   }
 
   onExit(callback: () => void) {
-    if (this.#onExit) {
-      const prev = this.#onExit
-      this.#onExit = () => {
-        prev()
-        callback()
-      }
-    } else {
-      this.#onExit = callback
-    }
+    this.#onExit.push(callback)
   }
 
   /**
@@ -172,43 +168,49 @@ export class Screen {
     this.#isRunning = true
     this.rootView.moveToScreen(this)
 
-    this.#cleanupEvents = this.#program.onEvents(event => {
-      if (event.type === 'key') {
-        for (const {pattern, fn} of this.#keyListeners) {
-          if (matchKeyPattern(pattern, event)) {
-            fn(event.char, event)
-            if (!this.#isRunning) return
-          }
-        }
-      }
-
-      this.trigger(event)
-    })
-
-    this.#cleanupResize = this.#program.onResize(() => {
-      // A resize can move an inline region without changing its logical size.
-      // Always discard the physical-frame diff so every logical cell repaints.
-      this.#buffer.invalidate()
-      this.trigger({type: 'resize'})
-    })
+    this.addEventSource(this.#program)
+    this.#cleanupEvents.add(
+      this.#program.onResize(() => {
+        this.dispatch({type: 'resize'})
+      }),
+    )
 
     this.render()
   }
 
   /**
-   * Puts the screen back in normal terminal mode, restores the normal buffer
+   * Restore the terminal and detach input. Attempt every synchronous cleanup,
+   * including every onExit callback, then throw AggregateError if any failed.
    */
-  stop() {
-    if (this.#didStop) return
+  stop(): Error[] {
+    if (this.#didStop) return []
     this.#didStop = true
     this.#isRunning = false
-    this.#tickManager.stop()
-    this.rootView.moveToScreen(undefined)
-    this.#cleanupEvents?.()
-    this.#cleanupResize?.()
-    this.#cleanupEvents = undefined
-    this.#cleanupResize = undefined
-    this.#onExit?.()
+    const tasks = [
+      () => this.#tickManager.stop(),
+      () => this.rootView.moveToScreen(undefined),
+      ...this.#cleanupEvents,
+      ...this.#onExit,
+    ]
+    const errors: Error[] = []
+    for (const cleanup of tasks) {
+      try {
+        cleanup()
+      } catch (error) {
+        errors.push(
+          error instanceof Error
+            ? error
+            : new Error(
+                typeof error === 'string' ? error : 'Screen cleanup failed',
+                {cause: error},
+              ),
+        )
+      }
+    }
+    this.#cleanupEvents.clear()
+    this.#onExit.splice(0)
+
+    return errors
   }
 
   /**
@@ -226,6 +228,43 @@ export class Screen {
     } else {
       setTimeout(exitProcess, 0)
     }
+  }
+
+  /**
+   * Deliver an event through the same pipeline as terminal input, including
+   * screen.key() bindings (and quitChar). trigger() is the lower-level API.
+   */
+  dispatch(event: SystemEvent) {
+    if (!this.#isRunning) return
+    if (event.type === 'resize') {
+      // A resize can move an inline region without changing its logical size.
+      this.#buffer.invalidate()
+    } else if (event.type === 'key') {
+      for (const {pattern, fn} of this.#keyListeners) {
+        if (matchKeyPattern(pattern, event)) {
+          fn(event.char, event)
+          if (!this.#isRunning) return
+        }
+      }
+    }
+    this.trigger(event)
+  }
+
+  /**
+   * Subscribe another input source to dispatch(). The returned function detaches
+   * it; stop() detaches all sources. The caller owns the source's lifecycle.
+   */
+  addEventSource(source: EventSource): Unsubscribe {
+    if (this.#didStop)
+      throw new Error('Cannot add an event source to a stopped screen')
+    const cleanup = source.onEvents(event => this.dispatch(event))
+    const unsubscribe = () => {
+      if (this.#cleanupEvents.delete(unsubscribe)) cleanup()
+    }
+    this.#cleanupEvents.add(unsubscribe)
+    // A source may synchronously emit an event that stops the screen on subscribe.
+    if (this.#didStop) unsubscribe()
+    return unsubscribe
   }
 
   trigger(event: SystemEvent) {
@@ -422,7 +461,13 @@ export class Screen {
     return this.#naturalSizeRefreshState === 'refreshing-dirty'
   }
 
+  /** Delegate ANSI capture to Buffer. Does not trigger a render. */
+  snapshot(): string {
+    return this.#buffer.snapshot()
+  }
+
   render() {
+    if (this.#didStop) return
     if (this.#program.isUpdatingRegion) {
       this.#renderRequestedDuringRegionUpdate = true
       return
