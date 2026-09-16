@@ -1,0 +1,48 @@
+{
+  "name": "@teaui/remote-control",
+  "description": "Opt-in local WebSocket input and snapshots for TeaUI applications",
+  "author": "Colin T.A. Gray <colinta@colinta.com>",
+  "version": "1.17.16",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colinta/teaui"
+  },
+  "exports": {
+    ".": {
+      "types": "./.dist/index.d.ts",
+      "import": "./.dist/index.js",
+      "default": "./.dist/index.js"
+    }
+  },
+  "main": ".dist/index.js",
+  "types": ".dist/index.d.ts",
+  "files": [
+    ".dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "clean": "rm -rf .dist/",
+    "_build": "pnpm clean && pnpm tsc",
+    "build": "node ../../shared/check.js",
+    "typecheck": "tsc -p tsconfig.check.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">= 18.12.0"
+  },
+  "dependencies": {
+    "@teaui/core": "workspace:*",
+    "@teaui/result": "workspace:*",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@teaui/shared": "workspace:*",
+    "@types/ws": "^8.18.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

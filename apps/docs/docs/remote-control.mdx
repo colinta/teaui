@@ -1,0 +1,366 @@
+---
+title: Remote control
+---
+
+# Remote control
+
+TeaUI can expose a WebSocket so another process can drive an app using the same
+events as a real terminal and inspect its rendered buffer. This is useful
+for reproducing interaction sequences, UI integration tests, and profiling.
+
+Remote control is provided by the optional `@teaui/remote-control` package.
+
+## Event sources
+
+Input is a small protocol, separate from terminal output or transport lifecycle:
+
+```ts
+interface EventSource {
+  onEvents(listener: (event: SystemEvent) => void): Unsubscribe
+}
+```
+
+`RemoteControlServer` implements this protocol and is able to receive keyboard
+and mouse events from a client, and emit those to a TeaUI app.
+
+## Start a server
+
+Works with either the core or React API:
+
+```tsx
+import {RemoteControlServer} from '@teaui/remote-control'
+import {run} from '@teaui/react'
+
+const [screen] = await run(<App />)
+const remote = new RemoteControlServer() // idle source, OS-assigned port
+const detach = screen.addEventSource(remote) // safe before setup starts
+const detachSnapshot = remote.setSnapshotProvider(() => screen.snapshot())
+remote.onError(error => {
+  // Report via your application's logger. Not every error stops the server.
+  console.error(error)
+})
+remote.onListening(({url, port}) => {
+  // Publish the endpoint privately now that the socket has bound.
+  // Do not write the secret URL to the active TUI's stdout.
+})
+screen.onExit(() => {
+  detachSnapshot()
+  remote.close()
+}) // also cancels pending startup
+remote.listen() // start without awaiting; the callbacks handle the outcome
+
+// detach() stops delivery to this screen without closing the WebSocket server.
+```
+
+The source also works without any screen, in case you need to debug it I guess:
+
+```ts
+const remote = new RemoteControlServer({port: 9123})
+remote.onError(error => recorder.recordError(error))
+const unsubscribe = remote.onEvents(event => recorder.record(event))
+remote.listen()
+// Later (even if binding is still in progress):
+unsubscribe()
+remote.close()
+```
+
+### Awaiting a Result
+
+`remote.listen()` returns `Promise<Result<RemoteControlAddress,
+RemoteControlError>>`. It succeeds once the socket has bound, returning the url
+and port.
+
+```ts
+const remote = new RemoteControlServer()
+const result = await remote.listen()
+if (result.ok) {
+  const {url, port} = result.value // concrete address, not optional fields
+  // Publish the endpoint privately here.
+} else {
+  console.error(result.error)
+}
+// Close on shutdown, even when using the awaitable API.
+await remote.close()
+```
+
+Remote control uses its own error type `RemoteControlError` - see errors.ts.
+
+You can ignore the promise and use `onListening()`/`onError()` instead, as in the
+first example. Ignoring it does not imply success.
+
+### Start, stop, and restart
+
+| Server state             | What `listen()` does                                          |
+| ------------------------ | ------------------------------------------------------------- |
+| Idle, stopped, or failed | Start a new server.                                           |
+| Starting                 | Join the current startup.                                     |
+| Listening                | Return the current address.                                   |
+| Cleanup in progress      | Wait for cleanup attempts to finish, then start a new server. |
+
+`close()` cancels the current startup or stops the current server immediately.
+It does **not** remove callback registrations. Calling `listen()` again starts a
+new run with a fresh access token. Port `0` can produce a different port on restart;
+an explicit port is reused. Old clients must reconnect using the new URL.
+
+### Callback registrations and failures
+
+- `onEvents(listener)`, `onListening(listener)`, and `onError(listener)` return
+  detach functions. They work before startup and while stopped. Registrations
+  stay in place until detached, including across failures and restart.
+- Each detach function removes only its own registration. Registering the same
+  function twice creates two registrations. Repeating a detach is harmless.
+- `onListening()` notifies once per successful run. A late subscriber receives the
+  current address in a microtask, unless detached or that run has stopped.
+- `onError()` reports future errors only. It does not replay past failures.
+- Delivery uses a snapshot of registrations. A registration added during delivery
+  waits for the next event. A registration removed before its turn is not called.
+
+Failure handling depends on where the error occurs:
+
+| Failure                                                  | Handling                                                                                             |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Startup or HTTP/WebSocket server error                   | Stop the affected run; report through `onError()`. Pending startup also resolves an error Result.    |
+| Synchronous input callback error                         | Continue other input callbacks; return `dispatch-failed` to the client.                              |
+| Rejected async input work, or readiness callback failure | Report through `onError()`; leave the server running.                                                |
+| Reply transmission error                                 | Disconnect that client and report through `onError()`. Do not send a false `dispatch-failed` reply.  |
+| Error callback throws or rejects                         | Continue other error callbacks and emit a Node warning. Do not call the error callbacks recursively. |
+
+Input callback failures use `type: 'dispatch-failed'` with a `causes` array.
+One failure uses its safe cause message; multiple failures use a summary message.
+A single protocol conversion produces wire error replies for validation, input,
+and snapshot failures. Only `code` and `message` are sent, never local causes.
+An ACK does not wait for async work.
+Errors with no registered observer are ignored; startup results remain available
+through the returned promise. Warnings from failed error callbacks use Node's
+warning channel and may appear on stderr.
+
+`screen.stop()` detaches the screen from its sources without closing them. It
+attempts every synchronous cleanup and every `onExit` callback, including terminal
+restoration, even if one fails, and returns the collected errors without reporting
+or throwing them. Applications own error reporting and transport shutdown as shown above.
+
+Application signal handlers should call `screen.stop()` for `SIGTERM`/`SIGINT`.
+Publish private endpoint files from `onListening()` or a successful awaited Result,
+not immediately after calling `listen()`, and remove them when stopping.
+
+## Snapshots
+
+The application supplies snapshots explicitly; the server does not own or discover a
+screen. Register a provider once, then remote clients can request the current frame:
+
+```ts
+const detachSnapshot = remote.setSnapshotProvider(() => screen.snapshot())
+```
+
+The provider runs synchronously on each snapshot request. It survives server
+close/restart. Registering a new provider replaces the previous one; a stale detach
+function cannot remove its replacement. Detach it when its screen is no longer
+available. Missing providers return `snapshot-unavailable`; a thrown capture error
+returns `snapshot-failed` without affecting other clients or input delivery.
+
+`screen.snapshot()` returns one ANSI string. Each row starts and ends with a reset
+so it can be displayed independently. The string preserves blank rows and trailing
+spaces, with `\n` between rows and no extra trailing newline. Wide glyphs and
+grapheme clusters are not duplicated into their continuation cells.
+
+This is the **last flushed logical screen frame**, not terminal scrollback. It
+includes lazy background paints and overlays already drawn into the buffer. It
+excludes cursor movements, terminal titles, image protocols, and other metadata.
+Capture does not render, flush, clear the diff cache, or wait for React effects.
+Pending canvas writes are excluded. Before the first flush, or after buffer
+invalidation, the snapshot is an empty string.
+
+The provider always returns that ANSI representation. A request must select the
+wire representation:
+
+```json
+{"type": "snapshot", "format": "plain"}
+```
+
+The requesting client receives a snapshot **instead of an ACK**. Remote control
+removes ANSI for `plain`; it returns the provider string unchanged for `ansi`:
+
+```json
+{"type": "snapshot", "sequence": 1, "format": "plain", "snapshot": "hi"}
+```
+
+Applications can also send an ANSI snapshot to all currently connected clients:
+
+```ts
+remote.sendSnapshot('plain', screen.snapshot())
+```
+
+The server applies the selected conversion. Broadcasts use the same message shape
+but **omit `sequence`**. They do not consume a request sequence, and they are not
+queued for future connections or restarted runs. Drivers must not mistake a
+broadcast for the reply to an outstanding input request.
+
+To read output from a shell, request the representation you need:
+
+```sh
+printf '%s\n' '{"type":"snapshot","format":"plain"}' | node packages/remote-control/examples/remote-control.mjs /tmp/my-app-remote.json | jq -r '.snapshot'
+printf '%s\n' '{"type":"snapshot","format":"ansi"}' | node packages/remote-control/examples/remote-control.mjs /tmp/my-app-remote.json | jq -r '.snapshot'
+```
+
+For UI assertions, poll snapshots until the expected content appears with a bounded
+timeout. A request captures what has rendered _so far_; it does not force pending
+asynchronous application work to finish.
+
+## Protocol
+
+Send **one JSON text message per `SystemEvent` or snapshot request**, directly, with no wrapper.
+These are the existing types in `packages/core/lib/events/`, exported from
+`@teaui/core` as `SystemEvent`, `KeyEvent`, `SystemMouseEvent`, etc.
+
+```json
+{
+  "type": "key",
+  "name": "]",
+  "char": "]",
+  "full": "]",
+  "ctrl": false,
+  "alt": false,
+  "gui": false,
+  "shift": false
+}
+```
+
+```json
+{
+  "type": "mouse",
+  "name": "mouse.button.down",
+  "x": 6,
+  "y": 0,
+  "button": "left",
+  "ctrl": false,
+  "alt": false,
+  "gui": false,
+  "shift": false
+}
+```
+
+```json
+{
+  "type": "mouse",
+  "name": "mouse.button.up",
+  "x": 6,
+  "y": 0,
+  "button": "left",
+  "ctrl": false,
+  "alt": false,
+  "gui": false,
+  "shift": false
+}
+```
+
+```json
+{"type": "paste", "text": "hello world"}
+```
+
+Supported types:
+
+- **key** — all `KeyEvent` fields are required, including modifiers and `full`.
+  For example, Ctrl+C uses `name: "c"`, `char: "c"`, `full: "C-c"`, `ctrl: true`.
+- **mouse** — coordinates are zero-based terminal **cells**, relative to the
+  TeaUI screen (also for inline displays), not pixels. Use system-level names:
+  `mouse.move.in`, `mouse.button.down`, `mouse.button.up`, or
+  `mouse.wheel.up/down/left/right`. Use down then up for a click; down, move,
+  then up for a drag. TeaUI derives view-local enter/exit/drag events itself.
+  Negative coordinates are allowed for dragging outside the screen.
+- **paste** — a string `text`.
+- **focus / blur** — the existing focus/blur notifications.
+- **resize** — redraw using the current program dimensions. The existing event
+  has no size fields; it **does not resize a PTY**. The size is queried from the
+  application's session.
+
+When connected via `screen.addEventSource(remote)`, events enter
+`screen.dispatch()`, the same pipeline used by the primary program. This includes
+`screen.key()` bindings and `quitChar`, unlike the lower-level `screen.trigger()`
+method.
+
+### Replies and ordering
+
+Input messages receive an ACK or an error reply while the connection remains usable.
+Snapshot requests receive a snapshot or error reply.
+Oversized input, excessive reply buffering, transmission failure, or shutdown can
+close a connection without a reply. `sequence` starts at 1 for each connection and
+increases for every received message, including invalid messages:
+
+```json
+{"type": "ack", "sequence": 1}
+```
+
+```json
+{
+  "type": "error",
+  "sequence": 2,
+  "code": "invalid-event",
+  "message": "Expected a SystemEvent (key, mouse, paste, focus, blur, or resize) or snapshot request"
+}
+```
+
+Error codes: `invalid-json`, `invalid-event`, `binary-message`, `dispatch-failed`,
+`snapshot-unavailable`, `snapshot-failed`.
+Malformed messages are not dispatched. Oversized messages close the connection.
+
+An ACK confirms that all currently subscribed synchronous listeners returned.
+With a screen attached, this includes event dispatch and its synchronous render.
+With no listeners, the event is acknowledged but not delivered anywhere; attach
+sources before publishing their endpoints. **An ACK is not a React commit/effect
+or asynchronous-work barrier.** For UI assertions, wait until the expected
+output/state is observed. A quit event may close the socket before its ACK can be
+sent.
+
+Use one driver and one outstanding request at a time for deterministic replay.
+Multiple clients share the same screen/focus/mouse state.
+
+## Driver example
+
+From a source checkout, the included driver reads JSON events or snapshot requests
+one per stdin line and prints their replies. It prints unsolicited snapshots too,
+but matches request replies by `sequence`:
+
+```sh
+node packages/remote-control/examples/remote-control.mjs /tmp/my-app-remote.json <<'EVENTS'
+{"type":"mouse","name":"mouse.button.down","x":6,"y":0,"button":"left","ctrl":false,"alt":false,"gui":false,"shift":false}
+{"type":"mouse","name":"mouse.button.up","x":6,"y":0,"button":"left","ctrl":false,"alt":false,"gui":false,"shift":false}
+{"type":"key","name":"]","char":"]","full":"]","ctrl":false,"alt":false,"gui":false,"shift":false}
+EVENTS
+```
+
+Any standard WebSocket client works (for example `ws`, or Node 22+'s native
+`WebSocket`). No TeaUI-specific client is required.
+
+## Automated tests
+
+For in-process tests, TeaUI already provides `testRender()` with `sendKey()`,
+`sendMouse()`, `sendPaste()`, and output assertions. For network tests, construct a
+`Screen` with `TestProgram`, call `screen.start()`, create a `RemoteControlServer`,
+and attach it with `screen.addEventSource(remote)`. Call `await remote.listen()`
+and check the Result before connecting a WebSocket client to `result.value.url`.
+Register `remote.setSnapshotProvider(() => screen.snapshot())` and send snapshot
+requests to assert on content from the driver process. In-process tests can also
+inspect `program.terminal.textContent()` or `.styleOf()`. Close the server explicitly
+in test cleanup. Include a stop/restart test using the same source and registrations.
+
+To test the actual terminal app in another process, spawn it under a PTY (for
+example `node-pty`) and drive it over the WebSocket. A terminal emulator such as
+`@xterm/headless` can turn captured PTY output into cells for assertions. Feed the
+emulator's terminal-query responses back to the PTY as well.
+
+The WebSocket supports input and logical-buffer snapshots, not a continuous raw
+terminal-output stream. It deliberately bypasses ANSI input decoding, so keep PTY
+input/output tests for terminal protocol and escape-sequence handling.
+
+## Security
+
+The listener binds only to `127.0.0.1`, requires a fresh 256-bit token in the URL,
+and rejects browser `Origin` headers. It rejects binary messages and limits input
+payloads to 64 KiB. Outgoing JSON plus already buffered replies is capped at 8 MiB
+per client to accommodate styled full-screen snapshots; exceeding the cap disconnects
+that client without stopping the server.
+
+Treat the URL like a password: a holder can type, paste, click, quit, or read the
+contents of your app (including any secrets visible in snapshots).
+Do not put it in public logs, commit endpoint files, expose the port via a tunnel,
+or enable remote control in normal production sessions.

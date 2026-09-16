@@ -86,6 +86,7 @@ const sidebars: SidebarsConfig = {
       ],
     },
     'core-api',
+    'remote-control',
     'themes',
   ],
 }
