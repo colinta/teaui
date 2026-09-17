@@ -1,20 +1,29 @@
 #!/usr/bin/env node
 
-import {readFile, writeFile} from 'fs/promises'
+import {existsSync} from 'fs'
+import {readFile, readdir, writeFile} from 'fs/promises'
+import {join} from 'path'
 
 const MAIN_PACKAGE = 'packages/core/package.json'
 const VERSIONED_PACKAGES = [
   'shared/package.json',
-  'packages/cli/package.json',
-  'packages/code/package.json',
-  'packages/core/package.json',
-  'packages/image/package.json',
-  'packages/inspect/package.json',
-  'packages/log-viewer/package.json',
-  'packages/react/package.json',
-  'packages/subprocess/package.json',
-  'packages/term/package.json',
+  ...(await findPackageJsonFiles('packages')),
 ]
+
+async function findPackageJsonFiles(directory) {
+  const entries = await readdir(directory, {withFileTypes: true})
+  const packagePaths = entries
+    .filter(entry => entry.isDirectory())
+    .map(entry => join(directory, entry.name, 'package.json'))
+    .filter(packagePath => existsSync(packagePath))
+
+  return await Promise.all(
+    packagePaths.filter(async packagePath => {
+      const packageJson = await readPackageJson(packagePath)
+      return packageJson.name.startsWith('@teaui/')
+    }),
+  )
+}
 
 async function readPackageJson(filePath) {
   const content = await readFile(filePath, 'utf-8')
@@ -41,17 +50,28 @@ function bumpVersion(version, type) {
   }
 }
 
-async function updatePackageVersions(newVersion) {
-  for (const packagePath of VERSIONED_PACKAGES) {
-    const pkg = await readPackageJson(packagePath)
-    pkg.version = newVersion
-    await writePackageJson(packagePath, pkg)
-    console.info(`Updated ${packagePath} to version ${newVersion}`)
+async function updatePackageVersions(newVersion, isDryRun) {
+  const packages = await Promise.all(
+    VERSIONED_PACKAGES.map(async packagePath => ({
+      packagePath,
+      packageJson: await readPackageJson(packagePath),
+    })),
+  )
+
+  for (const {packagePath, packageJson} of packages) {
+    packageJson.version = newVersion
+    if (isDryRun) {
+      console.info(`[Dry-run] ${packagePath} to version ${newVersion}`)
+    } else {
+      await writePackageJson(packagePath, packageJson)
+      console.info(`Updated ${packagePath} to version ${newVersion}`)
+    }
   }
 }
 
 async function main() {
   const bumpType = process.argv[2]
+  const isDryRun = process.argv.includes('--dry-run')
 
   if (!['major', 'minor', 'bug', 'patch'].includes(bumpType)) {
     console.error('Please specify bump type: "major" "minor" or "patch"')
@@ -67,7 +87,7 @@ async function main() {
     console.info(`Bumped version from ${currentVersion} to ${newVersion}`)
 
     // Update all versioned workspace packages
-    await updatePackageVersions(newVersion)
+    await updatePackageVersions(newVersion, isDryRun)
 
     console.info('Version bump completed successfully!')
   } catch (error) {
