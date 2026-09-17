@@ -108,7 +108,7 @@ describe('Screen event sources', () => {
     )
   })
 
-  it('attempts every cleanup and exit callback before reporting failures', () => {
+  it('attempts every cleanup and exit callback before returning failures', () => {
     const {screen, program} = setup()
     const resizeCleanup = vi.fn()
     vi.spyOn(program, 'onResize').mockReturnValue(resizeCleanup)
@@ -126,23 +126,23 @@ describe('Screen event sources', () => {
     })
     const restoreTerminal = vi.fn()
     screen.onExit(restoreTerminal)
-    const warning = vi.spyOn(process, 'emitWarning').mockImplementation(() => {
-      expect(restoreTerminal).toHaveBeenCalledOnce()
-    })
-    expect(() => screen.stop()).not.toThrow()
-    expect(warning.mock.calls).toEqual([[detachFailure], [exitFailure]])
+    const warning = vi
+      .spyOn(process, 'emitWarning')
+      .mockImplementation(() => {})
+    const errors = screen.stop()
+    expect(errors).toEqual([detachFailure, exitFailure])
+    expect(warning).not.toHaveBeenCalled()
     expect(badCleanup).toHaveBeenCalledOnce()
     expect(goodCleanup).toHaveBeenCalledOnce()
     expect(resizeCleanup).toHaveBeenCalledOnce()
     expect(restoreTerminal).toHaveBeenCalledOnce()
-    screen.stop()
+    expect(screen.stop()).toEqual([])
     detach()
     expect(goodCleanup).toHaveBeenCalledOnce()
     expect(restoreTerminal).toHaveBeenCalledOnce()
-    expect(warning).toHaveBeenCalledTimes(2)
   })
 
-  it('reports all cleanup errors, including view and exit failures', () => {
+  it('returns all cleanup errors, including view and exit failures', () => {
     const {screen} = setup()
     screen.start()
     const viewFailure = new Error('view unmount failed')
@@ -157,31 +157,23 @@ describe('Screen event sources', () => {
     })
     const restored = vi.fn()
     screen.onExit(restored)
-    const warning = vi
-      .spyOn(process, 'emitWarning')
-      .mockImplementation(() => {})
-    expect(() => screen.stop()).not.toThrow()
-    expect(warning.mock.calls).toEqual([[viewFailure], [exitFailure]])
+    expect(screen.stop()).toEqual([viewFailure, exitFailure])
     expect(cleanup).toHaveBeenCalledOnce()
     expect(restored).toHaveBeenCalledOnce()
   })
 
   it.each(['cleanup failed', null, undefined, {reason: 'cleanup failed'}])(
-    'reports non-Error cleanup failures as warnings (%j)',
+    'returns non-Error cleanup failures as errors (%j)',
     failure => {
       const {screen} = setup()
       screen.start()
       screen.onExit(() => {
         throw failure
       })
-      const warning = vi
-        .spyOn(process, 'emitWarning')
-        .mockImplementation(() => {})
-      expect(() => screen.stop()).not.toThrow()
-      expect(warning).toHaveBeenCalledOnce()
-      const error = warning.mock.calls[0][0]
-      expect(error).toBeInstanceOf(Error)
-      expect(error).toHaveProperty('cause', failure)
+      const errors = screen.stop()
+      expect(errors).toHaveLength(1)
+      expect(errors[0]).toBeInstanceOf(Error)
+      expect(errors[0]).toHaveProperty('cause', failure)
     },
   )
 

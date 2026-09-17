@@ -60,6 +60,7 @@ import {
   Window,
 } from '@teaui/core'
 import {
+  TextBatch,
   TextContainer,
   TextLiteral,
   TextProvider,
@@ -271,6 +272,8 @@ function createInstance(type: string, props: Props): any {
 }
 
 export function render(screen: Screen, window: Window, rootNode: ReactNode) {
+  const textBatch = new TextBatch()
+  let finishTextBatch: (() => void) | undefined
   function rerender() {
     screen.render()
   }
@@ -323,7 +326,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
             if (previousChild instanceof TextContainer) {
               previousChild.add(child)
             } else {
-              const textContainer = new TextContainer()
+              const textContainer = new TextContainer(textBatch)
               parentInstance.add(textContainer, beforeIndex)
               textContainer.add(child)
             }
@@ -349,7 +352,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       if (lastChild instanceof TextContainer) {
         textContainer = lastChild
       } else {
-        textContainer = new TextContainer()
+        textContainer = new TextContainer(textBatch)
         parentInstance.add(textContainer)
       }
 
@@ -362,6 +365,11 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       : -1
     if (index === -1) {
       index = undefined
+    } else if (child.parent === parentInstance) {
+      // Container.add removes an existing child before inserting it. The
+      // before-child index was measured before that removal.
+      const oldIndex = parentInstance.children.indexOf(child)
+      if (oldIndex !== -1 && oldIndex < index) index -= 1
     }
 
     parentInstance.add(child, index)
@@ -442,9 +450,15 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       return false
     },
     prepareForCommit() {
+      finishTextBatch = textBatch.begin()
       return null
     },
     resetAfterCommit() {
+      try {
+        finishTextBatch?.()
+      } finally {
+        finishTextBatch = undefined
+      }
       rerender()
     },
 

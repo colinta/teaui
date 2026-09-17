@@ -34,14 +34,28 @@ const DEFAULTS = {
   font: 'default',
 } as const
 
+interface ParsedChar {
+  char: string
+  width: number
+  style: Style | undefined
+}
+
+interface RenderCache {
+  width: number | undefined
+  lines: [string, number][]
+  style?: Style
+  parsedLines?: ParsedChar[][]
+}
+
 export class Text extends View {
   #style: StyleProps['style']
   #text: string = ''
   #lines: [string, number][] = []
   #alignment: StyleProps['alignment'] = DEFAULTS.alignment
   #wrap: StyleProps['wrap'] = DEFAULTS.wrap
-  #wrappedLines?: [number, [string, number][]]
   #font: FontFamily = DEFAULTS.font
+  // One render layout per view, not a growing cache of past text or widths.
+  #renderCache?: RenderCache
 
   constructor(propsOrString: string | Props = {}) {
     let props: Props
@@ -131,7 +145,7 @@ export class Text extends View {
 
       return [line, unicode.lineWidth(line)]
     })
-    this.#wrappedLines = undefined
+    this.#renderCache = undefined
 
     this.invalidateSize()
   }
@@ -160,19 +174,27 @@ export class Text extends View {
       return
     }
 
-    let lines: [string, number][]
-    if (this.#wrap) {
-      lines = this.#wrapLines(this.#lines, viewport.contentSize.width)
-      // cache for future render
-      this.#wrappedLines = [viewport.contentSize.width, lines]
-    } else {
-      lines = this.#lines
+    const width = this.#wrap ? viewport.contentSize.width : undefined
+    let cache = this.#renderCache
+    if (!cache || cache.width !== width) {
+      cache = this.#renderCache = {
+        width,
+        lines: width === undefined ? this.#lines : wrap(this.#lines, width),
+      }
     }
+    const lines = cache.lines
 
     const startingStyle: Style = this.#style ?? Style.NONE
+    if (!cache.style?.isEqual(startingStyle)) {
+      // Copy primitive attributes to detect in-place Style mutations too.
+      cache.style = new Style(startingStyle)
+      cache.parsedLines = []
+    }
+    const parsedLines = cache.parsedLines!
     viewport.usingPen(startingStyle, pen => {
       const point = new Point(0, 0).mutableCopy()
-      for (let [line, lineWidth] of lines) {
+      for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        let [line, lineWidth] = lines[lineIndex]
         if (!line.length) {
           point.y += 1
           continue
@@ -195,11 +217,25 @@ export class Text extends View {
           continue
         }
 
-        for (const char of unicode.printableChars(line)) {
-          const charWidth = unicode.charWidth(char)
+        let parsed = parsedLines[lineIndex]
+        if (!parsed) {
+          parsed = []
+          for (const char of unicode.printableChars(line)) {
+            const width = unicode.charWidth(char)
+            parsed.push({
+              char,
+              width,
+              style:
+                width === 0 ? Style.fromSGR(char, startingStyle) : undefined,
+            })
+          }
+          parsedLines[lineIndex] = parsed
+        }
+        for (const {char, width: charWidth, style} of parsed) {
           if (charWidth === 0) {
-            // track the current style regardless of wether we are printing
-            pen.mergePen(Style.fromSGR(char, startingStyle))
+            // Replay deltas against the current pen; inherited viewport styles
+            // can change between renders even when text and layout do not.
+            pen.mergePen(style!)
             continue
           }
 
@@ -229,22 +265,5 @@ export class Text extends View {
         point.y += 1
       }
     })
-  }
-
-  #wrapLines(
-    lines: [string, number][],
-    contentWidth: number,
-  ): [string, number][] {
-    if (
-      this.#wrap &&
-      this.#wrappedLines &&
-      this.#wrappedLines[0] === contentWidth
-    ) {
-      return this.#wrappedLines[1]
-    }
-
-    const wrapped = wrap(lines, contentWidth)
-    this.#wrappedLines = [contentWidth, wrapped]
-    return wrapped
   }
 }

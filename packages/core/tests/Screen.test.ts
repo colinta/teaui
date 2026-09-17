@@ -145,13 +145,15 @@ describe('Screen lifecycle', () => {
         new Window(),
       )
 
+      const cleanupFailure = new Error('cleanup failed')
       if (cleanupFails)
         screen.onExit(() => {
-          throw new Error('cleanup failed')
+          throw cleanupFailure
         })
-      expect(() => screen.exit()).not.toThrow()
+      const errors = screen.exit()
 
-      expect(warning).toHaveBeenCalledTimes(cleanupFails ? 1 : 0)
+      expect(errors).toEqual(cleanupFails ? [cleanupFailure] : [])
+      expect(warning).not.toHaveBeenCalled()
       expect(exit).not.toHaveBeenCalled()
       expect(didFlushStdout).toBeTypeOf('function')
 

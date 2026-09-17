@@ -59,6 +59,38 @@ import {
 namespace _TextReact {}
 // yeah I don't care about this namespace I just needed something to attach the JSDoc to
 
+/** Commit-scoped text batching owned by one React root. */
+export class TextBatch {
+  #active: Set<TextContainer> | undefined
+
+  begin(): () => void {
+    const previous = this.#active
+    const batch = new Set<TextContainer>()
+    this.#active = batch
+    let closed = false
+    return () => {
+      if (closed) return
+      closed = true
+      try {
+        // Materializing a parent may dirty/mount additional text containers.
+        while (batch.size) {
+          const container = batch.values().next().value!
+          batch.delete(container)
+          container.flushTextUpdates()
+        }
+      } finally {
+        this.#active = previous
+      }
+    }
+  }
+
+  enqueue(container: TextContainer): boolean {
+    if (!this.#active) return false
+    this.#active.add(container)
+    return true
+  }
+}
+
 const DEFAULTS = {
   alignment: 'left',
   wrap: true,
@@ -151,13 +183,23 @@ export class TextLiteral extends View {
  */
 export class TextContainer extends Container {
   #nodes: View[] = []
+  #pendingTextUpdate: 'text' | 'nodes' | undefined
+  #flushingText = false
+  #textBatch: TextBatch | undefined
 
-  constructor() {
+  constructor(textBatch?: TextBatch) {
     super({})
+    this.#textBatch = textBatch
   }
 
   get nodes() {
     return this.#nodes
+  }
+
+  get children() {
+    // Imperative readers and natural-size/layout calls must never observe stale text.
+    this.flushTextUpdates()
+    return super.children
   }
 
   add(child: View, at?: number) {
@@ -210,6 +252,41 @@ export class TextContainer extends Container {
   }
 
   invalidateText() {
+    this.#queueTextUpdate('text')
+  }
+
+  #queueTextUpdate(kind: 'text' | 'nodes') {
+    const wasPending = this.#pendingTextUpdate !== undefined
+    if (kind === 'nodes' || !wasPending) this.#pendingTextUpdate = kind
+    if (!this.#textBatch?.enqueue(this)) {
+      this.flushTextUpdates()
+      return
+    }
+
+    // Clear cached ancestor measurements even if a read happens during the commit.
+    if (!wasPending) this.invalidateSize()
+  }
+
+  /** Internal; also used by synchronous reads while a commit is in progress. */
+  flushTextUpdates() {
+    if (this.#flushingText) return
+    this.#flushingText = true
+    try {
+      while (this.#pendingTextUpdate !== undefined) {
+        const kind = this.#pendingTextUpdate
+        this.#pendingTextUpdate = undefined
+        if (kind === 'nodes') {
+          this.#invalidateNodes()
+        } else {
+          this.#invalidateText()
+        }
+      }
+    } finally {
+      this.#flushingText = false
+    }
+  }
+
+  #invalidateText() {
     let childIndex = 0
     for (const nextChild of this.#nodesToChildren()) {
       const childView = this.children.at(childIndex)
@@ -229,6 +306,10 @@ export class TextContainer extends Container {
   }
 
   invalidateNodes() {
+    this.#queueTextUpdate('nodes')
+  }
+
+  #invalidateNodes() {
     // ideally, we would not remove/add views that are in children and this.#nodes,
     // but in reality that turns out to be tedious, and it's hardly any trouble to
     // remove and re-add those views.
@@ -434,9 +515,9 @@ export class TextProvider extends Container {
   }
 
   update(props: ProviderProps) {
-    this.#update(props)
+    const textChanged = this.#update(props)
     super.update(props)
-    this.#invalidateTextContainers(this)
+    if (textChanged) this.#invalidateTextContainers(this)
     this.invalidateSize()
   }
 
@@ -452,12 +533,21 @@ export class TextProvider extends Container {
     }
   }
 
-  #update(props: ProviderProps) {
+  #update(props: ProviderProps): boolean {
     const {style, alignment, wrap, font, ...styleProps} = props
-    this.#style = new Style(styleProps).merge(style)
+    const nextStyle = new Style(styleProps).merge(style)
+    const nextAlignment = alignment ?? 'left'
+    const nextWrap = wrap ?? false
+    const changed =
+      !this.#style.isEqual(nextStyle) ||
+      this.#font !== font ||
+      this.#alignment !== nextAlignment ||
+      this.#wrap !== nextWrap
+    this.#style = nextStyle
     this.#font = font
-    this.#alignment = alignment ?? 'left'
-    this.#wrap = wrap ?? false
+    this.#alignment = nextAlignment
+    this.#wrap = nextWrap
+    return changed
   }
 }
 

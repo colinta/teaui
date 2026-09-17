@@ -180,7 +180,7 @@ export class Screen {
 
   /**
    * Restore the terminal and detach input. Attempt every synchronous cleanup,
-   * including every onExit callback, then throw AggregateError if any failed.
+   * including every onExit callback, then return any failures.
    */
   stop(): Error[] {
     if (this.#didStop) return []
@@ -217,8 +217,8 @@ export class Screen {
    * Stops (putting the screen back in normal mode and buffer) and exits by emitting
    * process.exit(0)
    */
-  exit() {
-    this.stop()
+  exit(): Error[] {
+    const errors = this.stop()
 
     const exitProcess = () => process.exit(0)
     if (process.stdout.writable && !process.stdout.writableEnded) {
@@ -228,6 +228,7 @@ export class Screen {
     } else {
       setTimeout(exitProcess, 0)
     }
+    return errors
   }
 
   /**
