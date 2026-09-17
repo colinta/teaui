@@ -8,6 +8,7 @@ function App() {
     <Drawer
       location="left"
       isOpen={open}
+      hidesWhenClosed
       onToggle={setOpen}
       drawer={
         <Stack.down heading="Sidebar">

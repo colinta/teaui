@@ -19,6 +19,7 @@ import {System} from '../System.js'
 interface Props extends ContainerProps {
   location?: Edge
   isOpen?: boolean
+  hidesWhenClosed?: boolean
   onToggle?: (isOpen: boolean) => void
   hotKey?: HotKey
   title?: string
@@ -41,6 +42,7 @@ export class Drawer extends Container {
 
   #drawerSize = Size.zero
   #isOpen = false
+  #hidesWhenClosed = false
   #currentDx = 0
   #location: Edge = 'left'
   #title: string | undefined
@@ -61,6 +63,7 @@ export class Drawer extends Container {
     this.#update(props)
 
     define(this, 'location', {enumerable: true})
+    define(this, 'hidesWhenClosed', {enumerable: true})
   }
 
   get location() {
@@ -74,6 +77,15 @@ export class Drawer extends Container {
   update(props: Props) {
     this.#update(props)
     super.update(props)
+  }
+
+  get hidesWhenClosed(): boolean {
+    return this.#hidesWhenClosed
+  }
+  set hidesWhenClosed(value: boolean) {
+    if (this.#setHidesWhenClosed(value)) {
+      this.invalidateSize()
+    }
   }
 
   get title(): string | undefined {
@@ -91,10 +103,11 @@ export class Drawer extends Container {
     return [{key: hotKeyToString(this.#hotKey), label: 'Toggle Drawer'}]
   }
 
-  #update({isOpen, location, onToggle, hotKey, title}: Props) {
+  #update({isOpen, hidesWhenClosed, location, onToggle, hotKey, title}: Props) {
     this.#title = title
+    this.#setHidesWhenClosed(hidesWhenClosed ?? false)
     if (isOpen !== undefined) {
-      this.#setIsOpen(isOpen, false)
+      this.#setIsOpen(isOpen)
     }
 
     this.#onToggle = onToggle
@@ -106,27 +119,29 @@ export class Drawer extends Container {
    * Opens the drawer (does not trigger onToggle)
    */
   open() {
-    this.#setIsOpen(true, false)
+    this.#setIsOpen(true)
   }
 
   /**
    * Closes the drawer (does not trigger onToggle)
    */
   close() {
-    this.#setIsOpen(false, false)
+    this.#setIsOpen(false)
   }
 
   /**
    * Toggles the drawer open/closed (does not trigger onToggle)
    */
   toggle() {
-    this.#setIsOpen(!this.#isOpen, false)
+    this.#setIsOpen(!this.#isOpen)
   }
 
-  #setIsOpen(value: boolean, report: boolean) {
+  #setIsOpen(value: boolean) {
+    const changed = this.#isOpen !== value
     this.#isOpen = value
 
-    if (report) {
+    if (changed) {
+      this.invalidateSize()
       this.#onToggle?.(value)
     }
   }
@@ -139,6 +154,33 @@ export class Drawer extends Container {
 
   naturalSize(available: Size): Size {
     const [drawerSize, contentSize] = this.#saveDrawerSize(available)
+
+    if (this.#hidesWhenClosed) {
+      if (!this.#isOpen) {
+        return contentSize
+      }
+
+      switch (this.#location) {
+        case 'top':
+        case 'bottom':
+          return new Size(
+            Math.max(drawerSize.width + DRAWER_BORDER, contentSize.width),
+            Math.max(
+              drawerSize.height + DRAWER_BTN_SIZE.horizontal.height,
+              contentSize.height,
+            ),
+          )
+        case 'left':
+        case 'right':
+          return new Size(
+            Math.max(
+              drawerSize.width + DRAWER_BTN_SIZE.vertical.width,
+              contentSize.width,
+            ),
+            Math.max(drawerSize.height + DRAWER_BORDER, contentSize.height),
+          )
+      }
+    }
 
     switch (this.#location) {
       case 'top':
@@ -158,17 +200,53 @@ export class Drawer extends Container {
     }
   }
 
-  #targetDx(): number {
-    switch (this.#isOpen ? this.#location : '') {
+  #setHidesWhenClosed(value: boolean): boolean {
+    if (value === this.#hidesWhenClosed) {
+      return false
+    }
+
+    if (this.#currentDx > 0) {
+      const buttonDepth = this.#drawerButtonDepth()
+      this.#currentDx = Math.max(
+        0,
+        this.#currentDx + (value ? buttonDepth : -buttonDepth),
+      )
+    }
+
+    this.#hidesWhenClosed = value
+    return true
+  }
+
+  #drawerButtonDepth(): number {
+    switch (this.#location) {
       case 'top':
       case 'bottom':
-        return this.#drawerSize.height
+        return DRAWER_BTN_SIZE.horizontal.height
       case 'left':
       case 'right':
-        return this.#drawerSize.width
-      default:
-        return 0
+        return DRAWER_BTN_SIZE.vertical.width
     }
+  }
+
+  #drawerTravel(): number {
+    switch (this.#location) {
+      case 'top':
+      case 'bottom':
+        return (
+          this.#drawerSize.height +
+          (this.#hidesWhenClosed ? this.#drawerButtonDepth() : 0)
+        )
+      case 'left':
+      case 'right':
+        return (
+          this.#drawerSize.width +
+          (this.#hidesWhenClosed ? this.#drawerButtonDepth() : 0)
+        )
+    }
+  }
+
+  #targetDx(): number {
+    return this.#isOpen ? this.#drawerTravel() : 0
   }
 
   receiveTick(dt: number): boolean {
@@ -184,19 +262,10 @@ export class Drawer extends Container {
         delta = (targetDx > this.#currentDx ? 0.2 : -0.2) * dt
         break
     }
-    let target: number
-    switch (this.#location) {
-      case 'top':
-      case 'bottom':
-        target = this.#drawerSize.height
-        break
-      case 'left':
-      case 'right':
-        target = this.#drawerSize.width
-        break
-    }
-
-    const nextDx = Math.max(0, Math.min(target, this.#currentDx + delta))
+    const nextDx = Math.max(
+      0,
+      Math.min(this.#drawerTravel(), this.#currentDx + delta),
+    )
     if (nextDx !== this.#currentDx) {
       this.#currentDx = nextDx
       return true
@@ -206,14 +275,14 @@ export class Drawer extends Container {
   }
 
   receiveKey(_: KeyEvent) {
-    this.#setIsOpen(!this.#isOpen, true)
+    this.#setIsOpen(!this.#isOpen)
   }
 
   receiveMouse(event: MouseEvent, system: System) {
     super.receiveMouse(event, system)
 
     if (isMouseClicked(event)) {
-      this.#setIsOpen(!this.#isOpen, true)
+      this.#setIsOpen(!this.#isOpen)
     }
   }
 
@@ -230,9 +299,13 @@ export class Drawer extends Container {
         break
     }
 
-    const drawerSize = this.drawerView?.naturalSize(remainingSize) ?? Size.zero
+    const drawerSize =
+      this.drawerView?.naturalSize(remainingSize).max(remainingSize) ??
+      Size.zero
     const contentSize =
-      this.contentView?.naturalSize(remainingSize) ?? Size.zero
+      this.contentView?.naturalSize(
+        this.#hidesWhenClosed ? available : remainingSize,
+      ) ?? Size.zero
     this.#drawerSize = drawerSize
     return [drawerSize, contentSize]
   }
@@ -289,18 +362,23 @@ export class Drawer extends Container {
     uiStyle: Style,
     textStyle: Style,
   ) {
+    const hiddenOffset = this.#hidesWhenClosed
+      ? DRAWER_BTN_SIZE.horizontal.height
+      : 0
     const drawerButtonRect = new Rect(
-      new Point(0, ~~this.#currentDx),
+      new Point(0, ~~this.#currentDx - hiddenOffset),
       new Size(viewport.contentSize.width, DRAWER_BTN_SIZE.horizontal.height),
     )
 
-    const contentRect = new Rect(
-      new Point(0, DRAWER_BTN_SIZE.horizontal.height - 1),
-      viewport.contentSize.shrink(0, DRAWER_BTN_SIZE.horizontal.height - 1),
-    )
+    const contentRect = this.#hidesWhenClosed
+      ? viewport.contentRect
+      : new Rect(
+          new Point(0, DRAWER_BTN_SIZE.horizontal.height - 1),
+          viewport.contentSize.shrink(0, DRAWER_BTN_SIZE.horizontal.height - 1),
+        )
 
     const drawerRect = new Rect(
-      new Point(1, ~~this.#currentDx - drawerSize.height),
+      new Point(1, ~~this.#currentDx - hiddenOffset - drawerSize.height),
       new Size(drawerButtonRect.size.width - DRAWER_BORDER, drawerSize.height),
     )
 
@@ -315,23 +393,32 @@ export class Drawer extends Container {
     uiStyle: Style,
     textStyle: Style,
   ) {
+    const hiddenOffset = this.#hidesWhenClosed
+      ? DRAWER_BTN_SIZE.horizontal.height
+      : 0
     const drawerButtonRect = new Rect(
       new Point(
         0,
         viewport.contentSize.height -
           ~~this.#currentDx -
-          DRAWER_BTN_SIZE.horizontal.height,
+          DRAWER_BTN_SIZE.horizontal.height +
+          hiddenOffset,
       ),
       new Size(viewport.contentSize.width, DRAWER_BTN_SIZE.horizontal.height),
     )
 
-    const contentRect = new Rect(
-      new Point(0, 0),
-      viewport.contentSize.shrink(0, DRAWER_BTN_SIZE.horizontal.height - 1),
-    )
+    const contentRect = this.#hidesWhenClosed
+      ? viewport.contentRect
+      : new Rect(
+          new Point(0, 0),
+          viewport.contentSize.shrink(0, DRAWER_BTN_SIZE.horizontal.height - 1),
+        )
 
     const drawerRect = new Rect(
-      new Point(1, viewport.contentSize.height - this.#currentDx),
+      new Point(
+        1,
+        viewport.contentSize.height - this.#currentDx + hiddenOffset,
+      ),
       new Size(drawerButtonRect.size.width - DRAWER_BORDER, drawerSize.height),
     )
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
@@ -345,23 +432,29 @@ export class Drawer extends Container {
     uiStyle: Style,
     textStyle: Style,
   ) {
+    const hiddenOffset = this.#hidesWhenClosed
+      ? DRAWER_BTN_SIZE.vertical.width
+      : 0
     const drawerButtonRect = new Rect(
       new Point(
         viewport.contentSize.width -
           ~~this.#currentDx -
-          DRAWER_BTN_SIZE.vertical.width,
+          DRAWER_BTN_SIZE.vertical.width +
+          hiddenOffset,
         0,
       ),
       new Size(DRAWER_BTN_SIZE.vertical.width, viewport.contentSize.height),
     )
 
-    const contentRect = new Rect(
-      new Point(0, 0),
-      viewport.contentSize.shrink(DRAWER_BTN_SIZE.vertical.width - 1, 0),
-    )
+    const contentRect = this.#hidesWhenClosed
+      ? viewport.contentRect
+      : new Rect(
+          new Point(0, 0),
+          viewport.contentSize.shrink(DRAWER_BTN_SIZE.vertical.width - 1, 0),
+        )
 
     const drawerRect = new Rect(
-      new Point(viewport.contentSize.width - this.#currentDx, 1),
+      new Point(viewport.contentSize.width - this.#currentDx + hiddenOffset, 1),
       new Size(drawerSize.width, drawerButtonRect.size.height - DRAWER_BORDER),
     )
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
@@ -375,18 +468,23 @@ export class Drawer extends Container {
     uiStyle: Style,
     textStyle: Style,
   ) {
+    const hiddenOffset = this.#hidesWhenClosed
+      ? DRAWER_BTN_SIZE.vertical.width
+      : 0
     const drawerButtonRect = new Rect(
-      new Point(~~this.#currentDx, 0),
+      new Point(~~this.#currentDx - hiddenOffset, 0),
       new Size(DRAWER_BTN_SIZE.vertical.width, viewport.contentSize.height),
     )
 
-    const contentRect = new Rect(
-      new Point(DRAWER_BTN_SIZE.vertical.width - 1, 0),
-      viewport.contentSize.shrink(DRAWER_BTN_SIZE.vertical.width - 1, 0),
-    )
+    const contentRect = this.#hidesWhenClosed
+      ? viewport.contentRect
+      : new Rect(
+          new Point(DRAWER_BTN_SIZE.vertical.width - 1, 0),
+          viewport.contentSize.shrink(DRAWER_BTN_SIZE.vertical.width - 1, 0),
+        )
 
     const drawerRect = new Rect(
-      new Point(this.#currentDx - drawerSize.width, 1),
+      new Point(this.#currentDx - hiddenOffset - drawerSize.width, 1),
       new Size(drawerSize.width, drawerButtonRect.size.height - DRAWER_BORDER),
     )
 

@@ -2,6 +2,7 @@ import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Drawer} from '../../lib/components/Drawer.js'
 import {Text} from '../../lib/components/Text.js'
+import {Size} from '../../lib/geometry.js'
 
 describe('Drawer', () => {
   describe('content behind drawer does not bleed through', () => {
@@ -76,6 +77,121 @@ describe('Drawer', () => {
       const drawerLine = lines[lines.length - 1]
       expect(drawerLine).not.toContain('X')
       expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+  })
+
+  describe('hidesWhenClosed', () => {
+    it('invalidates its cached size when assigned directly', () => {
+      const drawer = new Drawer({
+        location: 'left',
+        isOpen: false,
+        drawer: new Text({text: 'Drawer'}),
+        content: new Text({text: 'Main'}),
+      })
+      const available = new Size(20, 8)
+
+      expect(drawer.naturalSize(available)).toEqual(new Size(9, 3))
+
+      drawer.hidesWhenClosed = true
+
+      expect(drawer.hidesWhenClosed).toBe(true)
+      expect(drawer.naturalSize(available)).toEqual(new Size(4, 1))
+    })
+
+    it('preserves an open drawer position when assigned directly', () => {
+      const content = new Text({text: 'XXXXXXXXXXXXXXXXXXXX'})
+      const drawer = new Drawer({
+        location: 'left',
+        isOpen: true,
+        drawer: new Text({text: 'Drawer'}),
+        content,
+      })
+      const t = testRender(drawer, {width: 20, height: 5})
+      t.tick(5000)
+      const before = t.terminal.textContent()
+
+      drawer.hidesWhenClosed = true
+      t.render()
+
+      expect(t.terminal.textContent()).toBe(before)
+      expect(content.contentSize.width).toBe(20)
+
+      drawer.hidesWhenClosed = false
+      t.render()
+
+      expect(t.terminal.textContent()).toBe(before)
+      expect(content.contentSize.width).toBe(18)
+    })
+
+    it.each(['top', 'right', 'bottom', 'left'] as const)(
+      'hides the %s drawer chrome and gives content the full viewport',
+      location => {
+        const content = new Text({text: 'XXXXXXXXXXXXXXXXXXXX'})
+        const drawer = new Drawer({
+          location,
+          isOpen: false,
+          hidesWhenClosed: true,
+          drawer: new Text({text: 'Drawer'}),
+          content,
+        })
+
+        const t = testRender(drawer, {width: 20, height: 8})
+
+        expect(t.terminal.textContent()).toBe('XXXXXXXXXXXXXXXXXXXX')
+        expect(content.contentSize.width).toBe(20)
+        expect(content.contentSize.height).toBe(8)
+
+        drawer.open()
+        t.render()
+        t.tick(5000)
+
+        expect(t.terminal.textContent()).not.toBe('XXXXXXXXXXXXXXXXXXXX')
+        expect(content.contentSize.width).toBe(20)
+        expect(content.contentSize.height).toBe(8)
+      },
+    )
+
+    it.each(['top', 'bottom'] as const)(
+      'keeps the %s drawer button visible when drawer content is too tall',
+      location => {
+        const drawerView = new Text({
+          text: Array.from({length: 20}, () => 'Drawer').join('\n'),
+        })
+        const drawer = new Drawer({
+          location,
+          isOpen: true,
+          hidesWhenClosed: true,
+          drawer: drawerView,
+          content: new Text({text: 'Main'}),
+        })
+        const t = testRender(drawer, {width: 20, height: 8})
+
+        t.tick(5000)
+
+        const lines = t.terminal.textContent().split('\n')
+        const buttonLine = lines[location === 'top' ? 5 : 2]
+        expect(buttonLine).toContain(location === 'top' ? '∧' : '∨')
+        expect(drawerView.contentSize.height).toBe(5)
+      },
+    )
+
+    it('hides after the closing animation completes', () => {
+      const drawer = new Drawer({
+        location: 'left',
+        isOpen: true,
+        hidesWhenClosed: true,
+        drawer: new Text({text: 'Drawer'}),
+        content: new Text({text: 'XXXXXXXXXXXXXXXXXXXX'}),
+      })
+      const t = testRender(drawer, {width: 20, height: 5})
+      t.tick(5000)
+
+      drawer.close()
+      t.render()
+      expect(t.terminal.textContent()).not.toBe('XXXXXXXXXXXXXXXXXXXX')
+
+      t.tick(5000)
+      expect(t.terminal.textContent()).toBe('XXXXXXXXXXXXXXXXXXXX')
     })
   })
 

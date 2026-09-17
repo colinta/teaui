@@ -12,14 +12,15 @@ A slide-out panel from any edge (left, right, top, bottom). Contains a drawer vi
 
 ## Props
 
-| Prop       | Type                                     | Default  | Description                 |
-| ---------- | ---------------------------------------- | -------- | --------------------------- |
-| `location` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'left'` | Edge to slide from          |
-| `isOpen`   | `boolean`                                | `false`  | Open/closed state           |
-| `onToggle` | `(isOpen: boolean) => void`              | —        | Toggle callback             |
-| `drawer`   | `ReactNode`                              | —        | Drawer content              |
-| `hotKey`   | `HotKey`                                 | —        | Keyboard shortcut to toggle |
-| `content`  | `ReactNode`                              | —        | Main content                |
+| Prop              | Type                                     | Default  | Description                                           |
+| ----------------- | ---------------------------------------- | -------- | ----------------------------------------------------- |
+| `location`        | `'left' \| 'right' \| 'top' \| 'bottom'` | `'left'` | Edge to slide from                                    |
+| `isOpen`          | `boolean`                                | `false`  | Open/closed state                                     |
+| `hidesWhenClosed` | `boolean`                                | `false`  | Hide the drawer chrome and expand content when closed |
+| `onToggle`        | `(isOpen: boolean) => void`              | —        | Toggle callback                                       |
+| `drawer`          | `ReactNode`                              | —        | Drawer content                                        |
+| `hotKey`          | `HotKey`                                 | —        | Keyboard shortcut to toggle                           |
+| `content`         | `ReactNode`                              | —        | Main content                                          |
 
 <details>
 <summary>Core API</summary>

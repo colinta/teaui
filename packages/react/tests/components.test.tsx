@@ -271,6 +271,21 @@ describe('component wrappers', () => {
         expect(window.children[0]).toBeInstanceOf(Drawer)
       })
 
+      it('supports hiding the drawer entirely when closed', async () => {
+        const {window} = renderToWindow(
+          <Components.Drawer
+            isOpen={false}
+            hidesWhenClosed
+            content={<Components.Text>XXXXXXXXXXXXXXXXXXXX</Components.Text>}
+            drawer={<Components.Text>Drawer</Components.Text>}
+          />,
+        )
+        await flush()
+        const t = testRender(window, {width: 20, height: 5})
+
+        expect(t.terminal.textContent()).toBe('XXXXXXXXXXXXXXXXXXXX')
+      })
+
       it('Drawer.top passes content and drawer', async () => {
         const {window} = renderToWindow(
           <Components.Drawer.top

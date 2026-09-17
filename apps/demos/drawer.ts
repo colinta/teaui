@@ -16,10 +16,9 @@ const firstInput = new Input({
 })
 
 const dontClickMe = new Button({
-  title: 'Not me!',
+  title: 'Toggle Drawer',
   onClick() {
-    console.info("You DIDN'T")
-    firstInput.removeFromParent()
+    drawer.toggle()
   },
 })
 
@@ -98,10 +97,10 @@ drawer = new Drawer({
                   'flex1',
                   Stack.down([
                     new Button({
-                      title: 'Click me!🙂',
+                      title: 'Show/Hide the drawer when closed',
                       width: 'natural',
                       onClick() {
-                        console.info('You did!')
+                        drawer.hidesWhenClosed = !drawer.hidesWhenClosed
                       },
                     }),
                     new Space({height: 1}),
