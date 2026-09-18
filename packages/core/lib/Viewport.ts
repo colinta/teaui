@@ -313,8 +313,11 @@ export class Viewport {
       if (width === 0) {
         style =
           char === RESET
-            ? startingStyle
-            : startingStyle.merge(Style.fromSGR(char, startingStyle))
+            ? startingStyle.merge({
+                link: style.link,
+                linkParams: style.linkParams,
+              })
+            : style.merge(Style.fromSGR(char, startingStyle))
       } else if (x >= minX && x + width - 1 < maxX) {
         this.#terminal.writeChar(
           char,

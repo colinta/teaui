@@ -2,6 +2,7 @@ import {parseStyleDescriptor} from '@teaui/term'
 
 import type {Color} from './Color.js'
 import {colorToSGR} from './Color.js'
+import {LINK_CLOSE} from './ansi.js'
 import {define} from './util.js'
 
 type Nullable<T> = {[K in keyof T]?: null | undefined | T[K]}
@@ -17,6 +18,10 @@ export class Style {
   invisible?: boolean
   foreground?: Color
   background?: Color
+  /** OSC 8 URI. An empty string explicitly ends a link when merging styles. */
+  link?: string
+  /** OSC 8 parameters, e.g. "id=entry". */
+  linkParams?: string
 
   static NONE = new Style()
   static underlined = new Style({underline: true})
@@ -33,6 +38,8 @@ export class Style {
     invisible,
     foreground,
     background,
+    link,
+    linkParams,
   }: {
     underline?: boolean
     inverse?: boolean
@@ -44,6 +51,8 @@ export class Style {
     invisible?: boolean
     foreground?: Color
     background?: Color
+    link?: string
+    linkParams?: string
   } = {}) {
     this.underline = underline
     this.inverse = inverse
@@ -56,6 +65,8 @@ export class Style {
     this.invisible = invisible
     this.foreground = foreground
     this.background = background
+    this.link = link
+    this.linkParams = linkParams
 
     define(this, 'underline', {enumerable: this.underline !== undefined})
     define(this, 'inverse', {enumerable: this.inverse !== undefined})
@@ -67,6 +78,8 @@ export class Style {
     define(this, 'invisible', {enumerable: this.invisible !== undefined})
     define(this, 'foreground', {enumerable: this.foreground !== undefined})
     define(this, 'background', {enumerable: this.background !== undefined})
+    define(this, 'link', {enumerable: this.link !== undefined})
+    define(this, 'linkParams', {enumerable: this.linkParams !== undefined})
   }
 
   invert(): Style {
@@ -103,6 +116,12 @@ export class Style {
           : style.background === undefined
             ? this.background
             : style.background,
+      link: style.link === null ? undefined : (style.link ?? this.link),
+      linkParams:
+        style.linkParams === null
+          ? undefined
+          : (style.linkParams ??
+            (style.link === undefined ? this.linkParams : undefined)),
     })
   }
 
@@ -118,7 +137,9 @@ export class Style {
         this.blink === style.blink &&
         this.invisible === style.invisible &&
         this.foreground === style.foreground &&
-        this.background === style.background)
+        this.background === style.background &&
+        this.link === style.link &&
+        this.linkParams === style.linkParams)
     )
   }
 
@@ -138,6 +159,8 @@ export class Style {
         ['invisible', this.invisible],
         ['foreground', this.foreground],
         ['background', this.background],
+        ['link', this.link],
+        ['linkParams', this.linkParams],
       ] as const
     )
       .filter(([_name, value]) => value !== undefined)
@@ -147,7 +170,15 @@ export class Style {
       }, {} as any)
   }
 
+  /** Parse a zero-width text-style token (SGR or OSC 8) into a style delta. */
   static fromSGR(ansi: string, prevStyle: Style): Style {
+    const link = ansi.match(
+      /^(?:\x1b\]|\x9d)8;([^;\x00-\x1f\x7f-\x9f]*);([^\x00-\x1f\x7f-\x9f]*)(?:\x07|\x1b\\|\x9c)$/,
+    )
+    if (link) {
+      return new Style({link: link[2], linkParams: link[2] ? link[1] : ''})
+    }
+
     let match = ansi.match(/^\x1b\[([\d;]*)m$/)
     if (!match) {
       return Style.NONE
@@ -441,14 +472,30 @@ export class Style {
     parts.sort()
     undo.sort()
 
+    const codes = parseStyleDescriptor(parts) + this.#linkTransition(prevStyle)
     if (text !== undefined) {
-      return parseStyleDescriptor(parts) + text + parseStyleDescriptor(undo)
+      return (
+        codes +
+        text +
+        parseStyleDescriptor(undo) +
+        prevStyle.#linkTransition(this)
+      )
     }
 
-    if (parts.length) {
-      return parseStyleDescriptor(parts)
-    } else {
+    return codes
+  }
+
+  #linkTransition(prevStyle: Style): string {
+    if (
+      (this.link || '') === (prevStyle.link || '') &&
+      (!this.link || (this.linkParams || '') === (prevStyle.linkParams || ''))
+    ) {
       return ''
     }
+
+    return (
+      (prevStyle.link ? LINK_CLOSE : '') +
+      (this.link ? `\x1b]8;${this.linkParams ?? ''};${this.link}\x1b\\` : '')
+    )
   }
 }

@@ -1,6 +1,8 @@
 import {parseStyleDescriptor, BG_DRAW as _BG_DRAW} from '@teaui/term'
 
 export const RESET = '\x1b[0m'
+// SGR reset does not end OSC 8 links; they must be closed separately.
+export const LINK_CLOSE = '\x1b]8;;\x1b\\'
 
 // unicode.charWidth considers this "drawable" (width: 1). Buffer translates it
 // to a space when it flushes to a terminal. It's used by Viewport.paint to

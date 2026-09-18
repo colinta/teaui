@@ -483,7 +483,12 @@ function ansiRegex(): RegExp {
 }
 
 const ANSI_STRING_TERMINATOR = '(?:\\u0007|\\u001B\\u005C|\\u009C)'
+// OSC payloads are strings, not CSI parameters. In particular, OSC 8 URIs can
+// contain '+', parentheses, Unicode, etc. Consume through ST/BEL atomically
+// before the legacy ANSI matcher can mistake a URI prefix for a short CSI.
+const OSC_PATTERN = `(?:\\u001B\\]|\\u009D)[^\\u0000-\\u001F\\u007F-\\u009F]*${ANSI_STRING_TERMINATOR}`
 const ANSI_PATTERN = [
+  OSC_PATTERN,
   `[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ANSI_STRING_TERMINATOR})`,
   '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
 ].join('|')

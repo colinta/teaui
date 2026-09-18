@@ -2,7 +2,7 @@ import * as unicode from '@teaui/term'
 
 import type {Terminal, SGRTerminal} from './terminal.js'
 import type {Color} from './Color.js'
-import {BG_DRAW, RESET} from './ansi.js'
+import {BG_DRAW, RESET, LINK_CLOSE} from './ansi.js'
 import {Style} from './Style.js'
 import {Size} from './geometry.js'
 
@@ -72,6 +72,9 @@ export class Buffer implements Terminal {
         }
         output.push(clipped || cell.char === BG_DRAW ? ' ' : cell.char)
         x += clipped ? 1 : cell.width
+      }
+      if (previousStyle.link) {
+        output.push(LINK_CLOSE)
       }
       output.push(RESET)
       lines.push(output.join(''))
@@ -350,8 +353,13 @@ export class Buffer implements Terminal {
       }
     }
 
+    // Clipping or diff-skipped cells may discard the input's closing OSC 8.
+    // Never leave the terminal linked after a flush, even at the right edge.
+    if (prevStyle.link) {
+      terminal.write(LINK_CLOSE)
+    }
     if (prevStyle !== Style.NONE) {
-      terminal.write('\x1b[0m')
+      terminal.write(RESET)
     }
     terminal.flush()
 
