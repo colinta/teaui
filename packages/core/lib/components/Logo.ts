@@ -138,7 +138,9 @@ export class Logo extends View {
     return this.#isAnimating
   }
   set isAnimating(value: boolean) {
-    if (value === this.#isAnimating) return
+    if (value === this.#isAnimating) {
+      return
+    }
     this.#isAnimating = value
     this.invalidateRender()
   }
@@ -157,7 +159,9 @@ export class Logo extends View {
   }
 
   receiveTick(dt: number): boolean {
-    if (!this.#isAnimating) return false
+    if (!this.#isAnimating) {
+      return false
+    }
 
     this.#elapsed += dt
     let stepped = false

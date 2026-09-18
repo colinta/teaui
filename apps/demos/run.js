@@ -24,13 +24,19 @@ if (!name) {
 
 function fuzzyMatch(query, candidates) {
   const exact = candidates.find(c => c === query)
-  if (exact) return [exact]
+  if (exact) {
+    return [exact]
+  }
 
   const prefixed = candidates.filter(c => c.startsWith(query))
-  if (prefixed.length) return prefixed
+  if (prefixed.length) {
+    return prefixed
+  }
 
   const substr = candidates.filter(c => c.includes(query))
-  if (substr.length) return substr
+  if (substr.length) {
+    return substr
+  }
 
   return candidates.filter(c => {
     let ci = 0

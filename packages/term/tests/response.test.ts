@@ -13,9 +13,13 @@ function exactResponse(expected: string): TerminalResponseMatcher<string> {
   return candidate => {
     const comparedLength = Math.min(candidate.length, bytes.length)
     for (let i = 0; i < comparedLength; i++) {
-      if (candidate[i] !== bytes[i]) return {status: 'none'}
+      if (candidate[i] !== bytes[i]) {
+        return {status: 'none'}
+      }
     }
-    if (candidate.length < bytes.length) return {status: 'partial'}
+    if (candidate.length < bytes.length) {
+      return {status: 'partial'}
+    }
     return {status: 'match', length: bytes.length, value: expected}
   }
 }

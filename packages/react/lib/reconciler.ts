@@ -369,7 +369,9 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       // Container.add removes an existing child before inserting it. The
       // before-child index was measured before that removal.
       const oldIndex = parentInstance.children.indexOf(child)
-      if (oldIndex !== -1 && oldIndex < index) index -= 1
+      if (oldIndex !== -1 && oldIndex < index) {
+        index -= 1
+      }
     }
 
     parentInstance.add(child, index)

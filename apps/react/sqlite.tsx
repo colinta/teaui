@@ -36,7 +36,9 @@ function loadSchema(db: DatabaseSync): TableSchema[] {
 }
 
 function formatValue(value: unknown, type: string): string {
-  if (value === null || value === undefined) return 'NULL'
+  if (value === null || value === undefined) {
+    return 'NULL'
+  }
   const upperType = type.toUpperCase()
   if (upperType.includes('BOOL')) {
     return value ? 'true' : 'false'
@@ -87,12 +89,16 @@ export function BrowseAnything() {
   )
 
   const rows = useMemo(() => {
-    if (!selectedTable || !selectedSchema) return []
+    if (!selectedTable || !selectedSchema) {
+      return []
+    }
     return loadRows(db, selectedTable, selectedSchema[1])
   }, [selectedTable, selectedSchema])
 
   const header = useMemo(() => {
-    if (!selectedSchema) return ''
+    if (!selectedSchema) {
+      return ''
+    }
     return selectedSchema[1].map(col => col.name).join(' | ')
   }, [selectedSchema])
 

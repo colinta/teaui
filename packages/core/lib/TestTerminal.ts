@@ -116,7 +116,9 @@ export class TestTerminal implements SGRTerminal {
    * Get the character at (x, y). Returns ' ' for empty cells.
    */
   charAt(x: number, y: number): string {
-    if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) return ''
+    if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) {
+      return ''
+    }
     return this.#grid[y][x].char
   }
 
@@ -124,7 +126,9 @@ export class TestTerminal implements SGRTerminal {
    * Get the Style at (x, y).
    */
   styleAt(x: number, y: number): Style {
-    if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) return Style.NONE
+    if (x < 0 || x >= this.cols || y < 0 || y >= this.rows) {
+      return Style.NONE
+    }
     return this.#grid[y][x].style
   }
 
@@ -137,7 +141,10 @@ export class TestTerminal implements SGRTerminal {
     let count = 0
     for (let cx = x; cx < this.cols && count < length; cx++) {
       const char = this.#grid[y]?.[cx]?.char ?? ''
-      if (char === '') continue // skip wide char continuation cells
+      if (char === '') {
+        // skip wide char continuation cells
+        continue
+      }
       result += char
       count++
     }
@@ -148,11 +155,16 @@ export class TestTerminal implements SGRTerminal {
    * Get all text on a row (trimmed of trailing spaces).
    */
   textAtRow(y: number): string {
-    if (y < 0 || y >= this.rows) return ''
+    if (y < 0 || y >= this.rows) {
+      return ''
+    }
     let line = ''
     for (let x = 0; x < this.cols; x++) {
       const char = this.#grid[y][x].char
-      if (char === '') continue // skip wide char continuation cells
+      if (char === '') {
+        // skip wide char continuation cells
+        continue
+      }
       line += char
     }
     return line.trimEnd() // + '␤'
@@ -194,7 +206,9 @@ export class TestTerminal implements SGRTerminal {
    */
   styleOf(text: string): Style | null {
     const pos = this.find(text)
-    if (!pos) return null
+    if (!pos) {
+      return null
+    }
     return this.styleAt(pos.x, pos.y)
   }
 
@@ -203,13 +217,17 @@ export class TestTerminal implements SGRTerminal {
    * Wide char continuation cells are skipped.
    */
   getRow(y: number, from?: number, to?: number): string {
-    if (y < 0 || y >= this.rows) return ''
+    if (y < 0 || y >= this.rows) {
+      return ''
+    }
     from ??= 0
     to ??= this.cols
     let line = ''
     for (let x = from; x < to && x < this.cols; x++) {
       const char = this.#grid[y][x].char
-      if (char === '') continue
+      if (char === '') {
+        continue
+      }
       line += char
     }
     return line

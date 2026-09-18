@@ -36,18 +36,30 @@ function addLogLine(line: string) {
 
 function formatKeyEvent(event: KeyEvent): string {
   const mods: string[] = []
-  if (event.ctrl) mods.push('ctrl')
-  if (event.gui) mods.push('gui')
-  if (event.shift) mods.push('shift')
+  if (event.ctrl) {
+    mods.push('ctrl')
+  }
+  if (event.gui) {
+    mods.push('gui')
+  }
+  if (event.shift) {
+    mods.push('shift')
+  }
   const modStr = mods.length ? mods.join('+') + '+' : ''
   return `KEY ${modStr}${event.name} (char=${JSON.stringify(event.char)}, full=${event.full})`
 }
 
 function formatMouseEvent(event: MouseEvent): string {
   const mods: string[] = []
-  if (event.ctrl) mods.push('ctrl')
-  if (event.gui) mods.push('gui')
-  if (event.shift) mods.push('shift')
+  if (event.ctrl) {
+    mods.push('ctrl')
+  }
+  if (event.gui) {
+    mods.push('gui')
+  }
+  if (event.shift) {
+    mods.push('shift')
+  }
   const modStr = mods.length ? ' ' + mods.join('+') : ''
   return `MOUSE ${event.name} btn=${event.button} (${event.position.x},${event.position.y})${modStr}`
 }

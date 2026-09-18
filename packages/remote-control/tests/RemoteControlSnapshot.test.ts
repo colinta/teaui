@@ -38,7 +38,9 @@ function create() {
 }
 async function connect(remote: RemoteControlServer) {
   const address = await remote.listen()
-  if (!address.ok) throw address.error
+  if (!address.ok) {
+    throw address.error
+  }
   const socket = new WebSocket(address.value.url)
   sockets.push(socket)
   await once(socket, 'open')
@@ -55,9 +57,15 @@ async function send(
 }
 
 afterEach(async () => {
-  for (const socket of sockets.splice(0)) socket.terminate()
-  for (const screen of screens.splice(0)) screen.stop()
-  for (const remote of servers.splice(0)) await remote.close()
+  for (const socket of sockets.splice(0)) {
+    socket.terminate()
+  }
+  for (const screen of screens.splice(0)) {
+    screen.stop()
+  }
+  for (const remote of servers.splice(0)) {
+    await remote.close()
+  }
   vi.restoreAllMocks()
 })
 
@@ -137,7 +145,9 @@ describe('remote snapshots', () => {
     screen.addEventSource(remote)
     remote.setSnapshotProvider(() => screen.snapshot())
     const address = await remote.listen()
-    if (!address.ok) throw address.error
+    if (!address.ok) {
+      throw address.error
+    }
     const client = fileURLToPath(
       new URL('./fixtures/remote-client.mjs', import.meta.url),
     )
@@ -176,7 +186,9 @@ describe('remote snapshots', () => {
     remote.setSnapshotProvider(() => ansiFrame)
     remote.onEvents(() => remote.sendSnapshot('ansi', ansiFrame))
     const address = await remote.listen()
-    if (!address.ok) throw address.error
+    if (!address.ok) {
+      throw address.error
+    }
     const directory = mkdtempSync(join(tmpdir(), 'teaui-snapshot-'))
     try {
       const endpoint = join(directory, 'endpoint.json')

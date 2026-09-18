@@ -413,7 +413,9 @@ export class InputReader {
     this.listeners.push(cb)
     return () => {
       const idx = this.listeners.indexOf(cb)
-      if (idx !== -1) this.listeners.splice(idx, 1)
+      if (idx !== -1) {
+        this.listeners.splice(idx, 1)
+      }
     }
   }
 

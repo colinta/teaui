@@ -25,10 +25,16 @@ export class Callbacks<T> {
     const errors: unknown[] = []
     const snapshot = [...this.#listeners]
     for (const listener of snapshot) {
-      if (!isCurrent()) break
-      if (!this.#listeners.has(listener)) continue
+      if (!isCurrent()) {
+        break
+      }
+      if (!this.#listeners.has(listener)) {
+        continue
+      }
       const result = this.invoke(listener, value)
-      if (!result.ok) errors.push(result.error)
+      if (!result.ok) {
+        errors.push(result.error)
+      }
     }
     return errors
   }

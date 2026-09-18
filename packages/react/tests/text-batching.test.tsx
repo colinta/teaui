@@ -11,7 +11,9 @@ import {
 
 const cleanups: (() => void)[] = []
 afterEach(() => {
-  for (const cleanup of cleanups.splice(0).reverse()) cleanup()
+  for (const cleanup of cleanups.splice(0).reverse()) {
+    cleanup()
+  }
   vi.restoreAllMocks()
 })
 function mount(element: React.ReactNode, width = 37, height = 9) {
@@ -29,7 +31,9 @@ function mount(element: React.ReactNode, width = 37, height = 9) {
 function textGroup(values: string[], textBatch?: TextBatch) {
   const container = new TextContainer(textBatch)
   const literals = values.map(value => new TextLiteral(value))
-  for (const literal of literals) container.add(literal)
+  for (const literal of literals) {
+    container.add(literal)
+  }
   container.invalidateNodes()
   return {container, literals}
 }
@@ -46,8 +50,9 @@ describe('text commit batching', () => {
     const serialized = vi.spyOn(literals[0], 'styledText')
     const finish = textBatch.begin()
     try {
-      for (const literal of literals)
+      for (const literal of literals) {
         literal.text = literal.text.toUpperCase() + '!'
+      }
       expect(serialized).not.toHaveBeenCalled()
     } finally {
       finish()

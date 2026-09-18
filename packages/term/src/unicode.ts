@@ -67,16 +67,24 @@ export function charWidth(str: string): 0 | 1 | 2 {
   const point = str.codePointAt(0)!
 
   // nul
-  if (point === 0) return 0
+  if (point === 0) {
+    return 0
+  }
 
   // tab — rendered as 2-wide sigil in Input
-  if (point === 0x09) return 2
+  if (point === 0x09) {
+    return 2
+  }
 
   // 8-bit control characters
-  if (point < 32 || (point >= 0x7f && point < 0xa0)) return 0
+  if (point < 32 || (point >= 0x7f && point < 0xa0)) {
+    return 0
+  }
 
   // combining characters
-  if (isCombiningCode(point)) return 0
+  if (isCombiningCode(point)) {
+    return 0
+  }
 
   // double-wide
   if (
@@ -372,7 +380,9 @@ export function lineWidth(str: string | string[]): number {
 
 let locale = (() => {
   const lang = process.env.LANG?.split('.')[0]?.slice(0, 2)
-  if (!lang || lang.length < 2) return 'en'
+  if (!lang || lang.length < 2) {
+    return 'en'
+  }
   try {
     Intl.getCanonicalLocales(lang)
     return lang

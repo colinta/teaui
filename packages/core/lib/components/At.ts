@@ -133,7 +133,9 @@ export class At extends Container {
   }
 
   set location(value: Location) {
-    if (value === this.#location) return
+    if (value === this.#location) {
+      return
+    }
     this.#location = value
     this.invalidateSize()
   }
@@ -143,7 +145,9 @@ export class At extends Container {
   }
 
   set useAvailable(value: boolean) {
-    if (value === this.#useAvailable) return
+    if (value === this.#useAvailable) {
+      return
+    }
     this.#useAvailable = value
     this.invalidateSize()
   }
@@ -191,7 +195,9 @@ export class At extends Container {
     // Compute combined children size (ZStack-style: max of all children)
     const childrenSize = Size.zero.mutableCopy()
     for (const child of this.children) {
-      if (!child.isVisible) continue
+      if (!child.isVisible) {
+        continue
+      }
       const childSize = child.naturalSize(layoutRect.size).max(layoutRect.size)
       childrenSize.width = Math.max(childrenSize.width, childSize.width)
       childrenSize.height = Math.max(childrenSize.height, childSize.height)
@@ -211,7 +217,9 @@ export class At extends Container {
     // Render all children overlaid (ZStack-style) at the computed position
     viewport.clipped(drawRect, inside => {
       for (const child of this.children) {
-        if (!child.isVisible) continue
+        if (!child.isVisible) {
+          continue
+        }
         child.render(inside)
       }
     })

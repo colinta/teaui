@@ -100,12 +100,16 @@ export class Box extends ZStack {
   }
 
   #resolvedTitle(): string | undefined {
-    if (this.#title !== undefined) return this.#title
+    if (this.#title !== undefined) {
+      return this.#title
+    }
     return this.children[0]?.heading
   }
 
   #headingHeight(): number {
-    if (!this.#resolvedTitle()) return 0
+    if (!this.#resolvedTitle()) {
+      return 0
+    }
     // When there's a border, the heading overlays the top border — no extra height.
     // When border is 'none', we need a dedicated row for the heading.
     return this.#borderSizes.maxTop === 0 ? 1 : 0

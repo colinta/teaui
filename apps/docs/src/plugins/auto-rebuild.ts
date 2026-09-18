@@ -21,14 +21,18 @@ export default function autoRebuildPlugin(): Plugin {
               compiler.hooks.afterCompile.tap(
                 'AutoRebuildTeaUI',
                 (compilation: any) => {
-                  if (isRebuilding) return
+                  if (isRebuilding) {
+                    return
+                  }
 
                   const hasTeauiError = compilation.errors.some(
                     (err: any) =>
                       err.message && TEAUI_MODULE_RE.test(err.message),
                   )
 
-                  if (!hasTeauiError) return
+                  if (!hasTeauiError) {
+                    return
+                  }
 
                   isRebuilding = true
                   console.info(

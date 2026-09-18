@@ -559,7 +559,9 @@ export class Drawer extends Container {
   }
 
   #resolvedDrawerTitle(): string | undefined {
-    if (this.#title !== undefined) return this.#title
+    if (this.#title !== undefined) {
+      return this.#title
+    }
     return this.drawerView?.heading
   }
 

@@ -44,7 +44,9 @@ export class TerminalResponseRouter {
   }
 
   push(data: Buffer): void {
-    if (data.length === 0) return
+    if (data.length === 0) {
+      return
+    }
 
     if (this.routes.length === 0 && this.pending.length === 0) {
       this.forward(data)
@@ -72,7 +74,9 @@ export class TerminalResponseRouter {
 
     return () => {
       const index = this.routes.indexOf(route)
-      if (index === -1) return
+      if (index === -1) {
+        return
+      }
       this.routes.splice(index, 1)
       this.drain()
     }
@@ -80,19 +84,25 @@ export class TerminalResponseRouter {
 
   /** Forward any candidate bytes currently waiting for another chunk. */
   flush(): void {
-    if (this.pending.length === 0) return
+    if (this.pending.length === 0) {
+      return
+    }
     const pending = this.pending
     this.pending = Buffer.alloc(0)
     this.forward(pending)
   }
 
   private drain(): void {
-    if (this.draining || this.pending.length === 0) return
+    if (this.draining || this.pending.length === 0) {
+      return
+    }
     this.draining = true
 
     const unmatched: Buffer[] = []
     const forwardUnmatched = () => {
-      if (unmatched.length === 0) return
+      if (unmatched.length === 0) {
+        return
+      }
       this.forward(
         unmatched.length === 1 ? unmatched[0] : Buffer.concat(unmatched),
       )
@@ -114,7 +124,9 @@ export class TerminalResponseRouter {
             matchedResult = result
             break
           }
-          if (result.status === 'partial') hasPartialMatch = true
+          if (result.status === 'partial') {
+            hasPartialMatch = true
+          }
         }
 
         if (matchedRoute && matchedResult) {
@@ -133,14 +145,18 @@ export class TerminalResponseRouter {
           this.pending = this.pending.subarray(matchedResult.length)
           if (matchedRoute.once) {
             const index = this.routes.indexOf(matchedRoute)
-            if (index !== -1) this.routes.splice(index, 1)
+            if (index !== -1) {
+              this.routes.splice(index, 1)
+            }
           }
           matchedRoute.listener(matchedResult.value, raw)
           continue
         }
 
         if (hasPartialMatch) {
-          if (this.pending.length <= this.maxPendingBytes) break
+          if (this.pending.length <= this.maxPendingBytes) {
+            break
+          }
           unmatched.push(this.pending)
           this.pending = Buffer.alloc(0)
           break

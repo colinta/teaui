@@ -116,20 +116,26 @@ function parseSingle(param: string, enabled: boolean): string {
 
     // "default fg" / "default bg"
     if (colorStr === 'default') {
-      if (!enabled) return ''
+      if (!enabled) {
+        return ''
+      }
       return fgbg === 'fg' ? `${CSI}39m` : `${CSI}49m`
     }
 
     // Named color
     const namedMap = fgbg === 'fg' ? namedFg : namedBg
     if (namedMap[colorStr] !== undefined) {
-      if (!enabled) return fgbg === 'fg' ? `${CSI}39m` : `${CSI}49m`
+      if (!enabled) {
+        return fgbg === 'fg' ? `${CSI}39m` : `${CSI}49m`
+      }
       return `${CSI}${namedMap[colorStr]}m`
     }
 
     // Hex color: "#rrggbb fg" or "#rrggbb(index) fg"
     if (colorStr.startsWith('#')) {
-      if (!enabled) return fgbg === 'fg' ? `${CSI}39m` : `${CSI}49m`
+      if (!enabled) {
+        return fgbg === 'fg' ? `${CSI}39m` : `${CSI}49m`
+      }
       const hex = colorStr.replace(/\(\d+\)$/, '')
       const [r, g, b] = colors.hexToRGB(hex)
       return fgbg === 'fg'
@@ -180,7 +186,9 @@ export function parseStyleDescriptor(param: string | string[]): string {
     parts = param.split(/\s*[,;]\s*/)
   }
 
-  if (parts.length === 0) return ''
+  if (parts.length === 0) {
+    return ''
+  }
 
   if (parts.length === 1) {
     return parseSingle(parts[0], true)
@@ -193,11 +201,15 @@ export function parseStyleDescriptor(param: string | string[]): string {
     const code = parseSingle(part, true)
     // Extract the numeric portion between CSI and 'm'
     const inner = code.slice(2, -1)
-    if (inner === '' || used.has(inner)) continue
+    if (inner === '' || used.has(inner)) {
+      continue
+    }
     used.add(inner)
     codes.push(inner)
   }
 
-  if (codes.length === 0) return ''
+  if (codes.length === 0) {
+    return ''
+  }
   return `${CSI}${codes.join(';')}m`
 }

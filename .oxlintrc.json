@@ -5,6 +5,7 @@
     "correctness": "error"
   },
   "rules": {
+    "curly": "error",
     "no-control-regex": "off",
     "no-unused-vars": [
       "error",

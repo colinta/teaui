@@ -91,7 +91,9 @@ export class SubprocessView extends View {
       (xtermMod as any).default?.Terminal ?? (xtermMod as any).Terminal
 
     // Check if we were unmounted during the async import
-    if (!this.screen) return
+    if (!this.screen) {
+      return
+    }
 
     const cols = this.#lastCols || 80
     const rows = this.#lastRows || 24
@@ -207,7 +209,9 @@ export class SubprocessView extends View {
 
     if (this.#state.kind === 'exited') {
       // Still render the final xterm buffer, then overlay exit message
-      if (this.#xterm) this.#renderXtermBuffer(viewport, cols, rows)
+      if (this.#xterm) {
+        this.#renderXtermBuffer(viewport, cols, rows)
+      }
       const msg = `[Process exited with code ${this.#state.exitCode}]`
       const y = Math.min(rows - 1, Math.max(0, rows - 1))
       const x = Math.max(0, Math.floor((cols - msg.length) / 2))
@@ -291,7 +295,9 @@ export class SubprocessView extends View {
   }
 
   receiveKey(event: KeyEvent) {
-    if (!this.#pty || this.#state.kind !== 'running') return
+    if (!this.#pty || this.#state.kind !== 'running') {
+      return
+    }
 
     const bytes = keyEventToAnsi(event)
     if (bytes) {
@@ -311,7 +317,9 @@ export class SubprocessView extends View {
       return
     }
 
-    if (!this.#pty || this.#state.kind !== 'running') return
+    if (!this.#pty || this.#state.kind !== 'running') {
+      return
+    }
 
     const bytes = mouseEventToAnsi(event)
     if (bytes) {

@@ -45,19 +45,27 @@ export class BarChart<T> extends Chart<T> {
   }
 
   getYRange(): ChartRange {
-    if (this.data.length === 0) return {min: 0, max: 1}
+    if (this.data.length === 0) {
+      return {min: 0, max: 1}
+    }
     let min = 0 // bars always start from 0
     let max = -Infinity
     for (const row of this.data) {
       const y = this.#extract(row)
-      if (y > max) max = y
+      if (y > max) {
+        max = y
+      }
     }
-    if (max <= 0) max = 1
+    if (max <= 0) {
+      max = 1
+    }
     return {min, max}
   }
 
   getXLabels(): string[] {
-    if (!this.#xLabelsFn) return []
+    if (!this.#xLabelsFn) {
+      return []
+    }
     return this.data.map(this.#xLabelsFn)
   }
 
@@ -75,7 +83,9 @@ export class BarChart<T> extends Chart<T> {
   }
 
   renderChart(viewport: Viewport, layout: ChartLayout): void {
-    if (viewport.isEmpty || this.data.length === 0) return
+    if (viewport.isEmpty || this.data.length === 0) {
+      return
+    }
 
     const style = this.chartStyle ?? this.purpose.ui({isHover: true}).invert()
     const emptyStyle = this.purpose.text()
@@ -109,7 +119,9 @@ export class BarChart<T> extends Chart<T> {
       // For each column of this bar
       for (let bx = 0; bx < this.#barWidth; bx++) {
         const x = barX + bx
-        if (x >= totalWidth) break
+        if (x >= totalWidth) {
+          break
+        }
 
         // Fill from bottom to top
         // Number of completely full rows
@@ -149,8 +161,14 @@ function defaultYLabels(range: ChartRange, count: number): string[] {
 }
 
 function formatNumber(n: number): string {
-  if (Number.isInteger(n)) return String(n)
-  if (Math.abs(n) >= 100) return String(Math.round(n))
-  if (Math.abs(n) >= 10) return n.toFixed(1)
+  if (Number.isInteger(n)) {
+    return String(n)
+  }
+  if (Math.abs(n) >= 100) {
+    return String(Math.round(n))
+  }
+  if (Math.abs(n) >= 10) {
+    return n.toFixed(1)
+  }
   return n.toFixed(2)
 }

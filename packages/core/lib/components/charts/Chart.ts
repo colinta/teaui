@@ -64,7 +64,9 @@ export abstract class Chart<T = unknown> extends View {
   }
 
   render(viewport: Viewport) {
-    if (viewport.isEmpty) return
+    if (viewport.isEmpty) {
+      return
+    }
 
     const xRange = this.getXRange()
     const yRange = this.getYRange()

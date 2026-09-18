@@ -40,7 +40,9 @@ export class ZStack extends Container {
     return this.#location
   }
   set align(value: Location | undefined) {
-    if (value === this.#location) return
+    if (value === this.#location) {
+      return
+    }
     this.#location = value
     this.invalidateSize()
   }
@@ -61,7 +63,9 @@ export class ZStack extends Container {
 
     const size = Size.zero.mutableCopy()
     for (const child of this.children) {
-      if (!child.isVisible) continue
+      if (!child.isVisible) {
+        continue
+      }
       const childSize = child.naturalSize(available)
       size.width = Math.max(size.width, childSize.width)
       size.height = Math.max(size.height, childSize.height)
@@ -76,7 +80,9 @@ export class ZStack extends Container {
 
     if (this.#location !== undefined) {
       for (const child of this.children) {
-        if (!child.isVisible) continue
+        if (!child.isVisible) {
+          continue
+        }
 
         const childSize = child
           .naturalSize(viewport.contentSize)
@@ -92,7 +98,9 @@ export class ZStack extends Container {
       }
     } else {
       for (const child of this.children) {
-        if (!child.isVisible) continue
+        if (!child.isVisible) {
+          continue
+        }
         child.render(viewport)
       }
     }

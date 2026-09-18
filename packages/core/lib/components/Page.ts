@@ -88,7 +88,9 @@ export class Page extends Container {
   }
 
   set activeIndex(value: number) {
-    if (value === this.#activeIndex) return
+    if (value === this.#activeIndex) {
+      return
+    }
     this.#navigateTo(value)
   }
 
@@ -106,13 +108,19 @@ export class Page extends Container {
 
   #navigateTo(index: number) {
     const sections = this.sections
-    if (sections.length === 0) return
+    if (sections.length === 0) {
+      return
+    }
     index = Math.max(0, Math.min(sections.length - 1, index))
-    if (index === this.#activeIndex && !this.#animating) return
+    if (index === this.#activeIndex && !this.#animating) {
+      return
+    }
 
     const prevIndex = this.#animating ? this.#incomingIndex : this.#activeIndex
 
-    if (index === prevIndex) return
+    if (index === prevIndex) {
+      return
+    }
 
     this.#outgoingIndex = prevIndex
     this.#incomingIndex = index
@@ -147,7 +155,9 @@ export class Page extends Container {
 
   receiveKey(event: KeyEvent) {
     const sections = this.sections
-    if (sections.length === 0) return
+    if (sections.length === 0) {
+      return
+    }
 
     switch (event.name) {
       case 'pagedown':
@@ -169,7 +179,9 @@ export class Page extends Container {
     super.receiveMouse(event, system)
 
     if (isMouseWheel(event)) {
-      if (this.#disableScrollTimeout > 0) return
+      if (this.#disableScrollTimeout > 0) {
+        return
+      }
 
       if (
         event.name === 'mouse.wheel.up' ||
@@ -257,7 +269,9 @@ export class Page extends Container {
 
   render(viewport: Viewport) {
     const sections = this.sections
-    if (sections.length === 0) return
+    if (sections.length === 0) {
+      return
+    }
 
     viewport.registerFocus()
     viewport.registerMouse(['mouse.button.left', 'mouse.move', 'mouse.wheel'])

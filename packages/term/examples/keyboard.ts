@@ -38,10 +38,18 @@ const log: string[] = []
 
 function formatKey(event: KeyEvent): string {
   const mods: string[] = []
-  if (event.ctrl) mods.push('ctrl')
-  if (event.alt) mods.push('alt')
-  if (event.shift) mods.push('shift')
-  if (event.gui) mods.push('gui')
+  if (event.ctrl) {
+    mods.push('ctrl')
+  }
+  if (event.alt) {
+    mods.push('alt')
+  }
+  if (event.shift) {
+    mods.push('shift')
+  }
+  if (event.gui) {
+    mods.push('gui')
+  }
 
   const keyName = event.key === ' ' ? 'space' : event.key
   if (mods.length > 0) {
@@ -53,10 +61,18 @@ function formatKey(event: KeyEvent): string {
 function formatKeyDetailed(event: KeyEvent): string {
   const parts = [formatKey(event)]
   const details: string[] = []
-  if (event.ctrl) details.push('ctrl')
-  if (event.alt) details.push('alt')
-  if (event.shift) details.push('shift')
-  if (event.gui) details.push('gui')
+  if (event.ctrl) {
+    details.push('ctrl')
+  }
+  if (event.alt) {
+    details.push('alt')
+  }
+  if (event.shift) {
+    details.push('shift')
+  }
+  if (event.gui) {
+    details.push('gui')
+  }
   if (details.length > 0) {
     parts.push(`[${details.join(', ')}]`)
   }

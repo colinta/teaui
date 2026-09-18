@@ -11,9 +11,15 @@ function key(
   const alt = opts.alt ?? false
   const shift = opts.shift ?? false
   let full = ''
-  if (ctrl) full += 'C-'
-  if (alt) full += 'A-'
-  if (shift) full += 'S-'
+  if (ctrl) {
+    full += 'C-'
+  }
+  if (alt) {
+    full += 'A-'
+  }
+  if (shift) {
+    full += 'S-'
+  }
   full += name
   return {type: 'key', name, char, ctrl, alt, gui: false, shift, full}
 }

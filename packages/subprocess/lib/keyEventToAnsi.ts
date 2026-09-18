@@ -6,27 +6,39 @@ import type {KeyEvent} from '@teaui/core'
  */
 function modifierParam(event: KeyEvent): number {
   let bits = 0
-  if (event.shift) bits |= 1
-  if (event.alt) bits |= 2
-  if (event.ctrl) bits |= 4
+  if (event.shift) {
+    bits |= 1
+  }
+  if (event.alt) {
+    bits |= 2
+  }
+  if (event.ctrl) {
+    bits |= 4
+  }
   return bits === 0 ? 0 : 1 + bits
 }
 
 function csiKey(letter: string, event: KeyEvent): string {
   const mod = modifierParam(event)
-  if (mod === 0) return `\x1b[${letter}`
+  if (mod === 0) {
+    return `\x1b[${letter}`
+  }
   return `\x1b[1;${mod}${letter}`
 }
 
 function tildeKey(code: number, event: KeyEvent): string {
   const mod = modifierParam(event)
-  if (mod === 0) return `\x1b[${code}~`
+  if (mod === 0) {
+    return `\x1b[${code}~`
+  }
   return `\x1b[${code};${mod}~`
 }
 
 function ss3Key(letter: string, event: KeyEvent): string {
   const mod = modifierParam(event)
-  if (mod === 0) return `\x1bO${letter}`
+  if (mod === 0) {
+    return `\x1bO${letter}`
+  }
   // Modified F1-F4 use CSI format
   return `\x1b[1;${mod}${letter}`
 }
@@ -79,13 +91,19 @@ export function keyEventToAnsi(event: KeyEvent): string {
     case 'backspace':
       return '\x7f'
     case 'tab':
-      if (event.shift) return '\x1b[Z'
+      if (event.shift) {
+        return '\x1b[Z'
+      }
       return '\t'
     case 'escape':
       return '\x1b'
     case 'space':
-      if (event.ctrl) return '\x00'
-      if (event.alt) return '\x1b '
+      if (event.ctrl) {
+        return '\x00'
+      }
+      if (event.alt) {
+        return '\x1b '
+      }
       return ' '
   }
 

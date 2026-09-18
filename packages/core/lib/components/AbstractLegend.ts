@@ -22,10 +22,18 @@ function formatKey(key: string): string {
     const modStr = modMatch[0]
     const base = key.slice(modStr.length)
     let sigils = ''
-    if (modStr.includes('C-')) sigils += MODIFIER_SIGILS.ctrl
-    if (modStr.includes('A-')) sigils += MODIFIER_SIGILS.alt
-    if (modStr.includes('G-')) sigils += MODIFIER_SIGILS.gui
-    if (modStr.includes('S-')) sigils += MODIFIER_SIGILS.shift
+    if (modStr.includes('C-')) {
+      sigils += MODIFIER_SIGILS.ctrl
+    }
+    if (modStr.includes('A-')) {
+      sigils += MODIFIER_SIGILS.alt
+    }
+    if (modStr.includes('G-')) {
+      sigils += MODIFIER_SIGILS.gui
+    }
+    if (modStr.includes('S-')) {
+      sigils += MODIFIER_SIGILS.shift
+    }
     return sigils + mapKey(base)
   }
 
@@ -145,7 +153,9 @@ export abstract class AbstractLegend extends View {
       foreground: this.purpose.mutedTextColor,
     })
     for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
-      if (rowIdx >= viewport.contentSize.height) break
+      if (rowIdx >= viewport.contentSize.height) {
+        break
+      }
 
       const row = rows[rowIdx]
       let x = 0

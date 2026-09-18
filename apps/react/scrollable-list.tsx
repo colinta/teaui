@@ -66,7 +66,9 @@ export function ListTab() {
 
   const filter = useCallback(
     (item: Movie) => {
-      if (query.length === 0) return true
+      if (query.length === 0) {
+        return true
+      }
       const q = query.toLowerCase()
       return (
         item.title.toLowerCase().includes(q) ||

@@ -77,7 +77,9 @@ export class Tabs extends Container {
     return this.#border
   }
   set border(value: boolean) {
-    if (value === this.#border) return
+    if (value === this.#border) {
+      return
+    }
     this.#border = value
     this.invalidateSize()
   }

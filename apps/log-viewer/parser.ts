@@ -77,7 +77,9 @@ function tokenize(input: string): Token[] {
         value += input[i]
         i++
       }
-      if (i < input.length) i++ // skip closing quote
+      if (i < input.length) {
+        i++
+      } // skip closing quote
       tokens.push({type: 'quoted', value})
       continue
     }
@@ -94,7 +96,9 @@ function tokenize(input: string): Token[] {
         pattern += input[i]
         i++
       }
-      if (i < input.length) i++ // skip closing /
+      if (i < input.length) {
+        i++
+      } // skip closing /
       // read flags
       let flags = ''
       while (i < input.length && /[gimsuy]/.test(input[i])) {
@@ -153,7 +157,9 @@ class Parser {
   }
 
   parse(): ParseResult | undefined {
-    if (this.#tokens.length === 0) return undefined
+    if (this.#tokens.length === 0) {
+      return undefined
+    }
     const node = this.#expr()
     if (this.#error) {
       return {type: 'failure', error: this.#error}
@@ -180,7 +186,9 @@ class Parser {
 
   #expr(): FilterNode | undefined {
     const left = this.#andExpr()
-    if (!left) return undefined
+    if (!left) {
+      return undefined
+    }
     let result = left
     while (this.#peek()?.type === 'or') {
       this.#advance()
@@ -196,7 +204,9 @@ class Parser {
 
   #andExpr(): FilterNode | undefined {
     const left = this.#seqExpr()
-    if (!left) return undefined
+    if (!left) {
+      return undefined
+    }
     let result = left
     while (this.#peek()?.type === 'and') {
       this.#advance()
@@ -212,11 +222,15 @@ class Parser {
 
   #seqExpr(): FilterNode | undefined {
     const first = this.#atom()
-    if (!first) return undefined
+    if (!first) {
+      return undefined
+    }
     const nodes: FilterNode[] = [first]
     while (this.#isAtomStart()) {
       const next = this.#atom()
-      if (!next) break
+      if (!next) {
+        break
+      }
       nodes.push(next)
     }
     return nodes.length === 1 ? nodes[0] : {type: 'sequence', nodes}
@@ -224,7 +238,9 @@ class Parser {
 
   #isAtomStart(): boolean {
     const t = this.#peek()
-    if (!t) return false
+    if (!t) {
+      return false
+    }
     return (
       t.type === 'word' ||
       t.type === 'quoted' ||
@@ -235,7 +251,9 @@ class Parser {
 
   #atom(): FilterNode | undefined {
     const t = this.#peek()
-    if (!t) return undefined
+    if (!t) {
+      return undefined
+    }
 
     if (t.type === 'lparen') {
       this.#advance()
@@ -308,10 +326,14 @@ function matchSequence(
   lower: string,
   fromIndex: number,
 ): boolean {
-  if (nodes.length === 0) return true
+  if (nodes.length === 0) {
+    return true
+  }
   const [first, ...rest] = nodes
   const pos = findMatch(first, lower, fromIndex)
-  if (pos === -1) return false
+  if (pos === -1) {
+    return false
+  }
   const len = matchLength(first, lower, pos)
   return matchSequence(rest, lower, pos + len)
 }
@@ -331,14 +353,18 @@ function findMatch(node: FilterNode, lower: string, fromIndex: number): number {
     case 'sequence':
       // try every starting position
       for (let i = fromIndex; i < lower.length; i++) {
-        if (matchSequence(node.nodes, lower, i)) return i
+        if (matchSequence(node.nodes, lower, i)) {
+          return i
+        }
       }
       return -1
     case 'and':
     case 'or':
       // for compound nodes inside a sequence, just check if they match
       // from this position forward
-      if (matchFilter(node, lower.slice(fromIndex))) return fromIndex
+      if (matchFilter(node, lower.slice(fromIndex))) {
+        return fromIndex
+      }
       return -1
   }
 }

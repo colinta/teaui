@@ -73,10 +73,18 @@ class TestScreen {
     const shift = mods.shift ?? false
 
     let full = ''
-    if (ctrl) full += 'C-'
-    if (alt) full += 'A-'
-    if (gui) full += 'G-'
-    if (shift) full += 'S-'
+    if (ctrl) {
+      full += 'C-'
+    }
+    if (alt) {
+      full += 'A-'
+    }
+    if (gui) {
+      full += 'G-'
+    }
+    if (shift) {
+      full += 'S-'
+    }
     full += key
 
     const char = key === 'space' ? ' ' : key.length === 1 ? key : ''

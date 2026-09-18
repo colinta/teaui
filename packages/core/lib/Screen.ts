@@ -183,7 +183,9 @@ export class Screen {
    * including every onExit callback, then return any failures.
    */
   stop(): Error[] {
-    if (this.#didStop) return []
+    if (this.#didStop) {
+      return []
+    }
     this.#didStop = true
     this.#isRunning = false
     const tasks = [
@@ -236,7 +238,9 @@ export class Screen {
    * screen.key() bindings (and quitChar). trigger() is the lower-level API.
    */
   dispatch(event: SystemEvent) {
-    if (!this.#isRunning) return
+    if (!this.#isRunning) {
+      return
+    }
     if (event.type === 'resize') {
       // A resize can move an inline region without changing its logical size.
       this.#buffer.invalidate()
@@ -244,7 +248,9 @@ export class Screen {
       for (const {pattern, fn} of this.#keyListeners) {
         if (matchKeyPattern(pattern, event)) {
           fn(event.char, event)
-          if (!this.#isRunning) return
+          if (!this.#isRunning) {
+            return
+          }
         }
       }
     }
@@ -256,15 +262,20 @@ export class Screen {
    * it; stop() detaches all sources. The caller owns the source's lifecycle.
    */
   addEventSource(source: EventSource): Unsubscribe {
-    if (this.#didStop)
+    if (this.#didStop) {
       throw new Error('Cannot add an event source to a stopped screen')
+    }
     const cleanup = source.onEvents(event => this.dispatch(event))
     const unsubscribe = () => {
-      if (this.#cleanupEvents.delete(unsubscribe)) cleanup()
+      if (this.#cleanupEvents.delete(unsubscribe)) {
+        cleanup()
+      }
     }
     this.#cleanupEvents.add(unsubscribe)
     // A source may synchronously emit an event that stops the screen on subscribe.
-    if (this.#didStop) unsubscribe()
+    if (this.#didStop) {
+      unsubscribe()
+    }
     return unsubscribe
   }
 
@@ -423,7 +434,9 @@ export class Screen {
   }
 
   viewNaturalSizeDidChange(view: View): void {
-    if (view !== this.rootView || !this.#isRunning) return
+    if (view !== this.rootView || !this.#isRunning) {
+      return
+    }
     if (this.#naturalSizeRefreshState !== 'idle') {
       this.#naturalSizeRefreshState = 'refreshing-dirty'
       return
@@ -451,7 +464,9 @@ export class Screen {
           }
         }
 
-        if (!this.#isNaturalSizeRefreshDirty()) return
+        if (!this.#isNaturalSizeRefreshDirty()) {
+          return
+        }
       }
     } finally {
       this.#naturalSizeRefreshState = 'idle'
@@ -468,7 +483,9 @@ export class Screen {
   }
 
   render() {
-    if (this.#didStop) return
+    if (this.#didStop) {
+      return
+    }
     if (this.#program.isUpdatingRegion) {
       this.#renderRequestedDuringRegionUpdate = true
       return

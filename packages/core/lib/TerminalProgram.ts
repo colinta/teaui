@@ -87,13 +87,17 @@ export class TerminalProgram implements Program {
   // --- Lifecycle ---
 
   setup(): void | Promise<void> {
-    if (this.#usesNaturalHeight) return
+    if (this.#usesNaturalHeight) {
+      return
+    }
     return this.#terminal.setup()
   }
 
   /** Complete deferred inline setup once the root view is available to measure. */
   setupRootView(rootView: View): void | Promise<void> {
-    if (!this.#usesNaturalHeight) return
+    if (!this.#usesNaturalHeight) {
+      return
+    }
     this.#naturalHeightView = rootView
     return this.#terminal.setup()
   }

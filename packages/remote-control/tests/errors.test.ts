@@ -120,7 +120,9 @@ describe('remote-control error values', () => {
         throw cause
       }, undefined)
       expect(result.ok).toBe(false)
-      if (!result.ok) expect(result.error).toBe(cause)
+      if (!result.ok) {
+        expect(result.error).toBe(cause)
+      }
       detach()
       callbacks.subscribe(() => Promise.reject(cause))
       expect(callbacks.emit()).toEqual([])

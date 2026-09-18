@@ -27,10 +27,18 @@ export function translateTermKeyEvent(event: TermKeyEvent): KeyEvent {
 
   // Build "full" string: "C-A-G-S-x"
   let full = ''
-  if (ctrl) full += 'C-'
-  if (alt) full += 'A-'
-  if (gui) full += 'G-'
-  if (shift) full += 'S-'
+  if (ctrl) {
+    full += 'C-'
+  }
+  if (alt) {
+    full += 'A-'
+  }
+  if (gui) {
+    full += 'G-'
+  }
+  if (shift) {
+    full += 'S-'
+  }
   full += name
 
   return {

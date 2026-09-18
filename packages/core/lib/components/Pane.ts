@@ -171,7 +171,9 @@ export class Pane extends Container {
    * Whether a given browser pane is in the "will collapse" zone during a drag.
    */
   #isInCollapseZone(index: number): boolean {
-    if (!this.#collapsible) return false
+    if (!this.#collapsible) {
+      return false
+    }
     const pane = this.#browserPanes[index]
     return !pane.collapsed && pane.width <= COLLAPSE_THRESHOLD
   }
@@ -182,10 +184,13 @@ export class Pane extends Container {
    * dragging), and the initial down event itself.
    */
   #isDragGesture(event: MouseEvent): boolean {
-    if (!event.name.startsWith('mouse.button.')) return false
-    // up and cancel end the gesture
-    if (event.name.endsWith('.up') || event.name.endsWith('.cancel'))
+    if (!event.name.startsWith('mouse.button.')) {
       return false
+    }
+    // up and cancel end the gesture
+    if (event.name.endsWith('.up') || event.name.endsWith('.cancel')) {
+      return false
+    }
     return true
   }
 

@@ -16,7 +16,9 @@ export function decodeMessage(
   text: string,
   isBinary: boolean,
 ): Result<RemoteControlRequest, RequestError> {
-  if (isBinary) return err(remoteError({type: 'binary-message'}))
+  if (isBinary) {
+    return err(remoteError({type: 'binary-message'}))
+  }
   let event: unknown
   try {
     event = JSON.parse(text)
@@ -30,8 +32,9 @@ export function decodeMessage(
     (event as Record<string, unknown>).type === 'snapshot'
   ) {
     const format = (event as Record<string, unknown>).format
-    if (format === 'plain' || format === 'ansi')
+    if (format === 'plain' || format === 'ansi') {
       return ok({type: 'snapshot', format})
+    }
     return err(remoteError({type: 'invalid-event', reason: 'snapshot-format'}))
   }
   return isSystemEvent(event)

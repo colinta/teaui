@@ -46,7 +46,9 @@ export class Client {
 
   /** Send a log message to the log-viewer. Silently dropped if disconnected. */
   send(log: Omit<LogMessage, 'type'>) {
-    if (!this.#socket) return
+    if (!this.#socket) {
+      return
+    }
     try {
       const message: LogMessage = {type: 'log', ...log}
       this.#socket.write(JSON.stringify(message) + '\n')
@@ -85,7 +87,9 @@ export class Client {
   }
 
   #scheduleReconnect() {
-    if (this.#reconnectTimer) return
+    if (this.#reconnectTimer) {
+      return
+    }
     this.#reconnectTimer = setTimeout(() => {
       this.#reconnectTimer = undefined
       this.#connect()
@@ -95,7 +99,9 @@ export class Client {
 }
 
 function inferName(argv1: string | undefined): string {
-  if (!argv1) return 'unknown'
+  if (!argv1) {
+    return 'unknown'
+  }
   const base = argv1.split('/').pop() ?? 'unknown'
   return base.replace(/\.[jt]s$/, '')
 }

@@ -16,8 +16,12 @@ export function detectColorSupport(
   }
 
   const term = env.TERM?.toLowerCase() ?? ''
-  if (term === 'dumb') return 'none'
-  if (term.includes('256color')) return '256'
+  if (term === 'dumb') {
+    return 'none'
+  }
+  if (term.includes('256color')) {
+    return '256'
+  }
   if (
     term.includes('xterm') ||
     term.includes('screen') ||
@@ -91,7 +95,9 @@ export class ScreenController {
     }
 
     let output = CARRIAGE_RETURN
-    if (advanceToFreshLine) output += LINE_FEED
+    if (advanceToFreshLine) {
+      output += LINE_FEED
+    }
     for (let row = 0; row < height; row++) {
       output += ansi.eraseLine() + LINE_FEED + CARRIAGE_RETURN
     }
@@ -109,9 +115,13 @@ export class ScreenController {
     let output = CARRIAGE_RETURN
     for (let row = 0; row < height; row++) {
       output += ansi.eraseLine()
-      if (row < height - 1) output += ansi.cursorDown(1)
+      if (row < height - 1) {
+        output += ansi.cursorDown(1)
+      }
     }
-    if (height > 1) output += ansi.cursorUp(height - 1)
+    if (height > 1) {
+      output += ansi.cursorUp(height - 1)
+    }
     output += CARRIAGE_RETURN
     this.write(output)
     return this
@@ -184,9 +194,15 @@ export class ScreenController {
 
     this.applicationState = {mouse, hideCursor, focusEvents}
 
-    if (hideCursor) this.hideCursor()
-    if (mouse) this.enableMouse()
-    if (focusEvents) this.enableFocusEvents()
+    if (hideCursor) {
+      this.hideCursor()
+    }
+    if (mouse) {
+      this.enableMouse()
+    }
+    if (focusEvents) {
+      this.enableFocusEvents()
+    }
     this.enableKeyboardEnhancement()
     this.enableBracketedPaste()
 
@@ -197,9 +213,15 @@ export class ScreenController {
     if (this.applicationState) {
       this.disableBracketedPaste()
       this.disableKeyboardEnhancement()
-      if (this.applicationState.focusEvents) this.disableFocusEvents()
-      if (this.applicationState.mouse) this.disableMouse()
-      if (this.applicationState.hideCursor) this.showCursor()
+      if (this.applicationState.focusEvents) {
+        this.disableFocusEvents()
+      }
+      if (this.applicationState.mouse) {
+        this.disableMouse()
+      }
+      if (this.applicationState.hideCursor) {
+        this.showCursor()
+      }
       this.applicationState = null
     }
     return this
