@@ -54,7 +54,9 @@ drawHelp()
 
 // --- Drawing ---
 function drawCursor(x: number, y: number, action: MouseEvent['action']) {
-  if (x < 0 || y < 1 || x >= cols || y >= rows) return
+  if (x < 0 || y < 1 || x >= cols || y >= rows) {
+    return
+  }
 
   if (action === 'press' || action === 'drag') {
     // Bright stamp when clicking or dragging
@@ -66,9 +68,13 @@ function drawCursor(x: number, y: number, action: MouseEvent['action']) {
 }
 
 function clearCell(x: number, y: number) {
-  if (x < 0 || y < 0 || x >= cols || y >= rows) return
+  if (x < 0 || y < 0 || x >= cols || y >= rows) {
+    return
+  }
   // Don't clear the help line
-  if (y === 0) return
+  if (y === 0) {
+    return
+  }
   term.moveTo(x, y).write(' ')
 }
 
@@ -112,10 +118,18 @@ term.onInput(event => {
 
     // Show coordinates and modifiers in bottom-left
     const mods: string[] = []
-    if (event.ctrl) mods.push('ctrl')
-    if (event.alt) mods.push('alt')
-    if (event.gui) mods.push('gui')
-    if (event.shift) mods.push('shift')
+    if (event.ctrl) {
+      mods.push('ctrl')
+    }
+    if (event.alt) {
+      mods.push('alt')
+    }
+    if (event.gui) {
+      mods.push('gui')
+    }
+    if (event.shift) {
+      mods.push('shift')
+    }
     const modStr = mods.length > 0 ? mods.join('+') : 'none'
     const status = `pos: (${event.x}, ${event.y})  action: ${event.action.padEnd(7)}  button: ${event.button.padEnd(6)}  mods: ${modStr.padEnd(20)}`
     term

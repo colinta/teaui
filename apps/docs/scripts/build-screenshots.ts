@@ -53,13 +53,24 @@ function ansiToHtml(ansi: string): string {
     const effectiveFg = inverse ? (bg ?? DEFAULT_BG) : (fg ?? DEFAULT_FG)
     const effectiveBg = inverse ? (fg ?? DEFAULT_FG) : (bg ?? DEFAULT_BG)
 
-    if (effectiveFg !== DEFAULT_FG) styles.push(`color:${effectiveFg}`)
-    if (effectiveBg !== DEFAULT_BG)
+    if (effectiveFg !== DEFAULT_FG) {
+      styles.push(`color:${effectiveFg}`)
+    }
+    if (effectiveBg !== DEFAULT_BG) {
       styles.push(`background-color:${effectiveBg}`)
-    if (bold) styles.push('font-weight:bold')
-    if (dim) styles.push('opacity:0.7')
-    if (italic) styles.push('font-style:italic')
-    if (underline) styles.push('text-decoration:underline')
+    }
+    if (bold) {
+      styles.push('font-weight:bold')
+    }
+    if (dim) {
+      styles.push('opacity:0.7')
+    }
+    if (italic) {
+      styles.push('font-style:italic')
+    }
+    if (underline) {
+      styles.push('text-decoration:underline')
+    }
 
     if (styles.length > 0) {
       html += `<span style="${styles.join(';')}">`
@@ -77,7 +88,9 @@ function ansiToHtml(ansi: string): string {
   function parse256Color(params: number[], i: number): [string | null, number] {
     if (params[i + 1] === 5 && i + 2 < params.length) {
       const n = params[i + 2]
-      if (n < 16) return [COLORS_16[n] ?? DEFAULT_FG, i + 3]
+      if (n < 16) {
+        return [COLORS_16[n] ?? DEFAULT_FG, i + 3]
+      }
       if (n < 232) {
         // 216 color cube
         const idx = n - 16
@@ -104,7 +117,9 @@ function ansiToHtml(ansi: string): string {
     if (ansi[i] === '\x1b' && ansi[i + 1] === '[') {
       // Parse SGR sequence
       let j = i + 2
-      while (j < ansi.length && ansi[j] !== 'm') j++
+      while (j < ansi.length && ansi[j] !== 'm') {
+        j++
+      }
       const paramStr = ansi.slice(i + 2, j)
       const params = paramStr.split(';').map(s => parseInt(s, 10) || 0)
 
@@ -189,10 +204,15 @@ function ansiToHtml(ansi: string): string {
     } else {
       // Escape HTML special chars
       const ch = ansi[i]
-      if (ch === '<') html += '&lt;'
-      else if (ch === '>') html += '&gt;'
-      else if (ch === '&') html += '&amp;'
-      else html += ch
+      if (ch === '<') {
+        html += '&lt;'
+      } else if (ch === '>') {
+        html += '&gt;'
+      } else if (ch === '&') {
+        html += '&amp;'
+      } else {
+        html += ch
+      }
       i++
     }
   }
@@ -265,7 +285,9 @@ async function buildExamples() {
       source = source.replace(
         /^(import \{)(.*?)(\} from '@teaui\/react')$/m,
         (match, pre, imports, post) => {
-          if (imports.includes('run')) return match
+          if (imports.includes('run')) {
+            return match
+          }
           return `${pre}${imports.trimEnd()}, run${post}`
         },
       )

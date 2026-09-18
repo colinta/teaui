@@ -77,9 +77,15 @@ export function mouseEventToAnsi(event: MouseEvent): string {
   }
 
   // Add modifier bits
-  if (event.shift) button += 4
-  if (event.alt) button += 8
-  if (event.ctrl) button += 16
+  if (event.shift) {
+    button += 4
+  }
+  if (event.alt) {
+    button += 8
+  }
+  if (event.ctrl) {
+    button += 16
+  }
 
   return `\x1b[<${button};${x};${y}${final}`
 }

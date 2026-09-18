@@ -7,10 +7,15 @@ export function itermImage(data: Buffer, options: ImageOptions = {}): string {
   const b64 = data.toString('base64')
   const params: string[] = ['inline=1']
 
-  if (options.width !== undefined) params.push(`width=${options.width}`)
-  if (options.height !== undefined) params.push(`height=${options.height}`)
-  if (options.preserveAspectRatio === false)
+  if (options.width !== undefined) {
+    params.push(`width=${options.width}`)
+  }
+  if (options.height !== undefined) {
+    params.push(`height=${options.height}`)
+  }
+  if (options.preserveAspectRatio === false) {
     params.push('preserveAspectRatio=0')
+  }
 
   return `${OSC}1337;File=${params.join(';')}:${b64}${ST}`
 }
@@ -21,8 +26,12 @@ export function kittyImage(data: Buffer, options: ImageOptions = {}): string {
 
   // Build base params
   const baseParams: string[] = ['a=T', 'f=100']
-  if (options.width !== undefined) baseParams.push(`c=${options.width}`)
-  if (options.height !== undefined) baseParams.push(`r=${options.height}`)
+  if (options.width !== undefined) {
+    baseParams.push(`c=${options.width}`)
+  }
+  if (options.height !== undefined) {
+    baseParams.push(`r=${options.height}`)
+  }
 
   if (b64.length <= KITTY_CHUNK_SIZE) {
     return `${ESC}_G${baseParams.join(',')},m=0;${b64}${ST}`
@@ -50,8 +59,12 @@ export function detectImageProtocol(
   const termProgram = env.TERM_PROGRAM?.toLowerCase() ?? ''
   const term = env.TERM?.toLowerCase() ?? ''
 
-  if (termProgram === 'kitty' || term === 'xterm-kitty') return 'kitty'
-  if (termProgram === 'iterm.app' || termProgram === 'wezterm') return 'iterm'
+  if (termProgram === 'kitty' || term === 'xterm-kitty') {
+    return 'kitty'
+  }
+  if (termProgram === 'iterm.app' || termProgram === 'wezterm') {
+    return 'iterm'
+  }
 
   return 'none'
 }

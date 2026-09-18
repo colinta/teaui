@@ -16,7 +16,9 @@ try {
     const [data] = await reply
     const response = JSON.parse(data.toString())
     const expected = event.type === 'snapshot' ? 'snapshot' : 'ack'
-    if (response.type !== expected) throw new Error(JSON.stringify(response))
+    if (response.type !== expected) {
+      throw new Error(JSON.stringify(response))
+    }
     console.log(JSON.stringify(response))
   }
   const closed = once(socket, 'close')

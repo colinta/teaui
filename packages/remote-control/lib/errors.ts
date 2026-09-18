@@ -71,11 +71,15 @@ function errorMessage(error: ErrorDetail): string {
 
 // Never coerce an arbitrary thrown value. Even reading a message can throw.
 function causeMessage(cause: unknown, fallback: string): string {
-  if (typeof cause === 'string') return cause
+  if (typeof cause === 'string') {
+    return cause
+  }
   try {
     if (typeof cause === 'object' && cause !== null && 'message' in cause) {
       const message = cause.message
-      if (typeof message === 'string') return message
+      if (typeof message === 'string') {
+        return message
+      }
     }
   } catch {
     // A throwing getter/proxy must not escape the error boundary.

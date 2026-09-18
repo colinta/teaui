@@ -67,10 +67,18 @@ export function hotKeyToString(hotKey: HotKey): string {
   }
 
   let str = ''
-  if (hotKey.ctrl) str += 'C-'
-  if (hotKey.alt) str += 'A-'
-  if (hotKey.gui) str += 'G-'
-  if (hotKey.shift) str += 'S-'
+  if (hotKey.ctrl) {
+    str += 'C-'
+  }
+  if (hotKey.alt) {
+    str += 'A-'
+  }
+  if (hotKey.gui) {
+    str += 'G-'
+  }
+  if (hotKey.shift) {
+    str += 'S-'
+  }
   str += hotKey.char
   return str
 }

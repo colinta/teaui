@@ -55,7 +55,9 @@ export class Buffer implements Terminal {
    */
   snapshot(): string {
     const {width, height} = this.size
-    if (!this.#prev.size || !width || !height) return ''
+    if (!this.#prev.size || !width || !height) {
+      return ''
+    }
     const lines: string[] = []
     for (let y = 0; y < height; y++) {
       const row = this.#prev.get(y)
@@ -177,7 +179,9 @@ export class Buffer implements Terminal {
     let bgCache = this.#mergeCache.get(bgStyle)
     if (bgCache) {
       const cached = bgCache.get(style)
-      if (cached) return cached
+      if (cached) {
+        return cached
+      }
     } else {
       bgCache = new Map()
       this.#mergeCache.set(bgStyle, bgCache)
@@ -211,7 +215,9 @@ export class Buffer implements Terminal {
     // over content that was rendered before this paint call.
     for (let y = rMinY; y < rMaxY; y++) {
       const line = this.#canvas.get(y)
-      if (!line) continue
+      if (!line) {
+        continue
+      }
       for (let x = rMinX; x < rMaxX; x++) {
         line.delete(x)
       }
@@ -371,7 +377,9 @@ export class Buffer implements Terminal {
   }
 
   #paintRectsEqual(a: PaintRect[], b: PaintRect[]): boolean {
-    if (a.length !== b.length) return false
+    if (a.length !== b.length) {
+      return false
+    }
     for (let i = 0; i < a.length; i++) {
       const ra = a[i]
       const rb = b[i]

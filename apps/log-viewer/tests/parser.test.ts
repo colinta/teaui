@@ -3,14 +3,20 @@ import {parseFilter, matchFilter, type FilterNode} from '../parser.js'
 
 function parse(filter: string): FilterNode | undefined {
   const result = parseFilter(filter)
-  if (!result) return undefined
-  if (result.type === 'failure') return undefined
+  if (!result) {
+    return undefined
+  }
+  if (result.type === 'failure') {
+    return undefined
+  }
   return result.node
 }
 
 function matches(filter: string, text: string): boolean {
   const result = parseFilter(filter)
-  if (!result || result.type === 'failure') return true
+  if (!result || result.type === 'failure') {
+    return true
+  }
   return matchFilter(result.node, text)
 }
 

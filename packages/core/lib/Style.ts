@@ -406,66 +406,98 @@ export class Style {
     const undo: string[] = []
     if (this.underline && !prevStyle.underline) {
       parts.push('underline')
-      if (text) undo.push('!underline')
+      if (text) {
+        undo.push('!underline')
+      }
     } else if (!this.underline && prevStyle.underline) {
       parts.push('!underline')
-      if (text) undo.push('underline')
+      if (text) {
+        undo.push('underline')
+      }
     }
 
     if (this.bold && !prevStyle.bold) {
       parts.push('bold')
-      if (text) undo.push('!bold')
+      if (text) {
+        undo.push('!bold')
+      }
     } else if (!this.bold && prevStyle.bold) {
       parts.push('!bold')
-      if (text) undo.push('bold')
+      if (text) {
+        undo.push('bold')
+      }
     }
 
     if (this.dim && !prevStyle.dim) {
       parts.push('dim')
-      if (text) undo.push('!dim')
+      if (text) {
+        undo.push('!dim')
+      }
     } else if (!this.dim && prevStyle.dim) {
       parts.push('!dim')
-      if (text) undo.push('dim')
+      if (text) {
+        undo.push('dim')
+      }
     }
 
     if (this.italic && !prevStyle.italic) {
       parts.push('italic')
-      if (text) undo.push('!italic')
+      if (text) {
+        undo.push('!italic')
+      }
     } else if (!this.italic && prevStyle.italic) {
       parts.push('!italic')
-      if (text) undo.push('italic')
+      if (text) {
+        undo.push('italic')
+      }
     }
 
     if (this.strikeout && !prevStyle.strikeout) {
       parts.push('strikeout')
-      if (text) undo.push('!strikeout')
+      if (text) {
+        undo.push('!strikeout')
+      }
     } else if (!this.strikeout && prevStyle.strikeout) {
       parts.push('!strikeout')
-      if (text) undo.push('strikeout')
+      if (text) {
+        undo.push('strikeout')
+      }
     }
 
     if (this.inverse && !prevStyle.inverse) {
       parts.push('inverse')
-      if (text) undo.push('!inverse')
+      if (text) {
+        undo.push('!inverse')
+      }
     } else if (!this.inverse && prevStyle.inverse) {
       parts.push('!inverse')
-      if (text) undo.push('inverse')
+      if (text) {
+        undo.push('inverse')
+      }
     }
 
     if (this.foreground) {
       parts.push(colorToSGR(this.foreground, 'fg'))
-      if (text) undo.push(colorToSGR(prevStyle.foreground ?? 'default', 'fg'))
+      if (text) {
+        undo.push(colorToSGR(prevStyle.foreground ?? 'default', 'fg'))
+      }
     } else if (prevStyle.foreground && prevStyle.foreground !== 'default') {
       parts.push(colorToSGR('default', 'fg'))
-      if (text) undo.push(colorToSGR(prevStyle.foreground, 'fg'))
+      if (text) {
+        undo.push(colorToSGR(prevStyle.foreground, 'fg'))
+      }
     }
 
     if (this.background) {
       parts.push(colorToSGR(this.background, 'bg'))
-      if (text) undo.push(colorToSGR(prevStyle.background ?? 'default', 'bg'))
+      if (text) {
+        undo.push(colorToSGR(prevStyle.background ?? 'default', 'bg'))
+      }
     } else if (prevStyle.background && prevStyle.background !== 'default') {
       parts.push(colorToSGR('default', 'bg'))
-      if (text) undo.push(colorToSGR(prevStyle.background, 'bg'))
+      if (text) {
+        undo.push(colorToSGR(prevStyle.background, 'bg'))
+      }
     }
 
     // put '!' flags in front

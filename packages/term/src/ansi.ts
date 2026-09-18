@@ -21,10 +21,16 @@ export function cursorTo(x: number, y: number): string {
 
 export function cursorMove(dx: number, dy: number): string {
   let seq = ''
-  if (dy > 0) seq += cursorDown(dy)
-  else if (dy < 0) seq += cursorUp(-dy)
-  if (dx > 0) seq += cursorForward(dx)
-  else if (dx < 0) seq += cursorBack(-dx)
+  if (dy > 0) {
+    seq += cursorDown(dy)
+  } else if (dy < 0) {
+    seq += cursorUp(-dy)
+  }
+  if (dx > 0) {
+    seq += cursorForward(dx)
+  } else if (dx < 0) {
+    seq += cursorBack(-dx)
+  }
   return seq
 }
 
@@ -198,7 +204,9 @@ export function hslToRgb(
 }
 
 function resolveToRgb(color: Color): {r: number; g: number; b: number} | null {
-  if (isRGB(color)) return color
+  if (isRGB(color)) {
+    return color
+  }
   if (isHSL(color)) {
     const [r, g, b] = hslToRgb(color.h, color.s, color.l)
     return {r, g, b}

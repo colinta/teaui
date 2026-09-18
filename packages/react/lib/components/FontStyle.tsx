@@ -26,7 +26,9 @@ export function FontStyle({value, onChange}: FontStyleProps): JSX.Element {
   const selected = useMemo(() => {
     const indices: number[] = []
     KEYS.forEach((key, i) => {
-      if (value[key]) indices.push(i)
+      if (value[key]) {
+        indices.push(i)
+      }
     })
     return indices
   }, [value])

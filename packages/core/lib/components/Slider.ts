@@ -103,7 +103,9 @@ export class Slider extends View {
     return this.#border
   }
   set border(value: boolean) {
-    if (value === this.#border) return
+    if (value === this.#border) {
+      return
+    }
     this.#border = value
     this.invalidateSize()
   }

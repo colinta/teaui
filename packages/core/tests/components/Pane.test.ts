@@ -24,7 +24,9 @@ function findSeparatorX(
 ): number {
   const text = t.terminal.textRect(0, row, width, 1)
   for (let i = 0; i < text.length; i++) {
-    if (text[i] === '┃') return i
+    if (text[i] === '┃') {
+      return i
+    }
   }
   return -1
 }

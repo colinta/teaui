@@ -163,7 +163,7 @@ export class Viewport {
     const maxX = rect.maxX()
     const maxY = rect.maxY()
     const events = typeof eventNames === 'string' ? [eventNames] : eventNames
-    for (let y = rect.minY(); y < maxY; ++y)
+    for (let y = rect.minY(); y < maxY; ++y) {
       for (let x = rect.minX(); x < maxX; ++x) {
         this.#screen.registerMouse(
           this.#currentRender,
@@ -172,6 +172,7 @@ export class Viewport {
           events,
         )
       }
+    }
   }
 
   registerTick() {

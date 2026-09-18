@@ -37,7 +37,9 @@ export class FullscreenTerminal extends ApplicationTerminal {
   #isActive = false
 
   setup(): void {
-    if (this.#isActive) return
+    if (this.#isActive) {
+      return
+    }
     this.#isActive = true
     try {
       this.enterFullscreen({
@@ -57,7 +59,9 @@ export class FullscreenTerminal extends ApplicationTerminal {
   }
 
   teardown(): void {
-    if (!this.#isActive) return
+    if (!this.#isActive) {
+      return
+    }
     this.#isActive = false
 
     try {
@@ -131,7 +135,9 @@ export class InlineTerminal extends ApplicationTerminal {
         return
       }
 
-      if (!this.region.originKnown) return
+      if (!this.region.originKnown) {
+        return
+      }
 
       const y = event.y - this.region.originY
       if (
@@ -150,12 +156,16 @@ export class InlineTerminal extends ApplicationTerminal {
   override onResize(listener: (size: ScreenSize) => void): () => void {
     let subscribed = true
     const unsubscribe = super.onResize(size => {
-      if (!this.#isActive || !subscribed) return
+      if (!this.#isActive || !subscribed) {
+        return
+      }
 
       this.#pendingSize = size
       this.#resizePending = true
       void this.#drainResizeEvents(() => {
-        if (subscribed) listener(this.size)
+        if (subscribed) {
+          listener(this.size)
+        }
       })
     })
 
@@ -175,17 +185,23 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   async setup(): Promise<void> {
-    if (this.#isActive) return
+    if (this.#isActive) {
+      return
+    }
     this.#isActive = true
     const session = ++this.#session
 
     try {
       this.startInput()
       await this.#queueRegionUpdate(async () => {
-        if (!this.#isCurrentSession(session)) return
+        if (!this.#isCurrentSession(session)) {
+          return
+        }
         this.#updateConfiguredHeight(this.size)
         const origin = await this.#reserveConfiguredRows(session)
-        if (!this.#isCurrentSession(session)) return
+        if (!this.#isCurrentSession(session)) {
+          return
+        }
 
         this.#isReserved = true
         this.#setRegion(origin)
@@ -213,26 +229,36 @@ export class InlineTerminal extends ApplicationTerminal {
 
   /** Re-resolve a dynamic height and update the reserved region if it changed. */
   override refreshHeight(): Promise<boolean> {
-    if (!this.#isActive) return Promise.resolve(false)
+    if (!this.#isActive) {
+      return Promise.resolve(false)
+    }
     const session = this.#session
 
     return this.#queueRegionUpdate(async () => {
-      if (!this.#isCurrentSession(session)) return false
+      if (!this.#isCurrentSession(session)) {
+        return false
+      }
       const size = this.size
       const previousHeight = this.region.configuredHeight
       const previousRegionHeight = this.region.height
       this.#updateConfiguredHeight(size)
-      if (this.region.configuredHeight === previousHeight) return false
+      if (this.region.configuredHeight === previousHeight) {
+        return false
+      }
 
       try {
         const origin = await this.#reserveConfiguredRows(session)
-        if (!this.#isCurrentSession(session)) return false
+        if (!this.#isCurrentSession(session)) {
+          return false
+        }
         this.#setRegion(origin)
         this.#clearShrunkRegion(previousRegionHeight, size.rows)
         this.#setMouseEnabled(this.region.originKnown)
         this.flushWrites()
       } catch {
-        if (!this.#isCurrentSession(session)) return false
+        if (!this.#isCurrentSession(session)) {
+          return false
+        }
         this.#recoverRegionUpdate()
       }
 
@@ -241,7 +267,9 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   teardown(): void {
-    if (!this.#isActive) return
+    if (!this.#isActive) {
+      return
+    }
     this.#isActive = false
     this.#session++
     this.#resizePending = false
@@ -271,7 +299,9 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   async #drainResizeEvents(listener: () => void): Promise<void> {
-    if (this.#resizeRunning) return
+    if (this.#resizeRunning) {
+      return
+    }
     this.#resizeRunning = true
 
     try {
@@ -284,7 +314,9 @@ export class InlineTerminal extends ApplicationTerminal {
         const session = this.#session
 
         await this.#queueRegionUpdate(async () => {
-          if (!this.#isCurrentSession(session)) return
+          if (!this.#isCurrentSession(session)) {
+            return
+          }
           try {
             const previousHeight = this.region.configuredHeight
             const previousRegionHeight = this.region.height
@@ -295,13 +327,17 @@ export class InlineTerminal extends ApplicationTerminal {
               size.rows === previousSize.rows && !heightChanged
                 ? await this.queryCursorPosition()
                 : await this.#reserveConfiguredRows(session)
-            if (!this.#isCurrentSession(session)) return
+            if (!this.#isCurrentSession(session)) {
+              return
+            }
             this.#setRegion(origin)
             this.#clearShrunkRegion(previousRegionHeight, size.rows)
             this.#setMouseEnabled(this.region.originKnown)
             this.flushWrites()
           } catch {
-            if (!this.#isCurrentSession(session)) return
+            if (!this.#isCurrentSession(session)) {
+              return
+            }
             this.#recoverRegionUpdate()
           }
         })
@@ -313,7 +349,9 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   async #reserveConfiguredRows(session: number) {
-    if (!this.#isCurrentSession(session)) return null
+    if (!this.#isCurrentSession(session)) {
+      return null
+    }
 
     this.#isReserving = true
     try {
@@ -373,7 +411,9 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   #clearShrunkRegion(previousHeight: number, terminalRows: number): void {
-    if (this.region.height >= previousHeight) return
+    if (this.region.height >= previousHeight) {
+      return
+    }
     this.moveTo(0, 0)
     this.clearRows(Math.min(previousHeight, terminalRows))
   }
@@ -391,7 +431,9 @@ export class InlineTerminal extends ApplicationTerminal {
   }
 
   #setMouseEnabled(enabled: boolean): void {
-    if (enabled === this.#mouseEnabled) return
+    if (enabled === this.#mouseEnabled) {
+      return
+    }
     this.exitApplication()
     this.enterApplication({mouse: enabled, hideCursor: true, focusEvents: true})
     this.#mouseEnabled = enabled

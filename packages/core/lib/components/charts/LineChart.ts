@@ -31,33 +31,51 @@ export class LineChart<T> extends Chart<T> {
   }
 
   getXRange(): ChartRange {
-    if (this.data.length === 0) return {min: 0, max: 1}
+    if (this.data.length === 0) {
+      return {min: 0, max: 1}
+    }
     let min = Infinity
     let max = -Infinity
     for (const row of this.data) {
       const [x] = this.#extract(row)
-      if (x < min) min = x
-      if (x > max) max = x
+      if (x < min) {
+        min = x
+      }
+      if (x > max) {
+        max = x
+      }
     }
-    if (min === max) return {min: min - 1, max: max + 1}
+    if (min === max) {
+      return {min: min - 1, max: max + 1}
+    }
     return {min, max}
   }
 
   getYRange(): ChartRange {
-    if (this.data.length === 0) return {min: 0, max: 1}
+    if (this.data.length === 0) {
+      return {min: 0, max: 1}
+    }
     let min = Infinity
     let max = -Infinity
     for (const row of this.data) {
       const [, y] = this.#extract(row)
-      if (y < min) min = y
-      if (y > max) max = y
+      if (y < min) {
+        min = y
+      }
+      if (y > max) {
+        max = y
+      }
     }
-    if (min === max) return {min: min - 1, max: max + 1}
+    if (min === max) {
+      return {min: min - 1, max: max + 1}
+    }
     return {min, max}
   }
 
   getXLabels(): string[] {
-    if (!this.#xLabelsFn) return []
+    if (!this.#xLabelsFn) {
+      return []
+    }
     return this.data.map(this.#xLabelsFn)
   }
 
@@ -75,7 +93,9 @@ export class LineChart<T> extends Chart<T> {
   }
 
   renderChart(viewport: Viewport, layout: ChartLayout): void {
-    if (viewport.isEmpty || this.data.length === 0) return
+    if (viewport.isEmpty || this.data.length === 0) {
+      return
+    }
 
     const extract = this.#extract
 
@@ -131,8 +151,14 @@ function defaultYLabels(range: ChartRange, count: number): string[] {
 }
 
 function formatNumber(n: number): string {
-  if (Number.isInteger(n)) return String(n)
-  if (Math.abs(n) >= 100) return String(Math.round(n))
-  if (Math.abs(n) >= 10) return n.toFixed(1)
+  if (Number.isInteger(n)) {
+    return String(n)
+  }
+  if (Math.abs(n) >= 100) {
+    return String(Math.round(n))
+  }
+  if (Math.abs(n) >= 10) {
+    return n.toFixed(1)
+  }
   return n.toFixed(2)
 }

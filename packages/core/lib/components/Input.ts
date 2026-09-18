@@ -457,7 +457,9 @@ export class Input extends View {
     const pasteChars = unicode.printableChars(
       this.#multiline ? text : text.replaceAll('\n', ''),
     )
-    if (pasteChars.length === 0) return
+    if (pasteChars.length === 0) {
+      return
+    }
 
     this.#beginEdit('replace')
     const prevText = this.#value

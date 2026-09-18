@@ -64,7 +64,8 @@ describe('remote message decoding', () => {
       {...mouse, button: 'nope'},
       {...key, ctrl: 1},
       {...key, full: ''},
-    ])
+    ]) {
       expect(isSystemEvent(invalid)).toBe(false)
+    }
   })
 })

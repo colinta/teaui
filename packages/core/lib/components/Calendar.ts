@@ -152,13 +152,21 @@ export class Calendar extends View {
         0,
       )
     }
-    if (props.visibleDate !== undefined) this.#visibleDate = props.visibleDate
-    if (props.onChangeVisible !== undefined)
+    if (props.visibleDate !== undefined) {
+      this.#visibleDate = props.visibleDate
+    }
+    if (props.onChangeVisible !== undefined) {
       this.#onChangeVisible = props.onChangeVisible
-    if (props.onChange !== undefined) this.#onChange = props.onChange
-    if (props.selection !== undefined) this.#selection = props.selection
-    if (props.firstDayOfWeek !== undefined)
+    }
+    if (props.onChange !== undefined) {
+      this.#onChange = props.onChange
+    }
+    if (props.selection !== undefined) {
+      this.#selection = props.selection
+    }
+    if (props.firstDayOfWeek !== undefined) {
       this.#firstDayOfWeek = props.firstDayOfWeek
+    }
     super.update(props)
   }
 
@@ -272,7 +280,9 @@ export class Calendar extends View {
   }
 
   #isInRange(date: Date): boolean {
-    if (!this.#rangeStart || !this.#rangeEnd) return false
+    if (!this.#rangeStart || !this.#rangeEnd) {
+      return false
+    }
     const time = date.getTime()
     const start = Math.min(this.#rangeStart.getTime(), this.#rangeEnd.getTime())
     const end = Math.max(this.#rangeStart.getTime(), this.#rangeEnd.getTime())
@@ -431,7 +441,9 @@ export class Calendar extends View {
   }
 
   #getDateAtPosition(x: number, y: number): Date | undefined {
-    if (y < 2 || y > 7) return undefined
+    if (y < 2 || y > 7) {
+      return undefined
+    }
 
     const col = Math.floor(x / 3)
     const weekRow = y - 2

@@ -273,7 +273,9 @@ export class Terminal {
    * changing the active terminal display buffer or terminal protocols.
    */
   startInput(): this {
-    if (this.inputStarted || !this.input) return this
+    if (this.inputStarted || !this.input) {
+      return this
+    }
 
     this.inputReader.attach(this.input)
     this.inputStarted = true
@@ -295,7 +297,9 @@ export class Terminal {
 
   /** Restore the input stream state captured by `startInput()`. */
   stopInput(): this {
-    if (!this.inputStarted) return this
+    if (!this.inputStarted) {
+      return this
+    }
 
     this.inputReader.detach()
     if (this.rawModeManaged && this.input) {
@@ -387,7 +391,9 @@ export class Terminal {
 
     const effectiveHeight = Math.min(height, this.size.rows)
     const position = await this.queryCursorPosition(timeoutMs)
-    if (isCancelled?.()) return null
+    if (isCancelled?.()) {
+      return null
+    }
     if (!position) {
       // Without a position, conservatively start on a fresh line. The rows are
       // still usable for keyboard-only rendering, but their physical origin
@@ -424,14 +430,18 @@ export class Terminal {
     return new Promise((resolve, reject) => {
       let timer: ReturnType<typeof setTimeout> | undefined
       const waiter = (position: CursorPosition) => {
-        if (timer) clearTimeout(timer)
+        if (timer) {
+          clearTimeout(timer)
+        }
         resolve(position)
       }
       this.cursorPositionWaiters.push(waiter)
 
       timer = setTimeout(() => {
         const index = this.cursorPositionWaiters.indexOf(waiter)
-        if (index !== -1) this.cursorPositionWaiters.splice(index, 1)
+        if (index !== -1) {
+          this.cursorPositionWaiters.splice(index, 1)
+        }
         resolve(null)
       }, timeoutMs)
 
@@ -441,7 +451,9 @@ export class Terminal {
       } catch (error) {
         clearTimeout(timer)
         const index = this.cursorPositionWaiters.indexOf(waiter)
-        if (index !== -1) this.cursorPositionWaiters.splice(index, 1)
+        if (index !== -1) {
+          this.cursorPositionWaiters.splice(index, 1)
+        }
         reject(error)
       }
     })
@@ -452,7 +464,9 @@ export class Terminal {
    * sequence responses (e.g. iTerm2 background color query).
    */
   onRawData(cb: (data: Buffer) => void): () => void {
-    if (!this.input) throw new Error('No input stream')
+    if (!this.input) {
+      throw new Error('No input stream')
+    }
     const handler = (data: Buffer) => cb(data)
     this.input.on('data', handler)
     return () => {
@@ -464,7 +478,9 @@ export class Terminal {
    * Listen for raw data once, then remove the listener.
    */
   onceRawData(cb: (data: Buffer) => void): void {
-    if (!this.input) throw new Error('No input stream')
+    if (!this.input) {
+      throw new Error('No input stream')
+    }
     this.input.once('data', cb as any)
   }
 
@@ -567,22 +583,34 @@ function matchCursorPositionResponse(
 
   let index = CURSOR_POSITION_RESPONSE_PREFIX.length
   const rowStart = index
-  while (index < candidate.length && isDigit(candidate[index])) index++
+  while (index < candidate.length && isDigit(candidate[index])) {
+    index++
+  }
   if (index === rowStart) {
     return index === candidate.length ? {status: 'partial'} : {status: 'none'}
   }
-  if (index === candidate.length) return {status: 'partial'}
-  if (candidate[index] !== SEMICOLON) return {status: 'none'}
+  if (index === candidate.length) {
+    return {status: 'partial'}
+  }
+  if (candidate[index] !== SEMICOLON) {
+    return {status: 'none'}
+  }
 
   const rowEnd = index
   index++
   const columnStart = index
-  while (index < candidate.length && isDigit(candidate[index])) index++
+  while (index < candidate.length && isDigit(candidate[index])) {
+    index++
+  }
   if (index === columnStart) {
     return index === candidate.length ? {status: 'partial'} : {status: 'none'}
   }
-  if (index === candidate.length) return {status: 'partial'}
-  if (candidate[index] !== RESPONSE_END) return {status: 'none'}
+  if (index === candidate.length) {
+    return {status: 'partial'}
+  }
+  if (candidate[index] !== RESPONSE_END) {
+    return {status: 'none'}
+  }
 
   const row = Number(candidate.toString('ascii', rowStart, rowEnd))
   const column = Number(candidate.toString('ascii', columnStart, index))

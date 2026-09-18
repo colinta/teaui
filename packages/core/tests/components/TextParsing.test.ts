@@ -22,12 +22,14 @@ function draw(
   const viewport = new Viewport(screen, buffer, size)
   const render = () =>
     viewport.usingPen(parentStyle, () => view.render(viewport))
-  if (clipped)
+  if (clipped) {
     viewport.clipped(
       new Rect(new Point(-2, -1), new Size(width + 3, 7)),
       render,
     )
-  else render()
+  } else {
+    render()
+  }
   buffer.flush(new StringTerminal({cols: width, rows: size.height}))
   return buffer.snapshot()
 }

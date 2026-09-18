@@ -69,7 +69,9 @@ export class TextBatch {
     this.#active = batch
     let closed = false
     return () => {
-      if (closed) return
+      if (closed) {
+        return
+      }
       closed = true
       try {
         // Materializing a parent may dirty/mount additional text containers.
@@ -85,7 +87,9 @@ export class TextBatch {
   }
 
   enqueue(container: TextContainer): boolean {
-    if (!this.#active) return false
+    if (!this.#active) {
+      return false
+    }
     this.#active.add(container)
     return true
   }
@@ -257,19 +261,25 @@ export class TextContainer extends Container {
 
   #queueTextUpdate(kind: 'text' | 'nodes') {
     const wasPending = this.#pendingTextUpdate !== undefined
-    if (kind === 'nodes' || !wasPending) this.#pendingTextUpdate = kind
+    if (kind === 'nodes' || !wasPending) {
+      this.#pendingTextUpdate = kind
+    }
     if (!this.#textBatch?.enqueue(this)) {
       this.flushTextUpdates()
       return
     }
 
     // Clear cached ancestor measurements even if a read happens during the commit.
-    if (!wasPending) this.invalidateSize()
+    if (!wasPending) {
+      this.invalidateSize()
+    }
   }
 
   /** Internal; also used by synchronous reads while a commit is in progress. */
   flushTextUpdates() {
-    if (this.#flushingText) return
+    if (this.#flushingText) {
+      return
+    }
     this.#flushingText = true
     try {
       while (this.#pendingTextUpdate !== undefined) {
@@ -517,7 +527,9 @@ export class TextProvider extends Container {
   update(props: ProviderProps) {
     const textChanged = this.#update(props)
     super.update(props)
-    if (textChanged) this.#invalidateTextContainers(this)
+    if (textChanged) {
+      this.#invalidateTextContainers(this)
+    }
     this.invalidateSize()
   }
 

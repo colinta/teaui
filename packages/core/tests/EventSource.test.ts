@@ -19,7 +19,9 @@ class TestEventSource implements EventSource {
   }
 
   emit(event: SystemEvent) {
-    for (const listener of this.listeners) listener(event)
+    for (const listener of this.listeners) {
+      listener(event)
+    }
   }
 }
 
@@ -43,7 +45,9 @@ function setup() {
 }
 
 afterEach(() => {
-  for (const screen of screens.splice(0)) screen.stop()
+  for (const screen of screens.splice(0)) {
+    screen.stop()
+  }
   vi.restoreAllMocks()
 })
 

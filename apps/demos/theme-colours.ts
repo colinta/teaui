@@ -293,7 +293,9 @@ function headerRow() {
 
 function refresh() {
   const palette = paletteForPurpose(PURPOSES[selectedPurpose.index])
-  for (const row of rowViews) row.update(palette)
+  for (const row of rowViews) {
+    row.update(palette)
+  }
 }
 
 function paletteForPurpose(purpose: (typeof PURPOSES)[number]) {
@@ -305,7 +307,9 @@ function formatPurpose(purpose: string) {
 }
 
 function colorLabel(color: Color | undefined) {
-  if (color === undefined || color === 'default') return 'default'
+  if (color === undefined || color === 'default') {
+    return 'default'
+  }
   return colorToHex(color).replace(/\(.+\)$/, '')
 }
 

@@ -70,7 +70,9 @@ const server = net.createServer(socket => {
     buffer = lines.pop() ?? ''
 
     for (const line of lines) {
-      if (!line) continue
+      if (!line) {
+        continue
+      }
       try {
         const message = JSON.parse(line) as Message
         if (message.type === 'register') {
@@ -116,7 +118,9 @@ function addClient(socket: net.Socket, name: string): ClientState {
     placeholder: 'Filter logs… (supports "quoted" /regex/ AND OR)',
     onChange: (value: string) => {
       const state = clients.get(socket)
-      if (!state) return
+      if (!state) {
+        return
+      }
       const result = value.trim() ? parseFilter(value) : undefined
       state.filter = result?.type === 'success' ? result.node : undefined
       rebuildVisible(state)
@@ -149,7 +153,9 @@ function addClient(socket: net.Socket, name: string): ClientState {
 
 function removeClient(socket: net.Socket) {
   const state = clients.get(socket)
-  if (!state) return
+  if (!state) {
+    return
+  }
   clients.delete(socket)
 
   const tabIndex = tabs.tabs.findIndex(tab => tab.title === state.name)

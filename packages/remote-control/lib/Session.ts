@@ -69,14 +69,18 @@ export class Session {
   }
 
   async #bind() {
-    if (this.#stopped) return
+    if (this.#stopped) {
+      return
+    }
     const {port = 0} = this.#options
     if (!Number.isInteger(port) || port < 0 || port > 65535) {
       this.#fail(remoteError({type: 'invalid-port', port}))
       return
     }
     const {WebSocketServer} = await import('ws')
-    if (this.#stopped) return
+    if (this.#stopped) {
+      return
+    }
     const token = randomBytes(32).toString('hex')
     const secret = Buffer.from(token)
     const http = createServer((_req, response) => {
@@ -91,7 +95,9 @@ export class Session {
       maxPayload: MAX_PAYLOAD,
       perMessageDeflate: false,
       verifyClient: ({req}: {req: IncomingMessage}) => {
-        if (this.#stopped || req.headers.origin !== undefined) return false
+        if (this.#stopped || req.headers.origin !== undefined) {
+          return false
+        }
         try {
           const url = new URL(req.url ?? '/', `http://${HOST}`)
           const candidate = Buffer.from(url.searchParams.get('token') ?? '')
@@ -109,7 +115,9 @@ export class Session {
     server.on('error', cause => this.#transportFailed(cause))
     server.on('connection', socket => this.#connect(socket))
     server.once('listening', () => {
-      if (this.#stopped) return
+      if (this.#stopped) {
+        return
+      }
       const boundPort = (http.address() as AddressInfo).port
       this.#address = Object.freeze({
         port: boundPort,
@@ -130,7 +138,9 @@ export class Session {
   }
 
   #fail(error: RemoteControlError) {
-    if (this.#stopped) return
+    if (this.#stopped) {
+      return
+    }
     this.#settle(err(error))
     this.#callbacks.failed(error)
   }
@@ -144,7 +154,9 @@ export class Session {
     // Invalid frames and oversized messages affect this client only.
     socket.on('error', () => socket.terminate())
     socket.on('message', (data, isBinary) => {
-      if (this.#stopped) return
+      if (this.#stopped) {
+        return
+      }
       sequence += 1
       const decoded = decodeMessage(isBinary ? '' : data.toString(), isBinary)
       let result: Result<RemoteControlReply, RequestError>
@@ -175,14 +187,20 @@ export class Session {
 
   /** Unsolicited messages deliberately have no request sequence. */
   sendSnapshot(format: SnapshotFormat, snapshot: string): void {
-    if (this.#stopped || !this.#address || !this.#server) return
+    if (this.#stopped || !this.#address || !this.#server) {
+      return
+    }
     this.#send(this.#server.clients, {type: 'snapshot', format, snapshot})
   }
 
   #send(sockets: Iterable<WebSocket>, reply: RemoteControlReply) {
-    if (this.#stopped) return
+    if (this.#stopped) {
+      return
+    }
     const recipients = [...sockets].filter(socket => socket.readyState === OPEN)
-    if (!recipients.length) return
+    if (!recipients.length) {
+      return
+    }
 
     // One encoding for this send, shared by all recipients; never retained.
     let text: string
@@ -191,19 +209,25 @@ export class Session {
       text = JSON.stringify(reply)
       bytes = Buffer.byteLength(text)
     } catch (error) {
-      for (const socket of recipients) this.#sendFailed(socket, error)
+      for (const socket of recipients) {
+        this.#sendFailed(socket, error)
+      }
       return
     }
 
     for (const socket of recipients) {
-      if (this.#stopped || socket.readyState !== OPEN) continue
+      if (this.#stopped || socket.readyState !== OPEN) {
+        continue
+      }
       try {
         if (socket.bufferedAmount + bytes > MAX_BUFFERED_REPLY_BYTES) {
           socket.terminate()
           continue
         }
         socket.send(text, error => {
-          if (error) this.#sendFailed(socket, error)
+          if (error) {
+            this.#sendFailed(socket, error)
+          }
         })
       } catch (error) {
         this.#sendFailed(socket, error)
@@ -212,14 +236,18 @@ export class Session {
   }
 
   #sendFailed(socket: WebSocket, error: unknown) {
-    if (this.#stopped) return
+    if (this.#stopped) {
+      return
+    }
     socket.terminate()
     this.#callbacks.sendFailed(remoteError({type: 'send-failed', cause: error}))
   }
 
   /** Stop now; attempt all cleanup tasks and return any failures as a Result. */
   close(): Promise<Result<void, RemoteControlError>> {
-    if (this.#cleanup) return this.#cleanup
+    if (this.#cleanup) {
+      return this.#cleanup
+    }
     this.#stopped = true
     this.#address = undefined
     const canceled = remoteError({type: 'startup-canceled'})
@@ -240,9 +268,11 @@ export class Session {
             if (
               error &&
               (error as NodeJS.ErrnoException).code !== 'ERR_SERVER_NOT_RUNNING'
-            )
+            ) {
               reject(error)
-            else resolve()
+            } else {
+              resolve()
+            }
           }),
         ),
       )
@@ -251,12 +281,17 @@ export class Session {
     attempt(() => this.#abort.abort(canceled))
     if (this.#server) {
       const server = this.#server
-      for (const socket of server.clients) attempt(() => socket.terminate())
+      for (const socket of server.clients) {
+        attempt(() => socket.terminate())
+      }
       tasks.push(
         new Promise<void>((resolve, reject) =>
           server.close(error => {
-            if (error) reject(error)
-            else resolve()
+            if (error) {
+              reject(error)
+            } else {
+              resolve()
+            }
           }),
         ),
       )

@@ -42,10 +42,15 @@ function send(event) {
       try {
         const reply = JSON.parse(data.toString())
         // Application broadcasts are printed above, but cannot satisfy a request.
-        if (reply.sequence !== expectedSequence) return
+        if (reply.sequence !== expectedSequence) {
+          return
+        }
         cleanup()
-        if (reply.type === 'error') reject(new Error(reply.message))
-        else resolve(reply)
+        if (reply.type === 'error') {
+          reject(new Error(reply.message))
+        } else {
+          resolve(reply)
+        }
       } catch (error) {
         cleanup()
         reject(error)
@@ -76,7 +81,9 @@ try {
   // One request in flight. ACK confirms synchronous dispatch/render, not React
   // effects or async application work. Check application state before assertions.
   for await (const line of lines) {
-    if (!line.trim()) continue
+    if (!line.trim()) {
+      continue
+    }
     console.log(JSON.stringify(await send(JSON.parse(line))))
   }
 } catch (error) {

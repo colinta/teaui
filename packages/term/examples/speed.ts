@@ -39,7 +39,9 @@ const chars = '░▒▓█▀▄▌▐●◆◇○◎★☆'
 function renderFrame() {
   const buf: string[] = []
 
-  if (useSync) buf.push(syncStart())
+  if (useSync) {
+    buf.push(syncStart())
+  }
 
   const namedColors = [
     'red',
@@ -79,7 +81,9 @@ function renderFrame() {
   const fpsText = ` FPS: ${fps} | frame: ${frame} | sync: ${useSync ? 'ON' : 'OFF'} | color: ${colorMode} | q=quit s=sync c=color `
   buf.push(cursorTo(0, 0) + textAttr('inverse') + fpsText + resetAll())
 
-  if (useSync) buf.push(syncEnd())
+  if (useSync) {
+    buf.push(syncEnd())
+  }
 
   stdout.write(buf.join(''))
 }
@@ -89,15 +93,21 @@ term.enterFullscreen({hideCursor: true, mouse: false})
 
 // Handle input
 const unsub = term.onInput(event => {
-  if (!isKeyEvent(event)) return
+  if (!isKeyEvent(event)) {
+    return
+  }
   if (event.key === 'q' || (event.key === 'c' && event.ctrl)) {
     running = false
   } else if (event.key === 's') {
     useSync = !useSync
   } else if (event.key === 'c') {
-    if (colorMode === 'mono') colorMode = 'named'
-    else if (colorMode === 'named') colorMode = 'rgb'
-    else colorMode = 'mono'
+    if (colorMode === 'mono') {
+      colorMode = 'named'
+    } else if (colorMode === 'named') {
+      colorMode = 'rgb'
+    } else {
+      colorMode = 'mono'
+    }
   }
 })
 

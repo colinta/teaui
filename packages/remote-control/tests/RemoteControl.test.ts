@@ -64,7 +64,9 @@ function create(options?: RemoteControlOptions) {
 }
 async function ready(remote: RemoteControlServer) {
   const result = await remote.listen()
-  if (!result.ok) throw result.error // Test helper only; production API returns Result.
+  if (!result.ok) {
+    throw result.error
+  } // Test helper only; production API returns Result.
   return result.value
 }
 async function listen(options?: RemoteControlOptions) {
@@ -91,9 +93,15 @@ async function send(
 }
 
 afterEach(async () => {
-  for (const socket of sockets.splice(0)) socket.terminate()
-  for (const screen of screens.splice(0)) screen.stop()
-  for (const remote of servers.splice(0)) await remote.close()
+  for (const socket of sockets.splice(0)) {
+    socket.terminate()
+  }
+  for (const screen of screens.splice(0)) {
+    screen.stop()
+  }
+  for (const remote of servers.splice(0)) {
+    await remote.close()
+  }
   vi.restoreAllMocks()
 })
 
@@ -158,7 +166,9 @@ describe('remote lifecycle', () => {
       remote.onError(error)
       remote.onListening(notification)
       const first = remote.listen()
-      for (let i = 0; i < turns; i++) await Promise.resolve()
+      for (let i = 0; i < turns; i++) {
+        await Promise.resolve()
+      }
       const cleanup = remote.close()
       const next = remote.listen()
       await expect(first).resolves.toMatchObject({
@@ -168,7 +178,9 @@ describe('remote lifecycle', () => {
       await cleanup
       const result = await next
       expect(result.ok).toBe(true)
-      if (!result.ok) throw result.error
+      if (!result.ok) {
+        throw result.error
+      }
       await connect(result.value.url)
       expect(notification).toHaveBeenCalledOnce()
       expect(error).not.toHaveBeenCalled()
@@ -236,7 +248,9 @@ describe('remote lifecycle', () => {
     await Promise.all([stopping, canceledCleanup])
     const result = await next
     expect(result.ok).toBe(true)
-    if (!result.ok) throw result.error
+    if (!result.ok) {
+      throw result.error
+    }
     await connect(result.value.url)
     expect(bind).toHaveBeenCalledTimes(2)
   })
@@ -255,7 +269,9 @@ describe('remote lifecycle', () => {
       ok: false,
       error: {type: 'startup-failed', cause: {code: 'EADDRINUSE'}},
     })
-    if (result.ok) throw new Error('Expected port collision')
+    if (result.ok) {
+      throw new Error('Expected port collision')
+    }
     expect(errors).toHaveBeenCalledExactlyOnceWith(result.error)
     expect(remote.closed).toBe(true)
     const lateError = vi.fn()
@@ -317,7 +333,9 @@ describe('remote lifecycle', () => {
         ok: false,
         error: {type: 'cleanup-failed', causes: [failure]},
       })
-      if (result.ok) throw new Error('Expected cleanup failure')
+      if (result.ok) {
+        throw new Error('Expected cleanup failure')
+      }
       await disconnected
       expect(errors).toHaveBeenCalledExactlyOnceWith(result.error)
       expect(remote.closed).toBe(true)
@@ -353,7 +371,9 @@ describe('remote lifecycle', () => {
         message: 'Remote control cleanup failed',
       },
     })
-    if (result.ok) throw new Error('Expected cleanup failure')
+    if (result.ok) {
+      throw new Error('Expected cleanup failure')
+    }
     expect(reported).toHaveBeenCalledExactlyOnceWith(result.error)
     expect(await remote.close()).toBe(result)
     expect(reported).toHaveBeenCalledOnce()
@@ -379,10 +399,13 @@ describe('remote lifecycle', () => {
           cause: failure,
         },
       })
-      if (result.ok) throw new Error('Expected setup to fail')
+      if (result.ok) {
+        throw new Error('Expected setup to fail')
+      }
       expect(result.error).not.toBeInstanceOf(Error)
-      if (result.error.type === 'startup-failed')
+      if (result.error.type === 'startup-failed') {
         expect(result.error.cause).toBe(failure)
+      }
       expect(errors).toHaveBeenCalledExactlyOnceWith(result.error)
       expect(remote.closed).toBe(true)
       await connect((await ready(remote)).url)
@@ -531,7 +554,9 @@ describe('remote callbacks', () => {
       const failure = new Error('readiness callback failed')
       const observerFailure = new Error('error callback failed')
       const throwOrReject = (error: Error) => {
-        if (asynchronous) return Promise.reject(error)
+        if (asynchronous) {
+          return Promise.reject(error)
+        }
         throw error
       }
       remote.onListening(() => throwOrReject(failure))
@@ -623,7 +648,9 @@ describe('remote callbacks', () => {
     const remote = create()
     let first = true
     remote.onListening(() => {
-      if (!first) return
+      if (!first) {
+        return
+      }
       first = false
       void remote.close()
       remote.listen()
@@ -690,11 +717,12 @@ describe('remote protocol and screen integration', () => {
       {type: 'blur'},
       {type: 'resize'},
     ]
-    for (const [index, event] of events.entries())
+    for (const [index, event] of events.entries()) {
       expect(await send(socket, event)).toEqual({
         type: 'ack',
         sequence: index + 1,
       })
+    }
     expect(dispatch.mock.calls.map(([event]) => event)).toEqual(events)
   })
 

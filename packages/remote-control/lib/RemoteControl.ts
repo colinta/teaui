@@ -46,17 +46,23 @@ export class RemoteControlServer implements EventSource {
    * Startup failures resolve an error Result and notify onError; they do not reject.
    */
   listen(): Promise<Result<RemoteControlAddress, RemoteControlError>> {
-    if (this.#session) return this.#session.ready
+    if (this.#session) {
+      return this.#session.ready
+    }
     const session = new Session(this.#options, {
       dispatch: event => this.#dispatch(event),
       snapshot: format => this.#snapshot(format),
       failed: error => {
-        if (this.#session !== session) return
+        if (this.#session !== session) {
+          return
+        }
         void this.close() // Cleanup failures are reported through onError.
         this.#reportError(error)
       },
       sendFailed: error => {
-        if (this.#session === session) this.#reportError(error)
+        if (this.#session === session) {
+          this.#reportError(error)
+        }
       },
     })
     this.#session = session
@@ -64,7 +70,9 @@ export class RemoteControlServer implements EventSource {
     // starting again; a new bind must report its own result, not an old failure.
     session.start(this.#closing.then(() => {}))
     void session.ready.then(result => {
-      if (!result.ok || this.#session !== session) return
+      if (!result.ok || this.#session !== session) {
+        return
+      }
       for (const cause of this.#listening.emit(
         result.value,
         () => this.#session === session,
@@ -94,14 +102,16 @@ export class RemoteControlServer implements EventSource {
     const registration = () => provider()
     this.#snapshotProvider = registration
     return () => {
-      if (this.#snapshotProvider === registration)
+      if (this.#snapshotProvider === registration) {
         this.#snapshotProvider = undefined
+      }
     }
   }
 
   #snapshot(format: SnapshotFormat): Result<string, RequestError> {
-    if (!this.#snapshotProvider)
+    if (!this.#snapshotProvider) {
       return err(remoteError({type: 'snapshot-unavailable'}))
+    }
     try {
       return ok(formatSnapshot(this.#snapshotProvider(), format))
     } catch (cause) {
@@ -130,18 +140,22 @@ export class RemoteControlServer implements EventSource {
     let notified: Session | undefined
     const notify = (address: RemoteControlAddress) => {
       const session = this.#session
-      if (!active || !session || notified === session) return
+      if (!active || !session || notified === session) {
+        return
+      }
       notified = session
       return listener(address)
     }
     const detach = this.#listening.subscribe(notify)
     const session = this.#session
     const address = session?.address
-    if (address)
+    if (address) {
       queueMicrotask(() => {
-        if (this.#session !== session) return
+        if (this.#session !== session) {
+          return
+        }
         const result = this.#listening.invoke(notify, address)
-        if (!result.ok)
+        if (!result.ok) {
           this.#reportError(
             remoteError({
               type: 'callback-failed',
@@ -149,7 +163,9 @@ export class RemoteControlServer implements EventSource {
               cause: result.error,
             }),
           )
+        }
       })
+    }
     return () => {
       active = false
       detach()
@@ -164,7 +180,9 @@ export class RemoteControlServer implements EventSource {
   }
 
   #reportError(error: RemoteControlError) {
-    for (const failure of this.#errors.emit(error)) this.#warn(failure)
+    for (const failure of this.#errors.emit(error)) {
+      this.#warn(failure)
+    }
   }
 
   #warn(cause: unknown) {
@@ -196,11 +214,15 @@ export class RemoteControlServer implements EventSource {
    */
   close(): Promise<Result<void, RemoteControlError>> {
     const session = this.#session
-    if (!session) return this.#closing
+    if (!session) {
+      return this.#closing
+    }
     this.#session = undefined
     this.#closing = session.close()
     void this.#closing.then(result => {
-      if (!result.ok) this.#reportError(result.error)
+      if (!result.ok) {
+        this.#reportError(result.error)
+      }
     })
     return this.#closing
   }

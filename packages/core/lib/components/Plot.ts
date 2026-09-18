@@ -58,7 +58,9 @@ export class Plot extends View {
   }
 
   render(viewport: Viewport) {
-    if (viewport.isEmpty || this.#charts.length === 0) return
+    if (viewport.isEmpty || this.#charts.length === 0) {
+      return
+    }
 
     const textStyle = this.purpose.text()
     const totalW = viewport.contentSize.width
@@ -98,7 +100,9 @@ export class Plot extends View {
     const chartW = Math.max(0, totalW - chartX)
     const chartH = Math.max(0, chartHeight)
 
-    if (chartW <= 0 || chartH <= 0) return
+    if (chartW <= 0 || chartH <= 0) {
+      return
+    }
 
     // Draw title
     if (this.#title && titleHeight > 0) {
@@ -197,10 +201,16 @@ export class Plot extends View {
     let max = -Infinity
     for (const chart of this.#charts) {
       const range = chart.getXRange()
-      if (range.min < min) min = range.min
-      if (range.max > max) max = range.max
+      if (range.min < min) {
+        min = range.min
+      }
+      if (range.max > max) {
+        max = range.max
+      }
     }
-    if (!isFinite(min)) return {min: 0, max: 1}
+    if (!isFinite(min)) {
+      return {min: 0, max: 1}
+    }
     return {min, max}
   }
 
@@ -209,10 +219,16 @@ export class Plot extends View {
     let max = -Infinity
     for (const chart of this.#charts) {
       const range = chart.getYRange()
-      if (range.min < min) min = range.min
-      if (range.max > max) max = range.max
+      if (range.min < min) {
+        min = range.min
+      }
+      if (range.max > max) {
+        max = range.max
+      }
     }
-    if (!isFinite(min)) return {min: 0, max: 1}
+    if (!isFinite(min)) {
+      return {min: 0, max: 1}
+    }
     return {min, max}
   }
 }

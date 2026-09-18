@@ -114,20 +114,28 @@ export class Canvas extends View {
   }
 
   #setPixel(px: number, py: number): void {
-    if (px < 0 || py < 0) return
+    if (px < 0 || py < 0) {
+      return
+    }
     const cellX = Math.floor(px / 2)
     const cellY = Math.floor(py / 4)
-    if (cellX >= this.#cellCols || cellY >= this.#cellRows) return
+    if (cellX >= this.#cellCols || cellY >= this.#cellRows) {
+      return
+    }
 
     const bit = BRAILLE_BITS[px % 2][py % 4]
     this.#pixels[cellY * this.#cellCols + cellX] |= bit
   }
 
   #unsetPixel(px: number, py: number): void {
-    if (px < 0 || py < 0) return
+    if (px < 0 || py < 0) {
+      return
+    }
     const cellX = Math.floor(px / 2)
     const cellY = Math.floor(py / 4)
-    if (cellX >= this.#cellCols || cellY >= this.#cellRows) return
+    if (cellX >= this.#cellCols || cellY >= this.#cellRows) {
+      return
+    }
 
     const bit = BRAILLE_BITS[px % 2][py % 4]
     this.#pixels[cellY * this.#cellCols + cellX] &= ~bit
@@ -153,10 +161,14 @@ export class Canvas extends View {
   }
 
   isSet(px: number, py: number): boolean {
-    if (px < 0 || py < 0) return false
+    if (px < 0 || py < 0) {
+      return false
+    }
     const cellX = Math.floor(px / 2)
     const cellY = Math.floor(py / 4)
-    if (cellX >= this.#cellCols || cellY >= this.#cellRows) return false
+    if (cellX >= this.#cellCols || cellY >= this.#cellRows) {
+      return false
+    }
 
     const bit = BRAILLE_BITS[px % 2][py % 4]
     return (this.#pixels[cellY * this.#cellCols + cellX] & bit) !== 0
@@ -173,7 +185,9 @@ export class Canvas extends View {
   }
 
   rect(x: number, y: number, w: number, h: number): void {
-    if (w <= 0 || h <= 0) return
+    if (w <= 0 || h <= 0) {
+      return
+    }
 
     this.#drawLine(x, y, x + w - 1, y) // top
     this.#drawLine(x, y + h - 1, x + w - 1, y + h - 1) // bottom
@@ -192,13 +206,17 @@ export class Canvas extends View {
   }
 
   circle(cx: number, cy: number, r: number): void {
-    if (r <= 0) return
+    if (r <= 0) {
+      return
+    }
     this.#drawCircle(cx, cy, r)
     this.invalidateRender()
   }
 
   fillCircle(cx: number, cy: number, r: number): void {
-    if (r <= 0) return
+    if (r <= 0) {
+      return
+    }
     for (let dy = -r; dy <= r; dy++) {
       const dx = Math.floor(Math.sqrt(r * r - dy * dy))
       for (let px = cx - dx; px <= cx + dx; px++) {
@@ -220,7 +238,9 @@ export class Canvas extends View {
 
     while (true) {
       this.#setPixel(x, y)
-      if (x === x1 && y === y1) break
+      if (x === x1 && y === y1) {
+        break
+      }
 
       const e2 = 2 * err
       if (e2 > -dy) {

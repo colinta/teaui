@@ -146,10 +146,11 @@ describe('Screen lifecycle', () => {
       )
 
       const cleanupFailure = new Error('cleanup failed')
-      if (cleanupFails)
+      if (cleanupFails) {
         screen.onExit(() => {
           throw cleanupFailure
         })
+      }
       const errors = screen.exit()
 
       expect(errors).toEqual(cleanupFails ? [cleanupFailure] : [])
@@ -491,8 +492,9 @@ describe('TerminalProgram display options', () => {
 
   test('forwards mouse events inside the inline region as local events', () => {
     const program = new TerminalProgram({mode: 'inline', height: 9})
-    if (program.display.mode !== 'inline')
+    if (program.display.mode !== 'inline') {
       throw new Error('Expected inline mode')
+    }
     program.display.region.originY = 12
     program.display.region.originKnown = true
     const events: SystemEvent[] = []
@@ -517,8 +519,9 @@ describe('TerminalProgram display options', () => {
     ['right', Number.POSITIVE_INFINITY, 0],
   ])('discards mouse events %s the inline region', (_name, x, y) => {
     const program = new TerminalProgram({mode: 'inline', height: 9})
-    if (program.display.mode !== 'inline')
+    if (program.display.mode !== 'inline') {
       throw new Error('Expected inline mode')
+    }
     program.display.region.originKnown = true
     const events: SystemEvent[] = []
     program.onEvents(event => events.push(event))
@@ -566,5 +569,7 @@ function emitTermInput(program: TerminalProgram, event: TermInputEvent): void {
   const inputReader = Reflect.get(program.terminal, 'inputReader') as {
     listeners: Array<(event: TermInputEvent) => void>
   }
-  for (const listener of inputReader.listeners) listener(event)
+  for (const listener of inputReader.listeners) {
+    listener(event)
+  }
 }
