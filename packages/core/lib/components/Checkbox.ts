@@ -92,7 +92,7 @@ export class Checkbox extends Container {
   }
 
   naturalSize(available: Size): Size {
-    return super.naturalSize(available).grow(CHECKBOX_WIDTH, 0)
+    return super.naturalSize(available).grow(CHECKBOX_WIDTH, 0).minHeight(1)
   }
 
   receiveMouse(event: MouseEvent, system: System) {
@@ -130,7 +130,7 @@ export class Checkbox extends Container {
     const boxWidth = CHECKBOX_WIDTH
     const naturalSize = super.naturalSize(
       viewport.contentSize.shrink(boxWidth, 0),
-    )
+    ).minHeight(1)
     const offset = new Point(
       boxWidth,
       Math.round((viewport.contentSize.height - naturalSize.height) / 2),
