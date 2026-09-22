@@ -458,7 +458,9 @@ export class Viewport {
     this.#offset = offset
     this.#style = style
 
-    draw(this)
+    if (!visibleRect.isEmpty) {
+      draw(this)
+    }
 
     this.#contentSize = prevContentSize
     this.#availableRect = prevAvailableRect
