@@ -221,17 +221,15 @@ export class Scrollable extends Stack {
     const visibleHeight = this.contentSize.height - (showHBar ? 1 : 0)
 
     if (tooWide && this.#prevMouseDown === 'horizontal') {
-      const trackWidth = visibleWidth
-      const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth)
+      const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth - 1)
       const thumbWidth = this.#scrollbarThumbLength(
-        trackWidth,
         visibleWidth,
         this.#contentSize.width,
       )
-      const maxScrollbarX = Math.max(0, trackWidth - thumbWidth)
+      const maxScrollbarX = Math.max(0, visibleWidth - thumbWidth)
       const thumbX = Math.max(
         0,
-        Math.min(maxScrollbarX, event.position.x - Math.floor(thumbWidth / 2)),
+        Math.min(maxScrollbarX, event.position.x - interpolate(event.position.x, [0, visibleWidth], [0, thumbWidth])),
       )
       const offsetX = this.#scrollbarThumbPosition(
         thumbX,
@@ -243,20 +241,18 @@ export class Scrollable extends Stack {
         y: this.#contentOffset.y,
       }
     } else if (tooTall && this.#prevMouseDown === 'vertical') {
-      const trackHeight = visibleHeight
       const maxOffsetY = Math.max(
         0,
         this.#contentSize.height - visibleHeight - 1,
       )
       const thumbHeight = this.#scrollbarThumbLength(
-        trackHeight,
         visibleHeight,
         this.#contentSize.height,
       )
-      const maxScrollbarY = Math.max(0, trackHeight - thumbHeight)
+      const maxScrollbarY = Math.max(0, visibleHeight - thumbHeight)
       const thumbY = Math.max(
         0,
-        Math.min(maxScrollbarY, event.position.y - Math.floor(thumbHeight / 2)),
+        Math.min(maxScrollbarY, event.position.y - interpolate(event.position.y, [0, visibleHeight], [0, thumbHeight])),
       )
       const offsetY = this.#scrollbarThumbPosition(
         thumbY,
@@ -363,15 +359,14 @@ export class Scrollable extends Stack {
   }
 
   #scrollbarThumbLength(
-    trackLength: number,
     visibleLength: number,
     contentLength: number,
   ): number {
     const proportionalLength = Math.round(
-      (visibleLength / contentLength) * trackLength,
+      (visibleLength / contentLength) * visibleLength,
     )
     const maxLength =
-      contentLength > visibleLength ? trackLength - 1 : trackLength
+      contentLength > visibleLength ? visibleLength - 1 : visibleLength
 
     return Math.max(1, Math.min(maxLength, proportionalLength))
   }
@@ -475,32 +470,30 @@ export class Scrollable extends Stack {
       const scrollBar = this.#scrollbarStyle()
       const scrollControl = this.#scrollbarThumbStyle()
 
-      // scrollMaxX: x of the last column of the view
-      // scrollMaxY: y of the last row of the view
+      // vertScrollX: X position where the vertical scrollbar is drawn
+      // horizScrollY: Y position where the horizontal scrollbar is drawn
       // scrollMaxHorizX: horizontal scroll bar is drawn from 0 to scrollMaxHorizX
       // scrollMaxHorizY: vertical scroll bar is drawn from 0 to scrollMaxHorizY
-      const scrollMaxX = viewport.contentSize.width - 1,
-        scrollMaxY = viewport.contentSize.height - 1,
-        scrollMaxHorizX = scrollMaxX - (showVBar ? 1 : 0),
-        scrollMaxVertY = scrollMaxY - (showHBar ? 1 : 0)
+      const vertScrollX = viewport.contentSize.width - 1,
+        horizScrollY = viewport.contentSize.height - 1,
+        scrollMaxHorizX = vertScrollX - (showVBar ? 1 : 0),
+        scrollMaxVertY = horizScrollY - (showHBar ? 1 : 0)
       if (showHBar && showVBar) {
-        viewport.write('█', new Point(scrollMaxX, scrollMaxY), scrollBar)
+        viewport.write('█', new Point(vertScrollX, horizScrollY), scrollBar)
       }
 
       if (showHBar) {
         viewport.registerMouse(
           'mouse.button.left',
-          new Rect(new Point(0, scrollMaxY), new Size(scrollMaxHorizX + 1, 1)),
+          new Rect(new Point(0, horizScrollY), new Size(visibleWidth, 1)),
         )
 
-        const trackWidth = scrollMaxHorizX + 1
         const maxOffsetX = Math.max(0, contentSize.width - visibleWidth)
         const thumbWidth = this.#scrollbarThumbLength(
-          trackWidth,
           visibleWidth,
           contentSize.width,
         )
-        const maxScrollbarX = Math.max(0, trackWidth - thumbWidth)
+        const maxScrollbarX = Math.max(0, visibleWidth - thumbWidth)
         const contentOffsetX = -this.#contentOffset.x
         const viewX = this.#scrollbarThumbPosition(
           contentOffsetX,
@@ -511,7 +504,7 @@ export class Scrollable extends Stack {
           const inRange = x >= viewX && x < viewX + thumbWidth
           viewport.write(
             inRange ? '█' : ' ',
-            new Point(x, scrollMaxY),
+            new Point(x, horizScrollY),
             inRange ? scrollControl : scrollBar,
           )
         }
@@ -520,17 +513,15 @@ export class Scrollable extends Stack {
       if (showVBar) {
         viewport.registerMouse(
           'mouse.button.left',
-          new Rect(new Point(scrollMaxX, 0), new Size(1, scrollMaxVertY + 1)),
+          new Rect(new Point(vertScrollX, 0), new Size(1, visibleHeight)),
         )
 
-        const trackHeight = scrollMaxVertY + 1
         const maxOffsetY = Math.max(0, contentSize.height - visibleHeight)
         const thumbHeight = this.#scrollbarThumbLength(
-          trackHeight,
           visibleHeight,
           contentSize.height,
         )
-        const maxScrollbarY = Math.max(0, trackHeight - thumbHeight)
+        const maxScrollbarY = Math.max(0, visibleHeight - thumbHeight)
         const contentOffsetY = -this.#contentOffset.y
         const viewY = this.#scrollbarThumbPosition(
           contentOffsetY,
@@ -541,7 +532,7 @@ export class Scrollable extends Stack {
           const inRange = y >= viewY && y < viewY + thumbHeight
           viewport.write(
             inRange ? '█' : ' ',
-            new Point(scrollMaxX, y),
+            new Point(vertScrollX, y),
             inRange ? scrollControl : scrollBar,
           )
         }
