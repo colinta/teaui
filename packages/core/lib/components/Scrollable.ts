@@ -229,7 +229,11 @@ export class Scrollable extends Stack {
       const maxScrollbarX = Math.max(0, visibleWidth - thumbWidth)
       const thumbX = Math.max(
         0,
-        Math.min(maxScrollbarX, event.position.x - interpolate(event.position.x, [0, visibleWidth], [0, thumbWidth])),
+        Math.min(
+          maxScrollbarX,
+          event.position.x -
+            interpolate(event.position.x, [0, visibleWidth], [0, thumbWidth]),
+        ),
       )
       const offsetX = this.#scrollbarThumbPosition(
         thumbX,
@@ -252,7 +256,11 @@ export class Scrollable extends Stack {
       const maxScrollbarY = Math.max(0, visibleHeight - thumbHeight)
       const thumbY = Math.max(
         0,
-        Math.min(maxScrollbarY, event.position.y - interpolate(event.position.y, [0, visibleHeight], [0, thumbHeight])),
+        Math.min(
+          maxScrollbarY,
+          event.position.y -
+            interpolate(event.position.y, [0, visibleHeight], [0, thumbHeight]),
+        ),
       )
       const offsetY = this.#scrollbarThumbPosition(
         thumbY,
@@ -358,10 +366,7 @@ export class Scrollable extends Stack {
     })
   }
 
-  #scrollbarThumbLength(
-    visibleLength: number,
-    contentLength: number,
-  ): number {
+  #scrollbarThumbLength(visibleLength: number, contentLength: number): number {
     const proportionalLength = Math.round(
       (visibleLength / contentLength) * visibleLength,
     )
