@@ -128,9 +128,9 @@ export class Checkbox extends Container {
     viewport.paint(uiStyle)
 
     const boxWidth = CHECKBOX_WIDTH
-    const naturalSize = super.naturalSize(
-      viewport.contentSize.shrink(boxWidth, 0),
-    ).minHeight(1)
+    const naturalSize = super
+      .naturalSize(viewport.contentSize.shrink(boxWidth, 0))
+      .minHeight(1)
     const offset = new Point(
       boxWidth,
       Math.round((viewport.contentSize.height - naturalSize.height) / 2),

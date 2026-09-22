@@ -244,7 +244,10 @@ export class Scrollable extends Stack {
       }
     } else if (tooTall && this.#prevMouseDown === 'vertical') {
       const trackHeight = visibleHeight
-      const maxOffsetY = Math.max(0, this.#contentSize.height - visibleHeight - 1)
+      const maxOffsetY = Math.max(
+        0,
+        this.#contentSize.height - visibleHeight - 1,
+      )
       const thumbHeight = this.#scrollbarThumbLength(
         trackHeight,
         visibleHeight,
