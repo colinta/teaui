@@ -30,6 +30,28 @@ interface Cursor {
   end: number
 }
 
+/** A rendered row, in Input-local terminal cells and grapheme offsets. */
+interface MouseRow {
+  x: number
+  width: number
+  offset: number
+  /** Relative grapheme offsets; wide characters and tabs occupy multiple cells. */
+  columns: number[]
+}
+
+type MouseSelection =
+  | {
+      type: 'pressed' | 'dragging' | 'doublePressed'
+      position: Point
+      offset: number
+    }
+  | {
+      type: 'click' | 'doubleClick'
+      position: Point
+      offset: number
+      remaining: number
+    }
+
 interface UndoEntry {
   /** 'insert' entries can be coalesced when consecutive */
   kind: 'insert' | 'delete' | 'replace'
@@ -46,10 +68,6 @@ interface UndoEntry {
 }
 
 export type Props = StyleProps & TextProps & ViewProps
-
-const NL_SIGIL = '⤦'
-const TAB_SIGIL = '⭾ '
-const TAB_SPACES = '  '
 
 /**
  * Text input. Supports selection, word movement via alt+←→, single and multiline
@@ -86,6 +104,12 @@ export class Input extends View {
   #cursor: Cursor = {start: 0, end: 0}
   #visibleWidth = 0
 
+  // Mouse hit regions are produced during render.
+  #mouseRows: (MouseRow | undefined)[] = []
+  #mouseSelection: MouseSelection | undefined
+  // While dragging, #cursor controls the viewport, highlighting is based on #nextSelection
+  #nextSelection: Cursor | null = null
+
   // Undo/redo
   #undoStack: UndoEntry[] = []
   #redoStack: UndoEntry[] = []
@@ -115,6 +139,12 @@ export class Input extends View {
     onChange,
     onSubmit,
   }: Props) {
+    if (
+      this.#wrap !== (wrap ?? false) ||
+      this.#multiline !== (multiline ?? false)
+    ) {
+      this.#resetMouseSelection()
+    }
     this.#onChange = onChange
     this.#onSubmit = onSubmit
     this.#wrap = wrap ?? false
@@ -137,6 +167,14 @@ export class Input extends View {
 
   #updateLines(_chars: string[] | undefined, font: FontFamily | undefined) {
     let chars = _chars ?? this.#chars
+    if (
+      (font !== undefined && font !== this.#font) ||
+      chars.length !== this.#chars.length ||
+      chars.some((char, index) => char !== this.#chars[index])
+    ) {
+      this.#resetMouseSelection()
+    }
+    this.#mouseRows = []
     if (font === undefined) {
       font = this.#font
     } else {
@@ -185,6 +223,7 @@ export class Input extends View {
       })
     } else {
       this.#value = ''
+      this.#chars = []
       this.#printableLines = this.#placeholder.map(([line, width]) => {
         return [line.concat(' '), width]
       })
@@ -284,6 +323,7 @@ export class Input extends View {
 
   set wrap(wrap: boolean) {
     if (wrap !== this.#wrap) {
+      this.#resetMouseSelection()
       this.#wrap = wrap
       this.#updateLines(undefined, undefined)
     }
@@ -295,6 +335,7 @@ export class Input extends View {
 
   set multiline(multiline: boolean) {
     if (multiline !== this.#multiline) {
+      this.#resetMouseSelection()
       this.#multiline = multiline
       this.#updateLines(undefined, undefined)
     }
@@ -351,6 +392,8 @@ export class Input extends View {
   }
 
   receiveKey(event: KeyEvent) {
+    // Typing immediately after a click should use its destination, not the old cursor.
+    this.#resetMouseSelection(true)
     const prevChars = this.#chars
     const prevText = this.#value
     let removeAccent = true
@@ -461,6 +504,7 @@ export class Input extends View {
       return
     }
 
+    this.#resetMouseSelection(true)
     this.#beginEdit('replace')
     const prevText = this.#value
 
@@ -489,13 +533,198 @@ export class Input extends View {
   receiveMouse(event: MouseEvent, system: System) {
     super.receiveMouse(event, system)
 
-    if (event.name === 'mouse.button.down') {
+    if (event.button !== 'left') {
+      return
+    }
+
+    const {name, position} = event
+    if (name === 'mouse.button.down') {
       system.requestFocus()
       if (event.alt) {
+        this.#resetMouseSelection()
         this.#showInvisibles = !this.#showInvisibles
         this.invalidateRender()
+        return
+      }
+
+      const previous = this.#mouseSelection
+      this.#resetMouseSelection()
+      if (
+        !event.shift &&
+        previous?.type === 'doubleClick' &&
+        previous.position.isEqual(position)
+      ) {
+        // Selecting the word may have scrolled the input. Use the original
+        // grapheme offset, not whatever is now drawn under the third click.
+        this.#selectLine(previous.offset)
+        return
+      }
+
+      const offset = this.#mouseOffset(position)
+      if (offset === undefined) {
+        return
+      }
+
+      if (event.shift) {
+        // Shift starts the drag-style preview immediately, keeping the existing
+        // anchor and frozen viewport even if the mouse never moves.
+        const start = this.#cursor.start
+        this.#mouseSelection = {type: 'dragging', position, offset: start}
+        this.#nextSelection = {start, end: offset}
+        this.invalidateRender()
+      } else if (
+        previous?.type === 'click' &&
+        previous.position.isEqual(position)
+      ) {
+        this.#selectWord(previous.offset)
+        this.#mouseSelection = {
+          type: 'doublePressed',
+          position,
+          offset: previous.offset,
+        }
+      } else {
+        this.#mouseSelection = {type: 'pressed', position, offset}
+      }
+      return
+    }
+
+    const selection = this.#mouseSelection
+    if (
+      !selection ||
+      selection.type === 'click' ||
+      selection.type === 'doubleClick' ||
+      !name.startsWith('mouse.button.')
+    ) {
+      return
+    }
+
+    if (selection.type === 'doublePressed') {
+      // The word is already selected. Only a stationary release can continue
+      // the sequence; dragging or releasing outside leaves the word selected.
+      if (
+        !selection.position.isEqual(position) ||
+        name === 'mouse.button.cancel'
+      ) {
+        this.#resetMouseSelection()
+      } else if (name === 'mouse.button.up') {
+        this.#mouseSelection = {
+          ...selection,
+          type: 'doubleClick',
+          remaining: DBL_CLICK,
+        }
+      }
+      return
+    }
+
+    // Also examine the release position: terminals can omit the last drag event.
+    if (
+      selection.type === 'dragging' ||
+      !selection.position.isEqual(position)
+    ) {
+      selection.type = 'dragging'
+      this.#nextSelection = {
+        start: selection.offset,
+        end:
+          this.#mouseOffset(position) ??
+          this.#nextSelection?.end ??
+          selection.offset,
+      }
+      this.invalidateRender()
+    }
+
+    if (name === 'mouse.button.up' || name === 'mouse.button.cancel') {
+      if (selection.type === 'dragging') {
+        this.#resetMouseSelection(true)
+      } else if (name === 'mouse.button.up') {
+        this.#mouseSelection = {
+          ...selection,
+          type: 'click',
+          remaining: DBL_CLICK,
+        }
+      } else {
+        this.#resetMouseSelection()
       }
     }
+  }
+
+  receiveTick(dt: number): boolean {
+    const selection = this.#mouseSelection
+    if (selection?.type !== 'click' && selection?.type !== 'doubleClick') {
+      return false
+    }
+    selection.remaining -= dt
+    if (selection.remaining > 0) {
+      return false
+    }
+    this.#resetMouseSelection(true)
+    return selection.type === 'click'
+  }
+
+  didBlur() {
+    super.didBlur()
+    this.#resetMouseSelection()
+  }
+
+  #mouseOffset({x, y}: Point): number | undefined {
+    const row = this.#mouseRows[y]
+    if (!row || row.width === 0) {
+      return undefined
+    }
+    const column = Math.max(0, Math.min(row.width - 1, x - row.x))
+    return row.offset + row.columns[column]
+  }
+
+  #selectWord(offset: number) {
+    // Use the same grapheme-aware segmentation as alt+arrow. Whitespace and
+    // punctuation select their own segment; the trailing cursor cell is empty.
+    const word = unicode
+      .words(this.#chars)
+      .find(
+        ([chars, start]) => offset >= start && offset < start + chars.length,
+      )
+    this.#setMouseCursor(
+      word
+        ? {start: word[1], end: word[1] + word[0].length}
+        : {start: offset, end: offset},
+    )
+  }
+
+  #selectLine(offset: number) {
+    let start = offset
+    let end = offset
+    while (start > 0 && this.#chars[start - 1] !== '\n') {
+      start--
+    }
+    while (end < this.#chars.length && this.#chars[end] !== '\n') {
+      end++
+    }
+    // Select the logical line, including its newline, not just a wrapped row.
+    if (end < this.#chars.length) {
+      end++
+    }
+    this.#setMouseCursor({start, end})
+  }
+
+  #setMouseCursor(cursor: Cursor) {
+    this.#cursor = cursor
+    this.#insertCoalesceEnabled = false
+    this.invalidateRender()
+  }
+
+  #resetMouseSelection(commit = false) {
+    if (commit) {
+      if (this.#nextSelection) {
+        this.#setMouseCursor(this.#nextSelection)
+      } else if (this.#mouseSelection?.type === 'click') {
+        const {offset} = this.#mouseSelection
+        this.#setMouseCursor({start: offset, end: offset})
+      }
+    }
+    if (this.#nextSelection) {
+      this.invalidateRender()
+    }
+    this.#mouseSelection = undefined
+    this.#nextSelection = null
   }
 
   #inputStyle({
@@ -510,7 +739,7 @@ export class Input extends View {
     return this.purpose
       .ui({
         variant: 'flat',
-        isPressed: this.isPressed,
+        isPressed: this.isPressed && !hasFocus,
         isHover: this.isHover,
         hasFocus,
         isPlaceholder,
@@ -520,12 +749,14 @@ export class Input extends View {
   }
 
   render(viewport: Viewport) {
+    this.#mouseRows = []
     // Register focus before the isEmpty check — Input should participate in the
     // focus ring even when clipped to zero size (e.g. inside a Scrollable that
     // hasn't scrolled to it). Skipping registration would silently drop it from
     // the ring, causing focus to jump unexpectedly when the user tabs through.
     const hasFocus = viewport.registerFocus({isDefault: true})
     if (viewport.isEmpty) {
+      this.#resetMouseSelection()
       return
     }
 
@@ -551,7 +782,7 @@ export class Input extends View {
     viewport.paint(
       this.purpose.ui({
         variant: 'flat',
-        isPressed: this.isPressed,
+        isPressed: this.isPressed && !hasFocus,
         isHover: this.isHover,
         hasFocus,
       }),
@@ -562,8 +793,9 @@ export class Input extends View {
     // the cursor)
     // cursorPosition: the location of the cursor relative to the viewport
     const [cursorEnd, cursorPosition] = this.#cursorPosition(visibleSize)
-    const cursorMin = this.#toPosition(this.minSelected(), visibleSize.width)
-    const cursorMax = this.#toPosition(this.maxSelected(), visibleSize.width)
+    const selection = this.#nextSelection ?? this.#cursor
+    const cursorMin = Math.min(selection.start, selection.end)
+    const cursorMax = Math.max(selection.start, selection.end)
 
     // cursorVisible: the text location of the first line & char to draw
     const cursorVisible = new Point(
@@ -626,6 +858,12 @@ export class Input extends View {
         visibleLines.push([[' '], 0])
       }
 
+      // Wrapped rows retain their source graphemes; newline sigils occupy the
+      // original newline's offset. Only the final cursor cell is synthetic.
+      let textOffset = lines
+        .slice(0, cursorVisible.y)
+        .reduce((offset, [chars]) => offset + chars.length, 0)
+
       // Compute the character offset into the format styles array at the start
       // of visible lines. Each line's chars (excluding the trailing sigil) map
       // 1:1 to format style entries. Newlines do NOT have entries in the styles
@@ -660,6 +898,7 @@ export class Input extends View {
 
         // set to true if any character is skipped
         let drawInitialEllipses = false
+        let mouseRow: MouseRow | undefined
         scanTextPosition.x = 0
         let charIndex = 0
         for (let char of line) {
@@ -668,14 +907,23 @@ export class Input extends View {
           const charWidth = unicode.charWidth(char)
           const isSigil = charIndex === line.length - 1
           if (scanTextPosition.x >= cursorVisible.x) {
-            const inSelection = isInSelection(
-              cursorMin,
-              cursorMax,
-              scanTextPosition,
-            )
-            const inCursor =
-              scanTextPosition.x === cursorEnd.x &&
-              scanTextPosition.y === cursorEnd.y
+            const offset = isPlaceholder
+              ? 0
+              : Math.min(textOffset + charIndex, this.#chars.length)
+            const x = scanTextPosition.x - cursorVisible.x
+            if (charWidth > 0) {
+              mouseRow ??= {x, width: 0, offset, columns: []}
+              const width = Math.min(charWidth, visibleSize.width - x)
+              for (let cell = 0; cell < width; cell++) {
+                mouseRow.columns.push(offset - mouseRow.offset)
+              }
+              mouseRow.width += width
+              this.#mouseRows[scanTextPosition.y - cursorVisible.y] = mouseRow
+            }
+            const inSelection = offset >= cursorMin && offset < cursorMax
+            const inCursor = isPlaceholder
+              ? scanTextPosition.x === 0 && scanTextPosition.y === 0
+              : offset === selection.end
             const inNewline =
               char === NL_SIGIL && scanTextPosition.x + charWidth === width
             const inTab = isTabSigil(char)
@@ -690,7 +938,7 @@ export class Input extends View {
               ? plainStyle.merge(formatStyle)
               : plainStyle
 
-            if (isEmptySelection(this.#cursor)) {
+            if (isEmptySelection(selection)) {
               if (isAccentChar(char)) {
                 style = baseStyle.merge({underline: true, inverse: true})
               } else if (hasFocus && inCursor) {
@@ -767,6 +1015,7 @@ export class Input extends View {
           }
         }
 
+        textOffset += line.length
         // Advance formatOffset past this line's chars (excluding the trailing sigil).
         if (hasFormatStyles) {
           formatOffset += line.length - 1
@@ -1460,29 +1709,10 @@ function isEmptySelection(cursor: Cursor) {
   return cursor.start === cursor.end
 }
 
-function isInSelection(
-  cursorMin: Point,
-  cursorMax: Point,
-  scanTextPosition: Point,
-) {
-  if (scanTextPosition.y < cursorMin.y || scanTextPosition.y > cursorMax.y) {
-    return false
-  }
-
-  if (scanTextPosition.y === cursorMin.y) {
-    if (scanTextPosition.x < cursorMin.x) {
-      return false
-    }
-  }
-
-  if (scanTextPosition.y === cursorMax.y) {
-    if (scanTextPosition.x >= cursorMax.x) {
-      return false
-    }
-  }
-
-  return true
-}
+const DBL_CLICK = 300
+const NL_SIGIL = '⤦'
+const TAB_SIGIL = '⭾ '
+const TAB_SPACES = '  '
 
 function isAccentChar(char: string) {
   return ACCENTS[char] !== undefined

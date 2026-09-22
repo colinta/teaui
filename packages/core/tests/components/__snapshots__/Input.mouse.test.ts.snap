@@ -1,0 +1,226 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Input mouse selection > double clicks > selects the original word on the second press before scrolling 1`] = `
+{
+  "before": "…ree four five",
+  "selected": "… three four f…",
+}
+`;
+
+exports[`Input mouse selection > dragging > highlights live without scrolling until release 1`] = `
+{
+  "after": "…abcdefgh…",
+  "before": "…cdefghij",
+}
+`;
+
+exports[`Input mouse selection > shift-click > freezes scrolling on press and drag, using the final release endpoint 1`] = `
+{
+  "committed": "…abcdefgh…",
+  "dragged": {
+    "selected": ".....####.",
+    "text": "…cdefghij",
+  },
+  "pressed": {
+    "selected": ".########.",
+    "text": "…cdefghij",
+  },
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'after a tab' text to grapheme offsets 1`] = `
+{
+  "after": "a⭾ b",
+  "before": "a⭾ b",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'after emoji and combining grapheme' text to grapheme offsets 1`] = `
+{
+  "after": "👩‍💻éx",
+  "before": "👩‍💻éx",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'custom font' text to grapheme offsets 1`] = `
+{
+  "after": "𝐡𝐞𝐥𝐥𝐨",
+  "before": "𝐡𝐞𝐥𝐥𝐨",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'empty line' text to grapheme offsets 1`] = `
+{
+  "after": "one⤦
+⤦
+two",
+  "before": "one⤦
+⤦
+two",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'empty' text to grapheme offsets 1`] = `
+{
+  "after": "",
+  "before": "",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'first tab cell' text to grapheme offsets 1`] = `
+{
+  "after": "a⭾ b",
+  "before": "a⭾ b",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'formatted' text to grapheme offsets 1`] = `
+{
+  "after": "hello",
+  "before": "hello",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'horizontally scrolled' text to grapheme offsets 1`] = `
+{
+  "after": "…9abcdefg…",
+  "before": "…cdefghij",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'initial ellipsis' text to grapheme offsets 1`] = `
+{
+  "after": "…789abcde…",
+  "before": "…cdefghij",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'multiline' text to grapheme offsets 1`] = `
+{
+  "after": "first⤦
+second",
+  "before": "first⤦
+second",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'past a short line' text to grapheme offsets 1`] = `
+{
+  "after": "one⤦
+two",
+  "before": "one⤦
+two",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'placeholder' text to grapheme offsets 1`] = `
+{
+  "after": "type here",
+  "before": "type here",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'scrolled in both directions' text to grapheme offsets 1`] = `
+{
+  "after": "…abcdefgh…
+…KLMNOPQRS",
+  "before": "…MNOPQRST⤦
+…6789abcd",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'second tab cell' text to grapheme offsets 1`] = `
+{
+  "after": "a⭾ b",
+  "before": "a⭾ b",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'trailing newline' text to grapheme offsets 1`] = `
+{
+  "after": "one⤦",
+  "before": "one⤦",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'vertically scrolled' text to grapheme offsets 1`] = `
+{
+  "after": "one⤦
+two⤦",
+  "before": "two⤦
+three",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'wide grapheme' text to grapheme offsets 1`] = `
+{
+  "after": "a界b",
+  "before": "a界b",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'wrapped and scrolled' text to grapheme offsets 1`] = `
+{
+  "after": "fghij
+klmno",
+  "before": "klmno
+p",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'wrapped multiline' text to grapheme offsets 1`] = `
+{
+  "after": "abcd
+ef⤦
+xyz",
+  "before": "bcd
+f⤦
+yz",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'wrapped wide grapheme' text to grapheme offsets 1`] = `
+{
+  "after": "a界b
+cdef",
+  "before": "a界b
+cdef",
+}
+`;
+
+exports[`Input mouse selection > single clicks and hit regions > maps 'wrapped' text to grapheme offsets 1`] = `
+{
+  "after": "abcde
+fghij",
+  "before": "abcde
+fghij",
+}
+`;
+
+exports[`Input mouse selection > triple clicks > selects the original line after double-click scrolls a different line under the mouse 1`] = `
+{
+  "before": "two⤦
+three⤦
+four",
+  "line": "two⤦
+three⤦
+four",
+  "word": "one⤦
+two⤦
+three⤦",
+}
+`;
+
+exports[`Input mouse selection > triple clicks > selects the whole logical line across wrapped rows 1`] = `
+{
+  "before": "wo th
+ree f
+our",
+  "line": "wo th
+ree f
+our",
+  "word": "wo th
+ree f
+our",
+}
+`;

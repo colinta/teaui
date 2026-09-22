@@ -14,6 +14,17 @@ Even accented characters! `alt+e, e -> é`, `alt+s, s -> ş`, `alt+i, o -> ô`
 
 <Example name="input" title="Input" />
 
+## Mouse selection
+
+- **Click** to move the cursor. Movement waits 300 ms after release to distinguish a single click from a double-click without scrolling the text between clicks. Typing or pasting during that wait commits the click immediately.
+- **Double-click** the same cell to select its word. Whitespace and punctuation select their own segments, using the same word boundaries as Alt+←→.
+- **Triple-click** the same cell within 300 ms of the second release to select the original logical line, including its newline when present. Wrapped rows belong to the same line, and scrolling caused by double-click selection does not change the target.
+- **Click-drag** to select a range. Highlighting updates while the text stays in place; releasing commits the selection and allows the input to scroll to its endpoint.
+- **Shift-click** extends the selection from its existing anchor. The endpoint previews immediately on press and follows dragging, while the text stays in place. Releasing commits the selection without a double-click delay.
+- **Alt-click** toggles visible tab and newline markers without moving the cursor.
+
+Clicks past a rendered row clamp to its last position, including the end-of-line cursor cell. Rows without a text mapping only focus the input. Dragging outside a mapped row vertically retains the last mapped endpoint; it does not auto-scroll.
+
 ## Props
 
 | Prop          | Type                     | Default     | Description            |
