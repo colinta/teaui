@@ -1,0 +1,136 @@
+---
+title: Concepts
+---
+
+# Concepts
+
+## The View hierarchy
+
+Like most "classic" UI libraries, TeaUI represents an interface as a tree of
+View components. Every UI element is a [`View`](/docs/core-api#views), and every
+view has at most one parent. A [`Container`](/docs/components/container) is a
+view that owns child views; `Stack`, `Box`, `Window`, and many higher-level
+components are _Containers_.
+
+A `Screen` owns the root view and sends it events (keyboard, mouse, timer, and
+resize). Rendering begins there and proceeds through the tree. Each container
+decides where and in what order to render its children, using clipped viewports
+for their assigned regions.
+
+With the Core API, you create and update this hierarchy directly:
+
+```ts
+const view = Stack.down([new Text({text: 'Name'}), new Input({value: ''})])
+```
+
+With the React API, JSX describes the same hierarchy and the React reconciler
+creates, updates, reorders, and removes the underlying views.
+
+```tsx
+<Stack.down>
+  <Text>Name</Text>
+  <Input value="" />
+</Stack.down>
+```
+
+## Layout
+
+Layout is controlled by container classes rather. Views report their size via
+`naturalSize(available)`, and the parent container uses that size and the
+available space to assign the view a rectangle for rendering. Before rendering
+begins, the "resolved size" is assigned to the `view.contentSize` property. This
+size takes into account padding, offsets, available space, layout, etc.
+
+[`Stack`](/docs/components/stack) is the primary layout container. It arranges
+children vertically or horizontally, supports gaps and fixed or flexible sizes,
+and will feel familiar if you know Flexbox:
+
+```tsx
+<Stack.down gap={1}>
+  <Header>Account</Header>
+  <Input flex="flex1" />
+  <Button height={3}>Save</Button>
+</Stack.down>
+```
+
+View props such as `width`, `height`, `minWidth`, `maxWidth`, `padding`, and
+`flex` constrain that process. Other containers add their own layout behavior:
+for example, `Box` adds borders and insets, `Align` positions a child within
+all of the available space, and `Scrollable` presents a clipped region of larger
+content.
+
+## Events
+
+TeaUI supports mouse, keyboard, paste, focus, blur, and resize events. They are sent
+to the `Screen` via an instance of `Program` (there are other ways to send
+events - see [Remote control](/docs/remote-control)). Views register for events
+they are interested in as part of rendering. This means that views can decide what
+events to receive based on state and content size.
+
+The `Viewport` records those registrations, and the screen reconciles each
+incoming event against the registrations from the latest rendered frame.
+Registrations are rebuilt on every render, so event routing stays in sync as
+views appear, disappear, move, or become clipped.
+
+### Mouse events
+
+A view calls `viewport.registerMouse(events[, region])` for one or more event
+types and a region (optional - defaults to the current drawing region), then
+handles the resulting mouse event in `receiveMouse(event)`. The mouse manager
+hit-tests the terminal coordinate against the rendered registrations. Click and
+scrollwheel events go to the top-most registered target at that location. TeaUI
+also sends enter, exit, and drag events for moving and dragging.
+
+Components such as `Button`, `Input`, and `Scrollable` make these registrations
+internally; applications normally use their callback props instead of handling
+raw mouse events.
+
+### Keyboard events
+
+Keyboard routing has an explicit priority:
+
+1. Matching screen-level bindings registered with `screen.key()` run first.
+2. The first matching `Hotkey` receives the key (registered using
+   `viewport.registeredHotKey`)
+3. An Tab and Shift+Tab changes the focused view (the focus-ring is determined
+   via render order)
+4. Otherwise, the focused view receives the key.
+5. Use the `Keyboard` event if you want to receive all events (the precedence
+   rules still apply)
+
+Views join the focus ring with `viewport.registerFocus()` and handle keys in
+`receiveKey()`. The [`HotKey`](/docs/components/hotkey) component instead calls
+`viewport.registerHotKey()`, so its shortcut works regardless of which view is
+focused.
+
+A matching hotkey is exclusive: the focused view does not also receive that
+key. For example, if an `Input` is focused and a `HotKey` matches Enter, the
+hotkey runs; the input neither submits nor inserts a newline. If multiple
+hotkeys match, the first one registered during rendering wins.
+
+Bracketed paste is delivered only to the focused view through `receivePaste()`.
+
+Keyboard events do not bubble through the view hierarchy.
+
+### Resize events
+
+When the terminal size changes, the screen resizes its buffer and renders the
+root view with the new available size. Containers measure and position their
+children again, so the normal layout pass is the resize response.
+
+After an event is handled, TeaUI renders again. This updates the terminal output
+and rebuilds focus, hotkey, keyboard, and mouse registrations for the next
+event.
+
+## React reconciler
+
+React applications use TeaUI's React reconciler to manage the core view tree.
+JSX elements map to `View` subclasses, React children become container
+children, and prop changes call `view.update()` on the existing instances when
+possible. React state updates therefore change the same objects that the core
+layout, rendering, and event systems use.
+
+The component libraries are not identical between **@teaui/core** and
+**@teaui/react**. The React components attempt to be more idiomatic. The biggest
+difference is the `<Text>` component, which supports child elements to manage
+styling. The Core `Text()` class expects ANSI strings.
