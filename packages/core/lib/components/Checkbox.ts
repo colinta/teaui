@@ -139,7 +139,7 @@ export class Checkbox extends Container {
     const chars = hasFocus ? BOX_FOCUS : BOX
     const box = chars[this.boxStyle()][this.#value ? 'checked' : 'unchecked']
     const textStyle = hasFocus
-      ? uiStyle.merge(new Style({bold: true}))
+      ? uiStyle.merge(new Style({bold: true, underline: true}))
       : uiStyle
     viewport.write(box, new Point(0, offset.y), textStyle)
     viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
@@ -177,12 +177,12 @@ const BOX_FOCUS: Record<
   Record<'unchecked' | 'checked', string>
 > = {
   checkbox: {
-    unchecked: '🞐 ',
-    checked: '🞕 ',
+    unchecked: '☐ ',
+    checked: '◼︎ ',
   },
   radio: {
-    unchecked: '◎ ',
-    checked: '🞋 ',
+    unchecked: '◯ ',
+    checked: '⦿ ',
   },
 }
 
