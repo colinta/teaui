@@ -94,6 +94,16 @@ describe('Input', () => {
       expect(value).toBe('hi!')
     })
 
+    it('does not restore the previous value after being cleared', () => {
+      const input = new Input({value: '/help'})
+      const t = testRender(input, {width: 20, height: 1})
+
+      input.value = ''
+      t.sendKey('r')
+
+      expect(input.value).toBe('r')
+    })
+
     it('handles space key', () => {
       let value = 'a'
       const input = new Input({
