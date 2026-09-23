@@ -16,27 +16,36 @@ slug: /
 
 ```
 
-A React-compatible terminal UI framework for building beautiful fullscreen TUI applications.
+A terminal UI framework for building beautiful fullscreen TUI applications.
 
 ## What is TeaUI?
 
-TeaUI lets you build fullscreen terminal applications using **React JSX** or a direct **OOP core API**. It handles rendering, input, mouse events, focus management, and layout — so you can focus on your application logic.
+TeaUI lets you build fullscreen terminal applications using **React JSX** or an **Object-Oriented
+API**. It handles rendering, input, mouse events, focus management, and layout — so you can focus on
+your application logic.
 
 ## Quick Start
 
 ```bash
-pnpm install @teaui/core @teaui/react react @types/react
+pnpm install @teaui/cli
+teaui create my-app --framework react
 ```
+
+Edit `index.tsx`:
 
 ```tsx
 import React from 'react'
-import {Box, Button, Stack, run} from '@teaui/react'
+import {interceptConsoleLog} from '@teaui/core'
+import {Box, Button, Stack, Text, run} from '@teaui/react'
+
+// Redirect console.info away from the TUI — logs flush on exit
+interceptConsoleLog()
 
 function App() {
   return (
     <Box border="single">
       <Stack.down>
-        Hello, TeaUI!
+        <Text>Hello, TeaUI!</Text>
         <Button>[ OK ]</Button>
       </Stack.down>
     </Box>
@@ -52,7 +61,7 @@ npx tsx index.tsx
 
 ## Next Steps
 
-- **[Getting Started](/docs/getting-started)** — Installation, TypeScript config, and your first app
-- **[Components](/docs/components/button)** — Browse all components
+- **[Concepts](/docs/concepts)** — Quick FWI
+- **[Components](/docs/components/badge)** — Browse all components
 - **[Core API](/docs/core-api)** — OOP API overview
 - **[Palettes](/docs/themes)** — Styling and shared color purposes

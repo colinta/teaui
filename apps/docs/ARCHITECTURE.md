@@ -12,7 +12,7 @@ Deployed via: **GitHub Actions** (`.github/workflows/docs.yml`)
 apps/docs/
 ├── docs/                     # MDX documentation pages
 │   ├── intro.mdx
-│   ├── getting-started.mdx
+│   ├── concepts.mdx
 │   ├── core-api.mdx
 │   ├── themes.mdx
 │   └── components/           # One .mdx per component
