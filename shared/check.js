@@ -256,23 +256,12 @@ export async function getWorkspaceBuildOrder(projectDir = '.') {
   return results
 }
 
-async function calculateWorkspaceAwareChecksum(projectDir) {
-  const buildOrder = await getWorkspaceBuildOrder(projectDir)
-  const checksums = []
-
-  for (const dependencyDir of buildOrder) {
-    const checksum = await calculateProjectChecksum(dependencyDir)
-    const relativeDir = path.relative(projectDir, dependencyDir) || '.'
-    checksums.push(`${relativeDir}:${checksum}`)
-  }
-
-  return crypto.createHash('sha1').update(checksums.join('\n')).digest('hex')
-}
-
 export async function compare(projectDir = '.') {
   const realProjectDir = await fs.promises.realpath(projectDir)
   const checksumPath = path.join(realProjectDir, CHECKSUM_FILE)
   const outputDir = path.join(realProjectDir, BUILD_OUTPUT_DIRECTORY)
+
+  const newChecksum = await calculateProjectChecksum(realProjectDir)
 
   if (!(await directoryExists(outputDir))) {
     try {
@@ -281,25 +270,23 @@ export async function compare(projectDir = '.') {
       // Ignore missing checksum file.
     }
 
-    return 1
+    return {changed: true, checksum: newChecksum}
   }
-
-  const newChecksum = await calculateWorkspaceAwareChecksum(realProjectDir)
 
   if (await fileExists(checksumPath)) {
     const oldChecksum = await fs.promises.readFile(checksumPath, 'utf8')
     if (oldChecksum.trim() === newChecksum) {
-      return 0
+      return {changed: false, checksum: newChecksum}
     }
   }
 
-  return 1
+  return {changed: true, checksum: newChecksum}
 }
 
 async function buildProject(projectDir) {
-  const changed = await compare(projectDir)
+  const {changed, checksum} = await compare(projectDir)
 
-  if (changed === 0) {
+  if (!changed) {
     console.info('No changes')
     return false
   }
@@ -307,8 +294,10 @@ async function buildProject(projectDir) {
   console.info('Changes detected')
   execSync('pnpm _build', {stdio: 'inherit', cwd: projectDir})
 
+  // The checksum only hashes source files (.dist is ignored), so building
+  // doesn't change it — reuse the value `compare()` already computed instead
+  // of hashing the project a second time.
   const checksumPath = path.join(projectDir, CHECKSUM_FILE)
-  const checksum = await calculateWorkspaceAwareChecksum(projectDir)
   await fs.promises.writeFile(checksumPath, checksum)
   return true
 }
