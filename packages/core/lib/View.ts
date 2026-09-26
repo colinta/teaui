@@ -87,6 +87,7 @@ export abstract class View {
   #prevSizeCache: Map<string, Size> = new Map()
   #viewportContentSize: Size = Size.zero
   #renderedContentSize: Size = Size.zero
+  #renderedLocation: Point = Point.zero
   #invalidateParent = true
 
   #heading: string | undefined
@@ -248,6 +249,15 @@ export abstract class View {
 
   get contentSize(): Size {
     return this.#renderedContentSize
+  }
+
+  /**
+   * Where this view was last rendered, relative to its parent (for children of
+   * a Scrollable, relative to the scrolled content). Views that have never been
+   * rendered - e.g. never scrolled into view - report Point.zero.
+   */
+  get location(): Point {
+    return this.#renderedLocation
   }
 
   get isHover() {
@@ -470,6 +480,7 @@ export abstract class View {
       }
 
       this.#viewportContentSize = viewport.contentSize
+      this.#renderedLocation = viewport.location
 
       let origin: Point
       const contentSize = viewport.contentSize.mutableCopy()

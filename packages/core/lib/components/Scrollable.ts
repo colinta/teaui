@@ -4,6 +4,7 @@ import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
 import {Style} from '../Style.js'
 import {type Orientation, type Direction} from '../types.js'
+import type {View} from '../View.js'
 import {Stack} from './Stack.js'
 
 interface Props extends ContainerProps {
@@ -342,6 +343,58 @@ export class Scrollable extends Stack {
     this.#onOffsetChange?.(new Point(-x || 0, -y || 0))
   }
 
+  /**
+   * Scrolls to an offset along the scroll direction (y for up/down, x for
+   * left/right), or so that `view` - a child or any descendant - is at the top
+   * (or left). The offset is clamped to the scrollable range. Views that aren't
+   * inside this Scrollable are ignored.
+   *
+   * Descendant locations come from their last render (`location`).
+   */
+  scrollTo(location: number | View) {
+    if (typeof location !== 'number') {
+      const point = this.#locationOf(location)
+      if (!point) {
+        return
+      }
+      location = this.isVertical ? point.y : point.x
+    }
+
+    let {x, y} = this.#contentOffset
+    if (this.isVertical) {
+      y = -Math.min(-this.#maxOffsetY(), Math.max(0, location))
+    } else {
+      x = -Math.min(-this.#maxOffsetX(), Math.max(0, location))
+    }
+    if (x === this.#contentOffset.x && y === this.#contentOffset.y) {
+      return
+    }
+
+    this.#contentOffset = {x, y}
+    this.#isAtBottom = y <= this.#maxOffsetY()
+    this.invalidateRender()
+    this.#onOffsetChange?.(new Point(-x || 0, -y || 0))
+  }
+
+  /**
+   * Sum of `location` from `view` up to (and including) this
+   * Scrollable's child.
+   */
+  #locationOf(view: View): Point | undefined {
+    let x = 0
+    let y = 0
+    let current: View = view
+    while (current !== this) {
+      if (!current.parent) {
+        return undefined
+      }
+      x += current.location.x
+      y += current.location.y
+      current = current.parent
+    }
+    return new Point(x, y)
+  }
+
   #showHorizontalScrollbar(): boolean {
     return (
       this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
@@ -459,6 +512,7 @@ export class Scrollable extends Stack {
     )
     viewport.clipped(scrollableArea, contentViewport => {
       contentViewport.clipped(outside, inside => {
+        inside.resetLocationOrigin()
         super.render(inside)
       })
     })

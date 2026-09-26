@@ -22,6 +22,8 @@ export class Viewport {
   #availableRect: Rect
   #visibleRect: Rect
   #offset: Point
+  // absolute offset that child locations are measured from, see `location`
+  #locationOrigin: Point
   #screen: Screen
   #style: Style
 
@@ -40,6 +42,7 @@ export class Viewport {
     this.parentRect = rect
     this.#visibleRect = rect
     this.#offset = Point.zero
+    this.#locationOrigin = Point.zero
     this.#style = Style.NONE
 
     // control visibility of props for inspect(viewport)
@@ -89,6 +92,29 @@ export class Viewport {
 
   get isEmpty(): boolean {
     return this.#contentSize.isEmpty
+  }
+
+  /**
+   * Where this viewport is, relative to the parent view's layout. `View`
+   * records this on every render (see `View.location`).
+   */
+  get location(): Point {
+    return new Point(
+      this.#offset.x - this.#locationOrigin.x,
+      this.#offset.y - this.#locationOrigin.y,
+    )
+  }
+
+  /**
+   * Measure child locations from the current origin. Scrolling containers call
+   * this after offsetting their content, so that child locations are in
+   * content coordinates and don't change when scrolling.
+   *
+   * Must be called inside a `clipped()` callback — the enclosing `clipped` will
+   * restore the previous state.
+   */
+  resetLocationOrigin() {
+    this.#locationOrigin = this.#offset
   }
 
   /**
@@ -386,9 +412,13 @@ export class Viewport {
 
   _render(view: View, clip: Rect, draw: (viewport: Viewport) => void): void {
     const prevRender = this.#currentRender
+    const prevLocationOrigin = this.#locationOrigin
     this.#currentRender = view
+    // children of `view` are located relative to its origin
+    this.#locationOrigin = this.#offset
     this.clipped(clip, draw)
     this.#currentRender = prevRender
+    this.#locationOrigin = prevLocationOrigin
   }
 
   clipped(clip: Rect, draw: (viewport: Viewport) => void): void
@@ -450,6 +480,7 @@ export class Viewport {
     const prevAvailableRect = this.#availableRect
     const prevVisibleRect = this.#visibleRect
     const prevOffset = this.#offset
+    const prevLocationOrigin = this.#locationOrigin
     const prevStyle = this.#style
 
     this.#contentSize = contentSize
@@ -466,6 +497,7 @@ export class Viewport {
     this.#availableRect = prevAvailableRect
     this.#visibleRect = prevVisibleRect
     this.#offset = prevOffset
+    this.#locationOrigin = prevLocationOrigin
     this.#style = prevStyle
   }
 
