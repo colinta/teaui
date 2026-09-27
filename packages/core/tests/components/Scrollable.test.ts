@@ -558,7 +558,7 @@ describe('Scrollable', () => {
 
       scrollable.scrollTo(3)
       t.render()
-      expect(lines[5].location.y).toBe(5)
+      expect(lines[5].origin.y).toBe(5)
 
       scrollable.scrollTo(lines[5])
       t.render()
