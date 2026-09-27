@@ -37,3 +37,19 @@ exports[`Tabs > renders without border 1`] = `
 ━━━━━━━╶──────
 Content A"
 `;
+
+exports[`Tabs > updates a section title from props 1`] = `
+"   Info  ● Settings  Help
+┌╴━━━━━━╶─────────────────╶───────┐
+│Information panel                │
+│                                 │
+└─────────────────────────────────┘"
+`;
+
+exports[`Tabs > updates a section title via the title property 1`] = `
+"   Info  ● Settings  Help
+┌╴━━━━━━╶─────────────────╶───────┐
+│Information panel                │
+│                                 │
+└─────────────────────────────────┘"
+`;

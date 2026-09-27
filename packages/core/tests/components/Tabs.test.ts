@@ -57,6 +57,28 @@ describe('Tabs', () => {
     expect(t.terminal.textContent()).not.toContain('Information panel')
   })
 
+  it('updates a section title from props', () => {
+    const tabs = makeTabs()
+    const t = testRender(tabs, {width: 35, height: 5})
+
+    tabs.tabs[1].update({title: '● Settings'})
+    t.render()
+
+    expect(tabs.tabs[1].title).toBe('● Settings')
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
+  it('updates a section title via the title property', () => {
+    const tabs = makeTabs()
+    const t = testRender(tabs, {width: 35, height: 5})
+
+    tabs.tabs[1].title = '● Settings'
+    t.render()
+
+    expect(tabs.tabs[1].title).toBe('● Settings')
+    expect(t.terminal.textContent()).toMatchSnapshot()
+  })
+
   it('animates separator when selecting another tab', () => {
     const tabs = makeTabs()
     const t = testRender(tabs, {width: 35, height: 5})

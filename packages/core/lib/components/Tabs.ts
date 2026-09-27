@@ -508,9 +508,18 @@ class Section extends Container {
   constructor({title, ...props}: TabProps) {
     super(props)
 
-    this.titleView.title = title ?? ''
+    this.#update({title})
 
     define(this, 'title', {enumerable: true})
+  }
+
+  update(props: TabProps) {
+    super.update(props)
+    this.#update(props)
+  }
+
+  #update({title}: TabProps) {
+    this.titleView.title = title ?? ''
   }
 
   get title() {
