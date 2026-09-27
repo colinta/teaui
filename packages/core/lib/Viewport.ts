@@ -96,7 +96,7 @@ export class Viewport {
 
   /**
    * Where this viewport is, relative to the parent view's layout. `View`
-   * records this on every render (see `View.location`).
+   * records this on every render (see `View.origin`).
    */
   get location(): Point {
     return new Point(

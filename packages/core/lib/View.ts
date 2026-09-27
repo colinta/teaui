@@ -256,7 +256,7 @@ export abstract class View {
    * a Scrollable, relative to the scrolled content). Views that have never been
    * rendered - e.g. never scrolled into view - report Point.zero.
    */
-  get location(): Point {
+  get origin(): Point {
     return this.#renderedLocation
   }
 

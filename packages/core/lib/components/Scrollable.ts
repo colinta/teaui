@@ -388,8 +388,8 @@ export class Scrollable extends Stack {
       if (!current.parent) {
         return undefined
       }
-      x += current.location.x
-      y += current.location.y
+      x += current.origin.x
+      y += current.origin.y
       current = current.parent
     }
     return new Point(x, y)
