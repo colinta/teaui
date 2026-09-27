@@ -579,12 +579,12 @@ export class Slider extends View {
   }
 
   render(viewport: Viewport) {
+    const hasFocus = viewport.registerFocus({isDefault: false})
+    this.#hasFocus = hasFocus
     if (viewport.isEmpty) {
       return
     }
 
-    const hasFocus = viewport.registerFocus({isDefault: false})
-    this.#hasFocus = hasFocus
     this.#contentSize = viewport.contentSize
 
     const sliderStyle = this.purpose.ui({

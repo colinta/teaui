@@ -214,6 +214,10 @@ export class Logo extends View {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return
+    }
+
     if (this.#isAnimating) {
       viewport.registerTick()
     }

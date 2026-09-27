@@ -124,15 +124,14 @@ export class Button extends Container {
   render(viewport: Viewport) {
     const hasFocus = viewport.registerFocus({isDefault: false})
     this.#hasFocus = hasFocus
+    if (this.#hotKey) {
+      viewport.registerHotKey(toHotKeyDef(this.#hotKey))
+    }
     if (viewport.isEmpty) {
       return super.render(viewport)
     }
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
-
-    if (this.#hotKey) {
-      viewport.registerHotKey(toHotKeyDef(this.#hotKey))
-    }
 
     let textStyle = this.purpose.ui({
       variant: 'raised',

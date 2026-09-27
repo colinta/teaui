@@ -319,15 +319,14 @@ export class Drawer extends Container {
   }
 
   render(viewport: Viewport) {
+    if (this.#hotKey) {
+      viewport.registerHotKey(toHotKeyDef(this.#hotKey))
+    }
     if (viewport.isEmpty) {
       return super.render(viewport)
     }
 
     const [drawerSize] = this.#saveDrawerSize(viewport.contentSize)
-
-    if (this.#hotKey) {
-      viewport.registerHotKey(toHotKeyDef(this.#hotKey))
-    }
 
     if (this.#currentDx !== this.#targetDx()) {
       viewport.registerTick()

@@ -577,11 +577,11 @@ export class Table<TData> extends Container {
   }
 
   render(viewport: Viewport) {
+    const hasFocus = viewport.registerFocus({isDefault: true})
     if (viewport.isEmpty) {
       return super.render(viewport)
     }
 
-    const hasFocus = viewport.registerFocus({isDefault: true})
     viewport.registerMouse(['mouse.button.left', 'mouse.wheel'])
 
     const width = viewport.contentSize.width
