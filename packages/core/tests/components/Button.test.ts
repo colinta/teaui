@@ -135,4 +135,35 @@ describe('Button', () => {
       expect(clicked).toBe(false)
     })
   })
+
+  describe('hotKey', () => {
+    it('fires onClick when the hotKey is pressed', () => {
+      let clicks = 0
+      const btn = new Button({
+        title: 'Save',
+        hotKey: 'C-s',
+        onClick() {
+          clicks++
+        },
+      })
+      const t = testRender(btn, {width: 14, height: 3})
+      t.sendKey('s', {ctrl: true})
+      expect(clicks).toBe(1)
+    })
+
+    it('does not fire onClick for other keys', () => {
+      let clicks = 0
+      const btn = new Button({
+        title: 'Save',
+        hotKey: 'C-s',
+        onClick() {
+          clicks++
+        },
+      })
+      const t = testRender(btn, {width: 14, height: 3})
+      t.sendKey('s')
+      t.sendKey('x', {ctrl: true})
+      expect(clicks).toBe(0)
+    })
+  })
 })

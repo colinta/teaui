@@ -12,6 +12,7 @@ import {
   styleTextForHotKey,
   toHotKeyDef,
   hotKeyToString,
+  match,
 } from '../events/index.js'
 import {childPalette} from '../UI.js'
 import type {View} from '../View.js'
@@ -114,10 +115,10 @@ export class Button extends Container {
   }
 
   receiveKey(event: KeyEvent) {
-    switch (event.name) {
-      case 'return':
-        this.#onClick?.()
-        break
+    if (event.name === 'return') {
+      this.#onClick?.()
+    } else if (this.#hotKey && match(toHotKeyDef(this.#hotKey), event)) {
+      this.#onClick?.()
     }
   }
 
