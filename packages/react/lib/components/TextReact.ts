@@ -375,6 +375,10 @@ export class TextContainer extends Container {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
     const remaining = viewport.contentSize.mutableCopy()
     let y = 0
     for (const child of this.children) {

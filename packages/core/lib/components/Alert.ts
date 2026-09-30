@@ -43,8 +43,12 @@ class AlertLayout extends BaseContainer {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
     const child = this.children[0]
-    if (!child || viewport.isEmpty) {
+    if (!child) {
       return
     }
 

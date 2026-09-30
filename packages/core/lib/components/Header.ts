@@ -45,6 +45,10 @@ export class Header extends Container {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
     const inside = viewport.contentRect.inset({
       left: 1,
       right: 1,

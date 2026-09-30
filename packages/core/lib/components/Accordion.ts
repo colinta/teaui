@@ -121,6 +121,10 @@ export class Accordion extends Container {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
     const remainingSize = viewport.contentSize.mutableCopy()
     let y = 0
     for (const section of this.sections) {
@@ -284,6 +288,10 @@ class Section extends Container {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
     if (
       this.#currentViewHeight !== (this.#isOpen ? this.#actualViewHeight : 0)
     ) {

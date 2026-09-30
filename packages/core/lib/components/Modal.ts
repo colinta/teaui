@@ -146,6 +146,13 @@ export class Modal extends Container {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      if (this.#dismissOnEsc) {
+        viewport.registerHotKey(toHotKeyDef('escape'))
+      }
+      return super.render(viewport)
+    }
+
     if (this.#dim) {
       const style =
         this.#dimStyle ??

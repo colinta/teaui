@@ -155,6 +155,10 @@ export class ConsoleLog extends Log {
   }
 
   render(viewport: Viewport) {
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
     fetchLogs().forEach(log => this.appendLog(log))
     super.render(viewport)
   }

@@ -268,12 +268,16 @@ export class Page extends Container {
   }
 
   render(viewport: Viewport) {
-    const sections = this.sections
-    if (sections.length === 0) {
+    if (this.children.length === 0) {
       return
     }
 
     viewport.registerFocus()
+    if (viewport.isEmpty) {
+      return super.render(viewport)
+    }
+
+    const sections = this.sections
     viewport.registerMouse(['mouse.button.left', 'mouse.move', 'mouse.wheel'])
 
     if (

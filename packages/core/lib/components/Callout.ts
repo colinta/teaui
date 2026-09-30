@@ -82,7 +82,7 @@ export class Callout extends Notification {
 
   render(viewport: Viewport) {
     if (viewport.isEmpty) {
-      return
+      return super.render(viewport)
     }
 
     // Paint dim background with bright foreground
