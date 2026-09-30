@@ -353,8 +353,9 @@ export class Scrollable extends Stack {
   }
 
   /**
-   * Scrolls to reveal the target. If any part of the target is already visible
-   * the offset is left alone. Otherwise, on each axis, the entire target is
+   * Scrolls to reveal the target. Each axis is handled independently: if any
+   * part of the target is already visible on an axis, that axis' offset is left
+   * alone. Otherwise, on that axis, the entire target is
    * made visible when it fits, and a target larger than the viewport is aligned
    * to the top (or left) - scrolling as little as possible.
    *
@@ -403,18 +404,11 @@ export class Scrollable extends Stack {
       return
     }
 
-    const isVisible =
-      (!xAxis || this.#isRangeVisible(xAxis)) &&
-      (!yAxis || this.#isRangeVisible(yAxis))
-    if (isVisible) {
-      return
-    }
-
     let {x, y} = this.#contentOffset
-    if (xAxis) {
+    if (xAxis && !this.#isRangeVisible(xAxis)) {
       x = -this.#offsetToReveal(xAxis, -this.#maxOffsetX())
     }
-    if (yAxis) {
+    if (yAxis && !this.#isRangeVisible(yAxis)) {
       y = -this.#offsetToReveal(yAxis, -this.#maxOffsetY())
     }
     if (x === this.#contentOffset.x && y === this.#contentOffset.y) {
