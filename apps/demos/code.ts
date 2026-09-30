@@ -1,5 +1,5 @@
 import {Stack, Tabs, Text, Style, Scrollable} from '@teaui/core'
-import {CodeView} from '@teaui/code'
+import {Code} from '@teaui/code'
 
 import {demo} from './demo.js'
 
@@ -79,26 +79,26 @@ class Server {
 const server = new Server({host: 'localhost', port: 3000})
 server.start()`
 
-const jsView = new CodeView({
+const jsView = new Code({
   code: JS_CODE,
   language: 'javascript',
   showLineNumbers: true,
 })
 
-const pythonView = new CodeView({
+const pythonView = new Code({
   code: PYTHON_CODE,
   language: 'python',
   showLineNumbers: true,
   highlightLines: [3, 4, 5],
 })
 
-const sqlView = new CodeView({
+const sqlView = new Code({
   code: SQL_CODE,
   language: 'sql',
   showLineNumbers: true,
 })
 
-const tsView = new CodeView({
+const tsView = new Code({
   code: TS_CODE,
   language: 'typescript',
   showLineNumbers: true,

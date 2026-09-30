@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest'
 import {testRender, Size} from '@teaui/core'
-import {ImageView} from '../lib/ImageView.js'
+import {Image} from '../lib/Image.js'
 
 // Mock sharp to avoid needing real image files in tests
 vi.mock('../lib/loadImage.js', () => ({
@@ -38,13 +38,13 @@ function make4x4Image() {
   return {pixels, width: 4, height: 4}
 }
 
-describe('ImageView', () => {
+describe('Image', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('renders empty when no source', () => {
-    const t = testRender(new ImageView({source: ''}), {
+    const t = testRender(new Image({source: ''}), {
       width: 10,
       height: 5,
     })
@@ -54,7 +54,7 @@ describe('ImageView', () => {
   it('renders empty before image loads', () => {
     // Never resolve the promise
     mockedLoadImageResized.mockReturnValue(new Promise(() => {}))
-    const t = testRender(new ImageView({source: 'test.png'}), {
+    const t = testRender(new Image({source: 'test.png'}), {
       width: 10,
       height: 5,
     })
@@ -64,7 +64,7 @@ describe('ImageView', () => {
   it('renders a 2x2 image after loading', async () => {
     mockedLoadImageResized.mockResolvedValue(make2x2Image())
 
-    const t = testRender(new ImageView({source: 'test.png'}), {
+    const t = testRender(new Image({source: 'test.png'}), {
       width: 10,
       height: 5,
     })
@@ -82,7 +82,7 @@ describe('ImageView', () => {
   it('renders a 4x4 image after loading', async () => {
     mockedLoadImageResized.mockResolvedValue(make4x4Image())
 
-    const t = testRender(new ImageView({source: 'gradient.png'}), {
+    const t = testRender(new Image({source: 'gradient.png'}), {
       width: 10,
       height: 5,
     })
@@ -99,7 +99,7 @@ describe('ImageView', () => {
   it('centers the image in the viewport', async () => {
     mockedLoadImageResized.mockResolvedValue(make2x2Image())
 
-    const t = testRender(new ImageView({source: 'test.png'}), {
+    const t = testRender(new Image({source: 'test.png'}), {
       width: 10,
       height: 5,
     })
@@ -117,7 +117,7 @@ describe('ImageView', () => {
   it('calls loadImageResized with correct dimensions', async () => {
     mockedLoadImageResized.mockResolvedValue(make2x2Image())
 
-    testRender(new ImageView({source: 'photo.jpg'}), {
+    testRender(new Image({source: 'photo.jpg'}), {
       width: 20,
       height: 10,
     })
@@ -130,7 +130,7 @@ describe('ImageView', () => {
   })
 
   it('naturalSize returns zero for empty source', () => {
-    const view = new ImageView({source: ''})
+    const view = new Image({source: ''})
     const size = view.naturalSize(new Size(40, 20))
     expect(size.width).toBe(0)
     expect(size.height).toBe(0)
@@ -139,7 +139,7 @@ describe('ImageView', () => {
   it('handles load errors gracefully', async () => {
     mockedLoadImageResized.mockRejectedValue(new Error('File not found'))
 
-    const t = testRender(new ImageView({source: 'missing.png'}), {
+    const t = testRender(new Image({source: 'missing.png'}), {
       width: 10,
       height: 5,
     })

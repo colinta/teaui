@@ -10,7 +10,7 @@ import {
   interceptConsoleLog,
   ConsoleLog,
 } from '@teaui/core'
-import {SubprocessView} from '@teaui/subprocess'
+import {Subprocess} from '@teaui/subprocess'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -29,7 +29,7 @@ async function main() {
         border: 'single',
       })
 
-      const left = new SubprocessView({
+      const left = new Subprocess({
         command: process.execPath,
         args: [path.resolve(__dirname, 'components.js')],
         onExit: code => {
@@ -44,7 +44,7 @@ async function main() {
         },
       })
 
-      const right = new SubprocessView({
+      const right = new Subprocess({
         command: process.execPath,
         args: [path.resolve(__dirname, 'inputs.js')],
         onExit: code => {

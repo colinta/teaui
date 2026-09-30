@@ -9,7 +9,7 @@ import {keyEventToAnsi} from './keyEventToAnsi.js'
 import {mouseEventToAnsi} from './mouseEventToAnsi.js'
 import {StyleCache} from './xtermBridge.js'
 
-export interface SubprocessViewProps {
+export interface SubprocessProps {
   command: string
   args?: string[]
   env?: Record<string, string>
@@ -29,7 +29,7 @@ type SubprocessState =
   | {kind: 'exited'; exitCode: number; signal?: number}
   | {kind: 'error'; message: string}
 
-export class SubprocessView extends View {
+export class Subprocess extends View {
   #command: string
   #args: string[]
   #env: Record<string, string>
@@ -47,7 +47,7 @@ export class SubprocessView extends View {
   #lastRows = 0
   #styleCache = new StyleCache()
 
-  constructor(props: SubprocessViewProps) {
+  constructor(props: SubprocessProps) {
     super({
       width: props.width ?? 'fill',
       height: props.height ?? 'fill',
@@ -309,7 +309,7 @@ export class SubprocessView extends View {
     super.receiveMouse(event, system)
 
     if (!this.hasFocus) {
-      // Clicking an unfocused SubprocessView takes focus but does not
+      // Clicking an unfocused Subprocess takes focus but does not
       // forward the mouse event to the child process.
       if (event.name === 'mouse.button.down') {
         system.requestFocus()

@@ -1,7 +1,7 @@
 # @teaui/subprocess
 
 Embed child terminal processes inside a TeaUI view. The child runs in its own PTY
-(pseudo-terminal) and renders into a `SubprocessView` viewport. When focused,
+(pseudo-terminal) and renders into a `Subprocess` viewport. When focused,
 keyboard and mouse events are forwarded to the child process.
 
 This enables terminal multiplexer-style composition: a TeaUI app can embed other TUI
@@ -20,10 +20,10 @@ The `node-pty` package requires a C++ toolchain for compilation on first install
 
 ```typescript
 import {Screen, Window, Stack, Box, Text, Style} from '@teaui/core'
-import {SubprocessView} from '@teaui/subprocess'
+import {Subprocess} from '@teaui/subprocess'
 
 const [screen, program] = await Screen.start(async () => {
-  const subprocess = new SubprocessView({
+  const subprocess = new Subprocess({
     command: '/bin/bash',
     onExit: code => console.info(`Shell exited: ${code}`),
   })
@@ -46,7 +46,7 @@ const [screen, program] = await Screen.start(async () => {
 
 ## API
 
-### `SubprocessView`
+### `Subprocess`
 
 Extends `View`. Spawns a child process in a PTY and renders its output.
 
@@ -114,7 +114,7 @@ Parent TeaUI App
 │  └─ Window                                       │
 │      └─ Stack.down                               │
 │          ├─ Header("My App")                     │
-│          ├─ SubprocessView ──┐                   │
+│          ├─ Subprocess ──┐                   │
 │          │   ├─ pty (node-pty)  ──── Child Process│
 │          │   ├─ vt (xterm-headless)              │
 │          │   └─ cell buffer → render() → Viewport│
@@ -125,7 +125,7 @@ Parent TeaUI App
 **Data flows:**
 
 - Child stdout → `pty.onData` → `xterm.write(data)` → buffer cells
-- Parent render → `SubprocessView.render()` → read xterm buffer → `viewport.write()`
+- Parent render → `Subprocess.render()` → read xterm buffer → `viewport.write()`
 - User keypress → `receiveKey()` → `keyEventToAnsi()` → `pty.write()`
 - User mouse → `receiveMouse()` → `mouseEventToAnsi()` → `pty.write()`
 - Viewport resize → `pty.resize()` + `xterm.resize()`

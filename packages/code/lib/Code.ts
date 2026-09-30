@@ -20,7 +20,7 @@ export type Props = CodeProps & ViewProps
  * for colorization and renders the ANSI output using the core text rendering
  * pipeline.
  */
-export class CodeView extends View {
+export class Code extends View {
   #code: string = ''
   #language: string | undefined
   #showLineNumbers: boolean = false

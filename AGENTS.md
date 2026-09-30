@@ -104,7 +104,7 @@ the reconciler source.
 
 **Pattern** (used by `@teaui/subprocess`):
 
-1. Create a core `View` subclass in your package (e.g. `SubprocessView`)
+1. Create a core `View` subclass in your package (e.g. `Subprocess`)
 2. Create `lib/react.tsx` that:
    - Calls `registerElement('tui-myview', props => new MyView(props))`
    - Declares the JSX intrinsic element via `declare module 'react'`

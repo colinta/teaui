@@ -84,7 +84,7 @@ const customElements = new Map<string, ViewFactory>()
  * External packages (e.g. @teaui/subprocess) can call this to add new JSX elements.
  *
  * @example
- * registerElement('tui-subprocess', (props) => new SubprocessView(props))
+ * registerElement('tui-subprocess', (props) => new Subprocess(props))
  */
 export function registerElement(type: string, factory: ViewFactory) {
   customElements.set(type, factory)

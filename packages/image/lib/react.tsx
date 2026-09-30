@@ -1,11 +1,9 @@
 import React from 'react'
 import {registerElement} from '@teaui/react'
-import {ImageView} from './ImageView.js'
-import type {Props as ImageViewProps} from './ImageView.js'
+import {Image as CoreImage} from './Image.js'
+import type {Props as ImageProps} from './Image.js'
 
-type ImageProps = ImageViewProps
-
-registerElement('tui-image', (props: ImageProps) => new ImageView(props))
+registerElement('tui-image', (props: ImageProps) => new CoreImage(props))
 
 declare module 'react' {
   namespace JSX {

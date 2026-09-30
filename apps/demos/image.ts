@@ -1,7 +1,7 @@
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {Box, Stack, Text, Style} from '@teaui/core'
-import {ImageView} from '@teaui/image'
+import {Image} from '@teaui/image'
 
 import {demo} from './demo.js'
 
@@ -19,7 +19,7 @@ demo(
       new Box({
         border: 'rounded',
         flex: 1,
-        child: new ImageView({
+        child: new Image({
           source: IMAGE_PATH,
         }),
       }),

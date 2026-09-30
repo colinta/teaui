@@ -1,11 +1,9 @@
 import React from 'react'
 import {registerElement} from '@teaui/react'
-import {CodeView} from './CodeView.js'
-import type {Props as CodeViewProps} from './CodeView.js'
+import {Code as CoreCode} from './Code.js'
+import type {Props as CodeProps} from './Code.js'
 
-type CodeProps = CodeViewProps
-
-registerElement('tui-code', (props: CodeProps) => new CodeView(props))
+registerElement('tui-code', (props: CodeProps) => new CoreCode(props))
 
 declare module 'react' {
   namespace JSX {

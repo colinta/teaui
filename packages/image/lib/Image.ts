@@ -28,7 +28,7 @@ export type Props = ImageProps & ViewProps
  * Images are loaded asynchronously via sharp. The view renders empty until
  * the image data is available.
  */
-export class ImageView extends View {
+export class Image extends View {
   #source: string | Buffer = ''
 
   /** The loaded & resized image data */
