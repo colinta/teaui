@@ -2,7 +2,7 @@
   "name": "@teaui/code",
   "description": "Syntax-highlighted code view for TeaUI",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
-  "version": "1.20.23",
+  "version": "1.20.24",
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -60,7 +60,7 @@
     "@teaui/react": "workspace:*",
     "react": "^18.3.1",
     "@types/react": "^18.3.1",
-    "vitest": "^3.0.0"
+    "vitest": "4.1.11"
   },
   "publishConfig": {
     "access": "public"
