@@ -22,6 +22,7 @@ import type {
   Drawer as WrDrawer,
   Pane as WrPane,
   Dropdown as WrDropdown,
+  FontStyle as WrFontStyle,
   Modal as WrModal,
   Geometry as WrGeometry,
   Header as WrHeader,
@@ -51,9 +52,6 @@ import type {
 } from '@teaui/core'
 import {TextProvider, TextStyle} from './components/TextReact.js'
 
-export {FontStyle} from './components/FontStyle.js'
-export type {FontStyleValue} from './components/FontStyle.js'
-
 type Children = 'children' | 'child'
 type TUIView<
   T extends abstract new (arg: any, ...args: any) => any,
@@ -78,6 +76,8 @@ export type CheckboxProps = Simplify<TUIView<typeof WrCheckbox>>
 export type CollapsibleTextProps = Simplify<TUIView<typeof WrCollapsibleText>>
 export type ConsoleProps = Simplify<TUIView<typeof WrConsoleLog>>
 export type DigitsProps = Simplify<TUIView<typeof WrDigits>>
+export type FontStyleProps = Simplify<TUIView<typeof WrFontStyle>>
+export type FontStyleValue = WrFontStyle['value']
 export type GeometryProps = Simplify<TUIContainer<typeof WrGeometry>>
 export interface SharedDropdownProps<T> extends ViewProps {
   choices: [string, T][]
@@ -165,6 +165,7 @@ declare module 'react' {
       'tui-console': WithRef<ConsoleProps, WrConsoleLog>
       'tui-digits': WithRef<DigitsProps, WrDigits>
       'tui-dropdown': WithRef<DropdownProps<any>, WrDropdown<any, any>>
+      'tui-font-style': WithRef<FontStyleProps, WrFontStyle>
       'tui-geometry': WithRef<GeometryProps, WrGeometry>
       'tui-hotkey': WithRef<HotKeyProps, WrHotKey>
       'tui-keyboard': WithRef<KeyboardProps, WrKeyboard>
@@ -363,6 +364,11 @@ export const Digits = forwardRef<WrDigits, DigitsProps>(
 export function Dropdown<T>(reactProps: DropdownProps<T>): JSX.Element {
   return <tui-dropdown {...(reactProps as DropdownProps<any>)} />
 }
+export const FontStyle = forwardRef<WrFontStyle, FontStyleProps>(
+  function FontStyle(reactProps, ref): JSX.Element {
+    return <tui-font-style ref={ref} {...reactProps} />
+  },
+)
 export const HotKey = forwardRef<WrHotKey, HotKeyProps>(
   function HotKey(reactProps, ref): JSX.Element {
     return <tui-hotkey ref={ref} {...reactProps} />

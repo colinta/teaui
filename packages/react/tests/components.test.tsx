@@ -6,6 +6,7 @@ import {
   Checkbox,
   Collapsible,
   Drawer,
+  FontStyle,
   Separator,
   Space,
   Stack,
@@ -64,6 +65,21 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(<Components.Toggle />)
       await flush()
       expect(window.children[0]).toBeInstanceOf(Toggle)
+    })
+
+    it('FontStyle renders a core FontStyle', async () => {
+      const {window} = renderToWindow(
+        <Components.FontStyle
+          value={{
+            bold: false,
+            italic: false,
+            underline: false,
+            strikethrough: false,
+          }}
+        />,
+      )
+      await flush()
+      expect(window.children[0]).toBeInstanceOf(FontStyle)
     })
 
     it('Separator renders a tui-separator', async () => {

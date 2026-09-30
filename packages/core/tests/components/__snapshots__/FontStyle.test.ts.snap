@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FontStyle > rendering > renders with all selected 1`] = `
+"┏━━━┳━━━┳━━━┳━━━┓
+┃ B ┃ I ┃ U ┃ S ┃
+┗━━━┻━━━┻━━━┻━━━┛"
+`;
+
+exports[`FontStyle > rendering > renders with none selected 1`] = `
+"╭───┬───┬───┬───╮
+│ B │ I │ U │ S │
+╰───┴───┴───┴───╯"
+`;
+
+exports[`FontStyle > rendering > renders with one selected 1`] = `
+"╭───┲━━━┱───┬───╮
+│ B ┃ I ┃ U │ S │
+╰───┺━━━┹───┴───╯"
+`;
