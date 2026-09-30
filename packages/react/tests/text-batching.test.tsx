@@ -1,6 +1,14 @@
 import {afterEach, describe, expect, it, vi} from 'vitest'
 import React, {useLayoutEffect, useRef, useState} from 'react'
-import {Screen, Size, TestProgram, Text as CoreText, Window} from '@teaui/core'
+import {
+  HotKey,
+  Screen,
+  Size,
+  TestProgram,
+  Text as CoreText,
+  testRender,
+  Window,
+} from '@teaui/core'
 import {render} from '../lib/reconciler.js'
 import {
   TextBatch,
@@ -40,6 +48,18 @@ function textGroup(values: string[], textBatch?: TextBatch) {
 const settle = () => new Promise(resolve => setTimeout(resolve, 0))
 
 describe('text commit batching', () => {
+  it('renders TextContainer children when its viewport is empty', () => {
+    let presses = 0
+    const container = new TextContainer()
+    container.update({width: 0, height: 0})
+    container.add(new HotKey({hotKey: 'x', onPress: () => presses++}))
+    const t = testRender(container, {width: 20, height: 5})
+
+    t.sendKey('x')
+
+    expect(presses).toBe(1)
+  })
+
   it('materializes a group once for many mutations, while retaining generated Text identity', () => {
     const textBatch = new TextBatch()
     const {container, literals} = textGroup(
