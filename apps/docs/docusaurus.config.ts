@@ -57,6 +57,16 @@ const config: Config = {
           label: '[ Docs ]',
         },
         {
+          // Raw markdown for coding agents, served from static/AGENTS.md.
+          // `pathname://` makes this a plain link to the file rather than a
+          // client-side route; `html` (instead of `label`) and `target` avoid
+          // the external-link icon and new tab that pathname:// would add.
+          href: 'pathname:///AGENTS.md',
+          html: '[ AGENTS.md ]',
+          target: '_self',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/colinta/teaui',
           label: '[ GitHub ]',
           position: 'right',
