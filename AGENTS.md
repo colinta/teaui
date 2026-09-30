@@ -96,6 +96,12 @@ pnpm react                  # Run the React demo app
    `packages/react/lib/components.tsx`
 5. Add tests in `packages/core/tests/components/`
 
+### Component implementation rules
+
+- Container `render()`: if `viewport.contentSize.isEmpty`, skip sizing/layout and call `super.render(viewport)` so children can register hotkeys/focus.
+- View `render()`: register required events (focus, hotkeys, etc.) first, then early-exit when `viewport.contentSize.isEmpty`.
+- Props: `update(props)` supports React reconciliation, while the Core/OOP API uses property setters that call `invalidateSize()` (see `Tabs.Section.title`).
+
 ### Extending the reconcilers from external packages
 
 The React reconciler exposes `registerElement(type, factory)` so
