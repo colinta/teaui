@@ -1,0 +1,78 @@
+---
+title: Image
+---
+
+# Image
+
+Renders an image file or buffer as colored terminal cells. Each cell draws two vertical pixels with a half-block character (`▀`), using the foreground for the top pixel and the background for the bottom pixel.
+
+Provided by the `@teaui/image` package.
+
+## Installation
+
+```bash
+pnpm add @teaui/image
+```
+
+Decoding and resizing use [sharp](https://sharp.pixelplumbing.com/), which supports PNG, JPEG, GIF, WebP, TIFF, AVIF, and SVG. sharp ships prebuilt native binaries for common platforms.
+
+## React Example
+
+Import from the `/react` subpath; importing it registers the component with the reconciler.
+
+```tsx
+import React from 'react'
+import {Box, run} from '@teaui/react'
+import {Image} from '@teaui/image/react'
+
+function App() {
+  return (
+    <Box border="rounded" flex={1}>
+      <Image source="./photo.png" flex={1} />
+    </Box>
+  )
+}
+
+run(<App />)
+```
+
+## Behavior
+
+- **Loading is asynchronous.** The view is blank until the image has been decoded, then re-renders itself. If loading fails, it stays blank.
+- **Sizing:** before loading, the view requests all available space. The image is scaled down to fit that space, preserves its aspect ratio, and is never enlarged beyond its original resolution. The result is centered.
+- **Resizing:** when the view's size changes, the image is reloaded at the new size.
+- Changing `source` discards the loaded image and loads the new one.
+
+## Props
+
+| Prop     | Type                                | Default     | Description                    |
+| -------- | ----------------------------------- | ----------- | ------------------------------ |
+| `source` | `string \| Buffer`                  | —           | Image file path or image bytes |
+| `fit`    | `'contain' \| 'cover' \| 'stretch'` | `'contain'` | Not yet implemented; see below |
+
+`Image` also accepts the common [View props](../core-api#views), such as `width`, `height`, `flex`, and `padding`.
+
+:::note
+`fit` is accepted but currently ignored; images always use the `contain` behavior described above.
+:::
+
+<details>
+<summary>Core API</summary>
+
+```ts
+import {Box, Screen, Window} from '@teaui/core'
+import {Image} from '@teaui/image'
+
+await Screen.start(
+  new Window({
+    child: new Box({
+      border: 'rounded',
+      child: new Image({source: './photo.png'}),
+    }),
+  }),
+)
+```
+
+`@teaui/image` also exports the lower-level `loadImage()`, `loadImageResized()`, and `renderPixels()` helpers for custom image views.
+
+</details>

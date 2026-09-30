@@ -1,0 +1,36 @@
+---
+title: TrackMouse
+---
+
+# TrackMouse
+
+A debugging container that surrounds its content with coordinate rulers and displays the current pointer position. Use it to inspect layout bounds, clipping, and mouse coordinates while developing a Core/OOP application.
+
+The top ruler shows x coordinates, the left ruler shows y coordinates, and the row and column under the pointer are highlighted. The bottom-right label reports the current position.
+
+:::note Core API only
+`TrackMouse` currently has no `@teaui/react` wrapper.
+:::
+
+## Core Example
+
+```ts
+import {Box, Screen, Text, TrackMouse, Window} from '@teaui/core'
+
+const content = new Box({
+  border: 'single',
+  child: new Text({text: 'Move the pointer over this view'}),
+})
+
+await Screen.start(
+  new Window({
+    child: new TrackMouse({child: content}),
+  }),
+)
+```
+
+`TrackMouse` reserves one row at the top and one column at the left for its rulers, so remove it before evaluating the final application layout.
+
+## Props
+
+`TrackMouse` accepts the common [Container props](./container), including `child`, `children`, `width`, `height`, `flex`, `padding`, and `isVisible`.

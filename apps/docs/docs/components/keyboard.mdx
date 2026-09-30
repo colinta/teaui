@@ -1,0 +1,81 @@
+---
+title: Keyboard
+---
+
+# Keyboard
+
+A non-visual container for fallback keyboard handling. Use it for screen or region-level commands that should run only when no hotkey matches and no view has focus.
+
+Prefer component callbacks such as `Button.onClick`, `Input.onSubmit`, or [`HotKey`](./hotkey) for specific shortcuts. `Keyboard` is useful for otherwise-unhandled keys, event logging, and interfaces without focusable controls.
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {Keyboard, Stack, Text, run} from '@teaui/react'
+
+function App() {
+  const [lastKey, setLastKey] = useState('none')
+
+  return (
+    <Keyboard onKey={event => setLastKey(event.full)}>
+      <Stack.down>
+        <Text>Press any key</Text>
+        <Text>Last key: {lastKey}</Text>
+      </Stack.down>
+    </Keyboard>
+  )
+}
+
+run(<App />)
+```
+
+## Event priority
+
+Keyboard events are handled in this order:
+
+1. A matching screen-level binding registered with `screen.key()`.
+2. A matching [`HotKey`](./hotkey).
+3. Tab or Shift+Tab focus navigation.
+4. The focused view.
+5. `Keyboard` as a fallback.
+
+A focused child therefore prevents `Keyboard.onKey` from running. If `Keyboard` containers are nested, the innermost registered container receives the fallback event.
+
+## Props
+
+| Prop       | Type                        | Default | Description                      |
+| ---------- | --------------------------- | ------- | -------------------------------- |
+| `onKey`    | `(event: KeyEvent) => void` | —       | Called for an unhandled key      |
+| `children` | `ReactNode`                 | —       | Content covered by the container |
+
+## KeyEvent
+
+| Field   | Type      | Description                                                     |
+| ------- | --------- | --------------------------------------------------------------- |
+| `type`  | `'key'`   | Event type                                                      |
+| `char`  | `string`  | Character produced by the key, when available                   |
+| `name`  | `KeyName` | Named key such as `'enter'`, `'escape'`, `'up'`, or a character |
+| `full`  | `string`  | Key name with modifiers, such as `'C-x'` or `'S-up'`            |
+| `ctrl`  | `boolean` | Whether Control was held                                        |
+| `alt`   | `boolean` | Whether Alt/Option was held                                     |
+| `gui`   | `boolean` | Whether Command/Super was held                                  |
+| `shift` | `boolean` | Whether Shift was held                                          |
+
+<details>
+<summary>Core API</summary>
+
+```ts
+import {Keyboard, Stack, Text, type KeyEvent} from '@teaui/core'
+
+const status = new Text({text: 'Press any key'})
+
+const view = new Keyboard({
+  onKey(event: KeyEvent) {
+    status.text = `Last key: ${event.full}`
+  },
+  child: Stack.down([new Text({text: 'Press any key'}), status]),
+})
+```
+
+</details>

@@ -1,25 +1,34 @@
 ---
-title: Log
+title: Log and ConsoleLog
 ---
 
-# Log
+# Log and ConsoleLog
 
-Captures `console.info` / `console.error` / `console.warn` output and displays it in a scrollable view. Use with `interceptConsoleLog()`.
+Scrollable, color-coded views for diagnostic messages. Use `Log` when the application supplies structured log entries; use `ConsoleLog` to display calls intercepted from the global `console` object.
 
-## React Example
+| Component    | Source of entries                                     | API availability |
+| ------------ | ----------------------------------------------------- | ---------------- |
+| `Log`        | Entries supplied with `setLogs()` or `appendLog()`    | Core only        |
+| `ConsoleLog` | `console.*` calls captured by `interceptConsoleLog()` | Core and React   |
+
+Both views keep the latest entries visible, support mouse-wheel scrolling, wrap long messages, and color entries by level.
+
+## ConsoleLog
+
+`ConsoleLog` extends `Log` and reads from the queue populated by `interceptConsoleLog()`. Call `interceptConsoleLog()` before starting the screen so normal writes to stdout do not corrupt the fullscreen interface.
 
 ```tsx
 import React from 'react'
 import {interceptConsoleLog} from '@teaui/core'
-import {Stack, ConsoleLog, Button, run} from '@teaui/react'
+import {Button, ConsoleLog, Stack, run} from '@teaui/react'
 
 interceptConsoleLog()
 
 function App() {
   return (
     <Stack.down>
-      <Button onClick={() => console.info('Hello!')}>Log Message</Button>
-      <ConsoleLog height={10} />
+      <Button onClick={() => console.info('Hello!')}>Log message</Button>
+      <ConsoleLog flex="flex1" />
     </Stack.down>
   )
 }
@@ -27,31 +36,82 @@ function App() {
 run(<App />)
 ```
 
-## Props
+`interceptConsoleLog()` intercepts `console.debug`, `console.error`, `console.info`, `console.log`, and `console.warn`. Debug messages are retained for output when the process exits but are not displayed by `ConsoleLog`; the other levels appear in the view. Intercepted output is flushed to the original console when the process exits.
 
-The `ConsoleLog` component displays intercepted console output in a scrollable list with colored log levels: red for errors, yellow for warnings, white for info.
+Use `decorateConsoleLog()` before interception when logged objects should be formatted with TeaUI's colorized object inspector.
 
 <details>
-<summary>Core API</summary>
+<summary>Core ConsoleLog example</summary>
 
-```js
+```ts
 import {
+  Button,
+  ConsoleLog,
   Screen,
   Stack,
-  ConsoleLog,
-  Button,
+  Window,
   interceptConsoleLog,
 } from '@teaui/core'
 
 interceptConsoleLog()
 
-const log = new ConsoleLog()
+const log = new ConsoleLog({height: 10})
+
 Screen.start(
-  Stack.down([
-    new Button({title: 'Log', onClick: () => console.info('Hello!')}),
-    log,
-  ]),
+  new Window({
+    child: Stack.down([
+      new Button({title: 'Log message', onClick: () => console.info('Hello!')}),
+      log,
+    ]),
+  }),
 )
 ```
 
 </details>
+
+## Log
+
+`Log` does not read from `console` and does not require interception. Populate it with `LogLine` values when logs come from another process, a socket, a file, or application-owned state.
+
+:::note Core API only
+`Log` currently has no `@teaui/react` wrapper. React applications can use `ConsoleLog` for intercepted console output or build a custom view from `ScrollableList`.
+:::
+
+```ts
+import {Log, Screen, Window, type LogLine} from '@teaui/core'
+
+const log = new Log({height: 10})
+
+const entries: LogLine[] = [
+  {level: 'info', args: ['Server started']},
+  {level: 'warn', args: ['Connection is slow']},
+]
+
+log.setLogs(entries)
+await Screen.start(new Window({child: log}))
+```
+
+### LogLine
+
+```ts
+type Level = 'debug' | 'error' | 'info' | 'log' | 'warn'
+
+interface LogLine {
+  level: Level
+  args: any[]
+}
+```
+
+Each argument is converted to text. Multiline messages are rendered as expandable rows.
+
+### Methods
+
+| Method           | Use                                                               |
+| ---------------- | ----------------------------------------------------------------- |
+| `setLogs(logs)`  | Replace all entries and update the scrollable list                |
+| `appendLog(log)` | Append one entry when the surrounding code will trigger rendering |
+| `clear()`        | Remove all displayed entries                                      |
+
+## Shared props
+
+`Log` and `ConsoleLog` accept the common [View props](../core-api#views), including `width`, `height`, `flex`, `padding`, and `isVisible`.

@@ -1,0 +1,94 @@
+---
+title: Mouse
+---
+
+# Mouse
+
+A non-visual container for fallback mouse handling across its visible region. Use it for region-level clicks, wheel input, pointer tracking, or event logging when child components do not handle the event themselves.
+
+Prefer component callbacks such as `Button.onClick` when available. Children that register button or wheel events on the same terminal cells take priority over `Mouse`; move events may be delivered to both the child and its ancestor.
+
+## React Example
+
+```tsx
+import React, {useState} from 'react'
+import {Mouse, Text, run} from '@teaui/react'
+
+function App() {
+  const [position, setPosition] = useState('Move the mouse')
+
+  return (
+    <Mouse
+      mouse="mouse.move"
+      onMouse={event => setPosition(`${event.position.x}, ${event.position.y}`)}
+    >
+      <Text width="fill" height="fill">
+        Pointer: {position}
+      </Text>
+    </Mouse>
+  )
+}
+
+run(<App />)
+```
+
+`event.position` is relative to the `Mouse` container, not the terminal window.
+
+## Props
+
+| Prop       | Type                                                 | Default                        | Description                         |
+| ---------- | ---------------------------------------------------- | ------------------------------ | ----------------------------------- |
+| `mouse`    | `MouseEventListenerName \| MouseEventListenerName[]` | Button, wheel, and move events | Event groups to receive             |
+| `onMouse`  | `(event: MouseEvent, system: System) => void`        | —                              | Called for a matching mouse event   |
+| `children` | `ReactNode`                                          | —                              | Content covered by the mouse region |
+
+### Listener names
+
+| Name                    | Use for                                     |
+| ----------------------- | ------------------------------------------- |
+| `'mouse.button.all'`    | Left, middle, and right button interactions |
+| `'mouse.button.left'`   | Left-button interactions only               |
+| `'mouse.button.middle'` | Middle-button interactions only             |
+| `'mouse.button.right'`  | Right-button interactions only              |
+| `'mouse.wheel'`         | Vertical or horizontal wheel input          |
+| `'mouse.move'`          | Pointer enter, movement, overlap, and exit  |
+
+## MouseEvent
+
+| Field      | Type             | Description                                                |
+| ---------- | ---------------- | ---------------------------------------------------------- |
+| `type`     | `'mouse'`        | Event type                                                 |
+| `name`     | `MouseEventName` | Specific move, button, drag, release, or wheel event       |
+| `position` | `Point`          | Position relative to the container                         |
+| `button`   | `MouseButton`    | `'left'`, `'middle'`, `'right'`, `'wheel'`, or `'unknown'` |
+| `ctrl`     | `boolean`        | Whether Control was held                                   |
+| `alt`      | `boolean`        | Whether Alt/Option was held                                |
+| `gui`      | `boolean`        | Whether Command/Super was held                             |
+| `shift`    | `boolean`        | Whether Shift was held                                     |
+
+Button interactions can report `down`, `up`, `enter`, `exit`, `dragInside`, `dragOutside`, or `cancel`. Move interactions report `enter`, `in`, `below`, or `exit`; wheel interactions report `up`, `down`, `left`, or `right`.
+
+Use helpers exported by `@teaui/core`, such as `isMouseClicked`, `isMouseDragging`, `isMouseEnter`, `isMouseExit`, and `isMouseWheel`, instead of comparing event names when possible.
+
+The callback's `system` argument exposes `system.requestFocus()`, which requests focus for the `Mouse` container itself. Most applications should instead rely on interactive child components to manage focus.
+
+<details>
+<summary>Core API</summary>
+
+```ts
+import {Mouse, Text, isMouseClicked} from '@teaui/core'
+
+const status = new Text({text: 'Click this region'})
+
+const view = new Mouse({
+  mouse: 'mouse.button.left',
+  onMouse(event) {
+    if (isMouseClicked(event)) {
+      status.text = `Clicked at ${event.position.x}, ${event.position.y}`
+    }
+  },
+  child: status,
+})
+```
+
+</details>

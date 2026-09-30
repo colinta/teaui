@@ -1,0 +1,59 @@
+---
+title: Radio
+---
+
+# Radio
+
+A boolean control with radio-style marks (`◯` and `⦿`). `Radio` extends [`Checkbox`](./checkbox), so it has the same focus, mouse, keyboard, hotkey, and change behavior.
+
+:::note Core API only
+`Radio` currently has no `@teaui/react` wrapper. Use `Checkbox` or `ToggleGroup` in React applications.
+:::
+
+`Radio` represents one boolean value and does not enforce mutual exclusion. To build a traditional radio group, update every option from each `onChange` callback so only one value is true; use [`ToggleGroup`](./toggle-group) when its segmented appearance is appropriate.
+
+## Core Example
+
+```ts
+import {Radio, Stack} from '@teaui/core'
+
+const choices: Radio[] = []
+
+function select(selected: number) {
+  choices.forEach((choice, index) => {
+    choice.value = index === selected
+  })
+}
+
+choices.push(
+  new Radio({
+    title: 'Small',
+    value: true,
+    onChange: value => value && select(0),
+  }),
+  new Radio({
+    title: 'Medium',
+    value: false,
+    onChange: value => value && select(1),
+  }),
+  new Radio({
+    title: 'Large',
+    value: false,
+    onChange: value => value && select(2),
+  }),
+)
+
+const view = Stack.down(choices)
+```
+
+## Props
+
+| Prop       | Type                       | Default | Description                   |
+| ---------- | -------------------------- | ------- | ----------------------------- |
+| `title`    | `string`                   | —       | Label text                    |
+| `value`    | `boolean`                  | —       | Whether the option is chosen  |
+| `onChange` | `(value: boolean) => void` | —       | Called when the value toggles |
+| `hotKey`   | `HotKey`                   | —       | Keyboard shortcut             |
+| `children` | `View[]`                   | —       | Additional label content      |
+
+Click the control or focus it and press a key to toggle its value. When `hotKey` is set, the shortcut is also shown in the label and included in legends.

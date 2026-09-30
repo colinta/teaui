@@ -1,0 +1,103 @@
+---
+title: Subprocess
+---
+
+# Subprocess
+
+Embeds an interactive terminal program — a shell, editor, or another TUI — inside a TeaUI layout. The child runs in its own pseudo-terminal, and its screen is rendered with full color and text styling.
+
+Provided by the `@teaui/subprocess` package.
+
+## Installation
+
+```bash
+pnpm add @teaui/subprocess
+```
+
+This package depends on [`node-pty`](https://github.com/microsoft/node-pty), a native addon that may need a C++ toolchain to compile on install, and [`@xterm/headless`](https://www.npmjs.com/package/@xterm/headless) for terminal emulation.
+
+## React Example
+
+Import from the `/react` subpath; importing it registers the component with the reconciler.
+
+```tsx
+import React from 'react'
+import {interceptConsoleLog} from '@teaui/core'
+import {Stack, Text, run} from '@teaui/react'
+import {Subprocess} from '@teaui/subprocess/react'
+
+interceptConsoleLog()
+
+function App() {
+  return (
+    <Stack.down>
+      <Text>Click the shell to focus it</Text>
+      <Subprocess
+        command="/bin/bash"
+        onExit={code => console.info(`Shell exited: ${code}`)}
+      />
+    </Stack.down>
+  )
+}
+
+run(<App />)
+```
+
+## Behavior
+
+- **Lifecycle:** the process starts when the view is mounted and is killed when the view is unmounted.
+- **Props are read once.** Changing props after mounting has no effect. To run a different command, mount a new `Subprocess` — in React, change its `key`.
+- **Focus:** click the view to focus it. That first click is not forwarded to the child.
+- **Input:** while focused, key and mouse events are forwarded to the child. Keys that match a [`HotKey`](./hotkey), and `Tab`/`Shift+Tab` (focus navigation), are handled by TeaUI and do not reach the child.
+- **Resize:** the pseudo-terminal is resized to match the view.
+- **Exit:** the final screen remains visible with an exit-code banner. Spawn failures are displayed in the view.
+
+## Props
+
+| Prop      | Type                                          | Default  | Description                                            |
+| --------- | --------------------------------------------- | -------- | ------------------------------------------------------ |
+| `command` | `string`                                      | —        | Program to run                                         |
+| `args`    | `string[]`                                    | `[]`     | Command arguments                                      |
+| `env`     | `Record<string, string>`                      | `{}`     | Extra environment variables, merged with `process.env` |
+| `cwd`     | `string`                                      | —        | Working directory for the child                        |
+| `onData`  | `(data: string) => void`                      | —        | Called with raw output from the child                  |
+| `onExit`  | `(exitCode: number, signal?: number) => void` | —        | Called when the child exits                            |
+| `onFocus` | `() => void`                                  | —        | Called when the view gains focus                       |
+| `onBlur`  | `() => void`                                  | —        | Called when the view loses focus                       |
+| `width`   | `Dimension`                                   | `'fill'` | View width                                             |
+| `height`  | `Dimension`                                   | `'fill'` | View height                                            |
+
+Other common View props, such as `flex` and `padding`, are not currently supported. Wrap `Subprocess` in a `Box` or `Stack` to position it.
+
+### Properties
+
+| Property       | Type                                                       | Description                                 |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------- |
+| `processState` | `'idle' \| 'starting' \| 'running' \| 'exited' \| 'error'` | Current process lifecycle state             |
+| `exitCode`     | `number \| null`                                           | Exit code once `processState` is `'exited'` |
+
+<details>
+<summary>Core API</summary>
+
+```ts
+import {Screen, Stack, Text, Window} from '@teaui/core'
+import {Subprocess} from '@teaui/subprocess'
+
+const shell = new Subprocess({
+  command: '/bin/bash',
+  onExit: code => console.info(`Shell exited: ${code}`),
+})
+
+await Screen.start(
+  new Window({
+    child: Stack.down([
+      new Text({text: 'Click the shell to focus it'}),
+      ['flex1', shell],
+    ]),
+  }),
+)
+```
+
+`@teaui/subprocess` also exports `keyEventToAnsi()`, `mouseEventToAnsi()`, and `xtermCellToStyle()` for building custom terminal-embedding views.
+
+</details>

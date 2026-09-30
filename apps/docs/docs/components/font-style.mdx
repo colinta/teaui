@@ -1,0 +1,58 @@
+---
+title: FontStyle
+---
+
+import Example from '@site/src/components/Example'
+
+# FontStyle
+
+A compact multiple-selection control for choosing bold, italic, underline, and strikethrough text styles. Use it in text editors, formatting toolbars, and style inspectors.
+
+`FontStyle` manages an internal [`ToggleGroup`](./toggle-group) and exposes the selected styles as a named object instead of toggle indices.
+
+<Example name="font-style" title="FontStyle" />
+
+## Props
+
+| Prop       | Type                              | Default | Description                    |
+| ---------- | --------------------------------- | ------- | ------------------------------ |
+| `value`    | `FontStyleValue`                  | —       | Currently enabled text styles  |
+| `onChange` | `(value: FontStyleValue) => void` | —       | Called when a style is toggled |
+
+```ts
+type FontStyleValue = {
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  strikethrough: boolean
+}
+```
+
+The value uses `strikethrough`, while TeaUI's low-level `Style` prop is named `strikeout`.
+
+<details>
+<summary>Core API</summary>
+
+```ts
+import {FontStyle, Screen, Window, type FontStyleValue} from '@teaui/core'
+
+let value: FontStyleValue = {
+  bold: false,
+  italic: false,
+  underline: false,
+  strikethrough: false,
+}
+
+const fontStyle = new FontStyle({
+  value,
+  onChange(next) {
+    value = next
+  },
+})
+
+await Screen.start(new Window({child: fontStyle}))
+```
+
+The Core component exposes its managed `ToggleGroup` as `fontStyle.toggleGroup` for advanced customization. Prefer setting `fontStyle.value` for ordinary updates.
+
+</details>
