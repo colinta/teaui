@@ -6,10 +6,19 @@ import {Text} from '../../lib/components/Text.js'
 import {Slider} from '../../lib/components/Slider.js'
 import {Progress} from '../../lib/components/Progress.js'
 import {CollapsibleText} from '../../lib/components/CollapsibleText.js'
+import {Input} from '../../lib/components/Input.js'
 import {Point} from '../../lib/geometry.js'
 
 function makeLines(count: number): Text[] {
   return Array.from({length: count}, (_, i) => new Text({text: `Line ${i}`}))
+}
+
+// line i is `${i}bcdef${i}hij`, so both the row and the column are identifiable
+function makeGridLines(count: number): Text[] {
+  return Array.from(
+    {length: count},
+    (_, i) => new Text({text: `${i}bcdef${i}hij`}),
+  )
 }
 
 function scrollbarColumn(
@@ -481,39 +490,110 @@ describe('Scrollable', () => {
   })
 
   describe('scrollTo', () => {
-    it('scrollTo(number) scrolls to that offset', () => {
+    it('scrollTo({y}) scrolls just enough to reveal that row', () => {
       const scrollable = makeScrollable(10, {showScrollbars: false})
       const t = testRender(scrollable, {width: 10, height: 5})
 
-      scrollable.scrollTo(3)
+      scrollable.scrollTo({y: 3})
       t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 3')
-    })
+      expect(t.terminal.textAtRow(0)).toContain('Line 0')
 
-    it('scrollTo(number) clamps to 0 and to the max offset', () => {
-      const scrollable = makeScrollable(10, {showScrollbars: false})
-      const t = testRender(scrollable, {width: 10, height: 5})
-
-      scrollable.scrollTo(100)
+      scrollable.scrollTo({y: 5})
       t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 5')
-      expect(t.terminal.textAtRow(4)).toContain('Line 9')
+      expect(t.terminal.textAtRow(0)).toContain('Line 1')
 
-      scrollable.scrollTo(-5)
+      scrollable.scrollTo({y: 0})
       t.render()
       expect(t.terminal.textAtRow(0)).toContain('Line 0')
     })
 
-    it('scrollTo(number) scrolls horizontally for Scrollable.right', () => {
+    it('scrollTo({y}) clamps to 0 and to the max offset', () => {
+      const scrollable = makeScrollable(10, {showScrollbars: false})
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      scrollable.scrollTo({y: 100})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 5')
+      expect(t.terminal.textAtRow(4)).toContain('Line 9')
+
+      scrollable.scrollTo({y: -5})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 0')
+    })
+
+    it('scrollTo({x}) scrolls horizontally for Scrollable.right', () => {
       const scrollable = Scrollable.right(
         Array.from({length: 10}, (_, i) => new Text({text: `${i}`})),
         {showScrollbars: false},
       )
       const t = testRender(scrollable, {width: 4, height: 1})
 
-      scrollable.scrollTo(2)
+      scrollable.scrollTo({x: 2})
       t.render()
-      expect(t.terminal.textAtRow(0)).toBe('2345')
+      expect(t.terminal.textAtRow(0)).toBe('0123')
+
+      scrollable.scrollTo({x: 4})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toBe('1234')
+    })
+
+    it('scrollTo({x}) scrolls horizontally for a vertical Scrollable', () => {
+      const scrollable = Scrollable.down([new Text({text: '0123456789'})], {
+        showScrollbars: false,
+      })
+      const t = testRender(scrollable, {width: 4, height: 1})
+
+      scrollable.scrollTo({x: 6})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toBe('3456')
+    })
+
+    it('scrollTo({x, y}) moves both axes', () => {
+      const scrollable = Scrollable.down(makeGridLines(10), {
+        showScrollbars: false,
+      })
+      const t = testRender(scrollable, {width: 4, height: 3})
+
+      scrollable.scrollTo({x: 6, y: 5})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toBe('def3')
+      expect(t.terminal.textAtRow(2)).toBe('def5')
+    })
+
+    it('scrollTo ignores axes disallowed by the scrollable prop', () => {
+      const vertical = Scrollable.down(makeGridLines(10), {
+        showScrollbars: false,
+        scrollable: 'vertical',
+      })
+      const t = testRender(vertical, {width: 4, height: 3})
+
+      vertical.scrollTo({x: 6, y: 5})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toBe('3bcd')
+
+      const horizontal = Scrollable.down(makeGridLines(10), {
+        showScrollbars: false,
+        scrollable: 'horizontal',
+      })
+      const t2 = testRender(horizontal, {width: 4, height: 3})
+
+      horizontal.scrollTo({x: 6, y: 5})
+      t2.render()
+      expect(t2.terminal.textAtRow(0)).toBe('def0')
+    })
+
+    it('scrollTo does not offset content that already fits', () => {
+      const lines = makeLines(3)
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: lines,
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      scrollable.scrollTo(lines[2])
+      scrollable.scrollTo({x: 3, y: 4})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toBe('Line 0')
     })
 
     it('scrollTo(view) scrolls to a direct child', () => {
@@ -526,7 +606,11 @@ describe('Scrollable', () => {
 
       scrollable.scrollTo(lines[4])
       t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 4')
+      expect(t.terminal.textAtRow(0)).toContain('Line 0')
+
+      scrollable.scrollTo(lines[5])
+      t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 1')
     })
 
     it('scrollTo(view) scrolls to a nested descendant', () => {
@@ -541,12 +625,11 @@ describe('Scrollable', () => {
       })
       const t = testRender(scrollable, {width: 10, height: 5})
 
-      // 2 lines + 1 padding + 1 line
+      // 2 lines + 1 padding + 1 line; already visible, so don't scroll.
       scrollable.scrollTo(inner[1])
       t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 1')
-      expect(t.terminal.textAtRow(1)).toContain('Line 2')
-      expect(t.terminal.textAtRow(2)).toContain('Line 3')
+      expect(t.terminal.textAtRow(0)).toContain('Line 0')
+      expect(t.terminal.textAtRow(1)).toContain('Line 1')
       expect(t.terminal.textAtRow(3)).toContain('Line 0')
     })
 
@@ -556,23 +639,152 @@ describe('Scrollable', () => {
       scrollable.update({children: [Stack.down(lines)]})
       const t = testRender(scrollable, {width: 10, height: 5})
 
-      scrollable.scrollTo(3)
+      scrollable.scrollTo({y: 7})
       t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 3')
       expect(lines[5].origin.y).toBe(5)
 
-      scrollable.scrollTo(lines[5])
+      scrollable.scrollTo(lines[1])
       t.render()
-      expect(t.terminal.textAtRow(0)).toContain('Line 5')
+      expect(t.terminal.textAtRow(0)).toContain('Line 1')
+    })
+
+    it('scrollTo(view) reveals the entire view when it fits', () => {
+      const target = new Text({text: 'target', height: 3})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [...makeLines(6), target, ...makeLines(4)],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      scrollable.scrollTo(target)
+      t.render()
+
+      expect(t.terminal.textAtRow(0)).toContain('Line 4')
+      expect(t.terminal.textAtRow(2)).toContain('target')
+    })
+
+    it('scrollTo(view) aligns oversized views to the top', () => {
+      const target = new Text({text: 'target', height: 6})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [...makeLines(6), target, ...makeLines(4)],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      scrollable.scrollTo(target)
+      t.render()
+
+      expect(t.terminal.textAtRow(0)).toContain('target')
+    })
+
+    it('scrollTo(view) does not scroll when the view is partially visible vertically', () => {
+      const target = new Text({text: 'target', height: 3})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [...makeLines(4), target, ...makeLines(4)],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      scrollable.scrollTo(target)
+      t.render()
+
+      expect(t.terminal.textAtRow(0)).toContain('Line 0')
+      expect(t.terminal.textAtRow(4)).toContain('target')
+    })
+
+    it('scrollTo(view) does not scroll when the view is partially visible horizontally', () => {
+      const target = new Text({text: 'XXXXXX'})
+      const scrollable = Scrollable.down(
+        [
+          new Text({text: '0123456789'}),
+          Stack.right([new Text({text: '0123'}), target]),
+        ],
+        {showScrollbars: false},
+      )
+      const t = testRender(scrollable, {width: 6, height: 2})
+
+      scrollable.scrollTo(target)
+      t.render()
+
+      expect(t.terminal.textAtRow(0)).toBe('012345')
+      expect(t.terminal.textAtRow(1)).toBe('0123XX')
+    })
+
+    it('does not reset the horizontal offset when typing in a wide Input', () => {
+      const input = new Input({value: 'value'})
+      const scrollable = Scrollable.down(
+        [new Text({text: '0123456789abcdefghij'}), input],
+        {showScrollbars: false},
+      )
+      const t = testRender(scrollable, {width: 6, height: 3})
+      scrollable.scrollTo({x: 15})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toBe('abcdef')
+
+      t.sendKey('!')
+
+      expect(input.value).toBe('value!')
+      expect(t.terminal.textAtRow(0)).toBe('abcdef')
+    })
+
+    it('scrollTo(view) reveals the view on both axes', () => {
+      const target = new Text({text: 'X'})
+      const scrollable = Scrollable.down(
+        [
+          ...makeLines(4),
+          Stack.right([new Text({text: '0123456789'}), target]),
+          ...makeLines(4),
+        ],
+        {showScrollbars: false},
+      )
+      const t = testRender(scrollable, {width: 5, height: 3})
+
+      scrollable.scrollTo(target)
+      t.render()
+      expect(t.terminal.textAtRow(2)).toBe('6789X')
     })
 
     it('scrollTo(view) ignores views outside the Scrollable', () => {
       const scrollable = makeScrollable(10, {showScrollbars: false})
       const t = testRender(scrollable, {width: 10, height: 5})
-      scrollable.scrollTo(3)
+      scrollable.scrollTo({y: 7})
 
       scrollable.scrollTo(new Text({text: 'elsewhere'}))
       t.render()
       expect(t.terminal.textAtRow(0)).toContain('Line 3')
+    })
+
+    it('scrolls down to an off-screen Input when it receives a key event', () => {
+      const first = new Input({value: 'first'})
+      const second = new Input({value: 'second'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [first, ...makeLines(5), second],
+      })
+      const t = testRender(scrollable, {width: 12, height: 3})
+
+      t.sendKey('tab')
+      t.sendKey('!')
+
+      expect(second.value).toBe('second!')
+      expect(t.terminal.textAtRow(2)).toContain('second!')
+    })
+
+    it('scrolls up to an off-screen Input when it receives a key event', () => {
+      const input = new Input({value: 'first'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [input, ...makeLines(7)],
+      })
+      const t = testRender(scrollable, {width: 12, height: 3})
+      scrollable.scrollTo({y: 7})
+      t.render()
+
+      t.sendKey('!')
+
+      expect(input.value).toBe('first!')
+      expect(t.terminal.textAtRow(0)).toContain('first!')
     })
 
     it('scrollTo calls onOffsetChange', () => {
@@ -586,8 +798,8 @@ describe('Scrollable', () => {
       })
       testRender(scrollable, {width: 10, height: 5})
 
-      scrollable.scrollTo(2)
-      expect(lastOffset).toEqual(new Point(0, 2))
+      scrollable.scrollTo({y: 5})
+      expect(lastOffset).toEqual(new Point(0, 1))
     })
   })
 

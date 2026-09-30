@@ -10,6 +10,7 @@ import {Point, Rect, Size} from '../geometry.js'
 import {System} from '../System.js'
 import {type FontFamily, type LegendItem} from '../types.js'
 import {FONTS} from './fonts.js'
+import {Scrollable} from './Scrollable.js'
 
 interface TextProps {
   placeholder?: string
@@ -392,6 +393,8 @@ export class Input extends View {
   }
 
   receiveKey(event: KeyEvent) {
+    this.#scrollIntoView()
+
     // Typing immediately after a click should use its destination, not the old cursor.
     this.#resetMouseSelection(true)
     const prevChars = this.#chars
@@ -493,6 +496,18 @@ export class Input extends View {
 
     if (prevText !== this.#value) {
       this.#onChange?.(this.#value)
+    }
+  }
+
+  #scrollIntoView() {
+    let nestedScrollable: Scrollable | undefined
+    let ancestor = this.parent
+    while (ancestor) {
+      if (ancestor instanceof Scrollable) {
+        ancestor.scrollTo(nestedScrollable ?? this)
+        nestedScrollable = ancestor
+      }
+      ancestor = ancestor.parent
     }
   }
 

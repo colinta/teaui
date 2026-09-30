@@ -4,7 +4,7 @@ import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
 import {Style} from '../Style.js'
 import {type Orientation, type Direction} from '../types.js'
-import type {View} from '../View.js'
+import {View} from '../View.js'
 import {Stack} from './Stack.js'
 
 interface Props extends ContainerProps {
@@ -70,6 +70,14 @@ interface ContentOffset {
   y: number
 }
 
+/** One axis of a `scrollTo` target, in content coordinates. */
+interface RevealAxis {
+  location: number
+  length: number
+  offset: number
+  viewportLength: number
+}
+
 /**
  * Scrollable uses Stack layout and adds scroll offset, scrollbar rendering,
  * and mouse wheel handling on top.
@@ -87,6 +95,7 @@ export class Scrollable extends Stack {
   #contentOffset: ContentOffset
   #contentSize: Size = Size.zero
   #contentSizeOverride?: {width?: number; height?: number}
+  #viewportSize: Size = Size.zero
   #visibleSize: Size = Size.zero
   #prevMouseDown?: Orientation = undefined
   #onOffsetChange?: (offset: Point) => void
@@ -344,27 +353,69 @@ export class Scrollable extends Stack {
   }
 
   /**
-   * Scrolls to an offset along the scroll direction (y for up/down, x for
-   * left/right), or so that `view` - a child or any descendant - is at the top
-   * (or left). The offset is clamped to the scrollable range. Views that aren't
-   * inside this Scrollable are ignored.
+   * Scrolls to reveal the target. If any part of the target is already visible
+   * the offset is left alone. Otherwise, on each axis, the entire target is
+   * made visible when it fits, and a target larger than the viewport is aligned
+   * to the top (or left) - scrolling as little as possible.
    *
-   * Descendant locations come from their last render (`location`).
+   * - `scrollTo({x, y})` reveals the given content coordinate(s); an omitted
+   *   coordinate leaves that axis alone.
+   * - `scrollTo(view)` reveals a descendant view on both axes. Views outside
+   *   this Scrollable are ignored.
+   *
+   * Axes disallowed by the `scrollable` prop are never moved (and don't count
+   * towards visibility), and offsets are clamped to the scrollable range.
+   * Descendant locations and sizes come from their last render.
    */
-  scrollTo(location: number | View) {
-    if (typeof location !== 'number') {
-      const point = this.#locationOf(location)
+  scrollTo(target: View | {x?: number; y?: number}) {
+    let location: {x?: number; y?: number}
+    let size = new Size(1, 1)
+    if (target instanceof View) {
+      const point = this.#locationOf(target)
       if (!point) {
         return
       }
-      location = this.isVertical ? point.y : point.x
+      location = point
+      size = target.contentSize
+    } else {
+      location = target
+    }
+
+    const xAxis =
+      location.x !== undefined && this.#scrollable !== 'vertical'
+        ? {
+            location: location.x,
+            length: size.width,
+            offset: -this.#contentOffset.x,
+            viewportLength: this.#viewportSize.width,
+          }
+        : undefined
+    const yAxis =
+      location.y !== undefined && this.#scrollable !== 'horizontal'
+        ? {
+            location: location.y,
+            length: size.height,
+            offset: -this.#contentOffset.y,
+            viewportLength: this.#viewportSize.height,
+          }
+        : undefined
+    if (!xAxis && !yAxis) {
+      return
+    }
+
+    const isVisible =
+      (!xAxis || this.#isRangeVisible(xAxis)) &&
+      (!yAxis || this.#isRangeVisible(yAxis))
+    if (isVisible) {
+      return
     }
 
     let {x, y} = this.#contentOffset
-    if (this.isVertical) {
-      y = -Math.min(-this.#maxOffsetY(), Math.max(0, location))
-    } else {
-      x = -Math.min(-this.#maxOffsetX(), Math.max(0, location))
+    if (xAxis) {
+      x = -this.#offsetToReveal(xAxis, -this.#maxOffsetX())
+    }
+    if (yAxis) {
+      y = -this.#offsetToReveal(yAxis, -this.#maxOffsetY())
     }
     if (x === this.#contentOffset.x && y === this.#contentOffset.y) {
       return
@@ -374,6 +425,31 @@ export class Scrollable extends Stack {
     this.#isAtBottom = y <= this.#maxOffsetY()
     this.invalidateRender()
     this.#onOffsetChange?.(new Point(-x || 0, -y || 0))
+  }
+
+  #isRangeVisible({location, length, offset, viewportLength}: RevealAxis) {
+    const end = location + Math.max(1, length)
+    return end > offset && location < offset + viewportLength
+  }
+
+  /**
+   * Returns the (positive) offset along one axis that reveals the range,
+   * moving as little as possible from the current offset.
+   */
+  #offsetToReveal(
+    {location, length, offset, viewportLength}: RevealAxis,
+    maxOffset: number,
+  ) {
+    let next = offset
+    if (viewportLength > 0) {
+      const end = location + Math.max(1, length)
+      if (length > viewportLength || location < offset) {
+        next = location
+      } else if (end > offset + viewportLength) {
+        next = end - viewportLength
+      }
+    }
+    return Math.max(0, Math.min(Math.max(0, maxOffset), next))
   }
 
   /**
@@ -494,6 +570,7 @@ export class Scrollable extends Stack {
     // children that overflow extend beyond it.
     const visibleWidth = viewport.contentSize.width - (showVBar ? 1 : 0)
     const visibleHeight = viewport.contentSize.height - (showHBar ? 1 : 0)
+    this.#viewportSize = new Size(visibleWidth, visibleHeight)
 
     // First clip to exclude scrollbar area — this ensures that the inner
     // viewport's visibleRect does not include the scrollbar column/row.
