@@ -69,9 +69,8 @@ architecture document covering:
 
 ```bash
 pnpm install
-pnpm -r build              # Build all packages
-pnpm vitest run             # Run all tests
-pnpm react                  # Run the React demo app
+pnpm run build              # Build/Typecheck all packages
+pnpm run test               # Run all tests
 ```
 
 ## Testing

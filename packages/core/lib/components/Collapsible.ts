@@ -18,6 +18,13 @@ interface StyleProps {
    * @default false
    */
   showCollapsed?: boolean
+  /**
+   * Maximum height of the collapsed view. If the collapsed view is shorter
+   * than this, its own height is used. Use `minHeight` on the collapsed view
+   * to force a minimum height.
+   * @default 1
+   */
+  preview?: number
   collapsed?: View
   expanded?: View
 }
@@ -36,6 +43,7 @@ export class Collapsible extends Container {
 
   #isCollapsed = true
   #showCollapsed = false
+  #preview = 1
 
   constructor(props: Props) {
     super(props)
@@ -63,11 +71,13 @@ export class Collapsible extends Container {
   #update({
     isCollapsed,
     showCollapsed,
+    preview,
     collapsed: collapsedView,
     expanded: expandedView,
   }: Props) {
     this.#isCollapsed = isCollapsed ?? true
     this.#showCollapsed = showCollapsed ?? false
+    this.#preview = Math.max(1, preview ?? 1)
 
     // edge case: expandedView is being assigned, but not collapsedView
     if (expandedView && !collapsedView) {
@@ -90,7 +100,7 @@ export class Collapsible extends Container {
   naturalSize(available: Size): Size {
     let size: Size
     if (this.#isCollapsed) {
-      size = this.#collapsedView?.naturalSize(available) ?? Size.zero
+      size = this.#collapsedPreviewSize(available)
     } else if (this.#showCollapsed) {
       let collapsedSize =
         this.#collapsedView?.naturalSize(available) ?? Size.zero
@@ -102,6 +112,13 @@ export class Collapsible extends Container {
     }
 
     return size.grow(2, 0)
+  }
+
+  #collapsedPreviewSize(available: Size): Size {
+    const size = this.#collapsedView?.naturalSize(available) ?? Size.zero
+    return size.height > this.#preview
+      ? new Size(size.width, this.#preview)
+      : size
   }
 
   receiveMouse(event: MouseEvent, system: System) {
@@ -138,7 +155,11 @@ export class Collapsible extends Container {
     const contentSize = viewport.contentSize.shrink(2, 0)
     viewport.clipped(new Rect(offset, contentSize), inside => {
       if (this.#isCollapsed) {
-        this.#collapsedView?.render(inside)
+        const previewSize = this.#collapsedPreviewSize(contentSize)
+        inside.clipped(
+          new Rect(Point.zero, new Size(contentSize.width, previewSize.height)),
+          preview => this.#collapsedView?.render(preview),
+        )
       } else if (this.#showCollapsed) {
         const collapsedSize =
           this.#collapsedView?.naturalSize(contentSize) ?? Size.zero

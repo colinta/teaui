@@ -12,12 +12,13 @@ A text block that truncates to a single line when collapsed. Click to expand and
 
 ## Props
 
-| Prop    | Type     | Default | Description  |
-| ------- | -------- | ------- | ------------ |
-| `text`  | `string` | —       | Text content |
-| `style` | `Style`  | —       | Text style   |
+| Prop      | Type     | Default | Description                                        |
+| --------- | -------- | ------- | -------------------------------------------------- |
+| `text`    | `string` | —       | Text content                                       |
+| `style`   | `Style`  | —       | Text style                                         |
+| `preview` | `number` | 1       | Number of lines to show when the view is collapsed |
 
-Click to toggle between collapsed (1 line) and expanded (full text).
+Click to toggle between collapsed (1 line - or `preview` number of lines) and expanded (full text).
 
 <details>
 <summary>Core API</summary>

@@ -9,6 +9,12 @@ import {System} from '../System.js'
 
 interface Props extends ViewProps {
   text: string
+  /**
+   * Number of lines shown when collapsed. If the text has fewer lines, all of
+   * them are shown.
+   * @default 1
+   */
+  preview?: number
   style?: Style
 }
 
@@ -16,6 +22,7 @@ export class CollapsibleText extends View {
   #lines: string[] = []
   #style: Props['style']
   #isCollapsed = true
+  #preview = 1
 
   constructor(props: Props) {
     super(props)
@@ -27,8 +34,9 @@ export class CollapsibleText extends View {
     super.update(props)
   }
 
-  #update({text, style}: Props) {
+  #update({text, style, preview}: Props) {
     this.#style = style
+    this.#preview = Math.max(1, preview ?? 1)
     this.#lines = text.split('\n')
   }
 
@@ -62,8 +70,9 @@ export class CollapsibleText extends View {
     }
 
     if (this.#isCollapsed) {
-      const lineWidth = unicode.lineWidth(this.#lines[0])
-      return new Size(lineWidth + 2, 1)
+      const previewLines = this.#lines.slice(0, this.#preview)
+      const lineWidth = Math.max(...previewLines.map(unicode.lineWidth))
+      return new Size(lineWidth + 2, previewLines.length)
     }
 
     return new Size(unicode.stringSize(this.#lines, available.width)).grow(2, 0)
@@ -141,7 +150,10 @@ export class CollapsibleText extends View {
         }
 
         point.y += 1
-        if (point.y >= viewport.visibleRect.maxY()) {
+        if (
+          point.y >= viewport.visibleRect.maxY() ||
+          (this.#isCollapsed && point.y >= this.#preview)
+        ) {
           break
         }
         point.x = offsetX
