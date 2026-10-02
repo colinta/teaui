@@ -18,7 +18,8 @@ export interface FontStyleProps extends ViewProps {
 }
 
 /**
- * A font-style picker backed by a ToggleGroup.
+ * Lets users choose text formatting: bold, italic, underline, and strikethrough.
+ * Each style can be toggled independently, so users can combine them.
  */
 export class FontStyle extends View {
   readonly toggleGroup: ToggleGroup

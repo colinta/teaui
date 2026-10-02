@@ -79,11 +79,12 @@ interface RevealAxis {
 }
 
 /**
- * Scrollable uses Stack layout and adds scroll offset, scrollbar rendering,
- * and mouse wheel handling on top.
+ * Keeps content accessible when it is larger than the available space. Use it
+ * for long lists, logs, or other content that users need to scroll through.
  *
- * Use `direction` to control layout (default: 'down'), or the static
- * constructors `Scrollable.down()`, `Scrollable.right()`, etc.
+ * Arranges children in a chosen direction and supports mouse-wheel scrolling
+ * and optional scrollbars. Use `direction` to control layout (default: 'down'),
+ * or the static constructors `Scrollable.down()`, `Scrollable.right()`, etc.
  */
 export class Scrollable extends Stack {
   #scrollable: 'both' | 'horizontal' | 'vertical' = 'both'

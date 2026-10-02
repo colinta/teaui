@@ -13,11 +13,11 @@ import {Size} from '../geometry.js'
 interface Props extends LegendProps {}
 
 /**
- * A Legend that automatically shows keyboard shortcuts based on:
- * - The currently focused view's `legendItems()` method
- * - Registered HotKey components that have a `label` prop
+ * Helps users discover keyboard shortcuts relevant to their current focus,
+ * without maintaining a separate list of hints for each control.
  *
- * Subscribes to focusChange events on the screen and updates when focus changes.
+ * Shows the focused view's `legendItems()` alongside labeled HotKey shortcuts,
+ * and updates the hints as focus changes.
  */
 export class AutoLegend extends AbstractLegend {
   #unsubscribe?: Unsubscribe

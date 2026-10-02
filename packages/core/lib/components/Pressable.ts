@@ -40,16 +40,12 @@ export interface PressableStyles {
 }
 
 /**
- * A container that can be pressed. It tracks hover, pressed, and (optionally)
- * focus state, fills its background from the palette, and calls `onClick` on a
- * mouse click or Return. Children are drawn on top, with a palette that matches
- * the current state, so they pick up the hover/pressed background.
+ * Makes custom content actionable without imposing a Button's title or
+ * decorations. Use it for clickable cards, icons, or custom controls that need
+ * hover, pressed, and keyboard-focus feedback.
  *
- * That's all it does: it has no opinion about what the pressable looks like
- * beyond that background. `Button` is a Pressable that adds a title, brackets,
- * edge decorations, and a hotkey.
- *
- * To draw or lay out the content differently, override `renderContent`.
+ * Calls `onClick` on a mouse click or Return while focused. Set `focusable: false`
+ * when it belongs to a larger control that handles keyboard focus.
  */
 export class Pressable extends Container {
   #foreground?: Color

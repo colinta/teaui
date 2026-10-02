@@ -26,14 +26,12 @@ function fromShorthand(
 }
 
 /**
- * Positions its children at a fixed location within the available space.
- * Children are rendered as a ZStack (overlaid on top of each other), then
- * placed according to `location`.
+ * Anchors content at an edge, corner, or center of a larger area without manual
+ * offsets. Use it inside a ZStack for badges, floating controls, or status labels
+ * that should stay in place as the surrounding layout changes.
  *
- * Designed for use inside a ZStack to anchor content at edges or corners.
- *
- * When `useAvailable` is true, the component uses the viewport's
- * `availableRect` instead of `contentRect` for sizing and placement.
+ * Multiple children overlap at the chosen `location`. Set `useAvailable` to
+ * position them within the available area rather than this view's content area.
  *
  * ```ts
  * new ZStack({

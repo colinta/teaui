@@ -21,8 +21,9 @@ export interface ChartLayout {
 }
 
 /**
- * Base class for chart types. A Chart is a View that knows how to compute
- * its data ranges and render into a provided layout area.
+ * Gives chart types a common data, range, and label API so they can share Plot's
+ * axes and labels. Extend it to add a new visualization that works with Plot,
+ * or display a chart on its own when axes and labels are not needed.
  */
 export abstract class Chart<T = unknown> extends View {
   #data: T[] = []

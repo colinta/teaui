@@ -10,12 +10,12 @@ export interface Props extends ContainerProps {
 }
 
 /**
- * A non-visual container that receives mouse events as a fallback. Children that
- * register for mouse events on the same pixels will take priority (since they
- * render after this view and override the registration).
+ * Adds fallback mouse handling to a region without changing its appearance.
+ * Use it to handle events that the region's child controls do not handle;
+ * children retain priority for events they handle at the same position.
  *
- * By default listens for all button and wheel events. Pass `mouse` to restrict
- * which events to listen for.
+ * By default listens for all button, wheel, and movement events. Pass `mouse`
+ * to restrict which events to listen for.
  */
 export class Mouse extends Container {
   #mouse: MouseEventListenerName[]

@@ -21,12 +21,11 @@ interface Props extends ViewProps {
 }
 
 /**
- * Overlays children on top of each other. Each child receives the full
- * available size. Children are rendered in order, so later children appear
- * above earlier ones.
+ * Layers content in the same area, useful for backgrounds, overlays, or controls
+ * placed above other content. Later children appear above earlier ones.
  *
- * When `align` is set, each child is positioned at the specified alignment
- * within the available space, and the ZStack takes up all available space.
+ * Without `location`, children share the full area. Set `location` to align
+ * each child within the available space and make the ZStack fill that space.
  */
 export class ZStack extends Container {
   #location: Location | undefined

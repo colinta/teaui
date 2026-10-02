@@ -14,12 +14,8 @@ export interface Props extends ContainerProps {
 }
 
 /**
- * Internal base class for Alert and Callout. Not exported.
- *
- * Owns a managed Stack for child layout. Subclasses must call
- * `this.addDirect(view)` to add views to the Container directly
- * (bypassing the stack-forwarding `add()` override), and use
- * `this.contentStack` to place the stack in their view hierarchy.
+ * Gives Alert and Callout consistent headings and message layout, whether the
+ * notification appears inline or as a modal. Internal; not publicly exported.
  */
 export class Notification extends Container {
   #stack: Stack

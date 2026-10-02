@@ -65,7 +65,15 @@ type Props = ViewProps &
     onChange?: (value: number) => void
   }
 
-export class Slider extends View {
+/**
+ * Lets users choose a numeric value within a range without typing it. Useful
+ * for bounded settings where the position between a minimum and maximum matters.
+ *
+ * Click or drag to adjust the value, or use arrow keys while focused. Optional
+ * buttons provide stepwise adjustment. Supports horizontal and vertical layouts;
+ * `onChange` reports user changes.
+ */
+export class Slider extends Container {
   // styles
   #direction: Orientation = 'horizontal'
   #border: boolean = false

@@ -38,10 +38,12 @@ export interface Props extends ContainerProps {
 }
 
 /**
- * A modal overlay that is rendered above the main view tree.
+ * Presents temporary content above the main interface without changing its
+ * layout. Use it for dialogs or popovers that need interaction separate from
+ * the underlying screen.
  *
+ * Supports background dimming and dismissal by outside click or Escape.
  * Pass a Modal instance to `viewport.requestModal(modal)` to present it.
- * The ModalManager sets `presentedRect` and `windowSize` before rendering.
  *
  * Usage:
  *   const modal = new Modal({

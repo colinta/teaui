@@ -35,7 +35,7 @@ export interface Props extends NotificationProps {
 }
 
 /**
- * Centers its child, constraining the available width to max(MIN_WIDTH, available / 3).
+ * Keeps an alert centered and readable without stretching it across the screen.
  */
 class AlertLayout extends BaseContainer {
   naturalSize(available: Size): Size {
@@ -84,15 +84,11 @@ class AlertLayout extends BaseContainer {
 }
 
 /**
- * A notification meant to be presented in a modal overlay, drawn in a
- * rounded-corner Box.
+ * Draws attention to an important message or decision without replacing the
+ * current screen. Use it for errors, warnings, or confirmation prompts.
  *
- * Call `alert.presentFrom(owner)` to add the alert to a container and present
- * it as a modal. The alert renders as zero-size in the layout; when visible,
- * it presents a Modal overlay during `render()`.
- *
- * If the owner is removed from the tree, the alert is automatically removed
- * too — no modal will be presented.
+ * Call `alert.presentFrom(owner)` to show it as a modal tied to an owning
+ * container. The alert disappears if its owner is removed from the view tree.
  *
  * Usage (core):
  *   const alert = new Alert({

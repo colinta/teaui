@@ -1034,14 +1034,14 @@ export interface ReactListProps<TData> extends ViewProps {
 }
 
 /**
- * List component with virtualized row rendering via React children.
+ * Lets users browse and select items in a scrolling list, with custom JSX
+ * content for each item. Use it when a list needs richer entries than plain text.
  *
- * Similar to Table, this accepts a `renderItem` callback that returns JSX.
- * The core List handles scrolling, keyboard/mouse navigation, and selection
- * highlighting, while React renders each visible item.
+ * `renderItem` defines each entry's content; `filter` limits which items appear.
+ * Supports keyboard and mouse navigation, with selection highlighting.
  *
  * ```tsx
- * <List
+ * <ScrollableList
  *   data={items}
  *   renderItem={(item, index) => <Text>{item.name}</Text>}
  *   onSelect={(item) => console.info('Selected:', item)}
@@ -1094,14 +1094,9 @@ export interface ReactTableProps<TData> extends ViewProps {
 }
 
 /**
- * Table component with optional virtualized row rendering.
- *
- * When `renderItem` is provided, only visible rows are rendered as React children,
- * enabling efficient rendering of large datasets. The Geometry component measures
- * available space, and only the visible slice of data is passed through the reconciler.
- *
- * When only `format` is provided, the core Table handles all rendering directly
- * (no virtualization needed since cells are plain strings).
+ * Organizes records into named columns so users can compare, sort, and select
+ * rows. Use `format` for text cells or `renderItem` for custom JSX rows.
+ * Custom rows are virtualized to keep large datasets responsive.
  */
 export function Table<TData>(reactProps: ReactTableProps<TData>): JSX.Element {
   const {data, columns, renderItem, format, ...props} = reactProps
