@@ -21,6 +21,7 @@ import type {
   Digits as WrDigits,
   Drawer as WrDrawer,
   Pane as WrPane,
+  Pressable as WrPressable,
   Dropdown as WrDropdown,
   FontStyle as WrFontStyle,
   Modal as WrModal,
@@ -135,6 +136,7 @@ export type StyleProps = Simplify<TUIContainer<typeof TextStyle>>
 export type TextProps = Simplify<TUIContainer<typeof TextProvider>>
 
 export type PaneProps = Simplify<TUIContainer<typeof WrPane>>
+export type PressableProps = Simplify<TUIContainer<typeof WrPressable>>
 
 // "complex" containers
 export type AccordionProps = Simplify<TUIContainer<typeof WrAccordion>>
@@ -196,6 +198,7 @@ declare module 'react' {
 
       'tui-modal': WithRef<ModalProps, WrModal>
       'tui-pane': WithRef<PaneProps, WrPane>
+      'tui-pressable': WithRef<PressableProps, WrPressable>
 
       // "simple" containers
       'tui-alert': WithRef<AlertProps, WrAlert>
@@ -822,6 +825,15 @@ export const Button = forwardRef<WrButton, ButtonProps>(function Button(
     </tui-button>
   )
 })
+export const Pressable = forwardRef<WrPressable, PressableProps>(
+  function Pressable({children, ...props}, ref): JSX.Element {
+    return (
+      <tui-pressable ref={ref} {...props}>
+        {children}
+      </tui-pressable>
+    )
+  },
+)
 export const Collapsible = forwardRef<WrCollapsible, CollapsibleProps>(
   function Collapsible({collapsed, expanded, ...props}, ref): JSX.Element {
     return (

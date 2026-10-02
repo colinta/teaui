@@ -3,6 +3,7 @@ import React from 'react'
 import {
   Box,
   Button,
+  Pressable,
   Checkbox,
   Collapsible,
   Drawer,
@@ -136,6 +137,31 @@ describe('component wrappers', () => {
       await flush()
       const btn = window.children[0] as Button
       expect(btn.purpose).toBe(Palette.primary)
+    })
+
+    it('Pressable renders with children, and is not a Button', async () => {
+      const {window} = renderToWindow(
+        <Components.Pressable>
+          <Components.Space />
+        </Components.Pressable>,
+      )
+      await flush()
+      const pressable = window.children[0] as Container
+      expect(pressable).toBeInstanceOf(Pressable)
+      expect(pressable).not.toBeInstanceOf(Button)
+      expect(pressable.children[0]).toBeInstanceOf(Space)
+    })
+
+    it('Pressable calls onClick and honors focusable', async () => {
+      const onClick = vi.fn()
+      const {window} = renderToWindow(
+        <Components.Pressable onClick={onClick} focusable={false} />,
+      )
+      await flush()
+      const t = testRender(window.children[0], {width: 6, height: 1})
+      t.sendMouse('mouse.button.down', {x: 1, y: 0})
+      t.sendMouse('mouse.button.up', {x: 1, y: 0})
+      expect(onClick).toHaveBeenCalledOnce()
     })
 
     it('Stack renders with children', async () => {

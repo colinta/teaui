@@ -29,6 +29,7 @@ const sidebars: SidebarsConfig = {
           collapsed: false,
           items: [
             'components/button',
+            'components/pressable',
             'components/checkbox',
             'components/radio',
             'components/toggle',

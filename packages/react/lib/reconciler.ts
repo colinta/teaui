@@ -12,6 +12,7 @@ import {
   Box,
   Breadcrumb,
   Button,
+  Pressable,
   Callout,
   Calendar,
   Canvas,
@@ -221,6 +222,9 @@ function createInstance(type: string, props: Props): any {
     case 'button':
     case 'tui-button':
       return new Button(props as any)
+    case 'pressable':
+    case 'tui-pressable':
+      return new Pressable(props as any)
     case 'collapsible':
     case 'tui-collapsible':
       return new Collapsible(props as any)

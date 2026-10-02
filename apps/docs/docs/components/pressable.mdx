@@ -1,0 +1,35 @@
+---
+title: Pressable
+---
+
+# Pressable
+
+A container that can be pressed. It is the base class of [`Button`](/docs/components/button):
+it tracks hover, pressed, and focus state, paints its background from the palette,
+and calls `onClick` on a mouse click (or Return, when focused). It has no title or
+border of its own - use it when you want the look and behavior of a button around
+your own content.
+
+```tsx
+<Pressable onClick={save}>
+  <Text>Save</Text>
+</Pressable>
+```
+
+Children are drawn on top of the background, with a palette that matches the
+current state, so they pick up the hover and pressed colors.
+
+## Props
+
+| Prop         | Type         | Default | Description                                                                                                                     |
+| ------------ | ------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `onClick`    | `() => void` | —       | Called on click, or Return when focused                                                                                         |
+| `focusable`  | `boolean`    | `true`  | Whether the Pressable joins the focus ring. Pass `false` when it is part of a larger focusable view (a `Slider`'s buttons, say) |
+| `foreground` | `Color`      | —       | Text color, merged on top of the palette's style                                                                                |
+| `children`   | `ReactNode`  | —       | Content                                                                                                                         |
+
+## Extending
+
+Subclasses can override `renderContent(viewport, styles)` to lay out the content
+(`Button` draws its brackets and aligns its title there), and call the protected
+`click()` for their own triggers (`Button` calls it for its hotkey).

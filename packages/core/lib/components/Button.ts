@@ -1,12 +1,15 @@
 import * as unicode from '@teaui/term'
 
 import type {Viewport} from '../Viewport.js'
-import {type Props as ContainerProps, Container} from '../Container.js'
+import {
+  type Props as PressableProps,
+  type PressableStyles,
+  Pressable,
+} from './Pressable.js'
 import {Text} from './Text.js'
 import {Rect, Point, Size} from '../geometry.js'
+import type {Style} from '../Style.js'
 import {
-  type MouseEvent,
-  isMouseClicked,
   HotKey,
   KeyEvent,
   styleTextForHotKey,
@@ -14,31 +17,24 @@ import {
   hotKeyToString,
   match,
 } from '../events/index.js'
-import {childPalette} from '../UI.js'
 import type {View} from '../View.js'
 import {type Alignment, type LegendItem} from '../types.js'
-import {Color} from '../Color.js'
 
 type Border = 'default' | 'arrows' | 'none'
 type BorderChars = [string, string]
 
-export interface Props extends ContainerProps {
+export interface Props extends PressableProps {
   title?: string
   align?: Alignment
   border?: Border
-  foreground?: Color
   hotKey?: HotKey
-  onClick?: () => void
 }
 
-export class Button extends Container {
+export class Button extends Pressable {
   #align: Alignment = 'center'
   #border: Border = 'default'
-  #foreground?: Color
   #hotKey?: HotKey
-  #onClick?: Props['onClick']
   #textView: Text
-  #hasFocus: boolean = false
 
   constructor(props: Props) {
     super(props)
@@ -54,26 +50,16 @@ export class Button extends Container {
     super.update(props)
   }
 
-  childPalette(view: View) {
-    return childPalette(
-      super.childPalette(view),
-      this.isPressed,
-      this.isHover || this.#hasFocus,
-    )
-  }
-
   #hasCustomChildren() {
     return this.children.length !== 1 || this.children.at(0) !== this.#textView
   }
 
-  #update({title, align, border, foreground, hotKey, onClick}: Props) {
+  #update({title, align, border, hotKey}: Props) {
     const styledText = hotKey ? styleTextForHotKey(title ?? '', hotKey) : title
     this.#textView.text = styledText ?? ''
     this.#align = align ?? 'center'
     this.#border = border ?? 'default'
-    this.#foreground = foreground
     this.#hotKey = hotKey
-    this.#onClick = onClick
   }
 
   naturalSize(available: Size): Size {
@@ -107,68 +93,26 @@ export class Button extends Container {
     return [unicode.lineWidth(left), unicode.lineWidth(right)]
   }
 
-  receiveMouse(event: MouseEvent) {
-    if (isMouseClicked(event)) {
-      this.#onClick?.()
-    }
-  }
-
   receiveKey(event: KeyEvent) {
-    if (event.name === 'return') {
-      this.#onClick?.()
-    } else if (this.#hotKey && match(toHotKeyDef(this.#hotKey), event)) {
-      this.#onClick?.()
+    if (this.#hotKey && match(toHotKeyDef(this.#hotKey), event)) {
+      this.click()
+    } else {
+      super.receiveKey(event)
     }
   }
 
   render(viewport: Viewport) {
-    const hasFocus = viewport.registerFocus({isDefault: false})
-    this.#hasFocus = hasFocus
     if (this.#hotKey) {
       viewport.registerHotKey(toHotKeyDef(this.#hotKey))
     }
-    if (viewport.isEmpty) {
-      return super.render(viewport)
-    }
+    super.render(viewport)
+  }
 
-    viewport.registerMouse(['mouse.button.left', 'mouse.move'])
-
-    let textStyle = this.purpose.ui({
-      variant: 'raised',
-      isPressed: this.isPressed,
-      isHover: this.isHover,
-      hasFocus,
-    })
-    let topsStyle = this.purpose.ui({
-      variant: 'raised',
-      isPressed: this.isPressed,
-      isHover: this.isHover,
-      hasFocus,
-      isOrnament: true,
-    })
-    if (this.#foreground) {
-      textStyle = textStyle.merge({foreground: this.#foreground})
-      topsStyle = topsStyle.merge({foreground: this.#foreground})
-    }
-    if (this.background && !(this.isHover || hasFocus)) {
-      textStyle = textStyle.merge({background: this.background})
-      topsStyle = topsStyle.merge({background: this.background})
-    }
-
-    const useEmoji = this.purpose.emoji
-    viewport.visibleRect.forEachPoint(pt => {
-      if (useEmoji && pt.y === 0 && viewport.contentSize.height > 2) {
-        viewport.write(BUTTON_TOP, pt, topsStyle)
-      } else if (
-        useEmoji &&
-        pt.y === viewport.contentSize.height - 1 &&
-        viewport.contentSize.height > 2
-      ) {
-        viewport.write(BUTTON_BOTTOM, pt, topsStyle)
-      } else {
-        viewport.write(' ', pt, textStyle)
-      }
-    })
+  protected renderContent(
+    viewport: Viewport,
+    {text: textStyle, ornament, hasFocus}: PressableStyles,
+  ) {
+    this.#renderEdges(viewport, ornament)
 
     const borders = hasFocus ? BORDERS_FOCUS : BORDERS
     let [left, right] = borders[this.#border]
@@ -201,7 +145,25 @@ export class Button extends Container {
       viewport.write(right, new Point(rightX, offset.y + y), textStyle)
     }
     viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
-      super.render(inside)
+      this.renderChildren(inside)
+    })
+  }
+
+  /**
+   * Tall buttons (with an emoji palette) get a thin edge along the top and bottom
+   */
+  #renderEdges(viewport: Viewport, ornament: Style) {
+    const {height} = viewport.contentSize
+    if (!this.purpose.emoji || height <= 2) {
+      return
+    }
+
+    viewport.visibleRect.forEachPoint(pt => {
+      if (pt.y === 0) {
+        viewport.write(BUTTON_TOP, pt, ornament)
+      } else if (pt.y === height - 1) {
+        viewport.write(BUTTON_BOTTOM, pt, ornament)
+      }
     })
   }
 
