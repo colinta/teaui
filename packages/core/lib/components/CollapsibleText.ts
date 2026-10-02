@@ -63,19 +63,25 @@ export class CollapsibleText extends View {
       }
 
       if (this.#isCollapsed) {
-        return new Size(lineWidth + 2, 1)
+        return new Size(Math.min(lineWidth + 2, available.width), 1)
       }
 
-      return new Size(lineWidth + 2, lineHeight)
+      return new Size(Math.min(lineWidth + 2, available.width), lineHeight)
     }
 
     if (this.#isCollapsed) {
       const previewLines = this.#lines.slice(0, this.#preview)
       const lineWidth = Math.max(...previewLines.map(unicode.lineWidth))
-      return new Size(lineWidth + 2, previewLines.length)
+      return new Size(
+        Math.min(lineWidth + 2, available.width),
+        previewLines.length,
+      )
     }
 
-    return new Size(unicode.stringSize(this.#lines, available.width)).grow(2, 0)
+    const size = new Size(
+      unicode.stringSize(this.#lines, available.width),
+    ).grow(2, 0)
+    return new Size(Math.min(size.width, available.width), size.height)
   }
 
   receiveMouse(event: MouseEvent, system: System) {

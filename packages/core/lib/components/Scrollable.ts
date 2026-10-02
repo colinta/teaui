@@ -1,4 +1,4 @@
-import type {Viewport} from '../Viewport.js'
+import {Viewport} from '../Viewport.js'
 import type {Props as ContainerProps} from '../Container.js'
 import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {isMouseWheel, type MouseEvent} from '../events/index.js'
@@ -98,6 +98,7 @@ export class Scrollable extends Stack {
   #viewportSize: Size = Size.zero
   #visibleSize: Size = Size.zero
   #prevMouseDown?: Orientation = undefined
+  #isReflowing = false
   #onOffsetChange?: (offset: Point) => void
 
   static down(
@@ -366,12 +367,18 @@ export class Scrollable extends Stack {
    *
    * Axes disallowed by the `scrollable` prop are never moved (and don't count
    * towards visibility), and offsets are clamped to the scrollable range.
-   * Descendant locations and sizes come from their last render.
+   * Descendant locations and sizes come from their last render. Offscreen
+   * children are not laid out during render, so if `view` is inside one, a
+   * layout pass (see `#reflow`) is run first.
    */
   scrollTo(target: View | {x?: number; y?: number}) {
     let location: {x?: number; y?: number}
     let size = new Size(1, 1)
     if (target instanceof View) {
+      if (this.#isInOffscreenChild(target)) {
+        this.#reflow()
+      }
+
       const point = this.#locationOf(target)
       if (!point) {
         return
@@ -465,6 +472,38 @@ export class Scrollable extends Stack {
     return new Point(x, y)
   }
 
+  /**
+   * Whether `view` is (or is inside) a child that was rendered offscreen
+   * during the last render.
+   */
+  #isInOffscreenChild(view: View): boolean {
+    let current: View = view
+    while (current.parent && current.parent !== this) {
+      current = current.parent
+    }
+    return current.parent === this && this.isOffscreenChild(current)
+  }
+
+  /**
+   * Lays out all children - including offscreen children - using the sizes
+   * from the last render, without drawing or registering events. This updates
+   * the `origin` and `contentSize` of all descendants.
+   */
+  #reflow() {
+    const screen = this.screen
+    if (!screen) {
+      return
+    }
+
+    const viewport = Viewport.layout(screen, super.contentSize)
+    this.#isReflowing = true
+    try {
+      this.#renderContent(viewport)
+    } finally {
+      this.#isReflowing = false
+    }
+  }
+
   #showHorizontalScrollbar(): boolean {
     return (
       this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
@@ -514,10 +553,39 @@ export class Scrollable extends Stack {
     )
   }
 
+  protected get skipsOffscreenChildren() {
+    return !this.#isReflowing
+  }
+
   get contentSize(): Size {
     const deltaW = this.#showVerticalScrollbar() ? 1 : 0
     const deltaH = this.#showHorizontalScrollbar() ? 1 : 0
     return super.contentSize.shrink(deltaW, deltaH)
+  }
+
+  /**
+   * Renders the children, offset by #contentOffset, using #contentSize and
+   * #viewportSize (from `render()`).
+   */
+  #renderContent(viewport: Viewport) {
+    // First clip to exclude scrollbar area — this ensures that the inner
+    // viewport's visibleRect does not include the scrollbar column/row.
+    // Without this, pinned children (which size to visibleRect) would
+    // overlap the scrollbar.
+    const scrollableArea = new Rect(Point.zero, this.#viewportSize)
+    const outside = new Rect(
+      [this.#contentOffset.x, this.#contentOffset.y],
+      [
+        Math.max(this.#contentSize.width, this.#viewportSize.width),
+        Math.max(this.#contentSize.height, this.#viewportSize.height),
+      ],
+    )
+    viewport.clipped(scrollableArea, contentViewport => {
+      contentViewport.clipped(outside, inside => {
+        inside.resetLocationOrigin()
+        super.render(inside)
+      })
+    })
   }
 
   render(viewport: Viewport) {
@@ -549,8 +617,15 @@ export class Scrollable extends Stack {
 
     // keepAtBottom: snap to end when content grows and we were at the bottom
     if (this.#keepAtBottom && this.#isAtBottom && tooTall) {
-      const maxY = this.#maxOffsetY()
-      this.#contentOffset = {x: this.#contentOffset.x, y: maxY}
+      // Use this render's visible height: #visibleSize is only set at the end of
+      // render, so on the first render it is still zero and the content would
+      // scroll up by its whole height (a blank viewport).
+      const maxY =
+        viewport.visibleRect.size.height -
+        1 -
+        contentSize.height +
+        (tooWide ? 0 : 1)
+      this.#contentOffset = {x: this.#contentOffset.x, y: Math.min(0, maxY)}
     }
 
     const showVBar = this.#showVerticalScrollbar() && tooTall
@@ -566,27 +641,7 @@ export class Scrollable extends Stack {
     const visibleHeight = viewport.contentSize.height - (showHBar ? 1 : 0)
     this.#viewportSize = new Size(visibleWidth, visibleHeight)
 
-    // First clip to exclude scrollbar area — this ensures that the inner
-    // viewport's visibleRect does not include the scrollbar column/row.
-    // Without this, pinned children (which size to visibleRect) would
-    // overlap the scrollbar.
-    const scrollableArea = new Rect(
-      Point.zero,
-      new Size(visibleWidth, visibleHeight),
-    )
-    const outside = new Rect(
-      [this.#contentOffset.x, this.#contentOffset.y],
-      [
-        Math.max(contentSize.width, visibleWidth),
-        Math.max(contentSize.height, visibleHeight),
-      ],
-    )
-    viewport.clipped(scrollableArea, contentViewport => {
-      contentViewport.clipped(outside, inside => {
-        inside.resetLocationOrigin()
-        super.render(inside)
-      })
-    })
+    this.#renderContent(viewport)
 
     // Note: #visibleSize is used in #maxOffsetX/#maxOffsetY calculations.
     // The formula requires shrinking by overflow status (not scrollbar visibility)

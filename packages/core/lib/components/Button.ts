@@ -79,7 +79,9 @@ export class Button extends Container {
 
   naturalSize(available: Size): Size {
     const [left, right] = this.#borderSize(false)
-    return super.naturalSize(available).grow(left + right, 0)
+    return super
+      .naturalSize(available.shrink(left + right, 0))
+      .grow(left + right, 0)
   }
 
   get title() {

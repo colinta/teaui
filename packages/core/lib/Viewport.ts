@@ -26,6 +26,8 @@ export class Viewport {
   #locationOrigin: Point
   #screen: Screen
   #style: Style
+  // layout viewports don't draw or register events, see `Viewport.layout`
+  #isLayout = false
 
   /**
    * For modals, this is the Rect of the view that presented the modal, in absolute
@@ -49,6 +51,17 @@ export class Viewport {
     define(this, 'contentSize', {enumerable: true})
     define(this, 'contentRect', {enumerable: true})
     define(this, 'visibleRect', {enumerable: true})
+  }
+
+  /**
+   * A viewport that lays out views without drawing anything or registering
+   * focus/hotkeys/mouse events. Used to calculate view locations and sizes
+   * outside of the render loop (see `Scrollable.scrollTo`).
+   */
+  static layout(screen: Screen, contentSize: Size): Viewport {
+    const viewport = new Viewport(screen, NULL_TERMINAL, contentSize)
+    viewport.#isLayout = true
+    return viewport
   }
 
   /**
@@ -125,7 +138,7 @@ export class Viewport {
    * @return boolean Whether the modal creation was successful
    */
   requestModal(modal: Modal): boolean {
-    if (!this.#currentRender) {
+    if (!this.#currentRender || this.#isLayout) {
       return false
     }
 
@@ -136,7 +149,7 @@ export class Viewport {
   }
 
   registerHotKey(key: HotKeyDef) {
-    if (!this.#currentRender) {
+    if (!this.#currentRender || this.#isLayout) {
       return
     }
 
@@ -149,7 +162,7 @@ export class Viewport {
    * (last registered) keyboard listener.
    */
   registerKeyboard() {
-    if (!this.#currentRender) {
+    if (!this.#currentRender || this.#isLayout) {
       return
     }
 
@@ -162,6 +175,10 @@ export class Viewport {
   registerFocus(opts?: {isDefault?: boolean}): boolean {
     if (!this.#currentRender) {
       return false
+    }
+
+    if (this.#isLayout) {
+      return this.#screen.currentFocusView === this.#currentRender
     }
 
     return this.#screen.registerFocus(
@@ -178,6 +195,10 @@ export class Viewport {
     rect?: Rect,
   ) {
     if (!this.#currentRender || this.#currentRender.screen !== this.#screen) {
+      return
+    }
+
+    if (this.#isLayout) {
       return
     }
 
@@ -202,7 +223,7 @@ export class Viewport {
   }
 
   registerTick() {
-    if (!this.#currentRender) {
+    if (!this.#currentRender || this.#isLayout) {
       return
     }
 
@@ -278,7 +299,12 @@ export class Viewport {
       style ?? this.#style,
       width,
     )
-    if (this.#currentRender?.screen === this.#screen) {
+    if (
+      // if the currentRender wasn't added as a child to the screen's tree,
+      // we shouldn't perform this check
+      this.#currentRender?.screen === this.#screen &&
+      !this.#isLayout
+    ) {
       this.#screen.checkMouse(
         this.#currentRender,
         this.#offset.x + x,
@@ -313,7 +339,12 @@ export class Viewport {
           style,
           1,
         )
-        if (this.#currentRender?.screen === this.#screen) {
+        if (
+          // if the currentRender wasn't added as a child to the screen's tree,
+          // we shouldn't perform this check
+          this.#currentRender?.screen === this.#screen &&
+          !this.#isLayout
+        ) {
           this.#screen.checkMouse(
             this.#currentRender,
             this.#offset.x + x,
@@ -354,10 +385,10 @@ export class Viewport {
         )
 
         if (
-          this.#currentRender &&
           // if the currentRender wasn't added as a child to the screen's tree,
           // we shouldn't perform this check
-          this.#currentRender.screen === this.#screen
+          this.#currentRender?.screen === this.#screen &&
+          !this.#isLayout
         ) {
           this.#screen.checkMouse(
             this.#currentRender,
@@ -593,4 +624,11 @@ class Pen {
     this.#stack[0] = style
     this.#setter(style)
   }
+}
+
+const NULL_TERMINAL: Terminal = {
+  writeChar() {},
+  restyleChar() {},
+  writeMeta() {},
+  paintRect() {},
 }

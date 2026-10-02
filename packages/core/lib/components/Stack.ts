@@ -33,6 +33,7 @@ export class Stack extends Container {
   #gap: number = 0
   #fill: boolean = true
   #sizes: Map<View, FlexSize> = new Map()
+  #offscreenChildren: Set<View> = new Set()
 
   static down(
     props: ShorthandProps = {},
@@ -206,6 +207,24 @@ export class Stack extends Container {
     return this.#direction === 'down' || this.#direction === 'up'
   }
 
+  /**
+   * When true, children that are entirely outside of the visible rect (and do
+   * not contain the focused view) are rendered into an empty viewport, which
+   * registers focus/hotkeys but skips layout and drawing. Scrollable enables
+   * this.
+   */
+  protected get skipsOffscreenChildren() {
+    return false
+  }
+
+  /**
+   * Whether `child` was rendered offscreen (into an empty viewport) during the
+   * last render, in which case its layout is out of date.
+   */
+  protected isOffscreenChild(child: View) {
+    return this.#offscreenChildren.has(child)
+  }
+
   render(viewport: Viewport) {
     if (viewport.isEmpty) {
       return super.render(viewport)
@@ -276,6 +295,11 @@ export class Stack extends Container {
         origin = new Point(0, viewport.contentSize.height)
         break
     }
+
+    const focusView = this.skipsOffscreenChildren
+      ? this.screen?.currentFocusView
+      : undefined
+    this.#offscreenChildren.clear()
 
     // stores the leftover rounding errors, and added to view once it exceeds 1
     let correctAmount: number = 0
@@ -354,6 +378,18 @@ export class Stack extends Container {
         clipOrigin.y = viewport.visibleRect.origin.y
       }
 
+      // Offscreen children are rendered into an empty viewport, so that they
+      // still register focus/hotkeys, but skip layout and drawing.
+      if (
+        this.skipsOffscreenChildren &&
+        isOffscreen(new Rect(clipOrigin, clipSize), viewport.visibleRect) &&
+        !containsView(child, focusView)
+      ) {
+        this.#offscreenChildren.add(child)
+        clipSize.width = 0
+        clipSize.height = 0
+      }
+
       viewport.clipped(new Rect(clipOrigin, clipSize), inside => {
         child.render(inside)
       })
@@ -375,4 +411,36 @@ export class Stack extends Container {
       isFirst = false
     }
   }
+}
+
+/**
+ * Whether `rect` lies entirely outside of `visibleRect`. Empty rects are never
+ * considered offscreen - they are cheap to render, and often need to register
+ * hotkeys/focus (e.g. a collapsed Collapsible).
+ */
+function isOffscreen(rect: Rect, visibleRect: Rect) {
+  if (rect.size.width <= 0 || rect.size.height <= 0) {
+    return false
+  }
+
+  return (
+    rect.maxX() <= visibleRect.minX() ||
+    rect.minX() >= visibleRect.maxX() ||
+    rect.maxY() <= visibleRect.minY() ||
+    rect.minY() >= visibleRect.maxY()
+  )
+}
+
+/**
+ * Whether `view` is `ancestor`, or one of its descendants.
+ */
+function containsView(ancestor: View, view: View | undefined) {
+  let current = view
+  while (current) {
+    if (current === ancestor) {
+      return true
+    }
+    current = current.parent
+  }
+  return false
 }

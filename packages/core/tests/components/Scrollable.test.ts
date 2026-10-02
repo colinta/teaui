@@ -7,7 +7,23 @@ import {Slider} from '../../lib/components/Slider.js'
 import {Progress} from '../../lib/components/Progress.js'
 import {CollapsibleText} from '../../lib/components/CollapsibleText.js'
 import {Input} from '../../lib/components/Input.js'
-import {Point} from '../../lib/geometry.js'
+import {Button} from '../../lib/components/Button.js'
+import {View} from '../../lib/View.js'
+import type {Viewport} from '../../lib/Viewport.js'
+import {Point, Size} from '../../lib/geometry.js'
+
+// records whether it was laid out (rendered into a non-empty viewport)
+class ProbeView extends View {
+  didLayout = false
+
+  naturalSize() {
+    return new Size(5, 1)
+  }
+
+  render(viewport: Viewport) {
+    this.didLayout = !viewport.isEmpty
+  }
+}
 
 function makeLines(count: number): Text[] {
   return Array.from({length: count}, (_, i) => new Text({text: `Line ${i}`}))
@@ -1270,6 +1286,123 @@ describe('Scrollable', () => {
       expect(lastOffset).toBeDefined()
       expect(lastOffset!.x).toBe(3)
       expect(lastOffset!.y).toBe(0)
+    })
+  })
+
+  describe('offscreen children', () => {
+    it('only lays out children that are visible', () => {
+      const probes = Array.from({length: 10}, () => new ProbeView())
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: probes,
+      })
+      const t = testRender(scrollable, {width: 10, height: 3})
+      expect(probes.map(probe => probe.didLayout)).toEqual([
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ])
+
+      scrollable.scrollBy(0, 4)
+      t.render()
+      expect(probes.map(probe => probe.didLayout)).toEqual([
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+      ])
+    })
+
+    it('lays out partially visible children', () => {
+      const tall = new Text({text: 'a\nb\nc'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [...makeLines(2), tall],
+      })
+      const t = testRender(scrollable, {width: 10, height: 3})
+      expect(t.terminal.textAtRow(2)).toBe('a')
+      expect(tall.contentSize).toEqual(new Size(10, 3))
+    })
+
+    it('lays out the focused child when it is offscreen', () => {
+      const input = new Input({value: 'first'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [input, ...makeLines(7)],
+      })
+      const t = testRender(scrollable, {width: 12, height: 3})
+      expect(input.hasFocus).toBe(true)
+
+      scrollable.scrollTo({y: 7})
+      t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 4')
+      expect(input.contentSize.isEmpty).toBe(false)
+    })
+
+    it('registers hotkeys of offscreen children', () => {
+      let clicks = 0
+      const button = new Button({
+        title: 'Save',
+        hotKey: 'C-s',
+        onClick() {
+          clicks++
+        },
+      })
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [...makeLines(10), button],
+      })
+      const t = testRender(scrollable, {width: 12, height: 3})
+      expect(button.contentSize.isEmpty).toBe(true)
+
+      t.sendKey('s', {ctrl: true})
+      expect(clicks).toBe(1)
+    })
+
+    it('scrollTo(view) reveals the entire offscreen child', () => {
+      const tall = new Text({text: 'a\nb\nc'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [...makeLines(10), tall, ...makeLines(10)],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      scrollable.scrollTo(tall)
+      t.render()
+      expect(t.terminal.textAtRow(2)).toBe('a')
+      expect(t.terminal.textAtRow(4)).toBe('c')
+    })
+
+    it('scrollTo(view) lays out views nested in offscreen children', () => {
+      const target = new Text({text: 'X'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [
+          ...makeLines(10),
+          Stack.down([
+            ...makeLines(3),
+            Stack.right([new Text({text: '0123456789'}), target]),
+          ]),
+        ],
+      })
+      const t = testRender(scrollable, {width: 5, height: 3})
+
+      scrollable.scrollTo(target)
+      t.render()
+      expect(t.terminal.textAtRow(2)).toBe('6789X')
     })
   })
 })
