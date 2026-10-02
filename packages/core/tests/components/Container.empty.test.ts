@@ -61,7 +61,7 @@ describe('empty Container subclasses', () => {
     },
   )
 
-  it('renders children so they can register focus', () => {
+  it('does not register focus for children of empty containers', () => {
     let value = ''
     const stack = new Stack({
       width: 0,
@@ -72,7 +72,7 @@ describe('empty Container subclasses', () => {
 
     t.sendKey('x')
 
-    expect(value).toBe('x')
+    expect(value).toBe('')
   })
 
   it('renders Alert modal children when the screen is empty', () => {

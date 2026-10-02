@@ -181,6 +181,12 @@ export class Viewport {
       return this.#screen.currentFocusView === this.#currentRender
     }
 
+    // Empty viewports (offscreen, collapsed, inactive tab) don't join the focus
+    // ring, unless the view already has focus.
+    if (this.isEmpty && this.#screen.currentFocusView !== this.#currentRender) {
+      return false
+    }
+
     return this.#screen.registerFocus(
       this.#currentRender,
       opts?.isDefault ?? true,

@@ -771,7 +771,7 @@ describe('Scrollable', () => {
       expect(t.terminal.textAtRow(0)).toContain('Line 3')
     })
 
-    it('scrolls down to an off-screen Input when it receives a key event', () => {
+    it('tab does not focus an off-screen Input', () => {
       const first = new Input({value: 'first'})
       const second = new Input({value: 'second'})
       const scrollable = new Scrollable({
@@ -780,6 +780,24 @@ describe('Scrollable', () => {
       })
       const t = testRender(scrollable, {width: 12, height: 3})
 
+      t.sendKey('tab')
+      t.sendKey('!')
+
+      expect(second.hasFocus).toBe(false)
+      expect(second.value).toBe('second')
+    })
+
+    it('tab focuses an Input once it is scrolled into view', () => {
+      const first = new Input({value: 'first'})
+      const second = new Input({value: 'second'})
+      const scrollable = new Scrollable({
+        showScrollbars: false,
+        children: [first, ...makeLines(5), second],
+      })
+      const t = testRender(scrollable, {width: 12, height: 3})
+
+      scrollable.scrollTo(second)
+      t.render()
       t.sendKey('tab')
       t.sendKey('!')
 
