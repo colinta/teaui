@@ -2,7 +2,7 @@
   "name": "@teaui/result",
   "description": "Dependency-free Result types and constructors",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
-  "version": "1.21.24",
+  "version": "1.22.24",
   "license": "MIT",
   "type": "module",
   "repository": {
