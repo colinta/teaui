@@ -483,8 +483,6 @@ export class Calendar extends View {
   }
 
   receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
     if (event.name === 'mouse.button.down') {
       system.requestFocus()
     }

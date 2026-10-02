@@ -7,7 +7,6 @@ import {
   isMousePressStart,
   isMousePressEnd,
 } from '../events/index.js'
-import {System} from '../System.js'
 import {Style} from '../Style.js'
 
 interface Props extends ContainerProps {
@@ -194,9 +193,7 @@ export class Pane extends Container {
     return true
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     const x = event.position.x
 
     // During a drag, always track the dragged separator

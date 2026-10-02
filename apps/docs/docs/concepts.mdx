@@ -112,6 +112,84 @@ Bracketed paste is delivered only to the focused view through `receivePaste()`.
 
 Keyboard events do not bubble through the view hierarchy.
 
+### Listeners
+
+Any view can be observed from the outside with `addMouseListener`,
+`addKeyboardListener`, and `addFocusListener`. Each returns a function that
+removes the listener.
+
+```ts
+const text = new Text({text: 'Hover me'})
+
+const removeMouse = text.addMouseListener(
+  (event, contentSize, system) => {
+    // event.position is relative to the view's content
+    if (event.position.x >= contentSize.width - 1) return
+    // ...
+  },
+  {events: ['mouse.move']},
+)
+
+text.addKeyboardListener(save, {events: ['ctrl+s']})
+text.addFocusListener(
+  isFocused => {
+    /* ... */
+  },
+  {events: true},
+)
+```
+
+Listeners are additional subscribers - they are **not** `receiveMouse` or
+`receiveKey`, and a view's implementation does not need to call `super` for them
+to work. What a listener sees depends on `events`:
+
+- **Omitted** - the listener _piggy-backs_ on the events the view registered for
+  itself. Nothing is registered, so a `Text` (which registers nothing) never
+  calls its listeners, while a `Button`'s listeners see its clicks, hover, and
+  focus. They are called after the view's own handler.
+- **A list, or `true` for everything** - the listener registers for exactly those
+  events. They are _not_ sent to the view's `receiveMouse` / `receiveKey`, the
+  view's own registrations are not widened (hover and pressed styling still
+  only react to the view's own regions), and an empty list registers nothing.
+
+For the mouse, `events` are the same names as `viewport.registerMouse()`
+(`true` is `mouse.move`, `mouse.button.all`, and `mouse.wheel`). A listener's
+`event.position` and its `contentSize` are always in the same coordinate space,
+so a listener can ignore events along the edges of the view. Registering
+follows the normal rules: a child that registered for the same location takes
+button and wheel events from its parent's listener.
+
+For the keyboard, `events` is a list of hotkeys (`'C-a'`, `'ctrl+a'`,
+`'escape'`) or `true` for every key event. Keyboard listeners only _observe_:
+they never consume a key or change where it is routed.
+
+For focus, `events` is `'focus.focus'` and/or `'focus.blur'`. Registering makes
+the view focusable (it joins the focus ring, but does not take the initial focus
+unless you pass `isDefault: true`); the view's `didFocus`, `didBlur`, and
+`receiveKey` are not involved. `view.hasFocus` is always up to date.
+
+Listeners are registered while the view renders, so a listener added or removed
+takes effect on the next render (which is scheduled automatically).
+
+#### Listener props
+
+Every view also accepts `mouseListener`, `keyboardListener`, and `focusListener`
+props, which is how to use listeners from React (they work the same way with
+`new Text({...})`). Pass a function to piggy-back, or an object with the
+`listener` and the same options as above:
+
+```tsx
+<Text mouseListener={{listener: onHover, events: ['mouse.move']}}>Hover me</Text>
+<Box keyboardListener={{listener: save, events: ['ctrl+s']}}>...</Box>
+<Button focusListener={isFocused => setFocused(isFocused)}>OK</Button>
+```
+
+The subscription survives re-renders: an inline function is swapped in place
+(the latest closure is always the one called, and hover state isn't reset),
+and only changing `events` re-subscribes. Removing the prop removes the
+listener. For anything more dynamic, use a `ref` and `addMouseListener()` and
+friends directly; the two can be mixed.
+
 ### Resize events
 
 When the terminal size changes, the screen resizes its buffer and renders the

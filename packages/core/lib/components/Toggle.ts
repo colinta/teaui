@@ -1,6 +1,5 @@
 import {Point, Size} from '../geometry.js'
 import {Style} from '../Style.js'
-import type {System} from '../System.js'
 import {type Props as ViewProps, View} from '../View.js'
 import {Viewport} from '../Viewport.js'
 import {
@@ -66,9 +65,7 @@ export class Toggle extends View {
     }
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#toggle()
     }

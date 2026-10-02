@@ -5,7 +5,6 @@ import {View, type Props as ViewProps} from '../View.js'
 import {Style} from '../Style.js'
 import {Point, Size} from '../geometry.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
-import {System} from '../System.js'
 
 interface Props extends ViewProps {
   text: string
@@ -84,9 +83,7 @@ export class CollapsibleText extends View {
     return new Size(Math.min(size.width, available.width), size.height)
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#isCollapsed = !this.#isCollapsed
       this.invalidateSize()

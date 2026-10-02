@@ -285,12 +285,10 @@ export class Subprocess extends View {
   }
 
   didFocus() {
-    super.didFocus()
     this.#onFocus?.()
   }
 
   didBlur() {
-    super.didBlur()
     this.#onBlur?.()
   }
 
@@ -306,8 +304,6 @@ export class Subprocess extends View {
   }
 
   receiveMouse(event: MouseEvent, system: any) {
-    super.receiveMouse(event, system)
-
     if (!this.hasFocus) {
       // Clicking an unfocused Subprocess takes focus but does not
       // forward the mouse event to the child process.

@@ -13,7 +13,6 @@ import {
 import {type LegendItem} from '../types.js'
 import {childPalette} from '../UI.js'
 import {Style} from '../Style.js'
-import {System} from '../System.js'
 
 interface StyleProps {
   title?: string
@@ -95,9 +94,7 @@ export class Checkbox extends Container {
     return super.naturalSize(available).grow(CHECKBOX_WIDTH, 0).minHeight(1)
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#value = !this.#value
       this.#onChange?.(this.#value)

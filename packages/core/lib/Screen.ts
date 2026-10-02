@@ -12,6 +12,7 @@ import {Buffer} from './Buffer.js'
 import type {
   HotKeyDef,
   KeyEvent,
+  MouseDestination,
   MouseEventListenerName,
   SystemEvent,
   SystemMouseEvent,
@@ -311,8 +312,8 @@ export class Screen {
   /**
    * @return boolean Whether the current view has focus
    */
-  registerFocus(view: View, isDefault: boolean): boolean {
-    return this.#focusManager.registerFocus(view, isDefault)
+  registerFocus(view: View, isDefault: boolean, native = true): boolean {
+    return this.#focusManager.registerFocus(view, isDefault, native)
   }
 
   registerHotKey(view: View, key: HotKeyDef) {
@@ -321,6 +322,14 @@ export class Screen {
 
   registerKeyboard(view: View) {
     return this.#focusManager.registerKeyboard(view)
+  }
+
+  registerKeyTap(
+    view: View,
+    spec: HotKeyDef | 'all',
+    deliver: (event: KeyEvent) => void,
+  ) {
+    return this.#focusManager.registerKeyTap(view, spec, deliver)
   }
 
   requestFocus(view: View) {
@@ -374,8 +383,15 @@ export class Screen {
     offset: Point,
     point: Point,
     eventNames: MouseEventListenerName[],
+    destination?: MouseDestination,
   ) {
-    this.#mouseManager.registerMouse(view, offset, point, eventNames)
+    this.#mouseManager.registerMouse(
+      view,
+      offset,
+      point,
+      eventNames,
+      destination,
+    )
   }
 
   checkMouse(view: View, x: number, y: number) {

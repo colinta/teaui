@@ -12,7 +12,6 @@ import {
 } from '../events/index.js'
 import {type Color} from '../Color.js'
 import {Style} from '../Style.js'
-import {System} from '../System.js'
 
 export interface BreadcrumbItem {
   title: string
@@ -255,9 +254,7 @@ export class Breadcrumb extends Container {
     return new Size(width, 1)
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseExit(event)) {
       this.#hoverIndex = null
     } else if (isMouseEnter(event) || isMouseMove(event)) {

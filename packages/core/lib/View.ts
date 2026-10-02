@@ -10,8 +10,15 @@ import {
   isMouseExit,
   isMousePressStart,
   isMousePressExit,
+  normalizeHotKey,
+  toHotKeyDef,
+  type FocusEventName,
+  type HotKey,
+  type HotKeyDef,
   type KeyEvent,
+  type MouseDestination,
   type MouseEvent,
+  type MouseEventListenerName,
 } from './events/index.js'
 import {Point, Size, Rect} from './geometry.js'
 import {Color} from './Color.js'
@@ -33,6 +40,126 @@ export function parseFlexShorthand(flex: FlexShorthand): FlexSize {
 }
 
 export type Pin = 'horizontal' | 'vertical'
+
+/**
+ * Called with every mouse event the listener is subscribed to. `event.position`
+ * is relative to the view's content (the same coordinate space as `contentSize`),
+ * so a listener can ignore events along the edges, for example.
+ */
+export type MouseListener = (
+  event: MouseEvent,
+  contentSize: Size,
+  system: System,
+) => void
+export type KeyboardListener = (event: KeyEvent, contentSize: Size) => void
+export type FocusListener = (isFocused: boolean) => void
+/** Removes the listener. Safe to call more than once. */
+export type RemoveListener = () => void
+
+export interface MouseListenerOptions {
+  /**
+   * - omitted: "piggy-back" on the events the view registered for itself
+   *   (the events that reach `receiveMouse`). No registration is made.
+   * - a list of event names, or `true` for all of them (`mouse.move`,
+   *   `mouse.button.all`, `mouse.wheel`): the listener registers for exactly
+   *   those events over the view's content area. These events are *not* sent
+   *   to `receiveMouse`, and the view's own registrations are not widened.
+   */
+  events?: MouseEventListenerName[] | true
+}
+
+export interface KeyboardListenerOptions {
+  /**
+   * - omitted: "piggy-back" on the key events delivered to `receiveKey`
+   *   (hotkeys, focused key events, keyboard fallback).
+   * - a list of hotkeys (`'C-a'`, `'ctrl+a'`, `{char: 'a', ctrl: true}`): the
+   *   listener is called when one of them is pressed.
+   * - `true`: the listener is called for every key event.
+   *
+   * Explicit listeners only observe: they never consume the event or change
+   * which view receives it.
+   */
+  events?: HotKey[] | true
+}
+
+export interface FocusListenerOptions {
+  /**
+   * - omitted: "piggy-back" on the view's own focus handling (the view must call
+   *   `viewport.registerFocus()` itself). Both focus and blur are reported.
+   * - a list of focus events, or `true` for both: the listener makes the view
+   *   focusable, and is called for the listed events. The view's `receiveKey`,
+   *   `didFocus` and `didBlur` are not involved.
+   */
+  events?: FocusEventName[] | true
+  /**
+   * Only used with `events`. Whether the view may take focus when nothing else
+   * has it. Default false.
+   */
+  isDefault?: boolean
+}
+
+/**
+ * The `mouseListener` / `keyboardListener` / `focusListener` props: a function
+ * (piggy-backing on the view's own events), or the function and its options.
+ */
+export type MouseListenerProp =
+  | MouseListener
+  | ({listener: MouseListener} & MouseListenerOptions)
+export type KeyboardListenerProp =
+  | KeyboardListener
+  | ({listener: KeyboardListener} & KeyboardListenerOptions)
+export type FocusListenerProp =
+  | FocusListener
+  | ({listener: FocusListener} & FocusListenerOptions)
+
+/**
+ * A listener subscribed from a prop. The subscription calls through `callback`,
+ * so a new function can replace the old one without re-subscribing.
+ */
+type PropListener = {
+  callback: (...args: any[]) => void
+  optionsKey: string
+  remove: RemoveListener
+}
+
+const ALL_MOUSE_EVENTS: MouseEventListenerName[] = [
+  'mouse.move',
+  'mouse.button.all',
+  'mouse.wheel',
+]
+const ALL_FOCUS_EVENTS: FocusEventName[] = ['focus.focus', 'focus.blur']
+
+/**
+ * Like `toHotKeyDef`, but the `char` is the key name that `KeyEvent.name` uses
+ * ('up', 'escape', 'return'), not the sigil `toHotKeyDef` replaces it with for
+ * display.
+ */
+function toKeyListenerDef(hotKey: HotKey): HotKeyDef {
+  const normalized = normalizeHotKey(hotKey)
+  if (typeof normalized !== 'string') {
+    return normalized
+  }
+
+  return {
+    ...toHotKeyDef(normalized),
+    char: normalized.replace(/^([CAGS]-)*/, '').toLowerCase(),
+  }
+}
+
+type MouseListenerRecord = {
+  // undefined: piggy-backs on the view's own registrations
+  names: MouseEventListenerName[] | undefined
+  destination: MouseDestination
+}
+type KeyboardListenerRecord = {
+  specs: (HotKeyDef | 'all')[] | undefined
+  deliver: (event: KeyEvent) => void
+}
+type FocusListenerRecord = {
+  events: FocusEventName[] | undefined
+  isDefault: boolean
+  callback: FocusListener
+}
 
 export interface Props {
   purpose?: Palette | Purpose
@@ -73,6 +200,30 @@ export interface Props {
    * - `'vertical'` — pin height to visible height (don't scroll vertically)
    */
   pin?: Pin
+  /**
+   * Adds a mouse listener, see `View.addMouseListener`. Either a function (which
+   * piggy-backs on the events the view registered for itself), or an object with
+   * the `listener` and its `events`:
+   *
+   *     <Text mouseListener={event => ...} />
+   *     <Text mouseListener={{listener: onHover, events: ['mouse.move']}} />
+   *
+   * The subscription is kept across updates: passing a new function doesn't
+   * re-subscribe (so hover state isn't reset); changing `events` does.
+   */
+  mouseListener?: MouseListenerProp
+  /**
+   * Adds a keyboard listener, see `View.addKeyboardListener`.
+   *
+   *     <Box keyboardListener={{listener: save, events: ['ctrl+s']}} />
+   */
+  keyboardListener?: KeyboardListenerProp
+  /**
+   * Adds a focus listener, see `View.addFocusListener`.
+   *
+   *     <Text focusListener={{listener: setFocused, events: true}} />
+   */
+  focusListener?: FocusListenerProp
   // use this however you want
   debug?: boolean
 }
@@ -109,6 +260,49 @@ export abstract class View {
   #isHover = false
   #isPressed = false
   #hasFocus = false
+
+  // External listeners, see addMouseListener / addKeyboardListener / addFocusListener.
+  // These arrays are replaced (never mutated), so a listener can add or remove
+  // listeners while they're being notified.
+  #mouseListeners: MouseListenerRecord[] = []
+  #keyboardListeners: KeyboardListenerRecord[] = []
+  #focusListeners: FocusListenerRecord[] = []
+  // absolute location of the content, as of the last render
+  #contentOrigin: Point = Point.zero
+  // listeners from the mouseListener / keyboardListener / focusListener props
+  #propMouseListener: PropListener | undefined
+  #propKeyboardListener: PropListener | undefined
+  #propFocusListener: PropListener | undefined
+
+  /**
+   * Receives the events this view registered for itself (`viewport.registerMouse`).
+   * Updates hover/pressed state, calls `receiveMouse`, and then notifies the
+   * listeners that piggy-back on the view's events. Subclasses don't need to call
+   * `super.receiveMouse()` for any of this to work.
+   */
+  #nativeMouse: MouseDestination = {
+    isNative: true,
+    deliver: (event, system, location) => {
+      if (isMousePressStart(event)) {
+        this.#isPressed = true
+      } else if (isMousePressExit(event)) {
+        this.#isPressed = false
+      }
+
+      if (isMouseEnter(event)) {
+        this.#isHover = true
+      } else if (isMouseExit(event)) {
+        this.#isHover = false
+      }
+
+      this.receiveMouse(event, system)
+      for (const record of this.#mouseListeners) {
+        if (!record.names) {
+          record.destination.deliver(event, system, location)
+        }
+      }
+    },
+  }
 
   constructor(props: Props = {}) {
     this.#update(props)
@@ -160,6 +354,9 @@ export abstract class View {
     paddingLeft,
     flex,
     pin,
+    mouseListener,
+    keyboardListener,
+    focusListener,
     debug,
   }: Props) {
     this.#purpose = typeof purpose === 'string' ? Palette[purpose] : purpose
@@ -186,6 +383,22 @@ export abstract class View {
     this.pin = pin
     this.debug = debug ?? false
 
+    this.#propMouseListener = this.#syncPropListener(
+      this.#propMouseListener,
+      mouseListener,
+      (callback, options) => this.addMouseListener(callback, options),
+    )
+    this.#propKeyboardListener = this.#syncPropListener(
+      this.#propKeyboardListener,
+      keyboardListener,
+      (callback, options) => this.addKeyboardListener(callback, options),
+    )
+    this.#propFocusListener = this.#syncPropListener(
+      this.#propFocusListener,
+      focusListener,
+      (callback, options) => this.addFocusListener(callback, options),
+    )
+
     Object.defineProperties(this, {
       // only include these if they were defined
       padding: {
@@ -198,6 +411,44 @@ export abstract class View {
         enumerable: pin !== undefined,
       },
     })
+  }
+
+  /**
+   * Reconciles a listener prop with its current subscription. Returns the
+   * subscription to keep, if any.
+   */
+  #syncPropListener(
+    current: PropListener | undefined,
+    prop:
+      | ((...args: any[]) => void)
+      | {listener: (...args: any[]) => void}
+      | undefined,
+    add: (callback: (...args: any[]) => void, options: any) => RemoveListener,
+  ): PropListener | undefined {
+    if (!prop) {
+      current?.remove()
+      return undefined
+    }
+
+    const {listener, ...options} =
+      typeof prop === 'function' ? {listener: prop} : prop
+    const optionsKey = JSON.stringify(options)
+    if (current && current.optionsKey === optionsKey) {
+      current.callback = listener
+      return current
+    }
+
+    current?.remove()
+    const subscription: PropListener = {
+      callback: listener,
+      optionsKey,
+      remove: () => {},
+    }
+    subscription.remove = add(
+      (...args) => subscription.callback(...args),
+      options,
+    )
+    return subscription
   }
 
   get purpose(): Palette {
@@ -505,14 +756,246 @@ export abstract class View {
       )
 
       const rect = new Rect(origin, this.#renderedContentSize)
+      // Inside `_render`, the viewport is positioned at this view's content, and
+      // viewport.register*() calls are associated with this view.
+      const renderWithListeners = (viewport: Viewport) => {
+        this.#contentOrigin = viewport.absoluteOrigin
+        this.#registerListeners(viewport)
+        render(viewport)
+      }
       if (this.#background) {
         const style = new Style({background: this.#background})
         viewport.paint(style, rect)
         viewport.usingPen(style, () => {
-          viewport._render(this, rect, render)
+          viewport._render(this, rect, renderWithListeners)
         })
       } else {
-        viewport._render(this, rect, render)
+        viewport._render(this, rect, renderWithListeners)
+      }
+    }
+  }
+
+  /**
+   * Registers the external listeners that asked for specific `events`. These
+   * are registered before the view renders, so the view's children (which render
+   * later) take precedence for button and wheel events, as usual.
+   */
+  #registerListeners(viewport: Viewport) {
+    for (const record of this.#mouseListeners) {
+      if (record.names && record.names.length > 0) {
+        viewport._registerMouse(record.names, record.destination)
+      }
+    }
+
+    let isFocusable = false
+    let isDefault = false
+    for (const record of this.#focusListeners) {
+      if (record.events && record.events.length > 0) {
+        isFocusable = true
+        isDefault ||= record.isDefault
+      }
+    }
+    if (isFocusable) {
+      viewport._registerFocus(isDefault)
+    }
+
+    for (const record of this.#keyboardListeners) {
+      for (const spec of record.specs ?? []) {
+        viewport._registerKeyTap(spec, record.deliver)
+      }
+    }
+  }
+
+  /**
+   * Adds a mouse listener. The callback is *not* `receiveMouse`: it's an
+   * additional subscriber, and works with any view, whether or not the view's
+   * implementation calls `super`.
+   *
+   *     // events the view registered for itself (a Button's clicks and hover)
+   *     button.addMouseListener((event, contentSize) => ...)
+   *
+   *     // register for specific events over the view's area
+   *     text.addMouseListener(onHover, {events: ['mouse.move']})
+   *
+   * @return A function that removes the listener.
+   */
+  addMouseListener(
+    callback: MouseListener,
+    options: MouseListenerOptions = {},
+  ): RemoveListener {
+    const {events} = options
+    let isActive = true
+    const record: MouseListenerRecord = {
+      names:
+        events === undefined
+          ? undefined
+          : events === true
+            ? [...ALL_MOUSE_EVENTS]
+            : [...events],
+      destination: {
+        isNative: false,
+        deliver: (event, system, location) => {
+          if (!isActive) {
+            return
+          }
+
+          const position = new Point(
+            location.x - this.#contentOrigin.x,
+            location.y - this.#contentOrigin.y,
+          )
+          callback({...event, position}, this.#renderedContentSize, system)
+        },
+      },
+    }
+
+    this.#mouseListeners = [...this.#mouseListeners, record]
+    this.invalidateRender()
+    return () => {
+      if (!isActive) {
+        return
+      }
+      isActive = false
+      this.#mouseListeners = this.#mouseListeners.filter(
+        other => other !== record,
+      )
+      this.invalidateRender()
+    }
+  }
+
+  /**
+   * Adds a keyboard listener, see `KeyboardListenerOptions`. Listeners only
+   * observe key events; they never consume them.
+   *
+   *     input.addKeyboardListener(event => ...)                       // events the input handles
+   *     view.addKeyboardListener(onSave, {events: ['ctrl+s']})        // hotkey
+   *     view.addKeyboardListener(onKey, {events: true})               // every key
+   *
+   * @return A function that removes the listener.
+   */
+  addKeyboardListener(
+    callback: KeyboardListener,
+    options: KeyboardListenerOptions = {},
+  ): RemoveListener {
+    const {events} = options
+    let isActive = true
+    const record: KeyboardListenerRecord = {
+      specs:
+        events === undefined
+          ? undefined
+          : events === true
+            ? ['all']
+            : events.map(toKeyListenerDef),
+      deliver: event => {
+        if (isActive) {
+          callback(event, this.#renderedContentSize)
+        }
+      },
+    }
+
+    this.#keyboardListeners = [...this.#keyboardListeners, record]
+    this.invalidateRender()
+    return () => {
+      if (!isActive) {
+        return
+      }
+      isActive = false
+      this.#keyboardListeners = this.#keyboardListeners.filter(
+        other => other !== record,
+      )
+      this.invalidateRender()
+    }
+  }
+
+  /**
+   * Adds a focus listener, see `FocusListenerOptions`. With `events`, the view
+   * becomes focusable; without, the view must register for focus itself.
+   *
+   *     button.addFocusListener(isFocused => ...)
+   *     text.addFocusListener(isFocused => ..., {events: true})
+   *
+   * @return A function that removes the listener.
+   */
+  addFocusListener(
+    callback: FocusListener,
+    options: FocusListenerOptions = {},
+  ): RemoveListener {
+    const {events} = options
+    let isActive = true
+    const record: FocusListenerRecord = {
+      events:
+        events === undefined
+          ? undefined
+          : events === true
+            ? [...ALL_FOCUS_EVENTS]
+            : [...events],
+      isDefault: options.isDefault ?? false,
+      callback: isFocused => {
+        if (isActive) {
+          callback(isFocused)
+        }
+      },
+    }
+
+    this.#focusListeners = [...this.#focusListeners, record]
+    this.invalidateRender()
+    return () => {
+      if (!isActive) {
+        return
+      }
+      isActive = false
+      this.#focusListeners = this.#focusListeners.filter(
+        other => other !== record,
+      )
+      this.invalidateRender()
+    }
+  }
+
+  /**
+   * The destination for the events this view registers for itself with
+   * `viewport.registerMouse()`.
+   *
+   * @internal
+   */
+  get _nativeMouse(): MouseDestination {
+    return this.#nativeMouse
+  }
+
+  /**
+   * Called by the FocusManager for hotkeys, focused key events, and keyboard
+   * fallback: calls `receiveKey`, then the piggy-backing keyboard listeners.
+   *
+   * @internal
+   */
+  _deliverKey(event: KeyEvent) {
+    this.receiveKey(event)
+    for (const record of this.#keyboardListeners) {
+      if (!record.specs) {
+        record.deliver(event)
+      }
+    }
+  }
+
+  /**
+   * Called by the FocusManager when this view gains or loses focus.
+   * `isNative` is false when the view is focusable only because of an external
+   * focus listener: `didFocus` and `didBlur` are skipped.
+   *
+   * @internal
+   */
+  _focusChanged(isFocused: boolean, isNative: boolean) {
+    this.#hasFocus = isFocused
+    if (isNative) {
+      if (isFocused) {
+        this.didFocus()
+      } else {
+        this.didBlur()
+      }
+    }
+
+    const eventName: FocusEventName = isFocused ? 'focus.focus' : 'focus.blur'
+    for (const record of this.#focusListeners) {
+      if (record.events ? record.events.includes(eventName) : isNative) {
+        record.callback(isFocused)
       }
     }
   }
@@ -536,18 +1019,15 @@ export abstract class View {
   didUnmount(_screen: Screen) {}
   /**
    * Called when this view gains keyboard focus. Only called on views that call
-   * `viewport.registerFocus()` in their render method.
+   * `viewport.registerFocus()` in their render method. (`hasFocus` is already
+   * up to date; overrides don't need to call `super`.)
    */
-  didFocus() {
-    this.#hasFocus = true
-  }
+  didFocus() {}
   /**
    * Called when this view loses keyboard focus. Only called on views that previously
    * had focus (i.e. `didFocus()` was called).
    */
-  didBlur() {
-    this.#hasFocus = false
-  }
+  didBlur() {}
 
   /**
    * Returns keyboard shortcut items for this view, shown by AutoLegend
@@ -594,21 +1074,11 @@ export abstract class View {
    */
   receivePaste(_text: string) {}
   /**
-   * To register for this event, call `viewport.registerMouse()`
+   * To register for this event, call `viewport.registerMouse()`. `isHover` and
+   * `isPressed` are updated before this is called; overrides don't need to call
+   * `super`.
    */
-  receiveMouse(event: MouseEvent, _system: System) {
-    if (isMousePressStart(event)) {
-      this.#isPressed = true
-    } else if (isMousePressExit(event)) {
-      this.#isPressed = false
-    }
-
-    if (isMouseEnter(event)) {
-      this.#isHover = true
-    } else if (isMouseExit(event)) {
-      this.#isHover = false
-    }
-  }
+  receiveMouse(_event: MouseEvent, _system: System) {}
 
   /**
    * Receives the time-delta between previous and current render. Return 'true' if

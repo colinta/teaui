@@ -5,7 +5,6 @@ import {type Props as ContainerProps, Container} from '../Container.js'
 import {Text} from './Text.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
-import {System} from '../System.js'
 
 interface StyleProps {
   /**
@@ -121,9 +120,7 @@ export class Collapsible extends Container {
       : size
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#isCollapsed = !this.#isCollapsed
       this.invalidateSize()

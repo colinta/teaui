@@ -4,7 +4,6 @@ import {Style} from '../Style.js'
 import {Text} from './Text.js'
 import {View} from '../View.js'
 import {Viewport} from '../Viewport.js'
-import {System} from '../System.js'
 import {isMouseClicked, type MouseEvent} from '../events/index.js'
 import {define} from '../util.js'
 
@@ -476,9 +475,7 @@ class TabTitle extends Container {
       .grow(TAB_TITLE_PAD, TAB_SEPARATOR_HEIGHT)
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.onClick?.(this)
     }

@@ -3,7 +3,6 @@ import {interpolate, Point, Rect, Size} from '../geometry.js'
 import {View} from '../View.js'
 import {Text} from './Text.js'
 import {Viewport} from '../Viewport.js'
-import {System} from '../System.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
 import {Style} from '../Style.js'
 import {define} from '../util.js'
@@ -254,9 +253,7 @@ class Section extends Container {
     )
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.isOpen = !this.#isOpen
     }

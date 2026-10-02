@@ -6,7 +6,6 @@ import {Container} from '../Container.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
 import {Style} from '../Style.js'
-import {System} from '../System.js'
 
 type RenderFn<T> = (datum: T, path: string) => View
 type GetChildrenFn<T> = (datum: T, path: string) => T[] | undefined
@@ -187,9 +186,7 @@ class TreeChild extends Container {
     this.#onToggle = onToggle
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event) && this.#hasChildren) {
       this.#onToggle()
       this.invalidateSize()

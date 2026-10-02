@@ -13,7 +13,6 @@ import {ScrollableList} from './ScrollableList.js'
 import {Separator} from './Separator.js'
 import {Text} from './Text.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
-import {System} from '../System.js'
 import {Space} from './Space.js'
 import {Style} from '../Style.js'
 
@@ -154,9 +153,7 @@ export class Dropdown<T, M extends boolean> extends View {
     return size.grow(8, 0)
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#showModal = true
     }

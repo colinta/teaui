@@ -4,6 +4,17 @@ import {match, type HotKeyDef, type KeyEvent} from '../events/index.js'
 const UNFOCUS = Symbol('UNFOCUS')
 type FocusView = View | undefined | typeof UNFOCUS
 
+/**
+ * An external key observer (see `View.addKeyboardListener`). It sees every
+ * matching key event, in addition to - and never instead of - the native
+ * routing (hotkeys, focused view, keyboard fallback).
+ */
+export type KeyTap = {
+  view: View
+  spec: HotKeyDef | 'all'
+  deliver: (event: KeyEvent) => void
+}
+
 export class FocusManager {
   #didCommit = false
   #currentFocusView: FocusView
@@ -12,6 +23,14 @@ export class FocusManager {
   #focusRing: View[] = []
   #hotKeys: [View, HotKeyDef][] = []
   #keyboardListeners: View[] = []
+  #keyTaps: KeyTap[] = []
+  // Views that registered for focus *this frame*. 'native' means the view's own
+  // render called `viewport.registerFocus()` (focused keys go to `receiveKey`,
+  // `didFocus`/`didBlur` are called). 'explicit' means an external focus listener
+  // registered the view, which makes it focusable but nothing more.
+  #nativeFocus = new Set<View>()
+  #explicitFocus = new Set<View>()
+  #lastCommittedNative = true
 
   /**
    * If the previous focus-view is not mounted, we can clear out the current
@@ -29,44 +48,75 @@ export class FocusManager {
     this.#focusRing = []
     this.#hotKeys = []
     this.#keyboardListeners = []
+    this.#keyTaps = []
+    this.#nativeFocus = new Set()
+    this.#explicitFocus = new Set()
     this.#didCommit = false
   }
 
+  /**
+   * A view that is focused only because of an external focus listener doesn't
+   * get native key events. Views that never registered at all (focused via
+   * `requestFocus`) keep their native behavior.
+   */
+  #isNativeFocus(view: View) {
+    return this.#nativeFocus.has(view) || !this.#explicitFocus.has(view)
+  }
+
   trigger(event: KeyEvent) {
+    this.#triggerNative(event)
+
+    for (const tap of this.#keyTaps) {
+      if (tap.spec === 'all' || match(tap.spec, event)) {
+        tap.deliver(event)
+      }
+    }
+  }
+
+  #triggerNative(event: KeyEvent) {
     for (const [view, key] of this.#hotKeys) {
       if (match(key, event)) {
-        return view.receiveKey(event)
+        return view._deliverKey(event)
       }
     }
 
+    const focused = this.#currentFocusView
     if (event.name === 'tab' && !event.ctrl && !event.alt && !event.gui) {
       if (event.shift) {
         this.prevFocus()
       } else {
         this.nextFocus()
       }
-    } else if (this.#currentFocusView && this.#currentFocusView !== UNFOCUS) {
-      this.#currentFocusView.receiveKey(event)
+    } else if (focused && focused !== UNFOCUS && this.#isNativeFocus(focused)) {
+      focused._deliverKey(event)
     } else if (this.#keyboardListeners.length > 0) {
       // Last registered = innermost view = highest priority
-      this.#keyboardListeners[this.#keyboardListeners.length - 1].receiveKey(
+      this.#keyboardListeners[this.#keyboardListeners.length - 1]._deliverKey(
         event,
       )
     }
   }
 
   triggerPaste(text: string) {
-    if (this.#currentFocusView && this.#currentFocusView !== UNFOCUS) {
-      this.#currentFocusView.receivePaste(text)
+    const focused = this.#currentFocusView
+    if (focused && focused !== UNFOCUS && this.#isNativeFocus(focused)) {
+      focused.receivePaste(text)
     }
   }
 
   /**
    * Returns whether the current view has focus.
+   *
+   * @param native Whether the view's own render registered (true), or an
+   *   external focus listener did (false). A view may register both ways; it
+   *   only appears once in the focus ring.
    */
-  registerFocus(view: View, isDefault: boolean) {
+  registerFocus(view: View, isDefault: boolean, native = true) {
     if (!this.#didCommit) {
-      this.#focusRing.push(view)
+      if (!this.#focusRing.includes(view)) {
+        this.#focusRing.push(view)
+      }
+      ;(native ? this.#nativeFocus : this.#explicitFocus).add(view)
     }
 
     if (!this.#currentFocusView && this.#prevFocusView === view) {
@@ -119,6 +169,22 @@ export class FocusManager {
     this.#keyboardListeners.push(view)
   }
 
+  /**
+   * Registers an external observer for key events (see `View.addKeyboardListener`).
+   * Taps never consume the event.
+   */
+  registerKeyTap(
+    view: View,
+    spec: HotKeyDef | 'all',
+    deliver: KeyTap['deliver'],
+  ) {
+    if (this.#didCommit) {
+      return
+    }
+
+    this.#keyTaps.push({view, spec, deliver})
+  }
+
   requestFocus(view: View) {
     this.#currentFocusView = view
     return true
@@ -155,10 +221,11 @@ export class FocusManager {
 
     if (prev !== current) {
       if (prev && prev !== UNFOCUS) {
-        prev.didBlur()
+        prev._focusChanged(false, this.#lastCommittedNative)
       }
       if (current && current !== UNFOCUS) {
-        current.didFocus()
+        this.#lastCommittedNative = this.#isNativeFocus(current)
+        current._focusChanged(true, this.#lastCommittedNative)
       }
       this.#lastCommittedFocus = current
       return true

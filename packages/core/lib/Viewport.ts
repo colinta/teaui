@@ -7,7 +7,12 @@ import {Rect, Point, Size} from './geometry.js'
 import {Screen} from './Screen.js'
 import {View} from './View.js'
 import type {Modal} from './components/Modal.js'
-import type {HotKeyDef, MouseEventListenerName} from './events/index.js'
+import type {
+  HotKeyDef,
+  KeyEvent,
+  MouseDestination,
+  MouseEventListenerName,
+} from './events/index.js'
 import {define} from './util.js'
 
 /**
@@ -131,6 +136,15 @@ export class Viewport {
   }
 
   /**
+   * The absolute (screen) location of this viewport's origin. `View` records this
+   * on every render, so that external mouse listeners can be given positions
+   * relative to the view's content.
+   */
+  get absoluteOrigin(): Point {
+    return this.#offset
+  }
+
+  /**
    * Request that a modal be presented above the current view tree.
    * The modal receives `presentedRect` (this view's absolute rect) and
    * `windowSize` (the full screen size) before rendering.
@@ -200,6 +214,20 @@ export class Viewport {
     eventNames: MouseEventListenerName | MouseEventListenerName[],
     rect?: Rect,
   ) {
+    this._registerMouse(eventNames, undefined, rect)
+  }
+
+  /**
+   * Registers a mouse destination for the current render target. Without a
+   * `destination`, the view's own `receiveMouse` is the destination.
+   *
+   * @internal Used by `View` to register external mouse listeners.
+   */
+  _registerMouse(
+    eventNames: MouseEventListenerName | MouseEventListenerName[],
+    destination?: MouseDestination,
+    rect?: Rect,
+  ) {
     if (!this.#currentRender || this.#currentRender.screen !== this.#screen) {
       return
     }
@@ -223,9 +251,38 @@ export class Viewport {
           this.#offset,
           new Point(x, y),
           events,
+          destination,
         )
       }
     }
+  }
+
+  /**
+   * Makes the current render target focusable *without* enabling its native
+   * focus behavior (`receiveKey`, `didFocus`, `didBlur`).
+   *
+   * @internal Used by `View` to register external focus listeners.
+   */
+  _registerFocus(isDefault: boolean) {
+    if (!this.#currentRender) {
+      return
+    }
+
+    this.#screen.registerFocus(this.#currentRender, isDefault, false)
+  }
+
+  /**
+   * Registers an external observer for key events: hotkeys (`HotKeyDef`) or
+   * every key event (`'all'`). Observers never consume the event.
+   *
+   * @internal Used by `View` to register external keyboard listeners.
+   */
+  _registerKeyTap(spec: HotKeyDef | 'all', deliver: (event: KeyEvent) => void) {
+    if (!this.#currentRender) {
+      return
+    }
+
+    this.#screen.registerKeyTap(this.#currentRender, spec, deliver)
   }
 
   registerTick() {

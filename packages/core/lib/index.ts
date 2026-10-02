@@ -13,11 +13,25 @@ export * from './log.js'
 export * from './Screen.js'
 export type {SystemEvent, PasteEvent} from './events/index.js'
 export type {FocusEvent, ResizeEvent} from './events/window.js'
+export type {FocusEventName} from './events/focus.js'
 export * from './TerminalProgram.js'
 export * from './Style.js'
 export * from './Palette.js'
 export * from './types.js'
-export {View, Props as ViewProps} from './View.js'
+export {
+  View,
+  Props as ViewProps,
+  type MouseListener,
+  type MouseListenerOptions,
+  type KeyboardListener,
+  type KeyboardListenerOptions,
+  type FocusListener,
+  type FocusListenerOptions,
+  type RemoveListener,
+  type MouseListenerProp,
+  type KeyboardListenerProp,
+  type FocusListenerProp,
+} from './View.js'
 export {Container, Props as ContainerProps} from './Container.js'
 export * from './ansi.js'
 export * from './events/mouse.js'
@@ -27,6 +41,7 @@ export {
   type HotKeyDef,
   type HotKey as HotKeyProp,
   toHotKeyDef,
+  normalizeHotKey,
   isKeyPrintable,
   match as matchHotKey,
   styleTextForHotKey,

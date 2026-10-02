@@ -101,6 +101,61 @@ export function toHotKeyDef(hotKey: HotKey) {
   return {char, ctrl, alt, gui, shift}
 }
 
+const MODIFIER_ALIASES: Record<string, 'C' | 'A' | 'G' | 'S'> = {
+  ctrl: 'C',
+  control: 'C',
+  alt: 'A',
+  option: 'A',
+  opt: 'A',
+  gui: 'G',
+  cmd: 'G',
+  command: 'G',
+  meta: 'G',
+  super: 'G',
+  shift: 'S',
+}
+
+/**
+ * Accepts the spelled-out form of a hotkey ('ctrl+a', 'cmd+shift+up', 'ctrl++')
+ * and converts it to the 'C-A-G-S-' form that `toHotKeyDef` understands. Anything
+ * else (already 'C-a', a plain 'x', a HotKeyDef) is returned unchanged.
+ */
+export function normalizeHotKey(hotKey: HotKey): HotKey {
+  if (
+    typeof hotKey !== 'string' ||
+    hotKey.length <= 1 ||
+    !hotKey.includes('+')
+  ) {
+    return hotKey
+  }
+
+  let key: string
+  let modifiers: string[]
+  if (hotKey.endsWith('++')) {
+    // 'ctrl++' - the '+' key itself
+    key = '+'
+    modifiers = hotKey.slice(0, -2).split('+')
+  } else {
+    modifiers = hotKey.split('+')
+    key = modifiers.pop()!
+  }
+
+  const found = new Set<string>()
+  for (const modifier of modifiers) {
+    const alias = MODIFIER_ALIASES[modifier.toLowerCase()]
+    if (!alias || !key) {
+      return hotKey
+    }
+    found.add(alias)
+  }
+
+  const prefix = ['C', 'A', 'G', 'S']
+    .filter(modifier => found.has(modifier))
+    .map(modifier => `${modifier}-`)
+    .join('')
+  return `${prefix}${key}`
+}
+
 /**
  * Maps a key name to its sigil representation.
  */

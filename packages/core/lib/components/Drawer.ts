@@ -14,7 +14,6 @@ import {type LegendItem} from '../types.js'
 import {Style} from '../Style.js'
 import {Palette} from '../Palette.js'
 import {define} from '../util.js'
-import {System} from '../System.js'
 
 interface Props extends ContainerProps {
   location?: Edge
@@ -278,9 +277,7 @@ export class Drawer extends Container {
     this.#setIsOpen(!this.#isOpen)
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#setIsOpen(!this.#isOpen)
     }

@@ -546,8 +546,6 @@ export class Input extends View {
   }
 
   receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
     if (event.button !== 'left') {
       return
     }
@@ -676,7 +674,6 @@ export class Input extends View {
   }
 
   didBlur() {
-    super.didBlur()
     this.#resetMouseSelection()
   }
 

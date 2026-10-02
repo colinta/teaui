@@ -4,6 +4,7 @@ export type * from './key.js'
 export * from './key.js'
 export type * from './window.js'
 export * from './window.js'
+export type * from './focus.js'
 
 import type {MouseEvent, SystemMouseEvent} from './mouse.js'
 import type {KeyEvent} from './key.js'

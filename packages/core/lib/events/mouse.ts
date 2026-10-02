@@ -1,5 +1,6 @@
 export type MouseButton = 'left' | 'middle' | 'right' | 'wheel' | 'unknown'
-import {View} from '../View.js'
+import type {View} from '../View.js'
+import type {System} from '../System.js'
 import {Point, Rect} from '../geometry.js'
 
 export type MouseMove =
@@ -50,21 +51,44 @@ export type SystemMouseEvent = Omit<MouseEvent, 'name' | 'position'> & {
   x: number
   y: number
 }
+/**
+ * Where a mouse event is delivered. Every mouse registration (`viewport.registerMouse`
+ * or an external `view.addMouseListener(..., {events})`) has a destination.
+ * Destinations are compared by identity: that's how hover (enter/exit) and
+ * press/drag tracking work independently for each registration.
+ *
+ * `location` is the absolute (screen) location of the event; each destination
+ * decides what coordinate space to hand to its handler.
+ */
+export type MouseDestination = {
+  /**
+   * Native destinations forward to the view's `receiveMouse`. When a native and
+   * an external destination for the same view both match, the native one goes first.
+   */
+  readonly isNative: boolean
+  deliver(event: MouseEvent, system: System, location: Point): void
+}
 export type MouseDownEvent = {
-  target?: MouseEventTarget & {wasInside: boolean}
+  targets: (MouseEventTarget & {wasInside: boolean})[]
   button: MouseButton
 }
 export type MouseEventTarget = {
   view: View
   offset: Point
+  destination: MouseDestination
 }
+/**
+ * The registrations at one location. For button and wheel events, only the
+ * topmost *view* is targeted, but all of that view's matching destinations are
+ * kept in the list.
+ */
 export type MouseEventListener = {
   move: MouseEventTarget[]
-  buttonAll?: MouseEventTarget
-  buttonLeft?: MouseEventTarget
-  buttonMiddle?: MouseEventTarget
-  buttonRight?: MouseEventTarget
-  wheel?: MouseEventTarget
+  buttonAll?: MouseEventTarget[]
+  buttonLeft?: MouseEventTarget[]
+  buttonMiddle?: MouseEventTarget[]
+  buttonRight?: MouseEventTarget[]
+  wheel?: MouseEventTarget[]
 }
 
 export function isMouseClicked(event: MouseEvent, inside?: Rect) {

@@ -49,7 +49,6 @@ export class Mouse extends Container {
   }
 
   receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
     this.#onMouse?.(event, system)
   }
 

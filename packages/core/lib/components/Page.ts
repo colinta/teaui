@@ -2,7 +2,6 @@ import {Container, type Props as ContainerProps} from '../Container.js'
 import {Point, Rect, Size} from '../geometry.js'
 import {View} from '../View.js'
 import {Viewport} from '../Viewport.js'
-import {System} from '../System.js'
 import {
   type MouseEvent,
   type KeyEvent,
@@ -175,9 +174,7 @@ export class Page extends Container {
     }
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseWheel(event)) {
       if (this.#disableScrollTimeout > 0) {
         return

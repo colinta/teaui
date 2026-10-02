@@ -17,7 +17,6 @@ import {
 import {childPalette} from '../UI.js'
 import type {View} from '../View.js'
 import {type Alignment, type LegendItem} from '../types.js'
-import {System} from '../System.js'
 import {Color} from '../Color.js'
 
 type Border = 'default' | 'arrows' | 'none'
@@ -108,9 +107,7 @@ export class Button extends Container {
     return [unicode.lineWidth(left), unicode.lineWidth(right)]
   }
 
-  receiveMouse(event: MouseEvent, system: System) {
-    super.receiveMouse(event, system)
-
+  receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
       this.#onClick?.()
     }
