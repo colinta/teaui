@@ -109,12 +109,15 @@ export class CollapsibleText extends View {
       const point = new Point(0, 0).mutableCopy()
       let offsetX = 0
       if (viewport.contentSize.width < width || height > 1) {
-        viewport.registerMouse('mouse.button.left')
-        viewport.write(
-          this.#isCollapsed ? '► ' : '▼ ',
-          Point.zero,
-          this.purpose.ui({variant: 'flat', isPressed: this.isPressed}),
-        )
+        // Like Collapsible, the whole area highlights on hover and press
+        viewport.registerMouse(['mouse.button.left', 'mouse.move'])
+        const textStyle = this.purpose.ui({
+          variant: 'flat',
+          isPressed: this.isPressed,
+          isHover: this.isHover,
+        })
+        viewport.paint(textStyle)
+        viewport.write(this.#isCollapsed ? '► ' : '▼ ', Point.zero, textStyle)
         offsetX = 2
       }
       point.x = offsetX
