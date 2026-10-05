@@ -140,7 +140,12 @@ export class Text extends View {
 
     this.#lines = lines.map(line => {
       if (fontMap) {
-        line = [...line].map(c => fontMap.get(c) ?? c).join('')
+        // printableChars keeps each ANSI sequence whole, so only visible
+        // characters are mapped
+        line = unicode
+          .printableChars(line)
+          .map(c => fontMap.get(c) ?? c)
+          .join('')
       }
 
       return [line, unicode.lineWidth(line)]

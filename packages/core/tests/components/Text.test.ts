@@ -2,8 +2,45 @@ import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Text} from '../../lib/components/Text.js'
 import {Style} from '../../lib/Style.js'
+import {Size} from '../../lib/geometry.js'
 
 describe('Text', () => {
+  describe('font', () => {
+    it('maps letters and digits', () => {
+      const t = testRender(new Text({text: 'ab 12', font: 'serif-bold'}), {
+        width: 10,
+        height: 1,
+      })
+      expect(t.terminal.textContent()).toBe('𝐚𝐛 𝟏𝟐')
+    })
+
+    it('does not map the characters of ANSI sequences', () => {
+      const t = testRender(
+        new Text({
+          text: 'a\x1b[1mb\x1b[22m\x1b[38;5;196mc\x1b[39m',
+          font: 'serif-bold',
+        }),
+        {width: 10, height: 1},
+      )
+      expect(t.terminal.textContent()).toBe('𝐚𝐛𝐜')
+      expect(t.terminal.styleAt(0, 0).bold).toBeFalsy()
+      expect(t.terminal.styleAt(1, 0).bold).toBe(true)
+      expect(t.terminal.styleAt(2, 0).bold).toBeFalsy()
+      expect(t.terminal.styleAt(2, 0).foreground).toBeDefined()
+      expect(t.terminal.styleAt(1, 0).foreground).toBeUndefined()
+    })
+
+    it('measures mapped text without the ANSI sequences', () => {
+      const text = new Text({
+        text: '\x1b[1m12\x1b[22m',
+        font: 'serif-bold',
+      })
+      const t = testRender(text, {width: 10, height: 1})
+      expect(t.terminal.textContent()).toBe('𝟏𝟐')
+      expect(text.naturalSize(new Size(10, 1))).toEqual(new Size(2, 1))
+    })
+  })
+
   it('renders text content', () => {
     const t = testRender(new Text({text: 'Hello, world!'}), {
       width: 20,

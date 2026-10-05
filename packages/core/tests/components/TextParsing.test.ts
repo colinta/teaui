@@ -95,7 +95,7 @@ describe('Text parsing compatibility', () => {
         frames.push(draw(text, width, Style.NONE, true))
         text.text = '\x1b[4mchanged\x1b[24m 界\n\x1b[48;5;35mnew\x1b[49m'
         frames.push(draw(text, width))
-        text.font = 'bold'
+        text.font = 'serif-bold'
         frames.push(draw(text, width))
         text.font = 'default'
         frames.push(draw(text, width))

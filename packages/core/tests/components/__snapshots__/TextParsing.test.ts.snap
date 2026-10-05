@@ -50,8 +50,8 @@ exports[`Text parsing compatibility > retains styled/Unicode output across updat
 [0m       [0m
 [0m       [0m
 [0m       [0m",
-  "[0m[48;2;5;10;15;36;4mnged[24;48;2;5;10;15;36m 界[0m
-[0m    [48;5;35;36mnew[0m
+  "[0m[48;2;5;10;15;36;4m𝐧𝐠𝐞𝐝[24;48;2;5;10;15;36m 界[0m
+[0m    [48;5;35;36m𝐧𝐞𝐰[0m
 [0m       [0m
 [0m       [0m
 [0m       [0m
@@ -121,9 +121,9 @@ exports[`Text parsing compatibility > retains styled/Unicode output across updat
 [0m       [0m
 [0m       [0m
 [0m       [0m",
-  "[0m[48;2;5;10;15;36;4mchanged[0m
+  "[0m[48;2;5;10;15;36;4m𝐜𝐡𝐚𝐧𝐠𝐞𝐝[0m
 [0m  [48;2;5;10;15;36m界[49;39m   [0m
-[0m  [48;5;35;36mnew[49;39m  [0m
+[0m  [48;5;35;36m𝐧𝐞𝐰[49;39m  [0m
 [0m       [0m
 [0m       [0m
 [0m       [0m",
@@ -192,8 +192,8 @@ exports[`Text parsing compatibility > retains styled/Unicode output across updat
 [0m                   [0m
 [0m                   [0m
 [0m                   [0m",
-  "[0m         [48;2;5;10;15;36;4mchanged[24;48;2;5;10;15;36m 界[0m
-[0m                [48;5;35;36mnew[0m
+  "[0m         [48;2;5;10;15;36;4m𝐜𝐡𝐚𝐧𝐠𝐞𝐝[24;48;2;5;10;15;36m 界[0m
+[0m                [48;5;35;36m𝐧𝐞𝐰[0m
 [0m                   [0m
 [0m                   [0m
 [0m                   [0m
@@ -263,8 +263,8 @@ exports[`Text parsing compatibility > retains styled/Unicode output across updat
 [0m                   [0m
 [0m                   [0m
 [0m                   [0m",
-  "[0m    [48;2;5;10;15;36;4mchanged[24;48;2;5;10;15;36m 界[49;39m     [0m
-[0m        [48;5;35;36mnew[49;39m        [0m
+  "[0m    [48;2;5;10;15;36;4m𝐜𝐡𝐚𝐧𝐠𝐞𝐝[24;48;2;5;10;15;36m 界[49;39m     [0m
+[0m        [48;5;35;36m𝐧𝐞𝐰[49;39m        [0m
 [0m                   [0m
 [0m                   [0m
 [0m                   [0m
@@ -334,8 +334,8 @@ exports[`Text parsing compatibility > retains styled/Unicode output across updat
 [0m                                         [0m
 [0m                                         [0m
 [0m                                         [0m",
-  "[0m                               [48;2;5;10;15;36;4mchanged[24;48;2;5;10;15;36m 界[0m
-[0m                                      [48;5;35;36mnew[0m
+  "[0m                               [48;2;5;10;15;36;4m𝐜𝐡𝐚𝐧𝐠𝐞𝐝[24;48;2;5;10;15;36m 界[0m
+[0m                                      [48;5;35;36m𝐧𝐞𝐰[0m
 [0m                                         [0m
 [0m                                         [0m
 [0m                                         [0m
@@ -405,8 +405,8 @@ exports[`Text parsing compatibility > retains styled/Unicode output across updat
 [0m                                         [0m
 [0m                                         [0m
 [0m                                         [0m",
-  "[0m               [48;2;5;10;15;36;4mchanged[24;48;2;5;10;15;36m 界[49;39m                [0m
-[0m                   [48;5;35;36mnew[49;39m                   [0m
+  "[0m               [48;2;5;10;15;36;4m𝐜𝐡𝐚𝐧𝐠𝐞𝐝[24;48;2;5;10;15;36m 界[49;39m                [0m
+[0m                   [48;5;35;36m𝐧𝐞𝐰[49;39m                   [0m
 [0m                                         [0m
 [0m                                         [0m
 [0m                                         [0m

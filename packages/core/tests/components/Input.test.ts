@@ -702,7 +702,7 @@ describe('Input', () => {
         height: 1,
       })
       t.sendKey('tab')
-      t.sendMouse('mouse.move', {x: 0, y: 0})
+      t.sendMouse('mouse.move.in', {x: 0, y: 0})
 
       expect(t.terminal.styleAt(0, 0).background).toEqual([90, 122, 194])
     })
