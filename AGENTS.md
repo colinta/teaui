@@ -41,8 +41,12 @@ const LEFT_ARROW = '←';
 - **`View`** — Base class. Handles sizing (`naturalSize`), rendering (`render`),
   layout props (flex, padding, min/max size), mouse/key events, and screen
   mounting.
-- **`Container`** — Extends View with child management (`add`, `removeChild`,
-  `children`).
+- **`ComposedView`** — Extends View with child views it owns: renders and
+  mounts them, exposes read-only `children`, but `add`/`removeChild` are
+  `protected`. Use it when subviews are an implementation detail (`Slider`).
+- **`Container`** — Extends ComposedView, making child management public
+  (`add`, `removeChild`, `child`/`children` props). Use it for views that accept
+  children from their users.
 - **`Screen`** — The runtime. Owns the render loop, mouse/focus/tick managers,
   and the terminal buffer. Processes system events via `trigger()` → dispatch →
   `render()`.
@@ -87,8 +91,8 @@ pnpm run test               # Run all tests
 
 ### Adding a new core component
 
-1. Create `packages/core/lib/components/MyComponent.ts` extending `View` or
-   `Container`
+1. Create `packages/core/lib/components/MyComponent.ts` extending `View`,
+   `ComposedView` (built from subviews), or `Container` (accepts children)
 2. Export from `packages/core/lib/components/index.ts`
 3. Add to both reconcilers' `createInstance` switch
 4. Add JSX type declarations and wrapper component in

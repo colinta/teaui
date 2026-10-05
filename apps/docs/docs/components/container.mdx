@@ -6,7 +6,7 @@ import Example from '@site/src/components/Example'
 
 # Container
 
-`Container` extends `View`, adding child view management. It is the base class for all components that hold other views: `Box`, `Stack`, `Window`, `Accordion`, `Drawer`, `Tabs`, and more.
+`Container` extends [`ComposedView`](#composedview), adding public child view management. It is the base class for all components that hold other views: `Box`, `Stack`, `Window`, `Accordion`, `Drawer`, `Tabs`, and more.
 
 You never instantiate `Container` directly — instead you work with one of its subclasses. The examples on this page use `Box` and `Stack` to illustrate the concept.
 
@@ -123,3 +123,35 @@ need `add` or `removeFromParent` if you are using the Core API.
 | `container.removeChild(child)`  | Remove a specific child          |
 | `container.removeAllChildren()` | Remove all children              |
 | `view.removeFromParent()`       | Detach this view from its parent |
+
+## ComposedView
+
+Some views are _built_ from other views, but don't accept children. `Slider`,
+for example, is made of two buttons and a track, and callers shouldn't be able
+to add to or rearrange those.
+
+Those views extend `ComposedView`, the base class of `Container`. A
+`ComposedView` mounts, renders, and lays out its children like a `Container`
+does, and its `children` are readable. But `add`, `removeChild`, and
+`removeAllChildren` are `protected`, so only the view itself can call them. It
+also doesn't accept the `child`/`children` props, so `update()` never replaces
+the views it built.
+
+```ts
+import {ComposedView, Stack, Text} from '@teaui/core'
+
+class Labelled extends ComposedView {
+  #label = new Text({text: 'Name: '})
+  #value = new Text()
+
+  constructor(value: string) {
+    super()
+    this.#value.text = value
+    this.add(Stack.right([this.#label, this.#value]))
+  }
+}
+```
+
+A child can still call `view.removeFromParent()`; this goes through the
+parent's `removeChild()`, so a `ComposedView` can intercept it. In React,
+passing children to a `ComposedView` throws an error.

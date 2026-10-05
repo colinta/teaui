@@ -220,7 +220,7 @@ export class Align extends Container {
     this.#stack.removeAllChildren()
   }
 
-  get children(): View[] {
+  get children(): readonly View[] {
     return this.#stack.children
   }
 

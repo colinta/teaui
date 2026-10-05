@@ -3,7 +3,7 @@ import type {Viewport} from './Viewport.js'
 import type {Screen} from './Screen.js'
 import type {Purpose} from './Palette.js'
 import {Palette} from './Palette.js'
-import {Container} from './Container.js'
+import type {ComposedView} from './ComposedView.js'
 import {System} from './System.js'
 import {
   isMouseEnter,
@@ -228,9 +228,15 @@ export interface Props {
   debug?: boolean
 }
 
+/**
+ * How `view.removeFromParent()` asks its parent to let go of it. Not exported
+ * from the package: `ComposedView` keeps `removeChild()` protected.
+ */
+export const REMOVE_CHILD = Symbol('removeChild')
+
 export abstract class View {
   // id = performance.now().toString(36)
-  parent: Container | undefined = undefined
+  parent: ComposedView | undefined = undefined
   debug: boolean = false
 
   #screen: Screen | undefined = undefined
@@ -494,7 +500,7 @@ export abstract class View {
     return this.#screen
   }
 
-  get children(): View[] {
+  get children(): readonly View[] {
     return []
   }
 
@@ -1042,7 +1048,7 @@ export abstract class View {
       return
     }
 
-    this.parent.removeChild(this)
+    this.parent[REMOVE_CHILD](this)
   }
 
   moveToScreen(screen: Screen | undefined) {

@@ -153,6 +153,19 @@ describe('reconciler', () => {
       }).toThrow('unknown component "unknown-element"')
       console.error = e
     })
+
+    it('throws when giving children to a ComposedView', async () => {
+      const e = console.error
+      console.error = () => {}
+      expect(() => {
+        renderToWindow(
+          React.createElement('tui-slider', {range: [0, 10]} as any, [
+            <tui-space key="space" />,
+          ]),
+        )
+      }).toThrow('Slider does not accept children')
+      console.error = e
+    })
   })
 
   describe('unmount', () => {

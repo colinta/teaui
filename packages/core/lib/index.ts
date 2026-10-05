@@ -32,6 +32,7 @@ export {
   type KeyboardListenerProp,
   type FocusListenerProp,
 } from './View.js'
+export {ComposedView} from './ComposedView.js'
 export {Container, Props as ContainerProps} from './Container.js'
 export * from './ansi.js'
 export * from './events/mouse.js'

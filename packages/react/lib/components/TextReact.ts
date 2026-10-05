@@ -1,5 +1,6 @@
 import {
   Alignment,
+  type ComposedView,
   Container,
   define,
   FontFamily,
@@ -126,7 +127,7 @@ export class TextLiteral extends View {
   styledText(): string {
     let style: Style | undefined
     for (
-      let ancestorView: Container | undefined = this.parent;
+      let ancestorView: ComposedView | undefined = this.parent;
       ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
@@ -160,7 +161,7 @@ export class TextLiteral extends View {
   #invalidateTextContainer() {
     let textContainer: TextContainer | undefined
     for (
-      let ancestorView: Container | undefined = this.parent;
+      let ancestorView: ComposedView | undefined = this.parent;
       ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {
@@ -420,7 +421,7 @@ export class TextContainer extends Container {
     })
   }
 
-  #flatten(nodes: View[]): View[] {
+  #flatten(nodes: readonly View[]): View[] {
     return nodes.flatMap(node => {
       if (node instanceof TextContainer) {
         return this.#flatten(node.nodes)
@@ -587,7 +588,7 @@ export class TextStyle extends TextProvider {
 
   #invalidateTextContainer() {
     for (
-      let ancestorView: Container | undefined = this.parent;
+      let ancestorView: ComposedView | undefined = this.parent;
       ancestorView;
       ancestorView = ancestorView && ancestorView.parent
     ) {

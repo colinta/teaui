@@ -305,7 +305,16 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     return true
   }
 
+  // Views like Slider extend ComposedView: they are built from child views,
+  // but do not accept children.
+  function assertContainer(parent: View): asserts parent is Container {
+    if (!(parent instanceof Container)) {
+      throw new Error(`${parent.constructor.name} does not accept children`)
+    }
+  }
+
   function removeChild(container: Container, child: View) {
+    assertContainer(container)
     if (
       (child instanceof TextLiteral || child instanceof TextStyle) &&
       removeFromTextContainer(child)
@@ -320,6 +329,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
   }
 
   function appendChild(parentInstance: Container, child: View, before?: View) {
+    assertContainer(parentInstance)
     if (
       parentInstance instanceof TextStyle &&
       (child instanceof TextLiteral || child instanceof TextStyle)

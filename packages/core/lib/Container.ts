@@ -1,21 +1,20 @@
-import {Size} from './geometry.js'
 import type {Viewport} from './Viewport.js'
 import {type Props as ViewProps, View} from './View.js'
-import {Screen} from './Screen.js'
-import {define} from './util.js'
+import {ComposedView} from './ComposedView.js'
 
 export interface Props extends ViewProps {
   child?: View
   children?: View[]
 }
 
-export abstract class Container extends View {
-  #children: View[] = []
-
+/**
+ * A view that accepts children from its users - via the `child`/`children`
+ * props, or `add()`/`removeChild()`. For views whose children are an
+ * implementation detail, extend `ComposedView` instead.
+ */
+export abstract class Container extends ComposedView {
   constructor({child, children, ...viewProps}: Props = {}) {
     super(viewProps)
-
-    define(this, 'children', {enumerable: true})
 
     if (child) {
       this.add(child)
@@ -24,10 +23,6 @@ export abstract class Container extends View {
         this.add(child)
       }
     }
-  }
-
-  get children() {
-    return this.#children
   }
 
   update(props: Props) {
@@ -47,8 +42,8 @@ export abstract class Container extends View {
 
     if (children.length) {
       const childrenSet = new Set(children)
-      for (let index = this.#children.length - 1; index >= 0; index--) {
-        const child = this.#children[index]
+      for (let index = this.children.length - 1; index >= 0; index--) {
+        const child = this.children[index]
         if (!childrenSet.has(child)) {
           this.removeChild(child)
         }
@@ -62,111 +57,21 @@ export abstract class Container extends View {
     }
   }
 
-  naturalSize(available: Size): Size {
-    let width = 0
-    let height = 0
-    for (const child of this.#children) {
-      if (!child.isVisible) {
-        continue
-      }
-      const naturalSize = child.naturalSize(available)
-      width = Math.max(width, naturalSize.width)
-      height = Math.max(height, naturalSize.height)
-    }
-    return new Size(width, height)
-  }
-
-  render(viewport: Viewport) {
-    this.renderChildren(viewport)
-  }
+  // ComposedView's child management, made public
 
   renderChildren(viewport: Viewport) {
-    for (const child of this.#children) {
-      if (!child.isVisible) {
-        continue
-      }
-
-      child.render(viewport)
-    }
+    super.renderChildren(viewport)
   }
 
   add(child: View, at?: number) {
-    // early exit for adding child at its current index
-    if (
-      this.#children.length &&
-      this.#children[at ?? this.#children.length - 1] === child
-    ) {
-      return
-    }
-
-    if (child.parent === this) {
-      // only changing the order - remove it from this.#children, and add it back
-      // below at the correct index
-      this.#children = this.#children.filter(view => view !== child)
-    } else {
-      child.willMoveTo(this)
-
-      if (child.parent && child.parent instanceof Container) {
-        const previousParent = child.parent
-        const index = previousParent.#children.indexOf(child)
-        if (~index) {
-          previousParent.#children.splice(index, 1)
-          previousParent.invalidateSize()
-        }
-      }
-    }
-
-    this.#children.splice(at ?? this.#children.length, 0, child)
-
-    if (child.parent !== this) {
-      const parent = child.parent
-      child.parent = this
-      if (parent) {
-        child.didMoveFrom(parent)
-      }
-    }
-    // in theory we could call 'didReorder' in the else clause
-
-    // takes care of didMount, noop if screen == this.screen
-    child.moveToScreen(this.screen)
-
-    this.invalidateSize()
-  }
-
-  #removeChild(child: View) {
-    child.parent = undefined
-    child.didMoveFrom(this)
-
-    // takes care of didUnmount
-    child.moveToScreen(undefined)
+    super.add(child, at)
   }
 
   removeAllChildren() {
-    while (this.#children.length) {
-      this.removeChild(this.#children[this.#children.length - 1])
-    }
+    super.removeAllChildren()
   }
 
   removeChild(child: View) {
-    if (child.parent !== this) {
-      return
-    }
-
-    const index = this.#children.indexOf(child)
-    if (~index && index >= 0 && index < this.#children.length) {
-      const child = this.#children[index]
-      this.#children.splice(index, 1)
-
-      this.#removeChild(child)
-      this.invalidateSize()
-    }
-  }
-
-  moveToScreen(screen: Screen | undefined) {
-    super.moveToScreen(screen)
-
-    for (const child of this.#children) {
-      child.moveToScreen(this.screen)
-    }
+    super.removeChild(child)
   }
 }
