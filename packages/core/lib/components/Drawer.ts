@@ -413,7 +413,7 @@ export class Drawer extends Container {
     const drawerRect = new Rect(
       new Point(
         1,
-        viewport.contentSize.height - this.#currentDx + hiddenOffset,
+        viewport.contentSize.height - ~~this.#currentDx + hiddenOffset,
       ),
       new Size(drawerButtonRect.size.width - DRAWER_BORDER, drawerSize.height),
     )
@@ -450,7 +450,10 @@ export class Drawer extends Container {
         )
 
     const drawerRect = new Rect(
-      new Point(viewport.contentSize.width - this.#currentDx + hiddenOffset, 1),
+      new Point(
+        viewport.contentSize.width - ~~this.#currentDx + hiddenOffset,
+        1,
+      ),
       new Size(drawerSize.width, drawerButtonRect.size.height - DRAWER_BORDER),
     )
     this.#renderContent(viewport, drawerButtonRect, contentRect, drawerRect)
@@ -480,7 +483,7 @@ export class Drawer extends Container {
         )
 
     const drawerRect = new Rect(
-      new Point(this.#currentDx - hiddenOffset - drawerSize.width, 1),
+      new Point(~~this.#currentDx - hiddenOffset - drawerSize.width, 1),
       new Size(drawerSize.width, drawerButtonRect.size.height - DRAWER_BORDER),
     )
 
