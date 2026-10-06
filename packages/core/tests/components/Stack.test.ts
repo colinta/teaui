@@ -67,6 +67,38 @@ describe('Stack', () => {
     })
   })
 
+  describe('gap', () => {
+    const items = () => ['A', 'B', 'C'].map(text => new Text({text}))
+
+    it.each([
+      ['right', 'A B C'],
+      ['left', '    C B A'],
+    ] as const)(
+      'places one gap between each child (%s)',
+      (direction, expected) => {
+        const t = testRender(Stack[direction](items(), {gap: 1}), {
+          width: 9,
+          height: 1,
+        })
+        expect(t.terminal.textContent()).toBe(expected)
+      },
+    )
+
+    it.each([
+      ['down', 'A\n\nB\n\nC'],
+      ['up', '\n\nC\n\nB\n\nA'],
+    ] as const)(
+      'places one gap between each child (%s)',
+      (direction, expected) => {
+        const t = testRender(Stack[direction](items(), {gap: 1}), {
+          width: 1,
+          height: 7,
+        })
+        expect(t.terminal.textContent()).toBe(expected)
+      },
+    )
+  })
+
   describe('focus cycling', () => {
     it('tab moves focus between children', () => {
       let val1 = ''
