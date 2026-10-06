@@ -1,6 +1,17 @@
 export {Accordion} from './Accordion.js'
 export {At} from './At.js'
 export * from './Align.js'
+export {Alignment, type Props as AlignmentProps} from './Alignment.js'
+export {
+  AlignmentScope,
+  type UnavailableReason as AlignmentUnavailableReason,
+} from './AlignmentScope.js'
+export {
+  Placement,
+  type Props as PlacementProps,
+  type HorizontalEdge,
+  type VerticalEdge,
+} from './Placement.js'
 export {Alert} from './Alert.js'
 export {Callout} from './Callout.js'
 export {Calendar} from './Calendar.js'

@@ -63,6 +63,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'components/container',
             'components/align',
+            'components/alignment',
             'components/box',
             'components/stack',
             'components/space',

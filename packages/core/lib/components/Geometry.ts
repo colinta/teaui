@@ -41,7 +41,9 @@ export class Geometry extends Container {
   }
 
   render(viewport: Viewport) {
-    if (viewport.isEmpty) {
+    // Probes measure layout before it is drawn (see `Viewport.isProbe`); only
+    // report the size that is actually rendered.
+    if (viewport.isEmpty || viewport.isProbe) {
       return super.render(viewport)
     }
 

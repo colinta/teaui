@@ -1,0 +1,201 @@
+---
+title: Alignment points
+---
+
+import Example from '@site/src/components/Example'
+
+# Alignment points
+
+Lay out one view relative to a position inside a different part of the view
+tree. Three components work together:
+
+| Component        | Responsibility                                                     |
+| ---------------- | ------------------------------------------------------------------ |
+| `Alignment`      | A zero-sized, invisible marker that publishes a point.             |
+| `Placement`      | Positions and sizes its children using edges that refer to points. |
+| `AlignmentScope` | Resolves the points before drawing, and lays out the placements.   |
+
+The example below pins a list of differently sized cards to the top-right
+corner, and keeps the main text one column before the _widest_ card. Because
+the marker is the first item of a `Stack.down`, it sits at the stack's
+top-left corner, and the stack is as wide as its widest card.
+
+<Example name="alignment" title="Alignment points" />
+
+```tsx
+const cards = useAlignment('cards')
+
+<AlignmentScope>
+  <Placement left={0} right={cards.left.minus(1)}>
+    <Text wrap>...</Text>
+  </Placement>
+  <At.topRight>
+    <Stack.down>
+      <Alignment point={cards} />
+      <Stack.left><Box>box1</Box></Stack.left>
+      <Stack.left><Box>box2222</Box></Stack.left>
+    </Stack.down>
+  </At.topRight>
+</AlignmentScope>
+```
+
+The `Placement` can be declared before or after the `Alignment` it depends on;
+declaration order only controls which children are painted on top.
+
+## Coordinates
+
+A point has no size, so `left`, `right`, and `x` are the same coordinate, as
+are `top`, `bottom`, and `y`. Coordinates are symbolic and immutable; they are
+resolved during layout, not when you create them.
+
+```ts
+cards.left // the point's x
+cards.left.minus(1) // one column to its left
+cards.top.plus(2) // two rows below it
+```
+
+Horizontal and vertical coordinates have different types: `right={cards.top}`
+is a type error. Offsets must be integers.
+
+## Placement edges
+
+| Prop     | Type                             | Description                          |
+| -------- | -------------------------------- | ------------------------------------ |
+| `left`   | `number \| HorizontalCoordinate` | Leading horizontal edge              |
+| `right`  | `number \| HorizontalCoordinate` | Trailing horizontal edge (exclusive) |
+| `top`    | `number \| VerticalCoordinate`   | Leading vertical edge                |
+| `bottom` | `number \| VerticalCoordinate`   | Trailing vertical edge (exclusive)   |
+
+Numbers are coordinates in the scope's content area, **not** CSS-style insets:
+`right={20}` puts the right edge at x=20.
+
+Each axis is resolved independently:
+
+| Edges on an axis | Position              | Size                                            |
+| ---------------- | --------------------- | ----------------------------------------------- |
+| neither          | 0                     | natural size, bounded by the scope              |
+| leading only     | starts at the edge    | natural size, bounded by the remaining space    |
+| trailing only    | ends at the edge      | natural size, bounded by the space before it    |
+| both             | starts at the leading | fills the space between them (empty if crossed) |
+
+Right and bottom edges are exclusive, so `right={point.left}` is adjacent to
+the point and `right={point.left.minus(1)}` leaves a one-cell gap.
+
+```tsx
+// natural width, at most up to one column before the point
+<Placement right={cards.left.minus(1)}>...</Placement>
+
+// fill everything from x=0 to one column before the point
+<Placement left={0} right={cards.left.minus(1)}>...</Placement>
+
+// below a header, wherever the header ends
+<Placement top={header.bottom}>...</Placement>
+```
+
+The width is resolved before the height, so wrapping text measures its height
+at the width it will be drawn with. Children that are larger than their
+placement (e.g. with an explicit `width`) are clipped by it, including mouse
+events. Put size and padding props on the children of a `Placement`, not on
+the placement itself.
+
+## Markers in a Stack
+
+An `Alignment` is _flow-neutral_ in a `Stack`: it takes up no space, no flex,
+and no gap. Its location is the leading edge (in the stack direction) of the
+next item, or the trailing edge of the last item:
+
+```tsx
+<Stack.down gap={1}>
+  <Alignment point={top} /> {/* top-left of the stack */}
+  <Text>first</Text>
+  <Alignment point={middle} /> {/* top-left of "second", after the gap */}
+  <Text>second</Text>
+  <Alignment point={end} /> {/* bottom-left of "second", no trailing gap */}
+</Stack.down>
+```
+
+In `Stack.left` and `Stack.up`, the leading edge is the right and bottom edge,
+respectively.
+
+## Rules
+
+- `Placement` must be a **direct child** of an `AlignmentScope`. An `Alignment`
+  can be nested anywhere inside the scope's children, including inside another
+  placement, as long as it isn't inside a nested `AlignmentScope`.
+- A point can only be published by **one** mounted `Alignment`.
+- Dependency **cycles** are errors, including a placement that depends on a
+  point inside itself. Chains are fine: a marker inside placement A can
+  position placement B.
+- Ordinary (non-`Placement`) children receive the entire scope, like `ZStack`.
+- Coordinates are relative to the scope's content, so a scope can be padded,
+  boxed, or nested inside other layouts.
+
+Violations throw an `AlignmentError` with the points and placements involved.
+
+### Unavailable points
+
+When a point can't be resolved, the placements that depend on it are rendered
+into an empty viewport for that frame. They never use stale or default
+coordinates, and they still register their hotkeys. A point is unavailable when
+its `Alignment` is not mounted, is hidden (`isVisible={false}` on it or an
+ancestor), or was not rendered by its parent, and so are the points published
+inside a placement that couldn't be placed.
+
+This makes conditional markers safe:
+
+```tsx
+{
+  showCards && (
+    <At.topRight>
+      <Alignment point={cards} />
+      ...
+    </At.topRight>
+  )
+}
+```
+
+`AlignmentScope.unavailablePoints` reports the points that couldn't be resolved
+during the last render, and why (`'unmounted'`, `'hidden'`, or
+`'not-rendered'`).
+
+## How it works
+
+Before drawing, the scope measures each child that publishes a needed point by
+rendering it into a _probe_ viewport (`viewport.isProbe`), in dependency order.
+Probes draw nothing, register no events, and don't change the views' recorded
+geometry. Then every child is rendered normally, in declaration order.
+
+Custom views that have side effects in `render()` (calling callbacks, mutating
+outside state) should skip them when `viewport.isProbe` is true, the way
+`Geometry` skips `onLayout`.
+
+Not supported (yet): `Placement` inside a `Stack` or other intrinsically sized
+parent (put the `Stack` inside the placement instead), points shared across
+scopes, and markers inside virtualized or independently scrolling content.
+
+## Core API
+
+```ts
+const cards = new Alignment({name: 'cards'})
+
+new AlignmentScope({
+  children: [
+    new Placement({left: 0, right: cards.left.minus(1), child: content}),
+    At.topRight([
+      Stack.down([
+        cards,
+        Stack.left([new Box({child: new Text({text: 'box1'})})]),
+        Stack.left([new Box({child: new Text({text: 'box2222'})})]),
+      ]),
+    ]),
+  ],
+})
+```
+
+`new Alignment()` creates its own point, and exposes its coordinates
+(`cards.left`). To create the point before the view, use
+`createAlignment(name)` and `new Alignment({point})`; in React,
+`useAlignment(name)` keeps the same point for the component's lifetime.
+
+Placement edges can also be changed with setters (`placement.right =
+cards.left`) or `placement.update({...})`.

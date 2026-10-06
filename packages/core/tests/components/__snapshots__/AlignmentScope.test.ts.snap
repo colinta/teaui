@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AlignmentScope > motivating example > content avoids the widest card, and updates in the same render > both shrink 1`] = `
+"This content avoids the cards and   ┌──┐
+wraps before the widest one.        │b1│
+                                    └──┘
+                                    ┌──┐
+                                    │b2│
+                                    └──┘"
+`;
+
+exports[`AlignmentScope > motivating example > content avoids the widest card, and updates in the same render > box1 is widest 1`] = `
+"This content avoids the cards and ┌────┐
+wraps before the widest one.      │box1│
+                                  └────┘
+                                    ┌──┐
+                                    │b2│
+                                    └──┘"
+`;
+
+exports[`AlignmentScope > motivating example > content avoids the widest card, and updates in the same render > box2 is widest 1`] = `
+"This content avoids the cards     ┌────┐
+and wraps before the widest       │box1│
+one.                              └────┘
+                               ┌───────┐
+                               │box2222│
+                               └───────┘"
+`;
+
+exports[`AlignmentScope > placement rules > coordinates are relative to the scope content (padding, boxes, offsets) 1`] = `
+"  ┌────────────┐
+  │            │
+  │    xx      │
+  │            │
+  └────────────┘"
+`;

@@ -6,6 +6,8 @@ import {
   Accordion,
   Align,
   AlignRow,
+  Alignment,
+  AlignmentScope,
   At,
   Alert,
   Badge,
@@ -50,6 +52,7 @@ import {
   Spinner,
   Logo,
   Page,
+  Placement,
   ZStack,
   Stack,
   ScrollableList,
@@ -111,6 +114,15 @@ function createInstance(type: string, props: Props): any {
     case 'align-row':
     case 'tui-align-row':
       return new AlignRow(props as any)
+    case 'alignment':
+    case 'tui-alignment':
+      return new Alignment(props as any)
+    case 'alignment-scope':
+    case 'tui-alignment-scope':
+      return new AlignmentScope(props as any)
+    case 'placement':
+    case 'tui-placement':
+      return new Placement(props as any)
     case 'br':
     case 'tui-br':
       return new TextLiteral('\n')

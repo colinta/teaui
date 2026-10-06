@@ -14,6 +14,7 @@ import type {
   MouseEventListenerName,
 } from './events/index.js'
 import {define} from './util.js'
+import type {AlignmentContext} from './alignment.js'
 
 /**
  * Defines a region (contentSize) in which to draw, and a subset (visibleRect) that
@@ -33,7 +34,10 @@ export class Viewport {
   #style: Style
   // layout viewports don't draw or register events, see `Viewport.layout`
   #isLayout = false
-
+  // probe viewports are layout viewports that also leave the views' committed
+  // geometry alone, see `Viewport.isProbe`
+  #isProbe = false
+  #alignmentContext: AlignmentContext | undefined
   /**
    * For modals, this is the Rect of the view that presented the modal, in absolute
    * coordinates
@@ -67,6 +71,66 @@ export class Viewport {
     const viewport = new Viewport(screen, NULL_TERMINAL, contentSize)
     viewport.#isLayout = true
     return viewport
+  }
+
+  /**
+   * Probe viewports are used to measure a layout before it is drawn (see
+   * `AlignmentScope`). Nothing is drawn, no events are registered, and views
+   * don't record their location or size. The same views are rendered again,
+   * "for real", immediately afterwards.
+   *
+   * Views that have side effects in `render()` (callbacks, mutating external
+   * state) should skip them when `isProbe` is true. `Geometry`'s `onLayout` is
+   * an example.
+   */
+  get isProbe(): boolean {
+    return this.#isProbe
+  }
+
+  /**
+   * Renders `draw` into a probe viewport (see `isProbe`), which has the same
+   * origin, clipping, and style as this viewport.
+   *
+   * @internal Used by `AlignmentScope`.
+   */
+  _probe(draw: (viewport: Viewport) => void): void {
+    const probe = new Viewport(this.#screen, NULL_TERMINAL, this.#contentSize)
+    probe.#isLayout = true
+    probe.#isProbe = true
+    probe.#currentRender = this.#currentRender
+    probe.#availableRect = this.#availableRect
+    probe.#visibleRect = this.#visibleRect
+    probe.#offset = this.#offset
+    probe.#locationOrigin = this.#locationOrigin
+    probe.#style = this.#style
+    probe.#alignmentContext = this.#alignmentContext
+    probe.parentRect = this.parentRect
+    draw(probe)
+  }
+
+  /**
+   * The alignment context that `Alignment` views publish their location to.
+   *
+   * @internal
+   */
+  get _alignmentContext(): AlignmentContext | undefined {
+    return this.#alignmentContext
+  }
+
+  /**
+   * @internal Used by `AlignmentScope`.
+   */
+  _withAlignmentContext(
+    context: AlignmentContext | undefined,
+    draw: (viewport: Viewport) => void,
+  ): void {
+    const prev = this.#alignmentContext
+    this.#alignmentContext = context
+    try {
+      draw(this)
+    } finally {
+      this.#alignmentContext = prev
+    }
   }
 
   /**
@@ -264,7 +328,7 @@ export class Viewport {
    * @internal Used by `View` to register external focus listeners.
    */
   _registerFocus(isDefault: boolean) {
-    if (!this.#currentRender) {
+    if (!this.#currentRender || this.#isLayout) {
       return
     }
 
@@ -278,7 +342,7 @@ export class Viewport {
    * @internal Used by `View` to register external keyboard listeners.
    */
   _registerKeyTap(spec: HotKeyDef | 'all', deliver: (event: KeyEvent) => void) {
-    if (!this.#currentRender) {
+    if (!this.#currentRender || this.#isLayout) {
       return
     }
 

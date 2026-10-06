@@ -1,9 +1,12 @@
 import React, {forwardRef, useCallback, useMemo, useState} from 'react'
-import {isMouseClicked} from '@teaui/core'
+import {createAlignment, isMouseClicked} from '@teaui/core'
 import type {
   Accordion as WrAccordion,
   Align as WrAlign,
   AlignRow as WrAlignRow,
+  Alignment as WrAlignment,
+  AlignmentPoint,
+  AlignmentScope as WrAlignmentScope,
   Alert as WrAlert,
   At as WrAt,
   Badge as WrBadge,
@@ -42,6 +45,7 @@ import type {
   Spinner as WrSpinner,
   Tree as WrTree,
   Page as WrPage,
+  Placement as WrPlacement,
   Tabs as WrTabs,
   Toggle as WrToggle,
   ToggleGroup as WrToggleGroup,
@@ -122,6 +126,11 @@ export type AlertProps = Simplify<TUIContainer<typeof WrAlert>>
 export type CalloutProps = Simplify<TUIContainer<typeof WrCallout>>
 export type AlignProps = Simplify<TUIContainer<typeof WrAlign>>
 export type AlignRowProps = Simplify<TUIContainer<typeof WrAlignRow>>
+export type AlignmentProps = Simplify<TUIView<typeof WrAlignment>>
+export type AlignmentScopeProps = Simplify<
+  TUIContainer<typeof WrAlignmentScope>
+>
+export type PlacementProps = Simplify<TUIContainer<typeof WrPlacement>>
 export type ModalProps = Simplify<TUIContainer<typeof WrModal>>
 
 // "simple" containers
@@ -158,6 +167,9 @@ declare module 'react' {
       'tui-align': WithRef<AlignProps, WrAlign>
       'tui-badge': WithRef<BadgeProps, WrBadge>
       'tui-align-row': WithRef<AlignRowProps, WrAlignRow>
+      'tui-alignment': WithRef<AlignmentProps, WrAlignment>
+      'tui-alignment-scope': WithRef<AlignmentScopeProps, WrAlignmentScope>
+      'tui-placement': WithRef<PlacementProps, WrPlacement>
       'tui-br': {}
       'tui-breadcrumb': WithRef<BreadcrumbProps, WrBreadcrumb>
       'tui-calendar': WithRef<CalendarProps, WrCalendar>
@@ -521,6 +533,66 @@ export const Logo = forwardRef<WrLogo, LogoProps>(
     return <tui-logo ref={ref} {...reactProps} />
   },
 )
+/**
+ * Creates an alignment point that keeps its identity for the lifetime of the
+ * component. Pass it to an `<Alignment point={point} />` to publish it, and use
+ * its coordinates in `<Placement>` edges:
+ *
+ * ```tsx
+ * const cards = useAlignment('cards')
+ * <AlignmentScope>
+ *   <Placement left={0} right={cards.left.minus(1)}>...</Placement>
+ *   <At.topRight>
+ *     <Stack.down>
+ *       <Alignment point={cards} />
+ *       ...
+ *     </Stack.down>
+ *   </At.topRight>
+ * </AlignmentScope>
+ * ```
+ */
+export function useAlignment(name?: string): AlignmentPoint {
+  const [point] = useState(() => createAlignment(name))
+  return point
+}
+
+/**
+ * A zero-sized marker that publishes an alignment point, see `useAlignment`.
+ */
+export const Alignment = forwardRef<WrAlignment, AlignmentProps>(
+  function Alignment(reactProps, ref): JSX.Element {
+    return <tui-alignment ref={ref} {...reactProps} />
+  },
+)
+
+/**
+ * Resolves alignment points, and lays out its `<Placement>` children relative
+ * to them. Children are layered, like `<ZStack>`.
+ */
+export const AlignmentScope = forwardRef<WrAlignmentScope, AlignmentScopeProps>(
+  function AlignmentScope({children, ...props}, ref): JSX.Element {
+    return (
+      <tui-alignment-scope ref={ref} {...props}>
+        {children}
+      </tui-alignment-scope>
+    )
+  },
+)
+
+/**
+ * Positions its children using edge coordinates, which can be alignment points
+ * (`right={point.left.minus(1)}`). Must be a direct child of `<AlignmentScope>`.
+ */
+export const Placement = forwardRef<WrPlacement, PlacementProps>(
+  function Placement({children, ...props}, ref): JSX.Element {
+    return (
+      <tui-placement ref={ref} {...props}>
+        {children}
+      </tui-placement>
+    )
+  },
+)
+
 export const ZStack = forwardRef<WrZStack, ZStackProps>(
   function ZStack(reactProps, ref): JSX.Element {
     return <tui-zstack ref={ref} {...reactProps} />

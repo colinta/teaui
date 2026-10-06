@@ -9,6 +9,15 @@ export {testRender} from './TestScreen.js'
 export * from './Color.js'
 export * from './components/index.js'
 export * from './geometry.js'
+export {
+  AlignmentCoordinate,
+  AlignmentError,
+  AlignmentPoint,
+  createAlignment,
+  type AlignmentAxis,
+  type HorizontalCoordinate,
+  type VerticalCoordinate,
+} from './alignment.js'
 export * from './log.js'
 export * from './Screen.js'
 export type {SystemEvent, PasteEvent} from './events/index.js'

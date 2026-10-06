@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Alignment (React) > lays out content next to the widest card, and follows state changes > narrow 1`] = `
+"aaaaaaaaaa bbbbbbbbbbbb ┌────┐
+cccc                    │box1│
+                        └────┘
+                          ┌──┐
+                          │b2│
+                          └──┘"
+`;
+
+exports[`Alignment (React) > lays out content next to the widest card, and follows state changes > wide 1`] = `
+"aaaaaaaaaa              ┌────┐
+bbbbbbbbbbbb cccc       │box1│
+                        └────┘
+                     ┌───────┐
+                     │box2222│
+                     └───────┘"
+`;

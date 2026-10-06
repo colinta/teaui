@@ -148,10 +148,11 @@ export class Stack extends Container {
     const remainingSize = available.mutableCopy()
     let hasFlex = false
     for (const child of this.children) {
-      const childSize = child.naturalSize(remainingSize)
-      if (!child.isVisible) {
+      // layout markers are flow-neutral: no size, and no gap
+      if (!child.isVisible || child.isLayoutMarker) {
         continue
       }
+      const childSize = child.naturalSize(remainingSize)
 
       if (this.isVertical) {
         if (size.height) {
@@ -238,8 +239,16 @@ export class Stack extends Container {
     // contentSize - leftovers are divided to the flex views. naturalSizes might
     // as well be memoized along with the flex amounts
     const flexViews: [FlexSize, number, View][] = []
+    // Layout markers don't take up space (or gaps); they are rendered at the
+    // flow position in front of `flexViews[index]`, or after the last view.
+    const markers: [index: number, marker: View][] = []
     for (const child of this.children) {
       if (!child.isVisible) {
+        continue
+      }
+
+      if (child.isLayoutMarker) {
+        markers.push([flexViews.length, child])
         continue
       }
 
@@ -304,6 +313,19 @@ export class Stack extends Container {
     // stores the leftover rounding errors, and added to view once it exceeds 1
     let correctAmount: number = 0
 
+    let markerIndex = 0
+    const renderMarkers = (index: number) => {
+      while (
+        markerIndex < markers.length &&
+        markers[markerIndex][0] === index
+      ) {
+        const marker = markers[markerIndex++][1]
+        viewport.clipped(new Rect(origin.copy(), Size.zero), inside => {
+          marker.render(inside)
+        })
+      }
+    }
+
     // second pass, divide up the remainingSize to the flex views, subtracting off
     // of remainingSize. The last view receives any leftover height
     const totalRemainingSize = this.isVertical
@@ -311,7 +333,7 @@ export class Stack extends Container {
       : remainingSize.width
     let remainingDimension = totalRemainingSize
     let isFirst = true
-    for (const [flexSize, amount, child] of flexViews) {
+    for (const [index, [flexSize, amount, child]] of flexViews.entries()) {
       const childSize = viewport.contentSize.mutableCopy()
 
       // For pinned children, use the visible rect size in the pinned dimension
@@ -350,18 +372,25 @@ export class Stack extends Container {
         }
       }
 
-      if (this.#direction === 'left') {
-        origin.x -= childSize.width
-      } else if (this.#direction === 'up') {
-        origin.y -= childSize.height
-      }
-
       if (!isFirst) {
         if (this.#direction === 'right') {
           origin.x += this.#gap
         } else if (this.#direction === 'down') {
           origin.y += this.#gap
+        } else if (this.#direction === 'left') {
+          origin.x -= this.#gap
+        } else {
+          origin.y -= this.#gap
         }
+      }
+
+      // origin is now the leading edge (in the stack direction) of `child`
+      renderMarkers(index)
+
+      if (this.#direction === 'left') {
+        origin.x -= childSize.width
+      } else if (this.#direction === 'up') {
+        origin.y -= childSize.height
       }
 
       const clipOrigin = origin.mutableCopy()
@@ -394,14 +423,6 @@ export class Stack extends Container {
         child.render(inside)
       })
 
-      if (!isFirst) {
-        if (this.#direction === 'left') {
-          origin.x -= this.#gap
-        } else if (this.#direction === 'up') {
-          origin.y -= this.#gap
-        }
-      }
-
       if (this.#direction === 'right') {
         origin.x += childSize.width
       } else if (this.#direction === 'down') {
@@ -410,6 +431,9 @@ export class Stack extends Container {
 
       isFirst = false
     }
+
+    // trailing markers: the trailing edge of the last view (no trailing gap)
+    renderMarkers(flexViews.length)
   }
 }
 

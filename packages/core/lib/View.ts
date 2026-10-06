@@ -529,6 +529,15 @@ export abstract class View {
     return this.#hasFocus
   }
 
+  /**
+   * Layout markers (see `Alignment`) are flow-neutral: containers that lay out
+   * their children in sequence (`Stack`) don't allocate space, flex, or gaps
+   * for them, but still render them at their position in the flow.
+   */
+  get isLayoutMarker(): boolean {
+    return false
+  }
+
   get width() {
     return this.#width
   }
@@ -727,58 +736,81 @@ export abstract class View {
     render: (viewport: Viewport) => void,
   ): (viewport: Viewport) => void {
     return viewport => {
-      if (
-        this.#viewportContentSize.width !== viewport.contentSize.width ||
-        this.#viewportContentSize.height !== viewport.contentSize.height
-      ) {
-        this.#invalidateParent = false
-        this.invalidateSize()
-        this.#invalidateParent = true
+      if (!viewport.isProbe) {
+        this.#render(viewport, render)
+        return
       }
 
-      this.#viewportContentSize = viewport.contentSize
-      this.#renderedLocation = viewport.location
-
-      let origin: Point
-      const contentSize = viewport.contentSize.mutableCopy()
-      if (this.#x || this.#y) {
-        origin = new Point(this.#x ?? 0, this.#y ?? 0)
-        contentSize.width -= origin.x
-        contentSize.height -= origin.y
-      } else {
-        origin = Point.zero
+      // A probe measures the layout without committing it: restore the
+      // geometry from the last real render (used by mouse listeners,
+      // `View.origin`, and to detect size changes).
+      const viewportContentSize = this.#viewportContentSize
+      const renderedContentSize = this.#renderedContentSize
+      const renderedLocation = this.#renderedLocation
+      const contentOrigin = this.#contentOrigin
+      try {
+        this.#render(viewport, render)
+      } finally {
+        this.#viewportContentSize = viewportContentSize
+        this.#renderedContentSize = renderedContentSize
+        this.#renderedLocation = renderedLocation
+        this.#contentOrigin = contentOrigin
       }
+    }
+  }
 
-      this.#renderedContentSize = this.#restrictSize(
-        () => this.naturalSize(contentSize),
-        contentSize,
-        'grow',
+  #render(viewport: Viewport, render: (viewport: Viewport) => void) {
+    if (
+      this.#viewportContentSize.width !== viewport.contentSize.width ||
+      this.#viewportContentSize.height !== viewport.contentSize.height
+    ) {
+      this.#invalidateParent = false
+      this.invalidateSize()
+      this.#invalidateParent = true
+    }
+
+    this.#viewportContentSize = viewport.contentSize
+    this.#renderedLocation = viewport.location
+
+    let origin: Point
+    const contentSize = viewport.contentSize.mutableCopy()
+    if (this.#x || this.#y) {
+      origin = new Point(this.#x ?? 0, this.#y ?? 0)
+      contentSize.width -= origin.x
+      contentSize.height -= origin.y
+    } else {
+      origin = Point.zero
+    }
+
+    this.#renderedContentSize = this.#restrictSize(
+      () => this.naturalSize(contentSize),
+      contentSize,
+      'grow',
+    )
+    if (this.padding) {
+      origin = origin.offset(this.padding.left, this.padding.top)
+      this.#renderedContentSize = this.#renderedContentSize.shrink(
+        this.padding.left + this.padding.right,
+        this.padding.top + this.padding.bottom,
       )
-      if (this.padding) {
-        origin = origin.offset(this.padding.left, this.padding.top)
-        this.#renderedContentSize = this.#renderedContentSize.shrink(
-          this.padding.left + this.padding.right,
-          this.padding.top + this.padding.bottom,
-        )
-      }
+    }
 
-      const rect = new Rect(origin, this.#renderedContentSize)
-      // Inside `_render`, the viewport is positioned at this view's content, and
-      // viewport.register*() calls are associated with this view.
-      const renderWithListeners = (viewport: Viewport) => {
-        this.#contentOrigin = viewport.absoluteOrigin
-        this.#registerListeners(viewport)
-        render(viewport)
-      }
-      if (this.#background) {
-        const style = new Style({background: this.#background})
-        viewport.paint(style, rect)
-        viewport.usingPen(style, () => {
-          viewport._render(this, rect, renderWithListeners)
-        })
-      } else {
+    const rect = new Rect(origin, this.#renderedContentSize)
+    // Inside `_render`, the viewport is positioned at this view's content, and
+    // viewport.register*() calls are associated with this view.
+    const renderWithListeners = (viewport: Viewport) => {
+      this.#contentOrigin = viewport.absoluteOrigin
+      this.#registerListeners(viewport)
+      render(viewport)
+    }
+    if (this.#background) {
+      const style = new Style({background: this.#background})
+      viewport.paint(style, rect)
+      viewport.usingPen(style, () => {
         viewport._render(this, rect, renderWithListeners)
-      }
+      })
+    } else {
+      viewport._render(this, rect, renderWithListeners)
     }
   }
 
