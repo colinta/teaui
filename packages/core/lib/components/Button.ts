@@ -18,20 +18,20 @@ import {
   match,
 } from '../events/index.js'
 import type {View} from '../View.js'
-import {type Alignment, type LegendItem} from '../types.js'
+import {type TextAlignment, type LegendItem} from '../types.js'
 
 type Border = 'default' | 'arrows' | 'none'
 type BorderChars = [string, string]
 
 export interface Props extends PressableProps {
   title?: string
-  align?: Alignment
+  align?: TextAlignment
   border?: Border
   hotKey?: HotKey
 }
 
 export class Button extends Pressable {
-  #align: Alignment = 'center'
+  #align: TextAlignment = 'center'
   #border: Border = 'default'
   #hotKey?: HotKey
   #textView: Text

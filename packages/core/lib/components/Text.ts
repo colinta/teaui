@@ -5,7 +5,7 @@ import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
 import {Style} from '../Style.js'
 import {Point, Size} from '../geometry.js'
-import {Alignment, FontFamily} from '../types.js'
+import {type TextAlignment, FontFamily} from '../types.js'
 import {FONTS} from './fonts.js'
 import {define, wrap} from '../util.js'
 
@@ -21,7 +21,7 @@ interface LinesProps {
 
 interface StyleProps {
   style?: Style
-  alignment: Alignment
+  alignment: TextAlignment
   wrap: boolean
   font?: FontFamily
 }

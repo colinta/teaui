@@ -1,5 +1,5 @@
 import {
-  Alignment,
+  TextAlignment,
   type ComposedView,
   Container,
   define,
@@ -439,7 +439,7 @@ export class TextContainer extends Container {
 interface TextProviderProps {
   style?: Partial<Style>
   font?: FontFamily
-  alignment?: Alignment
+  alignment?: TextAlignment
   wrap?: boolean
 }
 
@@ -464,7 +464,7 @@ export class TextProvider extends Container {
 
   declare wrap: FontFamily
   declare font: FontFamily
-  declare alignment: Alignment
+  declare alignment: TextAlignment
 
   constructor(props: ProviderProps = {}) {
     super(props)

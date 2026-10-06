@@ -1,7 +1,7 @@
 import type {SGRTerminal} from './terminal.js'
 import type {SystemEvent} from './events/index.js'
 
-export type Alignment = 'left' | 'right' | 'center'
+export type TextAlignment = 'left' | 'right' | 'center'
 export const FontFamilies = [
   'default',
   'serif-bold',
