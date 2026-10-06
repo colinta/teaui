@@ -86,7 +86,7 @@ exports[`Box > heading > title prop overrides child heading 1`] = `
 `;
 
 exports[`Box > heading > truncates long heading to fit 1`] = `
-"┌─This Is A Ve┐
+"┌─This Is A V…┐
 │Hi           │
 └─────────────┘"
 `;

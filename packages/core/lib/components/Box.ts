@@ -255,7 +255,10 @@ export class Box extends ZStack {
     // Render heading over the top border (or on a blank line for borderless)
     const resolvedTitle = this.#resolvedTitle()
     if (resolvedTitle) {
-      const headingText = resolvedTitle.slice(0, maxX - HEADING_X - HEADING_PAD)
+      const headingText = truncateHeading(
+        resolvedTitle,
+        maxX - HEADING_X - HEADING_PAD,
+      )
       const headingY = headingHeight > 0 ? 0 : 0
       viewport.write(
         headingText,
@@ -358,8 +361,30 @@ const BORDERS: Record<Border, CalculatedBorderChars> = {
   dotted: ['⠒', '⡇', '⡖', '⢲', '⠧', '⠼', '⠤', '⢸'],
 }
 
+function truncateHeading(title: string, maxWidth: number): string {
+  if (maxWidth <= 0) {
+    return ''
+  }
+  if (unicode.lineWidth(title) <= maxWidth) {
+    return title
+  }
+
+  let result = ''
+  let width = 0
+  for (const char of unicode.printableChars(title)) {
+    const charWidth = unicode.charWidth(char)
+    if (width + charWidth > maxWidth - 1) {
+      break
+    }
+    result += char
+    width += charWidth
+  }
+  return result + ELLIPSIS
+}
+
 const HEADING_X = 2
 const HEADING_PAD = 1
+const ELLIPSIS = '…'
 
 const BORDER_SIZE_ZERO: BorderSizes = {
   maxTop: 0,
