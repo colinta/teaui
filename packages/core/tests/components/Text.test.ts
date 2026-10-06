@@ -5,6 +5,27 @@ import {Style} from '../../lib/Style.js'
 import {Size} from '../../lib/geometry.js'
 
 describe('Text', () => {
+  describe('wrapped naturalSize', () => {
+    // the measured height must match the number of rows that are drawn
+    it.each([
+      // word wrapping needs more rows than a character count suggests
+      [
+        'This column ends two cells before the widest card. Drag the sliders to resize the cards, and it reflows in the same render: the Placement is pinned to an Alignment marker at the top-left of the card column. No Geometry callbacks, no extra state.',
+        50,
+        6,
+      ],
+      // ...or fewer, because the space at the break isn't drawn
+      ['abcde fghij', 5, 2],
+      // blank lines take up a row
+      ['a\n\nb', 5, 3],
+    ])('%j at width %i is %i rows', (text, width, rows) => {
+      const view = new Text({text, wrap: true})
+      expect(view.naturalSize(new Size(width, 20)).height).toBe(rows)
+      const t = testRender(view, {width, height: 20})
+      expect(t.terminal.textContent().split('\n').length).toBe(rows)
+    })
+  })
+
   describe('font', () => {
     it('maps letters and digits', () => {
       const t = testRender(new Text({text: 'ab 12', font: 'serif-bold'}), {

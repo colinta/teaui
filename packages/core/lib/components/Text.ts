@@ -160,14 +160,23 @@ export class Text extends View {
       return Size.zero
     }
 
-    return this.#lines.reduce((size, [, width]) => {
-      if (this.#wrap) {
-        const lineHeight = Math.ceil(width / available.width)
-        size.width = Math.max(size.width, Math.min(width, available.width))
-        size.height += lineHeight
-        return size
-      }
+    if (this.#wrap) {
+      // The height comes from the same word-wrapping that `render` uses; the
+      // width is the widest line, up to the available width.
+      const cache = this.#renderCache
+      const lines =
+        cache?.width === available.width
+          ? cache.lines
+          : wrap(this.#lines, available.width)
+      const width = this.#lines.reduce(
+        (width, [, lineWidth]) =>
+          Math.max(width, Math.min(lineWidth, available.width)),
+        0,
+      )
+      return new Size(width, lines.length)
+    }
 
+    return this.#lines.reduce((size, [, width]) => {
       size.width = Math.max(size.width, width)
       size.height += 1
       return size
