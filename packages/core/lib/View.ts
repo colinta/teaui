@@ -749,17 +749,18 @@ export abstract class View {
         origin = Point.zero
       }
 
-      if (this.padding) {
-        origin = origin.offset(this.padding.left, this.padding.top)
-        contentSize.width -= this.padding.left + this.padding.right
-        contentSize.height -= this.padding.top + this.padding.bottom
-      }
-
       this.#renderedContentSize = this.#restrictSize(
         () => this.naturalSize(contentSize),
         contentSize,
         'grow',
       )
+      if (this.padding) {
+        origin = origin.offset(this.padding.left, this.padding.top)
+        this.#renderedContentSize = this.#renderedContentSize.shrink(
+          this.padding.left + this.padding.right,
+          this.padding.top + this.padding.bottom,
+        )
+      }
 
       const rect = new Rect(origin, this.#renderedContentSize)
       // Inside `_render`, the viewport is positioned at this view's content, and
