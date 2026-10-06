@@ -786,6 +786,9 @@ export class Drawer extends Container {
           }
           drawer += '│'
           drawer += this.#isOpen ? '›' : '‹'
+          if (this.isHover) {
+            drawer += ' '
+          }
         }
 
         viewport.write(drawer, point)
