@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url'
 import {promisify} from 'node:util'
 import {WebSocket} from 'ws'
 import {afterEach, describe, expect, it, vi} from 'vitest'
+import {err, ok, type Result} from '@teaui/result'
 import {
   Screen,
   TestProgram,
@@ -73,11 +74,61 @@ async function listen(options?: RemoteControlOptions) {
   const remote = create(options)
   return {remote, ...(await ready(remote))}
 }
-async function connect(url: string, options?: {origin: string}) {
+type ConnectionError =
+  | {type: 'unexpected-response'; statusCode: number | undefined}
+  | {type: 'socket-error'; cause: Error}
+
+function connectResult(
+  url: string,
+  options?: {origin: string},
+): Promise<Result<WebSocket, ConnectionError>> {
   const socket = new WebSocket(url, options)
   sockets.push(socket)
-  await once(socket, 'open')
-  return socket
+  return new Promise(resolve => {
+    const cleanup = () => {
+      socket.off('open', onOpen)
+      socket.off('unexpected-response', onUnexpectedResponse)
+      socket.off('error', onError)
+    }
+    const untrack = () => {
+      const index = sockets.indexOf(socket)
+      if (~index) {
+        sockets.splice(index, 1)
+      }
+    }
+    const onOpen = () => {
+      cleanup()
+      resolve(ok(socket))
+    }
+    const onUnexpectedResponse = (
+      _request: unknown,
+      response: {statusCode?: number; resume(): void},
+    ) => {
+      cleanup()
+      untrack()
+      response.resume()
+      resolve(
+        err({type: 'unexpected-response', statusCode: response.statusCode}),
+      )
+    }
+    const onError = (cause: Error) => {
+      cleanup()
+      untrack()
+      resolve(err({type: 'socket-error', cause}))
+    }
+    socket.once('open', onOpen)
+    socket.once('unexpected-response', onUnexpectedResponse)
+    socket.once('error', onError)
+  })
+}
+async function connect(url: string, options?: {origin: string}) {
+  const result = await connectResult(url, options)
+  if (!result.ok) {
+    throw new Error(
+      `unexpected WebSocket connection error: ${result.error.type}`,
+    )
+  } // Test helper only; rejection cases use connectResult().
+  return result.value
 }
 async function send(
   socket: WebSocket,
@@ -761,17 +812,23 @@ describe('remote protocol and screen integration', () => {
   it('rejects missing/wrong tokens and browser Origins, including old tokens after restart', async () => {
     const {remote, url} = await listen()
     const withoutToken = url.split('?')[0]
-    await expect(connect(withoutToken)).rejects.toThrow('401')
-    await expect(connect(`${withoutToken}?token=wrong`)).rejects.toThrow('401')
-    await expect(connect(url, {origin: 'https://example.com'})).rejects.toThrow(
-      '401',
+    const unauthorized = {
+      ok: false,
+      error: {type: 'unexpected-response', statusCode: 401},
+    }
+    expect(await connectResult(withoutToken)).toEqual(unauthorized)
+    expect(await connectResult(`${withoutToken}?token=wrong`)).toEqual(
+      unauthorized,
+    )
+    expect(await connectResult(url, {origin: 'https://example.com'})).toEqual(
+      unauthorized,
     )
     expect(url).toMatch(/^ws:\/\/127\.0\.0\.1:\d+\/\?token=[a-f0-9]{64}$/)
     await remote.close()
     const next = await ready(remote)
     const stale = new URL(next.url)
     stale.searchParams.set('token', new URL(url).searchParams.get('token')!)
-    await expect(connect(stale.href)).rejects.toThrow('401')
+    expect(await connectResult(stale.href)).toEqual(unauthorized)
     expect(await send(await connect(next.url), key('x'))).toEqual({
       type: 'ack',
       sequence: 1,
