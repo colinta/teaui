@@ -252,6 +252,191 @@ describe('Input', () => {
       t.sendKey('left')
       expect(t.terminal.styleAt(2, 0).underline).toBe(true)
     })
+
+    it('keeps the cursor visible after adding a newline to a full wrapped input', () => {
+      const rows = ['1', '2', '3', '4', '5'].map(char => char.repeat(28))
+      const input = new Input({
+        value: rows.join(''),
+        multiline: true,
+        wrap: true,
+      })
+      const t = testRender(input, {width: 28, height: 6})
+
+      t.sendKey('return')
+
+      const visibleRows = rows.slice(1)
+      visibleRows[0] = `…${visibleRows[0].slice(1)}`
+      expect(t.terminal.textContent()).toBe(`${visibleRows.join('\n')}\n⤦`)
+      expect(t.terminal.styleAt(0, 5).underline).toBe(true)
+    })
+  })
+
+  describe('wrapped multiline cursor visibility', () => {
+    const WIDTH = 28
+    const HEIGHT = 6
+    const fullRow = (char: string) => char.repeat(WIDTH)
+
+    function cursorCells(t: ReturnType<typeof testRender>) {
+      const cells: [number, number][] = []
+      for (let y = 0; y < t.terminal.rows; y++) {
+        for (let x = 0; x < t.terminal.cols; x++) {
+          if (t.terminal.styleAt(x, y).underline) {
+            cells.push([x, y])
+          }
+        }
+      }
+      return cells
+    }
+
+    function rowsOf(t: ReturnType<typeof testRender>) {
+      return t.terminal.textContent().split('\n')
+    }
+
+    function wrappedInput(
+      value: string,
+      size = {width: WIDTH, height: HEIGHT},
+    ) {
+      const input = new Input({value, multiline: true, wrap: true})
+      return {input, t: testRender(input, size)}
+    }
+
+    it('scrolls to a newline added after a partially filled final row', () => {
+      const rows = '12345'.split('').map(fullRow)
+      const {t} = wrappedInput(`${rows.join('')}${'6'.repeat(10)}`)
+
+      // 6 rows exactly fit: nothing scrolled, cursor after the last character.
+      expect(rowsOf(t)).toEqual([...rows, '6'.repeat(10)])
+      expect(cursorCells(t)).toEqual([[10, 5]])
+
+      t.sendKey('return')
+
+      expect(rowsOf(t)).toEqual([
+        `…${rows[1].slice(1)}`,
+        rows[2],
+        rows[3],
+        rows[4],
+        `${'6'.repeat(10)}⤦`,
+      ])
+      expect(cursorCells(t)).toEqual([[0, 5]])
+    })
+
+    it('keeps the cursor on the last row after repeated trailing newlines', () => {
+      const rows = '12345'.split('').map(fullRow)
+      const {t} = wrappedInput(rows.join(''))
+
+      for (let count = 1; count <= 3; count++) {
+        t.sendKey('return')
+        expect(cursorCells(t)).toEqual([[0, 5]])
+      }
+
+      expect(rowsOf(t)).toEqual([
+        `…${rows[3].slice(1)}`,
+        rows[4],
+        '⤦',
+        '⤦',
+        '⤦',
+      ])
+    })
+
+    it('accumulates the heights of earlier wrapped logical lines', () => {
+      const lines = ['A', 'B', 'C', 'D'].map(char => char.repeat(40))
+      const {t} = wrappedInput(lines.join('\n'))
+
+      // Each logical line is two rows (28 + 12 + newline sigil); 8 rows total.
+      expect(rowsOf(t)).toEqual([
+        `…${'B'.repeat(27)}`,
+        `${'B'.repeat(12)}⤦`,
+        'C'.repeat(28),
+        `${'C'.repeat(12)}⤦`,
+        'D'.repeat(28),
+        'D'.repeat(12),
+      ])
+      expect(cursorCells(t)).toEqual([[12, 5]])
+    })
+
+    it('adds a newline inside a later wrapped logical line', () => {
+      const lines = ['A', 'B', 'C', 'D'].map(char => char.repeat(40))
+      const {t} = wrappedInput(lines.join('\n'))
+
+      t.sendKey('return')
+
+      expect(cursorCells(t)).toEqual([[0, 5]])
+      // the new, empty row holds only the cursor (trailing blank row is trimmed)
+      expect(rowsOf(t).at(-1)).toBe(`${'D'.repeat(12)}⤦`)
+    })
+
+    it('keeps the cursor visible moving up and down across wrapped rows', () => {
+      const lines = ['A', 'B', 'C', 'D'].map(char => char.repeat(40))
+      const {t} = wrappedInput(lines.join('\n'))
+
+      for (let i = 0; i < 7; i++) {
+        t.sendKey('up')
+        expect(cursorCells(t)).toHaveLength(1)
+      }
+      // Once at the top of the text, the viewport shows the start of it.
+      expect(rowsOf(t)[0]).toBe('A'.repeat(WIDTH))
+      expect(cursorCells(t)[0][1]).toBe(0)
+
+      for (let i = 0; i < 7; i++) {
+        t.sendKey('down')
+        expect(cursorCells(t)).toHaveLength(1)
+      }
+      expect(cursorCells(t)[0][1]).toBe(5)
+      expect(rowsOf(t).at(-1)).toBe('D'.repeat(12))
+    })
+
+    it('keeps the cursor visible when moving the cursor to the start of the text', () => {
+      const {t} = wrappedInput(
+        fullRow('1') +
+          fullRow('2') +
+          fullRow('3') +
+          fullRow('4') +
+          fullRow('5') +
+          fullRow('6') +
+          fullRow('7'),
+      )
+
+      t.sendKey(',', {alt: true})
+      expect(cursorCells(t)).toEqual([[0, 0]])
+      expect(rowsOf(t)[0]).toBe(fullRow('1'))
+
+      t.sendKey('.', {alt: true})
+      expect(cursorCells(t)).toHaveLength(1)
+      expect(cursorCells(t)[0][1]).toBe(5)
+    })
+
+    it('wraps a wide grapheme that does not fit onto the next row', () => {
+      const {t} = wrappedInput('abcd界efgh', {width: 5, height: 3})
+
+      expect(rowsOf(t)).toEqual(['abcd', '界efg', 'h'])
+      expect(cursorCells(t)).toEqual([[1, 2]])
+    })
+
+    it('keeps the cursor visible after a newline when a wide grapheme wraps', () => {
+      const {t} = wrappedInput('abcd界efgh', {width: 5, height: 3})
+
+      t.sendKey('return')
+
+      expect(cursorCells(t)).toEqual([[0, 2]])
+    })
+
+    it('recomputes cursor visibility when the width changes', () => {
+      const rows = '12345'.split('').map(fullRow)
+      const {input, t} = wrappedInput(rows.join(''))
+      t.sendKey('return')
+      expect(cursorCells(t)).toEqual([[0, 5]])
+
+      input.update({
+        value: input.value,
+        multiline: true,
+        wrap: true,
+        width: 14,
+      })
+      t.render()
+
+      expect(cursorCells(t)).toEqual([[0, 5]])
+      expect(rowsOf(t).at(-1)).toBe('⤦')
+    })
   })
 
   describe('submit', () => {

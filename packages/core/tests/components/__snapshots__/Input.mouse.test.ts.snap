@@ -173,9 +173,9 @@ exports[`Input mouse selection > single clicks and hit regions > maps 'wrapped m
   "after": "abcd
 ef⤦
 xyz",
-  "before": "bcd
-f⤦
-yz",
+  "before": "abcd
+ef⤦
+xyz",
 }
 `;
 

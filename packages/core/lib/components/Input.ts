@@ -828,6 +828,16 @@ export class Input extends View {
           let currentWidth = 0
           for (const char of line[0]) {
             const charWidth = unicode.charWidth(char)
+            // A character that doesn't fit moves to the next row whole, the
+            // same rule #toPosition uses to place the cursor.
+            if (
+              currentLine.length &&
+              currentWidth + charWidth > visibleSize.width
+            ) {
+              wrappedLines.push([currentLine, currentWidth])
+              currentLine = []
+              currentWidth = 0
+            }
             currentLine.push(char)
             currentWidth += charWidth
 
@@ -1141,16 +1151,13 @@ export class Input extends View {
         const dh = Math.ceil(width / visibleSize.width)
         totalHeight += dh
 
-        if (currentLineWidth === -1 && dh >= cursorEnd.y) {
-          if (cursorEnd.y - h === dh) {
-            // the cursor is on the last wrapped line, use modulo divide to calculate the
-            // last line width, add 1 for the EOL cursor
-            currentLineWidth = (visibleSize.width % width) + 1
-          } else {
-            currentLineWidth = visibleSize.width
-          }
-          break
+        if (currentLineWidth === -1 && cursorEnd.y < h + dh) {
+          currentLineWidth =
+            cursorEnd.y === h + dh - 1
+              ? width % visibleSize.width || visibleSize.width
+              : visibleSize.width
         }
+        h += dh
       }
 
       currentLineWidth = Math.max(0, currentLineWidth)

@@ -147,7 +147,7 @@ describe('Input mouse selection', () => {
         props: {value: 'abcdef\nxyz', wrap: true, multiline: true},
         width: 4,
         height: 4,
-        x: 1,
+        x: 2,
         y: 2,
         offset: 9,
       },
