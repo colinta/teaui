@@ -306,7 +306,11 @@ export class Screen {
    * rendered after the main view tree. Multiple modals can be stacked.
    */
   requestModal(modal: Modal, rect: Rect) {
-    return this.#modalManager.requestModal(modal, rect)
+    return this.#modalManager.requestModal(
+      modal,
+      rect,
+      this.#focusManager.currentFocusView,
+    )
   }
 
   /**
@@ -334,6 +338,15 @@ export class Screen {
 
   requestFocus(view: View) {
     return this.#focusManager.requestFocus(view)
+  }
+
+  /** @internal Restores focus after a modal is dismissed. */
+  restoreFocus(view: View | undefined) {
+    if (this.#isFocused) {
+      this.#focusManager.restoreFocus(view)
+    } else {
+      this.#focusManager.unfocus()
+    }
   }
 
   get currentFocusView(): View | undefined {
@@ -511,6 +524,7 @@ export class Screen {
     const screenSize = new Size(this.#program.cols, this.#program.rows)
     this.#buffer.resize(screenSize)
 
+    this.#modalManager.beginFrame()
     // this may be called again by renderModals, before the last modal renders
     this.preRender(this.rootView)
 

@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
-import {Dropdown, Stack, Space} from '../../lib/components/index.js'
+import {Button, Dropdown, Stack, Space} from '../../lib/components/index.js'
 
 const CHOICES: [string, string][] = [
   ['Apple', 'apple'],
@@ -78,6 +78,17 @@ describe('Dropdown', () => {
       expect(t.terminal.styleAt(0, 0).background).toEqual([63, 63, 63])
     })
 
+    it.each(['up', 'down'] as const)('opens with %s', key => {
+      const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
+        width: 30,
+        height: 12,
+      })
+      t.sendKey('tab')
+      t.sendKey(key)
+
+      expect(t.terminal.textContent()).toContain('Apple')
+    })
+
     it('opens from the keyboard', () => {
       const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
         width: 30,
@@ -87,6 +98,73 @@ describe('Dropdown', () => {
       t.sendKey('return')
 
       expect(t.terminal.textContent()).toContain('Apple')
+    })
+
+    it('restores focus to the dropdown after selecting', () => {
+      let selected: string | undefined
+      const dropdown = new Dropdown({
+        choices: CHOICES,
+        onSelect: (value: string) => {
+          selected = value
+        },
+      })
+      const t = testRender(
+        Stack.down({
+          children: [new Button({title: 'Before'}), dropdown, new Space()],
+        }),
+        {width: 30, height: 12},
+      )
+      t.sendKey('tab')
+      t.sendKey('tab')
+      t.sendKey('return')
+      t.sendKey('down')
+      t.sendKey('return')
+
+      expect(selected).toBe('banana')
+      t.sendKey('down')
+      expect(t.terminal.textContent()).toContain('Apple')
+    })
+
+    it('moves focus with up and down', () => {
+      let selected: string | undefined
+      const dropdown = new Dropdown({
+        choices: CHOICES,
+        onSelect: (value: string) => {
+          selected = value
+        },
+      })
+      const t = testRender(dropdownInStack(dropdown), {width: 30, height: 12})
+      t.sendKey('tab')
+      t.sendKey('return')
+
+      t.sendKey('down')
+      t.sendKey('down')
+      t.sendKey('up')
+      t.sendKey('return')
+
+      expect(selected).toBe('banana')
+    })
+
+    it('advances the visible choices with page-up and page-down', () => {
+      const choices: [string, string][] = Array.from(
+        {length: 20},
+        (_, index) => [`Option ${index + 1}`, `option-${index + 1}`],
+      )
+      const t = testRender(dropdownInStack(new Dropdown({choices})), {
+        width: 30,
+        height: 10,
+      })
+      t.sendKey('tab')
+      t.sendKey('return')
+
+      const firstPage = t.terminal.textContent()
+      t.sendKey('pagedown')
+      const secondPage = t.terminal.textContent()
+      expect(secondPage).not.toBe(firstPage)
+      expect(secondPage).not.toContain('Option 1 ')
+
+      t.sendKey('pageup')
+      expect(t.terminal.textContent()).toContain('Option 1 ')
     })
   })
 

@@ -505,6 +505,21 @@ describe('Scrollable', () => {
     })
   })
 
+  describe('advancePage', () => {
+    it('scrolls by the visible page height', () => {
+      const scrollable = makeScrollable(10, {showScrollbars: false})
+      const t = testRender(scrollable, {width: 10, height: 3})
+
+      scrollable.advancePage(1)
+      t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 3')
+
+      scrollable.advancePage(-1)
+      t.render()
+      expect(t.terminal.textAtRow(0)).toContain('Line 0')
+    })
+  })
+
   describe('scrollTo', () => {
     it('scrollTo({y}) scrolls just enough to reveal that row', () => {
       const scrollable = makeScrollable(10, {showScrollbars: false})

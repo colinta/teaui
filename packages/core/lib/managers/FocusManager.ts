@@ -190,6 +190,15 @@ export class FocusManager {
     return true
   }
 
+  /**
+   * Restores focus only when the view participated in the current frame's
+   * focus ring. Otherwise, leaves the screen explicitly unfocused.
+   */
+  restoreFocus(view: View | undefined) {
+    this.#currentFocusView =
+      view && this.#focusRing.includes(view) ? view : UNFOCUS
+  }
+
   unfocus() {
     this.#currentFocusView = UNFOCUS
   }

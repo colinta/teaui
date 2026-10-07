@@ -9,15 +9,33 @@ interface ModalEntry {
   presentedRect: Rect
 }
 
+interface ActiveModal {
+  returnFocus: View | undefined
+}
+
 export class ModalManager {
   #stack: ModalEntry[] = []
+  #active = new Map<Modal, ActiveModal>()
+  #requested = new Set<Modal>()
+
+  beginFrame() {
+    this.#requested = new Set()
+  }
 
   reset() {
     this.#stack = []
   }
 
-  requestModal(modal: Modal, rect: Rect): boolean {
+  requestModal(
+    modal: Modal,
+    rect: Rect,
+    currentFocus: View | undefined,
+  ): boolean {
     this.#stack.push({modal, presentedRect: rect})
+    this.#requested.add(modal)
+    if (!this.#active.has(modal)) {
+      this.#active.set(modal, {returnFocus: currentFocus})
+    }
     return true
   }
 
@@ -47,6 +65,17 @@ export class ModalManager {
 
       viewport.parentRect = presentedRect
       modal.render(viewport)
+    }
+
+    const dismissed = [...this.#active].filter(
+      ([modal]) => !this.#requested.has(modal),
+    )
+    if (dismissed.length > 0) {
+      const returnFocus = dismissed[0][1].returnFocus
+      for (const [modal] of dismissed) {
+        this.#active.delete(modal)
+      }
+      screen.restoreFocus(returnFocus)
     }
 
     return lastView

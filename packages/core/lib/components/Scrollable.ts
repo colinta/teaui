@@ -315,15 +315,15 @@ export class Scrollable extends Stack {
   }
 
   /**
-   * Moves the visible region. The visible region is stored as a pointer to the
-   * top-most row and an offset from the top of that row (see `interface ContentOffset`)
-   *
-   * Positive offset scrolls *down* (currentOffset goes more negative)
-   *
-   * When current cell is entirely above the top, we set the `contentOffset` to the
-   * row that is at the top of the screen and still visible, similarly if the current
-   * cell is below the top, we fetch enough rows about and update the `contentOffset`
-   * to point to the top-most row.
+   * Moves vertically by a multiple of the visible page height.
+   */
+  advancePage(pageDelta: number) {
+    this.scrollBy(0, pageDelta * this.#viewportSize.height)
+  }
+
+  /**
+   * Moves the visible region by the given horizontal and vertical offsets.
+   * Positive offsets scroll right and down.
    */
   scrollBy(offsetX: number, offsetY: number) {
     if (offsetX === 0 && offsetY === 0) {

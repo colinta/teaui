@@ -177,6 +177,42 @@ export class ScrollableList<T> extends Container {
     }
   }
 
+  advancePage(pageDelta: number) {
+    this.scrollBy(pageDelta * this.contentSize.height)
+  }
+
+  /**
+   * Scrolls just enough to make the given row fully visible.
+   */
+  scrollToRow(row: number) {
+    if (row < 0 || row >= this.#filteredData.length) {
+      return
+    }
+
+    const cellWidth = this.contentSize.width
+    let y = this.#contentOffset.offset
+    if (row < this.#contentOffset.row) {
+      for (let index = this.#contentOffset.row - 1; index >= row; index--) {
+        y -= this.sizeForRow(index, cellWidth)?.height ?? 0
+      }
+    } else {
+      for (let index = this.#contentOffset.row; index < row; index++) {
+        y += this.sizeForRow(index, cellWidth)?.height ?? 0
+      }
+    }
+
+    const height = this.sizeForRow(row, cellWidth)?.height
+    if (height === undefined) {
+      return
+    }
+
+    if (y < 0) {
+      this.scrollBy(y)
+    } else if (y + height > this.contentSize.height) {
+      this.scrollBy(y + height - this.contentSize.height)
+    }
+  }
+
   /**
    * Moves the visible region. The visible region is stored as a pointer to the
    * top-most row and an offset from the top of that row (see `interface ContentOffset`)

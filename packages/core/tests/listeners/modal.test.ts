@@ -2,7 +2,9 @@ import {describe, expect, it, vi} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Modal} from '../../lib/components/Modal.js'
 import {Text} from '../../lib/components/Text.js'
+import {Stack} from '../../lib/components/Stack.js'
 import type {Viewport} from '../../lib/Viewport.js'
+import {Size} from '../../lib/geometry.js'
 import {Probe, type ProbeConfig} from './Probe.js'
 
 /**
@@ -77,5 +79,62 @@ describe('listeners and modals', () => {
 
     t.sendKey('x')
     expect(keyListener).toHaveBeenCalledOnce()
+  })
+
+  it('restores the previously focused view when a modal closes', () => {
+    const before = new Probe({
+      focus: {isDefault: false},
+      size: new Size(20, 1),
+    })
+    const host = new ModalHost({
+      focus: {isDefault: false},
+      size: new Size(20, 1),
+    })
+    const inner = new Probe({focus: true})
+    host.modal = new Modal({children: [inner]})
+    const t = testRender(Stack.down([before, host]), {width: 20, height: 5})
+    t.sendKey('tab')
+    t.sendKey('tab')
+
+    host.showModal = true
+    t.render()
+    // Re-rendering an open modal must not replace its original return focus.
+    t.render()
+
+    host.showModal = false
+    t.render()
+    t.sendKey('x')
+    expect(host.keys).toHaveLength(1)
+    expect(before.keys).toHaveLength(0)
+  })
+
+  it('does not restore focus when the previous view leaves the focus ring', () => {
+    const before = new Probe({
+      focus: {isDefault: false},
+      size: new Size(20, 1),
+    })
+    const host = new ModalHost({
+      focus: {isDefault: false},
+      size: new Size(20, 1),
+    })
+    const inner = new Probe({focus: true})
+    host.modal = new Modal({children: [inner]})
+    const t = testRender(Stack.down([before, host]), {width: 20, height: 5})
+    t.sendKey('tab')
+    t.sendKey('tab')
+
+    host.showModal = true
+    t.render()
+    host.showModal = false
+    host.isVisible = false
+    t.render()
+    t.sendKey('x')
+
+    expect(before.keys).toHaveLength(0)
+    expect(host.keys).toHaveLength(0)
+
+    t.sendKey('tab')
+    t.sendKey('x')
+    expect(before.keys).toHaveLength(1)
   })
 })

@@ -12,7 +12,11 @@ import {Stack} from './Stack.js'
 import {ScrollableList} from './ScrollableList.js'
 import {Separator} from './Separator.js'
 import {Text} from './Text.js'
-import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {
+  type KeyEvent,
+  type MouseEvent,
+  isMouseClicked,
+} from '../events/index.js'
 import {Space} from './Space.js'
 import {Style} from '../Style.js'
 
@@ -159,8 +163,13 @@ export class Dropdown<T, M extends boolean> extends View {
     }
   }
 
-  receiveKey(event: import('../events/index.js').KeyEvent) {
-    if (event.name === 'return' || event.name === 'enter') {
+  receiveKey(event: KeyEvent) {
+    if (
+      event.name === 'return' ||
+      event.name === 'enter' ||
+      event.name === 'up' ||
+      event.name === 'down'
+    ) {
       this.#showModal = true
     }
   }
@@ -230,6 +239,8 @@ class DropdownSelector<T> extends Container {
   #scrollView: ScrollableList<T>
   #box = new Box({maxHeight: 24, border: BORDERS.box})
   #checkbox: Checkbox
+  #rowButtons = new Map<number, Button>()
+  #buttonRows = new WeakMap<View, number>()
 
   constructor({
     choices,
@@ -267,6 +278,7 @@ class DropdownSelector<T> extends Container {
       data: this.#choices.map(([, choice]) => choice),
       renderItem: (choice, row) => this.renderItem(choice, row),
     })
+    this.addKeyboardListener(event => this.#receiveKey(event), {events: true})
 
     if (multiple) {
       const content = Stack.down([])
@@ -369,7 +381,44 @@ class DropdownSelector<T> extends Container {
         return [index]
       }),
     )
+    this.#rowButtons = new Map()
     this.#scrollView.updateData(choices.map(([, choice]) => choice))
+  }
+
+  #focusedRow() {
+    const focusedView = this.screen?.currentFocusView
+    return focusedView ? this.#buttonRows.get(focusedView) : undefined
+  }
+
+  #receiveKey(event: KeyEvent) {
+    if (event.name === 'pageup' || event.name === 'pagedown') {
+      this.#scrollView.advancePage(event.name === 'pageup' ? -1 : 1)
+      return
+    }
+
+    if (event.name !== 'up' && event.name !== 'down') {
+      return
+    }
+
+    const rowDelta = event.name === 'up' ? -1 : 1
+    const focusedRow = this.#focusedRow()
+    const row = Math.max(
+      0,
+      Math.min(
+        this.#choices.length - 1,
+        focusedRow === undefined
+          ? rowDelta < 0
+            ? this.#choices.length - 1
+            : 0
+          : focusedRow + rowDelta,
+      ),
+    )
+    this.#scrollView.scrollToRow(row)
+    this.#scrollView.viewForRow(row)
+    const button = this.#rowButtons.get(row)
+    if (button) {
+      this.screen?.requestFocus(button)
+    }
   }
 
   renderItem(choice: T, row: number): View {
@@ -424,6 +473,8 @@ class DropdownSelector<T> extends Container {
       }),
     )
 
+    this.#rowButtons.set(row, button)
+    this.#buttonRows.set(button, row)
     return button
   }
 
