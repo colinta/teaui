@@ -78,6 +78,20 @@ describe('Dropdown', () => {
       expect(t.terminal.styleAt(0, 0).background).toEqual([63, 63, 63])
     })
 
+    it('uses bold text while focused and closed', () => {
+      const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
+        width: 30,
+        height: 12,
+      })
+      expect(t.terminal.styleOf('<select>')?.bold).toBeFalsy()
+
+      t.sendKey('tab')
+      expect(t.terminal.styleOf('<select>')?.bold).toBe(true)
+
+      t.sendKey('return')
+      expect(t.terminal.styleOf('<select>')?.bold).toBeFalsy()
+    })
+
     it.each(['up', 'down'] as const)('opens with %s', key => {
       const t = testRender(dropdownInStack(new Dropdown({choices: CHOICES})), {
         width: 30,

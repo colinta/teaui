@@ -95,6 +95,7 @@ export class Screen {
     }
 
     const program = new TerminalProgram(opts.display)
+    let screen: Screen | undefined
 
     try {
       await program.setup()
@@ -110,25 +111,30 @@ export class Screen {
 
       await program.setupRootView(rootView)
 
-      const screen = new Screen(program, rootView)
-      screen.onExit(() => {
+      const startedScreen = new Screen(program, rootView)
+      screen = startedScreen
+      startedScreen.onExit(() => {
         program.teardown()
       })
 
       if (opts.quitChar) {
-        screen.key(opts.quitChar, () => {
-          screen.exit()
+        startedScreen.key(opts.quitChar, () => {
+          startedScreen.exit()
         })
       }
 
-      screen.start()
+      startedScreen.start()
 
-      return [screen, program, rootView]
+      return [startedScreen, program, rootView]
     } catch (error) {
-      try {
-        program.teardown()
-      } catch {
-        // Preserve the startup error after making a best effort to restore the terminal.
+      if (screen) {
+        screen.stop()
+      } else {
+        try {
+          program.teardown()
+        } catch {
+          // Preserve the startup error after making a best effort to restore the terminal.
+        }
       }
       throw error
     }
@@ -167,16 +173,21 @@ export class Screen {
    */
   start() {
     this.#isRunning = true
-    this.rootView.moveToScreen(this)
+    try {
+      this.rootView.moveToScreen(this)
 
-    this.addEventSource(this.#program)
-    this.#cleanupEvents.add(
-      this.#program.onResize(() => {
-        this.dispatch({type: 'resize'})
-      }),
-    )
+      this.addEventSource(this.#program)
+      this.#cleanupEvents.add(
+        this.#program.onResize(() => {
+          this.dispatch({type: 'resize'})
+        }),
+      )
 
-    this.render()
+      this.render()
+    } catch (error) {
+      this.stop()
+      throw error
+    }
   }
 
   /**

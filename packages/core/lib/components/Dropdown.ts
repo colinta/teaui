@@ -186,12 +186,14 @@ export class Dropdown<T, M extends boolean> extends View {
 
     viewport.registerMouse(['mouse.move', 'mouse.button.left'])
     const lines = this.#titleLines()
-    const textStyle = this.purpose.ui({
-      variant: 'raised',
-      isPressed: this.isPressed || this.#showModal,
-      isHover: this.isHover && !this.#showModal,
-      hasFocus,
-    })
+    const textStyle = this.purpose
+      .ui({
+        variant: 'raised',
+        isPressed: this.isPressed || this.#showModal,
+        isHover: this.isHover && !this.#showModal,
+        hasFocus,
+      })
+      .merge({bold: hasFocus && !this.#showModal})
 
     viewport.paint(textStyle)
 

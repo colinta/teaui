@@ -12,7 +12,6 @@ import {
 } from '../events/index.js'
 import {type LegendItem} from '../types.js'
 import {childPalette} from '../UI.js'
-import {Style} from '../Style.js'
 
 interface StyleProps {
   title?: string
@@ -135,9 +134,7 @@ export class Checkbox extends Container {
 
     const chars = hasFocus ? BOX_FOCUS : BOX
     const box = chars[this.boxStyle()][this.#value ? 'checked' : 'unchecked']
-    const textStyle = hasFocus
-      ? uiStyle.merge(new Style({bold: true, underline: true}))
-      : uiStyle
+    const textStyle = hasFocus ? uiStyle.merge({underline: true}) : uiStyle
     viewport.write(box, new Point(0, offset.y), textStyle)
     viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
       super.render(inside)

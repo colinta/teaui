@@ -57,6 +57,24 @@ describe('Screen.start', () => {
 })
 
 describe('Screen lifecycle', () => {
+  test('stops when the initial render throws', () => {
+    const renderError = new Error('initial render failed')
+    const view = new (class extends Text {
+      render(): never {
+        throw renderError
+      }
+    })({text: 'never rendered'})
+    const program = new TestProgram({cols: 10, rows: 5})
+    const screen = new Screen(program, view)
+    const onExit = vi.fn()
+    screen.onExit(onExit)
+
+    expect(() => screen.start()).toThrow(renderError)
+    expect(view.screen).toBeUndefined()
+    expect(onExit).toHaveBeenCalledOnce()
+    expect(screen.stop()).toEqual([])
+  })
+
   test('does not deliver or render a key event after its binding stops the screen', () => {
     const program = new TestProgram({cols: 10, rows: 5})
     const screen = new Screen(program, new Window())

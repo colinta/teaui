@@ -212,15 +212,17 @@ describe('Pressable', () => {
 
   describe('focus', () => {
     it('does not receive focus by default, but can with tab', () => {
-      const pressable = new Pressable()
+      const pressable = new Pressable({child: new Text({text: 'Focus'})})
       const t = testRender(pressable, {width: 6, height: 1})
       expect(pressable.hasFocus).toBe(false)
+      expect(t.terminal.styleOf('Focus')?.bold).toBeFalsy()
 
       t.sendKey('tab')
       expect(pressable.hasFocus).toBe(true)
       expect(t.terminal.styleAt(0, 0).background).toEqual(
         rgb(raised({hasFocus: true}).background),
       )
+      expect(t.terminal.styleOf('Focus')?.bold).toBe(true)
     })
 
     it('is skipped by tab with focusable: false', () => {

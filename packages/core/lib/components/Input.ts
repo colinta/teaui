@@ -748,16 +748,14 @@ export class Input extends View {
     isSelected?: boolean
     hasFocus?: boolean
   } = {}): Style {
-    return this.purpose
-      .ui({
-        variant: 'flat',
-        isPressed: this.isPressed && !hasFocus,
-        isHover: this.isHover,
-        hasFocus,
-        isPlaceholder,
-        isSelected,
-      })
-      .merge({bold: hasFocus})
+    return this.purpose.ui({
+      variant: 'flat',
+      isPressed: this.isPressed && !hasFocus,
+      isHover: this.isHover,
+      hasFocus,
+      isPlaceholder,
+      isSelected,
+    })
   }
 
   render(viewport: Viewport) {

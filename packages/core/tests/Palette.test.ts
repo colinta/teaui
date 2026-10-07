@@ -22,6 +22,17 @@ describe('Palette', () => {
       ).toBe('#1B2C4E')
     })
 
+    it('bolds focused controls and ornaments', () => {
+      expect(Palette.primary.ui().bold).toBe(false)
+      expect(Palette.primary.ui({hasFocus: true}).bold).toBe(true)
+      expect(Palette.primary.ui({hasFocus: true, isSelected: true}).bold).toBe(
+        true,
+      )
+      expect(Palette.primary.ui({hasFocus: true, isOrnament: true}).bold).toBe(
+        true,
+      )
+    })
+
     it('uses explicit placeholder and selection colors', () => {
       expect(
         Palette.primary.ui({

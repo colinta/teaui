@@ -237,6 +237,7 @@ export class Palette {
             ? background
             : this.pressedBackgroundColor,
         background,
+        bold: hasFocus,
       })
     }
 
@@ -248,12 +249,14 @@ export class Palette {
         background: hasFocus
           ? this.selectionBackgroundColor
           : this.inactiveSelectionBackgroundColor,
+        bold: hasFocus,
       })
     }
 
     return new Style({
       foreground: isPlaceholder ? this.placeholderTextColor : this.textColor,
       background,
+      bold: hasFocus,
     })
   }
 
