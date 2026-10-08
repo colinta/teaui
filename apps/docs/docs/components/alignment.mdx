@@ -55,7 +55,8 @@ cards.top.plus(2) // two rows below it
 ```
 
 Horizontal and vertical coordinates have different types: `right={cards.top}`
-is a type error. Offsets must be integers.
+is a type error. Fractional offset changes are truncated toward zero, and
+`NaN` or infinite changes are treated as `0`.
 
 ## Placement edges
 

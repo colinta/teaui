@@ -16,16 +16,16 @@ import {
 
 export function AlignmentTab() {
   // top-left of the card column; the column is as wide as its widest card
-  const cards = useAlignment('cards')
+  const cardsStart = useAlignment()
   // bottom-left of the card column (a trailing marker)
-  const cardsEnd = useAlignment('cards-end')
+  const cardsEnd = useAlignment()
   const [card1, setCard1] = useState(8)
   const [card2, setCard2] = useState(16)
 
   return (
-    <AlignmentScope flex={1}>
+    <AlignmentScope>
       {/* declared before the markers it depends on - order only affects painting */}
-      <Placement left={0} right={cards.left.minus(2)}>
+      <Placement left={0} right={cardsStart.left.minus(2)}>
         <Stack.down gap={1}>
           <Text>
             <Style bold foreground="cyan">
@@ -69,7 +69,7 @@ export function AlignmentTab() {
 
       <At.topRight>
         <Stack.down>
-          <Alignment point={cards} />
+          <Alignment point={cardsStart} />
           <Stack.left>
             <Box border="rounded" title="card 1">
               <Text>{DOT.repeat(card1)}</Text>
@@ -85,7 +85,7 @@ export function AlignmentTab() {
       </At.topRight>
 
       {/* a vertical pin: just below the card column, at its left edge */}
-      <Placement left={cards.left} top={cardsEnd.top.plus(1)}>
+      <Placement left={cardsStart.left} top={cardsEnd.top.plus(1)}>
         <Text wrap>↑ the widest card sets the edge</Text>
       </Placement>
     </AlignmentScope>

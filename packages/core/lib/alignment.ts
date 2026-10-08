@@ -32,18 +32,18 @@ export class AlignmentCoordinate<A extends AlignmentAxis = AlignmentAxis> {
   }
 
   plus(amount: number): AlignmentCoordinate<A> {
-    return new AlignmentCoordinate(
-      this.#point,
-      this.axis,
-      this.offset + checkOffset(amount),
-    )
+    return this.#offsetBy(amount)
   }
 
   minus(amount: number): AlignmentCoordinate<A> {
+    return this.#offsetBy(-amount)
+  }
+
+  #offsetBy(amount: number): AlignmentCoordinate<A> {
     return new AlignmentCoordinate(
       this.#point,
       this.axis,
-      this.offset - checkOffset(amount),
+      this.offset + ~~amount,
     )
   }
 

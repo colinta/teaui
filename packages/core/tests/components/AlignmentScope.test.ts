@@ -894,11 +894,14 @@ describe('AlignmentCoordinate', () => {
     ])
   })
 
-  it('only accepts integer offsets', () => {
+  it('truncates fractional offset changes and coerces non-finite changes to zero', () => {
     const point = createAlignment()
-    expect(() => point.left.plus(0.5)).toThrow(TypeError)
-    expect(() => point.left.minus(NaN)).toThrow(TypeError)
-    expect(() => point.left.plus(Infinity)).toThrow(TypeError)
+    const base = point.left.plus(2)
+    expect(base.plus(1.9).offset).toBe(3)
+    expect(base.minus(1.9).offset).toBe(1)
+    expect(base.plus(-1.9).offset).toBe(1)
+    expect(base.minus(NaN).offset).toBe(2)
+    expect(base.plus(Infinity).offset).toBe(2)
   })
 
   it('describes itself', () => {
