@@ -308,20 +308,18 @@ export function focusEventsDisable(): string {
 
 // --- Mouse Tracking (SGR mode) ---
 
+// Modes 1000, 1002, and 1003 are mutually exclusive. Enable only 1003 and
+// select SGR encoding first so no reports can arrive in the legacy format.
 export function mouseEnable(): string {
   return (
-    `${CSI}?1000h` + // button tracking
-    `${CSI}?1002h` + // button-event tracking
-    `${CSI}?1003h` + // any-event tracking
-    `${CSI}?1006h` // SGR encoding
+    `${CSI}?1006h` + // SGR encoding
+    `${CSI}?1003h` // any-event tracking
   )
 }
 
 export function mouseDisable(): string {
   return (
-    `${CSI}?1006l` + // SGR encoding off
     `${CSI}?1003l` + // any-event tracking off
-    `${CSI}?1002l` + // button-event tracking off
-    `${CSI}?1000l` // button tracking off
+    `${CSI}?1006l` // SGR encoding off
   )
 }

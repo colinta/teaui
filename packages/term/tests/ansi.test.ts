@@ -225,14 +225,9 @@ describe('ansi escape sequences', () => {
   })
 
   describe('mouse tracking', () => {
-    it('enable/disable SGR mouse mode', () => {
-      // Enable: button tracking + SGR encoding
-      expect(mouseEnable()).toBe(
-        `${CSI}?1000h${CSI}?1002h${CSI}?1003h${CSI}?1006h`,
-      )
-      expect(mouseDisable()).toBe(
-        `${CSI}?1006l${CSI}?1003l${CSI}?1002l${CSI}?1000l`,
-      )
+    it('enable/disable SGR any-event mouse mode', () => {
+      expect(mouseEnable()).toBe(`${CSI}?1006h${CSI}?1003h`)
+      expect(mouseDisable()).toBe(`${CSI}?1003l${CSI}?1006l`)
     })
   })
 })
