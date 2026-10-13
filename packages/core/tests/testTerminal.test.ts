@@ -5,8 +5,16 @@ import {Text} from '../lib/components/Text.js'
 import {Stack} from '../lib/components/Stack.js'
 import {Input} from '../lib/components/Input.js'
 import {Style} from '../lib/Style.js'
+import {TestTerminal} from '../lib/TestTerminal.js'
 
 describe('TestTerminal query API', () => {
+  it('normalizes tabs to single spaces', () => {
+    const term = new TestTerminal({cols: 5, rows: 1})
+    term.move(1, 0)
+    term.write('a\tb')
+    expect(term.getRow(0)).toBe(' a b ')
+  })
+
   describe('getRow', () => {
     it('returns full row without trimming', () => {
       const t = testRender(new Text({text: 'Hi'}), {width: 6, height: 1})

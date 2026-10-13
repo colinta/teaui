@@ -12,6 +12,7 @@ const WIDE_BLACK_SQUARE = '⬛︎'
 const WIDE_WHITE_SQUARE = '⬜︎'
 const ASCII_PRINTABLE_MIN = 0x20
 const ASCII_PRINTABLE_MAX = 0x7e
+const DEFAULT_TAB_SIZE = 4
 
 export interface AnsiLocation {
   start: number
@@ -23,7 +24,8 @@ export interface AnsiLocation {
  * Returns the number of *cells* that a grapheme or ANSI sequence takes up.
  *
  * "Cell" refers to a terminal space: ASCII characters take 1 cell, Emoji and Asian
- * characters take 2 cells. ANSI codes (\x1b[...) return 0.
+ * characters take 2 cells. ANSI codes (\x1b[...) return 0. Unexpanded tabs
+ * count as a single space; use formatTabs() for column-dependent tab stops.
  */
 export function charWidth(str: string): 0 | 1 | 2 {
   if (str.length === 1) {
@@ -83,9 +85,9 @@ export function charWidth(str: string): 0 | 1 | 2 {
     return 0
   }
 
-  // tab — rendered as 2-wide sigil in Input
+  // Unexpanded tabs are rendered as a single space.
   if (point === 0x09) {
-    return 2
+    return 1
   }
 
   // 8-bit control characters
@@ -386,6 +388,51 @@ export function lineWidth(str: string | string[]): number {
     width += charWidth(char)
   }
   return width
+}
+
+export interface FormatTabsOptions {
+  /** Distance between tab stops, in terminal cells. Defaults to 4. */
+  tabSize?: number
+  /** Initial column of the first line. Subsequent lines start at 0. */
+  startColumn?: number
+}
+
+/**
+ * Expands tabs to spaces using terminal cell widths, preserving ANSI sequences.
+ * Columns reset after each newline (LF or CRLF). This does not wrap text: apply
+ * tabs before wrapping, alignment, or clipping, relative to the text's own origin.
+ */
+export function formatTabs(
+  str: string,
+  {tabSize = DEFAULT_TAB_SIZE, startColumn = 0}: FormatTabsOptions = {},
+): string {
+  if (!Number.isSafeInteger(tabSize) || tabSize < 1) {
+    throw new RangeError('tabSize must be a positive safe integer')
+  }
+  if (!Number.isSafeInteger(startColumn) || startColumn < 0) {
+    throw new RangeError('startColumn must be a non-negative safe integer')
+  }
+  if (!str.includes('\t')) {
+    return str
+  }
+
+  let column = startColumn
+  const output: string[] = []
+  for (const char of printableChars(str)) {
+    if (char === '\t') {
+      const width = tabSize - (column % tabSize)
+      output.push(' '.repeat(width))
+      column += width
+    } else {
+      output.push(char)
+      if (char === '\n' || char === '\r\n') {
+        column = 0
+      } else {
+        column += charWidth(char)
+      }
+    }
+  }
+  return output.join('')
 }
 
 // --- Locale / Segmenters ---

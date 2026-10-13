@@ -120,6 +120,7 @@ export type {Cell} from './buffer.js'
 // Unicode
 export {
   BG_DRAW,
+  formatTabs,
   charWidth,
   lineWidth,
   stringSize,
@@ -131,7 +132,7 @@ export {
   getLocale,
   setLocale,
 } from './unicode.js'
-export type {AnsiLocation} from './unicode.js'
+export type {AnsiLocation, FormatTabsOptions} from './unicode.js'
 
 // Colors (256-color palette utilities)
 export * as colors from './colors.js'

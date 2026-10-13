@@ -101,6 +101,14 @@ export class Buffer implements Terminal {
       return
     }
 
+    // Tabs are one space unless the caller has expanded them with formatTabs().
+    // Normalize before storage so snapshots and terminal output agree, even
+    // when the caller supplies a known width.
+    if (char === '\t') {
+      char = EMPTY_CELL.char
+      knownWidth = 1
+    }
+
     const width = knownWidth ?? unicode.charWidth(char)
     if (width === 0) {
       return

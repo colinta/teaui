@@ -49,7 +49,10 @@ export class StringTerminal implements SGRTerminal {
   }
 
   write(str: string): void {
-    for (const char of unicode.printableChars(str)) {
+    for (let char of unicode.printableChars(str)) {
+      if (char === '\t') {
+        char = ' '
+      }
       const width = unicode.charWidth(char)
       if (width === 0) {
         if (char.startsWith('\x1b]8;') || char.startsWith('\x9d8;')) {

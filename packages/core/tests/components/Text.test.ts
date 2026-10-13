@@ -3,6 +3,7 @@ import {testRender} from '../../lib/TestScreen.js'
 import {Text} from '../../lib/components/Text.js'
 import {Style} from '../../lib/Style.js'
 import {Size} from '../../lib/geometry.js'
+import {formatTabs} from '../../lib/index.js'
 
 describe('Text', () => {
   describe('wrapped naturalSize', () => {
@@ -23,6 +24,46 @@ describe('Text', () => {
       expect(view.naturalSize(new Size(width, 20)).height).toBe(rows)
       const t = testRender(view, {width, height: 20})
       expect(t.terminal.textContent().split('\n').length).toBe(rows)
+    })
+  })
+
+  describe('tabs', () => {
+    it.each([
+      ['raw leading tab', '\thello', 6, 1],
+      ['raw inline tab', '1.\thello', 8, 3],
+      ['styled raw tab', '\x1b[31m1.\t\x1b[0mhello', 8, 3],
+      ['expanded leading tab', formatTabs('\thello'), 9, 4],
+      ['expanded inline tab', formatTabs('1.\thello'), 9, 4],
+    ])(
+      'measures and renders %s independently of screen position',
+      (_name, text, width, helloX) => {
+        const view = new Text({text, x: 1})
+        expect(view.naturalSize(new Size(20, 1))).toEqual(
+          new Size(width + 1, 1),
+        )
+        const t = testRender(view, {width: 20, height: 1})
+        expect(t.terminal.textContent()).toMatchSnapshot()
+        expect(t.terminal.charAt(helloX + 1, 0)).toBe('h')
+        expect(t.terminal.textContent()).not.toContain('\t')
+      },
+    )
+
+    it.each(['left', 'center', 'right'] as const)(
+      'aligns expanded tabs as ordinary spaces: %s',
+      alignment => {
+        const t = testRender(
+          new Text({text: formatTabs('1.\thello'), alignment}),
+          {width: 12, height: 1},
+        )
+        expect(t.terminal.getRow(0)).toMatchSnapshot()
+      },
+    )
+
+    it('wraps unexpanded tabs like single spaces', () => {
+      const view = new Text({text: 'a\tb', wrap: true})
+      expect(view.naturalSize(new Size(2, 2))).toEqual(new Size(2, 2))
+      const t = testRender(view, {width: 2, height: 2})
+      expect(t.terminal.textContent()).toMatchSnapshot()
     })
   })
 

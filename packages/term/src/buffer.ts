@@ -50,7 +50,11 @@ export class ScreenBuffer {
   }
 
   write(text: string, style: string): void {
-    for (const char of printableChars(text)) {
+    for (let char of printableChars(text)) {
+      // Never emit a raw tab: terminal tab stops are not our layout coordinates.
+      if (char === '\t') {
+        char = EMPTY_CHAR
+      }
       if (char === '\n') {
         this._cursorX = 0
         this._cursorY++

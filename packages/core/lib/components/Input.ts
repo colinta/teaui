@@ -162,7 +162,7 @@ export class Input extends View {
         : placeholder.split('\n').map(line => unicode.printableChars(line))
     this.#placeholder = placeholderLines.map(line => [
       line,
-      line.reduce((w, c) => w + unicode.charWidth(c), 0),
+      line.reduce((w, c) => w + this.#charWidth(c), 0),
     ])
   }
 
@@ -217,7 +217,7 @@ export class Input extends View {
         return [
           displayLine.concat(index === all.length - 1 ? ' ' : NL_SIGIL),
           displayLine.reduce(
-            (width, char) => width + unicode.charWidth(char),
+            (width, char) => width + this.#charWidth(char),
             0,
           ) + 1,
         ]
@@ -275,7 +275,7 @@ export class Input extends View {
     const styles: Style[] = []
     let currentStyle = Style.NONE
     for (const token of unicode.printableChars(formatted)) {
-      const charWidth = unicode.charWidth(token)
+      const charWidth = this.#charWidth(token)
       if (charWidth === 0) {
         // ANSI escape sequence — update current style.
         // Full resets (ESC[0m) clear back to no styling.
@@ -816,7 +816,7 @@ export class Input extends View {
           let currentLine: string[] = []
           let currentWidth = 0
           for (const char of line[0]) {
-            const charWidth = unicode.charWidth(char)
+            const charWidth = this.#charWidth(char)
             // A character that doesn't fit moves to the next row whole, the
             // same rule #toPosition uses to place the cursor.
             if (
@@ -930,7 +930,7 @@ export class Input extends View {
         for (let char of line) {
           char = fontMap?.get(char) ?? char
 
-          const charWidth = unicode.charWidth(char)
+          const charWidth = this.#charWidth(char)
           const isSigil = charIndex === line.length - 1
           if (scanTextPosition.x >= cursorVisible.x) {
             const offset = isPlaceholder
@@ -1058,6 +1058,11 @@ export class Input extends View {
     })
   }
 
+  /** Input displays a tab as a two-cell marker, independent of text tab stops. */
+  #charWidth(char: string): 0 | 1 | 2 {
+    return char === '\t' ? TAB_WIDTH : unicode.charWidth(char)
+  }
+
   #displayChar(char: string) {
     if (!this.#showInvisibles && char === NL_SIGIL) {
       return ' '
@@ -1093,7 +1098,7 @@ export class Input extends View {
             return new Point(x, y)
           }
 
-          const charWidth = unicode.charWidth(char)
+          const charWidth = this.#charWidth(char)
           if (x + charWidth > visibleWidth) {
             x = charWidth
             y += 1
@@ -1114,7 +1119,7 @@ export class Input extends View {
       if (index + chars.length > offset) {
         let x = 0
         for (const char of chars.slice(0, offset - index)) {
-          x += unicode.charWidth(char)
+          x += this.#charWidth(char)
         }
         return new Point({x, y})
       }
@@ -1346,7 +1351,7 @@ export class Input extends View {
         let displayX = 0
         let destOffset = 0
         for (const char of targetChars) {
-          const charWidth = unicode.charWidth(char)
+          const charWidth = this.#charWidth(char)
           if (displayX + charWidth > cursorPosition.x) {
             break
           }
@@ -1392,7 +1397,7 @@ export class Input extends View {
         let displayX = 0
         let destOffset = 0
         for (const char of targetChars) {
-          const charWidth = unicode.charWidth(char)
+          const charWidth = this.#charWidth(char)
           if (displayX + charWidth > cursorPosition.x) {
             break
           }
@@ -1494,7 +1499,7 @@ export class Input extends View {
 
   #updateWidth() {
     this.#maxLineWidth = this.#chars
-      .map(unicode.charWidth)
+      .map(char => this.#charWidth(char))
       .reduce((a, b) => a + b, 0 as number)
   }
 
@@ -1525,7 +1530,7 @@ export class Input extends View {
       if (this.#cursor.start > this.#chars.length - 1) {
         return
       }
-      this.#maxLineWidth -= unicode.charWidth(this.#chars[this.#cursor.start])
+      this.#maxLineWidth -= this.#charWidth(this.#chars[this.#cursor.start])
       this.#chars = this.#chars
         .slice(0, this.#cursor.start)
         .concat(this.#chars.slice(this.#cursor.start + 1))
@@ -1734,8 +1739,9 @@ function isEmptySelection(cursor: Cursor) {
 
 const DBL_CLICK = 300
 const NL_SIGIL = '⤦'
+const TAB_WIDTH = 2
 const TAB_SIGIL = '⭾ '
-const TAB_SPACES = '  '
+const TAB_SPACES = ' '.repeat(TAB_WIDTH)
 
 function isAccentChar(char: string) {
   return ACCENTS[char] !== undefined

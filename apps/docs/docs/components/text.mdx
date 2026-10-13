@@ -12,6 +12,32 @@ Renders styled text. Supports alignment, wrapping, and custom fonts.
 
 In React, you can also use plain strings as children — they're automatically wrapped in `Text`.
 
+## Tabs
+
+Unexpanded tab characters (`\t`) measure and render as a single space. For
+column-aligned tab stops, expand them explicitly with `formatTabs`, exported from
+both `@teaui/core` and `@teaui/term`:
+
+```ts
+import {formatTabs, Text} from '@teaui/core'
+
+formatTabs('\thello') // '    hello'
+formatTabs('1.\thello') // '1.  hello'
+formatTabs('a\tb', {tabSize: 8}) // 'a       b'
+
+new Text({x: 1, text: formatTabs('\thello')}) // hello starts at x: 5
+```
+
+`tabSize` defaults to 4 terminal cells. The helper counts Unicode grapheme cell
+widths and preserves ANSI styles and hyperlinks. `startColumn` defaults to 0 and
+can specify the initial column of the first line; each subsequent line starts at 0. Both options must be safe integers, with `tabSize > 0` and `startColumn >= 0`.
+
+`formatTabs` does not wrap text. Tabs are expanded on the original lines before
+any wrapping, alignment, or clipping performed by `Text`; soft wraps do not
+recalculate tab stops. A component's screen position does not affect expansion.
+
+`Input` retains its separate two-cell tab marker and keeps tabs in its value.
+
 ## Props
 
 | Prop        | Type                            | Default     | Description                     |

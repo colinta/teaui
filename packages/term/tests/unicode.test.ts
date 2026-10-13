@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest'
 import {
   ansiLocations,
+  formatTabs,
   charWidth,
   isAnnoyingWidth,
   lineWidth,
@@ -18,7 +19,7 @@ describe('unicode', () => {
       expect(charWidth('')).toBe(0)
       expect(charWidth('\n')).toBe(0)
       expect(charWidth('a')).toBe(1)
-      expect(charWidth('\t')).toBe(2)
+      expect(charWidth('\t')).toBe(1)
       expect(charWidth('界')).toBe(2)
       expect(charWidth('🧑‍🧑‍🧒‍🧒')).toBe(2)
       expect(charWidth('🙂')).toBe(2)
@@ -94,6 +95,13 @@ describe('unicode', () => {
   })
 
   describe('lineWidth', () => {
+    it('counts unexpanded tabs as single spaces', () => {
+      expect(lineWidth('\thello')).toBe(6)
+      expect(lineWidth('1.\thello')).toBe(8)
+      expect(lineWidth(['a', '\t', 'b'])).toBe(3)
+      expect(stringSize('\thello\n1.\thello')).toEqual({width: 8, height: 2})
+    })
+
     it('ignores ANSI sequences and stops at the first newline', () => {
       expect(lineWidth(`a${RED}界${RESET}\nabcdef`)).toBe(3)
     })
@@ -128,6 +136,81 @@ describe('unicode', () => {
         height: 4,
       })
     })
+  })
+
+  describe('formatTabs', () => {
+    it.each([
+      ['', ''],
+      ['no tabs', 'no tabs'],
+      ['\thello', '    hello'],
+      ['1.\thello', '1.  hello'],
+      ['abc\tx', 'abc x'],
+      ['1234\tx', '1234    x'],
+      ['a\tb\t', 'a   b   '],
+      ['\t\t', '        '],
+      ['\tfoo\n1.\tbar\n', '    foo\n1.  bar\n'],
+      ['a\r\n\tb', 'a\r\n    b'],
+    ])('expands %j at four-cell stops', (input, expected) => {
+      expect(formatTabs(input)).toBe(expected)
+      expect(formatTabs(expected)).toBe(expected)
+    })
+
+    it.each([
+      ['界', '  '],
+      ['🙂', '  '],
+      ['🇺🇸', '  '],
+      ['👩‍💻', '  '],
+      ['ดำ', '  '],
+      ['e\u0301', '   '],
+      ['นี้', '   '],
+    ])('uses terminal cell widths after %j', (prefix, spaces) => {
+      const expanded = formatTabs(prefix + '\tx')
+      expect(expanded).toBe(prefix + spaces + 'x')
+      expect(lineWidth(expanded)).toBe(5)
+    })
+
+    it('supports custom tab sizes', () => {
+      expect(formatTabs('a\tb\tc', {tabSize: 2})).toBe('a b c')
+      expect(formatTabs('a\tx', {tabSize: 8})).toBe('a       x')
+      expect(formatTabs('a\t\tb', {tabSize: 1})).toBe('a  b')
+    })
+
+    it('applies the starting column only to the first line', () => {
+      expect(formatTabs('\tx\n\tx', {startColumn: 2})).toBe('  x\n    x')
+      expect(formatTabs('a\tx', {tabSize: 8, startColumn: 5})).toBe('a  x')
+    })
+
+    it('preserves ANSI styles without counting them as cells', () => {
+      expect(formatTabs(`a${RED}\t界${RESET}\tZ`)).toBe(
+        `a${RED}   界${RESET}  Z`,
+      )
+    })
+
+    it('preserves hyperlink sequences without measuring their payloads', () => {
+      const open = '\x1b]8;;https://example.com/界+🙂\x1b\\'
+      const close = '\x1b]8;;\x1b\\'
+      expect(formatTabs(`${open}a\tb${close}\tc`)).toBe(
+        `${open}a   b${close}   c`,
+      )
+    })
+
+    it('does not wrap long lines', () => {
+      expect(formatTabs('abcdefghij\tx')).toBe('abcdefghij  x')
+    })
+
+    it.each([0, -1, 1.5, NaN, Infinity])(
+      'rejects invalid tabSize %s',
+      tabSize => {
+        expect(() => formatTabs('\t', {tabSize})).toThrow(RangeError)
+      },
+    )
+
+    it.each([-1, 1.5, NaN, Infinity])(
+      'rejects invalid startColumn %s',
+      startColumn => {
+        expect(() => formatTabs('\t', {startColumn})).toThrow(RangeError)
+      },
+    )
   })
 
   describe('ANSI utilities', () => {

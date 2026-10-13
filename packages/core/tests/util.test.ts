@@ -163,6 +163,13 @@ describe('wrap', () => {
     ])
   })
 
+  test('measures trimmed tabs as single spaces', () => {
+    expect(wrap('a\tb', 2)).toEqual([
+      ['a', 1],
+      ['b', 1],
+    ])
+  })
+
   test('wraps long words by character width', () => {
     expect(wrap('abcdef', 3)).toEqual([
       ['abc', 3],

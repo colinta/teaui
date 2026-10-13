@@ -2,6 +2,7 @@ import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Box} from '../../lib/components/Box.js'
 import {Input} from '../../lib/components/Input.js'
+import {Size} from '../../lib/geometry.js'
 
 describe('Input', () => {
   describe('rendering', () => {
@@ -32,6 +33,15 @@ describe('Input', () => {
     it('renders empty input without crashing', () => {
       const t = testRender(new Input({value: ''}), {width: 20, height: 1})
       expect(t.terminal.textContent()).toBeDefined()
+    })
+
+    it('keeps tabs as two-cell editing units despite the one-space text default', () => {
+      const input = new Input({value: 'a\tb'})
+      expect(input.naturalSize(new Size(20, 1))).toEqual(new Size(5, 1))
+      const t = testRender(input, {width: 20, height: 1})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+      expect(t.terminal.charAt(3, 0)).toBe('b')
+      expect(input.value).toBe('a\tb')
     })
 
     it('toggles invisible characters with alt+click', () => {

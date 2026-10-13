@@ -21,6 +21,13 @@ describe('StringTerminal', () => {
     expect(term.output).toBe('hi        \u001b[0m')
   })
 
+  it('normalizes tabs to single spaces', () => {
+    const term = new StringTerminal({cols: 5, rows: 1})
+    term.move(1, 0)
+    term.write('a\tb')
+    expect(term.output).toBe(' a b \u001b[0m')
+  })
+
   it('move() positions cursor for subsequent writes', () => {
     const term = new StringTerminal({cols: 10, rows: 2})
     term.move(0, 0)

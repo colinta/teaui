@@ -59,6 +59,8 @@ export {
 export * from './iTerm2.js'
 export {colors} from '@teaui/term'
 export {
+  formatTabs,
+  type FormatTabsOptions,
   charWidth,
   lineWidth,
   stringSize,

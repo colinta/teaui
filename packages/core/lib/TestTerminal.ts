@@ -50,7 +50,10 @@ export class TestTerminal implements SGRTerminal {
   }
 
   write(str: string): void {
-    for (const char of unicode.printableChars(str)) {
+    for (let char of unicode.printableChars(str)) {
+      if (char === '\t') {
+        char = ' '
+      }
       const width = unicode.charWidth(char)
 
       if (width === 0) {

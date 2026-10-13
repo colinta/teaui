@@ -4,6 +4,8 @@ exports[`Input > format > renders formatted text correctly 1`] = `"const x = 1"`
 
 exports[`Input > format > works with empty value 1`] = `"type here"`;
 
+exports[`Input > rendering > keeps tabs as two-cell editing units despite the one-space text default 1`] = `"a⭾ b"`;
+
 exports[`Input > rendering > renders initial value 1`] = `"hello"`;
 
 exports[`Input > rendering > renders placeholder when empty 1`] = `"Type here..."`;

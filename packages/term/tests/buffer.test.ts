@@ -177,6 +177,22 @@ describe('ScreenBuffer', () => {
     })
   })
 
+  describe('tab handling', () => {
+    it('writes raw tabs as single spaces, including when overwriting text', () => {
+      const buf = new ScreenBuffer(10, 1)
+      buf.moveTo(1, 0)
+      buf.write('xxxxx', '')
+      flush(buf)
+
+      buf.moveTo(1, 0)
+      buf.write('a\tb\t', '')
+      const out = flush(buf)
+      expect(buf.cursorX).toBe(5)
+      expect(out).toBe(`${SYNC_START}${moveTo(1, 0)}a b ${SYNC_END}`)
+      expect(out).not.toContain('\t')
+    })
+  })
+
   describe('newline handling', () => {
     it('newline advances to next row column 0', () => {
       const buf = new ScreenBuffer(10, 5)

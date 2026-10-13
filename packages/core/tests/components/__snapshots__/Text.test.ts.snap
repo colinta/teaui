@@ -8,6 +8,27 @@ Line 3"
 
 exports[`Text > renders text content 1`] = `"Hello, world!"`;
 
+exports[`Text > tabs > aligns expanded tabs as ordinary spaces: center 1`] = `" 1.  hello  "`;
+
+exports[`Text > tabs > aligns expanded tabs as ordinary spaces: left 1`] = `"1.  hello   "`;
+
+exports[`Text > tabs > aligns expanded tabs as ordinary spaces: right 1`] = `"   1.  hello"`;
+
+exports[`Text > tabs > measures and renders expanded inline tab independently of screen position 1`] = `" 1.  hello"`;
+
+exports[`Text > tabs > measures and renders expanded leading tab independently of screen position 1`] = `"     hello"`;
+
+exports[`Text > tabs > measures and renders raw inline tab independently of screen position 1`] = `" 1. hello"`;
+
+exports[`Text > tabs > measures and renders raw leading tab independently of screen position 1`] = `"  hello"`;
+
+exports[`Text > tabs > measures and renders styled raw tab independently of screen position 1`] = `" 1. hello"`;
+
+exports[`Text > tabs > wraps unexpanded tabs like single spaces 1`] = `
+"a
+b"
+`;
+
 exports[`Text > truncates long text when wrap is disabled 1`] = `"Hello"`;
 
 exports[`Text > wraps long text when wrap is enabled 1`] = `
