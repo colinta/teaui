@@ -234,6 +234,12 @@ export interface Props {
  */
 export const REMOVE_CHILD = Symbol('removeChild')
 
+interface RenderGeometry {
+  rect: Rect
+  contentSize: Size
+  padding: Edges | undefined
+}
+
 export abstract class View {
   // id = performance.now().toString(36)
   parent: ComposedView | undefined = undefined
@@ -242,6 +248,7 @@ export abstract class View {
   #screen: Screen | undefined = undefined
   #purpose: Palette | undefined
   #prevSizeCache: Map<string, Size> = new Map()
+  #renderGeometry: RenderGeometry | undefined
   #viewportContentSize: Size = Size.zero
   #renderedContentSize: Size = Size.zero
   #renderedLocation: Point = Point.zero
@@ -554,6 +561,7 @@ export abstract class View {
    */
   invalidateSize() {
     this.#prevSizeCache = new Map()
+    this.#renderGeometry = undefined
     if (this.#invalidateParent) {
       if (this.parent) {
         this.parent.invalidateSize()
@@ -698,7 +706,9 @@ export abstract class View {
     naturalSize: (available: Size) => Size,
   ): (available: Size) => Size {
     return parentAvailableSize => {
-      const cached = this.#prevSizeCache.get(cacheKey(parentAvailableSize))
+      // Key by the caller's dimensions, before padding/constraints change them.
+      const key = cacheKey(parentAvailableSize)
+      const cached = this.#prevSizeCache.get(key)
       if (cached) {
         return cached
       }
@@ -727,7 +737,7 @@ export abstract class View {
         size.height += this.#y
       }
 
-      this.#prevSizeCache.set(cacheKey(available), size)
+      this.#prevSizeCache.set(key, size)
       return size
     }
   }
@@ -772,30 +782,8 @@ export abstract class View {
     this.#viewportContentSize = viewport.contentSize
     this.#renderedLocation = viewport.location
 
-    let origin: Point
-    const contentSize = viewport.contentSize.mutableCopy()
-    if (this.#x || this.#y) {
-      origin = new Point(this.#x ?? 0, this.#y ?? 0)
-      contentSize.width -= origin.x
-      contentSize.height -= origin.y
-    } else {
-      origin = Point.zero
-    }
-
-    this.#renderedContentSize = this.#restrictSize(
-      () => this.naturalSize(contentSize),
-      contentSize,
-      'grow',
-    )
-    if (this.padding) {
-      origin = origin.offset(this.padding.left, this.padding.top)
-      this.#renderedContentSize = this.#renderedContentSize.shrink(
-        this.padding.left + this.padding.right,
-        this.padding.top + this.padding.bottom,
-      )
-    }
-
-    const rect = new Rect(origin, this.#renderedContentSize)
+    const {rect, contentSize} = this.#geometryFor(viewport)
+    this.#renderedContentSize = contentSize
     // Inside `_render`, the viewport is positioned at this view's content, and
     // viewport.register*() calls are associated with this view.
     const renderWithListeners = (viewport: Viewport) => {
@@ -812,6 +800,56 @@ export abstract class View {
     } else {
       viewport._render(this, rect, renderWithListeners)
     }
+  }
+
+  #geometryFor(viewport: Viewport): RenderGeometry {
+    const cached = this.#renderGeometry
+    if (
+      !viewport.isProbe &&
+      cached &&
+      // padding is public and can be replaced or mutated without invalidation.
+      cached.padding?.top === this.padding?.top &&
+      cached.padding?.right === this.padding?.right &&
+      cached.padding?.bottom === this.padding?.bottom &&
+      cached.padding?.left === this.padding?.left
+    ) {
+      return cached
+    }
+    const sizeCache = this.#prevSizeCache
+    let origin: Point
+    const contentSize = viewport.contentSize.mutableCopy()
+    if (this.#x || this.#y) {
+      origin = new Point(this.#x ?? 0, this.#y ?? 0)
+      contentSize.width -= origin.x
+      contentSize.height -= origin.y
+    } else {
+      origin = Point.zero
+    }
+
+    let renderedContentSize = this.#restrictSize(
+      () => this.naturalSize(contentSize),
+      contentSize,
+      'grow',
+    )
+    if (this.padding) {
+      origin = origin.offset(this.padding.left, this.padding.top)
+      renderedContentSize = renderedContentSize.shrink(
+        this.padding.left + this.padding.right,
+        this.padding.top + this.padding.bottom,
+      )
+    }
+
+    const geometry: RenderGeometry = {
+      rect: new Rect(origin, renderedContentSize),
+      contentSize: renderedContentSize,
+      padding: this.padding && {...this.padding},
+    }
+    // The caller invalidates on allocation-size changes. Don't cache probe
+    // geometry, or a measurement that invalidated its own size while running.
+    if (!viewport.isProbe && sizeCache === this.#prevSizeCache) {
+      this.#renderGeometry = geometry
+    }
+    return geometry
   }
 
   /**

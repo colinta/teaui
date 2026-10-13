@@ -17,6 +17,7 @@ import type {
   SystemEvent,
   SystemMouseEvent,
 } from './events/index.js'
+import {isMouseWheel} from './events/index.js'
 import {TerminalProgram} from './TerminalProgram.js'
 import {FocusManager} from './managers/FocusManager.js'
 import type {Modal} from './components/Modal.js'
@@ -55,6 +56,7 @@ export class Screen {
   #didStop = false
   #naturalSizeRefreshState: NaturalSizeRefreshState = 'idle'
   #renderRequestedDuringRegionUpdate = false
+  #pendingWheel: SystemMouseEvent | undefined
 
   rootView: View
 
@@ -200,6 +202,7 @@ export class Screen {
     }
     this.#didStop = true
     this.#isRunning = false
+    this.#pendingWheel = undefined
     const tasks = [
       () => this.#tickManager.stop(),
       () => this.rootView.moveToScreen(undefined),
@@ -257,6 +260,11 @@ export class Screen {
       // A resize can move an inline region without changing its logical size.
       this.#buffer.invalidate()
     } else if (event.type === 'key') {
+      // Screen bindings can inspect the frame or act on geometry too.
+      this.#flushWheelRender()
+      if (!this.#isRunning) {
+        return
+      }
       for (const {pattern, fn} of this.#keyListeners) {
         if (matchKeyPattern(pattern, event)) {
           fn(event.char, event)
@@ -291,7 +299,42 @@ export class Screen {
     return unsubscribe
   }
 
+  #flushWheelRender() {
+    if (this.#pendingWheel) {
+      this.render()
+    }
+  }
+
+  /**
+   * Apply input immediately. Wheel paints coalesce on the next frame tick;
+   * other input flushes pending wheel work before being handled. Call render()
+   * explicitly when a caller needs a synchronously painted frame.
+   */
   trigger(event: SystemEvent) {
+    if (this.#didStop) {
+      return
+    }
+    const wheel =
+      event.type === 'mouse' && isMouseWheel(event) ? event : undefined
+    const previous = this.#pendingWheel
+    // Hit-testing uses the last painted frame. Do not carry a burst across a
+    // pointer/modifier change, or into a click/key/resize that needs fresh geometry.
+    if (previous && (!wheel || !sameWheelPointer(previous, wheel))) {
+      this.#flushWheelRender()
+      if (this.#didStop) {
+        return
+      }
+    }
+    if (wheel) {
+      // Deliver every delta in order (including reversals at scroll bounds),
+      // without retaining an input queue. Only the paint is deferred.
+      this.triggerMouse(wheel)
+      if (!this.#didStop) {
+        this.#pendingWheel = {...wheel}
+        this.needsRender()
+      }
+      return
+    }
     switch (event.type) {
       case 'resize':
       case 'focus':
@@ -470,7 +513,9 @@ export class Screen {
   }
 
   needsRender() {
-    this.#tickManager.needsRender()
+    if (!this.#didStop) {
+      this.#tickManager.needsRender()
+    }
   }
 
   viewNaturalSizeDidChange(view: View): void {
@@ -531,6 +576,11 @@ export class Screen {
       return
     }
     this.#renderRequestedDuringRegionUpdate = false
+    // Consume requests before drawing, not afterward: invalidations raised by
+    // render/commit still need a subsequent frame. An explicit render also
+    // satisfies any wheel/tick work that was already pending.
+    this.#tickManager.beginRender()
+    this.#pendingWheel = undefined
 
     const screenSize = new Size(this.#program.cols, this.#program.rows)
     this.#buffer.resize(screenSize)
@@ -553,6 +603,17 @@ export class Screen {
 
     this.#buffer.flush(this.#program)
   }
+}
+
+function sameWheelPointer(a: SystemMouseEvent, b: SystemMouseEvent): boolean {
+  return (
+    a.x === b.x &&
+    a.y === b.y &&
+    a.ctrl === b.ctrl &&
+    a.alt === b.alt &&
+    a.gui === b.gui &&
+    a.shift === b.shift
+  )
 }
 
 function matchKeyPattern(pattern: string, event: KeyEvent): boolean {

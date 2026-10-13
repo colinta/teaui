@@ -14,15 +14,20 @@ export class TickManager {
     this.#tickViews = new Set()
   }
 
+  beginRender() {
+    this.#needsRender = false
+  }
+
   endRender() {
-    if (!this.#tickViews.size) {
-      this.#stop()
-    } else if (this.#tickViews.size) {
+    if (this.#tickViews.size || this.#needsRender) {
       this.#start()
+    } else {
+      this.#stop()
     }
   }
 
   stop() {
+    this.#needsRender = false
     this.#stop()
   }
 
@@ -65,8 +70,6 @@ export class TickManager {
 
     if (needsRender) {
       this.#onRender()
-
-      this.#needsRender = false
     }
   }
 }

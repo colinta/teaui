@@ -127,6 +127,11 @@ class TestScreen {
     }
 
     this.#screen.trigger(event)
+    if (button === 'wheel') {
+      // Component tests inspect the frame immediately after sendMouse. Production
+      // input batches wheel paints; explicitly finish that frame in this harness.
+      this.#screen.render()
+    }
   }
 
   sendPaste(text: string) {

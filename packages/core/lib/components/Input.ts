@@ -789,15 +789,6 @@ export class Input extends View {
       viewport.registerTick()
     }
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
-    viewport.paint(
-      this.purpose.ui({
-        variant: 'flat',
-        isPressed: this.isPressed && !hasFocus,
-        isHover: this.isHover,
-        hasFocus,
-      }),
-    )
-
     // cursorEnd: the location of the cursor relative to the text
     // (ie if the text had been drawn at 0,0, cursorEnd is the screen location of
     // the cursor)
@@ -859,6 +850,21 @@ export class Input extends View {
     } else {
       lines = this.#wrappedLines
     }
+
+    // Keep wrapping/keyboard geometry and focus registration current, but
+    // don't construct styles, mouse hit cells, or glyphs that cannot be drawn.
+    // A focused/dragging input must still maintain its selection hit map.
+    if (viewport.visibleRect.isEmpty && !hasFocus && !this.#mouseSelection) {
+      return
+    }
+    viewport.paint(
+      this.purpose.ui({
+        variant: 'flat',
+        isPressed: this.isPressed && !hasFocus,
+        isHover: this.isHover,
+        hasFocus,
+      }),
+    )
 
     let isPlaceholder = !this.#chars.length
     let currentStyle = Style.NONE

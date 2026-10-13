@@ -304,7 +304,7 @@ Error codes: `invalid-json`, `invalid-event`, `binary-message`, `dispatch-failed
 Malformed messages are not dispatched. Oversized messages close the connection.
 
 An ACK confirms that all currently subscribed synchronous listeners returned.
-With a screen attached, this includes event dispatch and its synchronous render.
+With a screen attached, this confirms event delivery, not that the screen has painted.
 With no listeners, the event is acknowledged but not delivered anywhere; attach
 sources before publishing their endpoints. **An ACK is not a React commit/effect
 or asynchronous-work barrier.** For UI assertions, wait until the expected

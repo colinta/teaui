@@ -114,15 +114,6 @@ export class Checkbox extends ComposedView {
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
-    const uiStyle = this.purpose.ui({
-      variant: 'raised',
-      isPressed: this.isPressed,
-      isHover: this.isHover,
-      hasFocus,
-    })
-
-    viewport.paint(uiStyle)
-
     const boxWidth = CHECKBOX_WIDTH
     const naturalSize = super
       .naturalSize(viewport.contentSize.shrink(boxWidth, 0))
@@ -131,6 +122,28 @@ export class Checkbox extends ComposedView {
       boxWidth,
       Math.round((viewport.contentSize.height - naturalSize.height) / 2),
     )
+
+    if (
+      viewport.visibleRect.isEmpty &&
+      this.children.length === 1 &&
+      this.children[0] === this.#textView
+    ) {
+      // Keep the label's geometry/listeners up to date, even though neither
+      // its glyphs nor the checkbox can be drawn. Focus registration stays above.
+      // Custom children added by subclasses retain their inherited drawing pen.
+      viewport.clipped(new Rect(offset, naturalSize), inside =>
+        super.render(inside),
+      )
+      return
+    }
+
+    const uiStyle = this.purpose.ui({
+      variant: 'raised',
+      isPressed: this.isPressed,
+      isHover: this.isHover,
+      hasFocus,
+    })
+    viewport.paint(uiStyle)
 
     const box = BOX[this.#value ? 'checked' : 'unchecked']
     const textStyle = hasFocus ? uiStyle.merge({underline: true}) : uiStyle

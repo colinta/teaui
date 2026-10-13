@@ -198,8 +198,12 @@ export class Scrollable extends Stack {
       return
     }
 
-    const tooWide = this.#showHorizontalScrollbar() && this.#contentSize.width > this.contentSize.width
-    const tooTall = this.#showVerticalScrollbar() && this.#contentSize.height > this.contentSize.height
+    const tooWide =
+      this.#showHorizontalScrollbar() &&
+      this.#contentSize.width > this.contentSize.width
+    const tooTall =
+      this.#showVerticalScrollbar() &&
+      this.#contentSize.height > this.contentSize.height
 
     if (
       tooWide &&
@@ -498,13 +502,15 @@ export class Scrollable extends Stack {
   }
 
   #showHorizontalScrollbar(): boolean {
-    const show = this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
+    const show =
+      this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
     const enabled = this.#scrollable !== 'vertical'
     return show && enabled
   }
 
   #showVerticalScrollbar(): boolean {
-    const show = this.#showScrollbars === true || this.#showScrollbars === 'vertical'
+    const show =
+      this.#showScrollbars === true || this.#showScrollbars === 'vertical'
     const enabled = this.#scrollable !== 'horizontal'
     return show && enabled
   }

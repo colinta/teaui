@@ -14,6 +14,18 @@ interface Props extends ViewProps {
   gap?: number
 }
 
+interface Placement {
+  view: View
+  rect: Rect
+}
+
+interface Layout {
+  contentSize: Size
+  visibleSize: Size
+  pins: View['pin'][]
+  placements: Placement[]
+}
+
 type ShorthandProps = NonNullable<Props['children']> | Omit<Props, 'direction'>
 
 function fromShorthand(
@@ -34,6 +46,8 @@ export class Stack extends Container {
   #fill: boolean = true
   #sizes: Map<View, FlexSize> = new Map()
   #offscreenChildren: Set<View> = new Set()
+  #layout: Layout | undefined
+  #layoutVersion = 0
 
   static down(
     props: ShorthandProps = {},
@@ -196,12 +210,25 @@ export class Stack extends Container {
 
   add(child: View, at?: number) {
     super.add(child, at)
-    this.#sizes.set(child, child.flex)
+    if (this.#sizes.get(child) !== child.flex) {
+      this.#sizes.set(child, child.flex)
+      this.invalidateSize()
+    }
   }
 
   addFlex(flexSize: FlexSize, child: View, at?: number) {
     super.add(child, at)
-    this.#sizes.set(child, flexSize)
+    if (this.#sizes.get(child) !== flexSize) {
+      this.#sizes.set(child, flexSize)
+      // add() can be a no-op for an existing child; flex may still change.
+      this.invalidateSize()
+    }
+  }
+
+  invalidateSize() {
+    this.#layout = undefined
+    this.#layoutVersion++
+    super.invalidateSize()
   }
 
   get isVertical() {
@@ -231,6 +258,65 @@ export class Stack extends Container {
       return super.render(viewport)
     }
 
+    const layout = this.#layoutFor(viewport)
+    const focusView = this.skipsOffscreenChildren
+      ? this.screen?.currentFocusView
+      : undefined
+    this.#offscreenChildren.clear()
+
+    // Replay identical geometry even for offscreen descendants. They still
+    // render/register events; zeroing their viewports would change the focus ring.
+    for (const {view: child, rect} of layout.placements) {
+      let clip = rect
+      if (!child.isLayoutMarker) {
+        if (child.pin === 'horizontal' && this.isVertical) {
+          clip = rect.atX(viewport.visibleRect.origin.x)
+        } else if (child.pin === 'vertical' && !this.isVertical) {
+          clip = rect.atY(viewport.visibleRect.origin.y)
+        }
+        if (
+          this.skipsOffscreenChildren &&
+          isOffscreen(clip, viewport.visibleRect) &&
+          !containsView(child, focusView)
+        ) {
+          this.#offscreenChildren.add(child)
+          clip = new Rect(clip.origin, Size.zero)
+        }
+      }
+      viewport.clipped(clip, inside => child.render(inside))
+    }
+  }
+
+  #layoutFor(viewport: Viewport): Layout {
+    const cached = this.#layout
+    if (
+      !viewport.isProbe &&
+      cached &&
+      cached.contentSize.isEqual(viewport.contentSize) &&
+      // pin is a public field, so it can change without invalidateSize().
+      cached.pins.every((pin, i) => pin === this.children[i]?.pin) &&
+      (!cached.pins.some(Boolean) ||
+        cached.visibleSize.isEqual(viewport.visibleRect.size))
+    ) {
+      return cached
+    }
+    const version = this.#layoutVersion
+    const layout: Layout = {
+      contentSize: viewport.contentSize.copy(),
+      visibleSize: viewport.visibleRect.size.copy(),
+      pins: this.children.map(child => child.pin),
+      placements: this.#layoutChildren(viewport),
+    }
+    // Probes have transient constraints; don't reuse their layout in a real
+    // render. A child's measurement can also invalidate the tree mid-layout.
+    if (!viewport.isProbe && version === this.#layoutVersion) {
+      this.#layout = layout
+    }
+    return layout
+  }
+
+  #layoutChildren(viewport: Viewport): Placement[] {
+    const placements: Placement[] = []
     const remainingSize = viewport.contentSize.mutableCopy()
 
     let flexTotal = 0
@@ -305,11 +391,6 @@ export class Stack extends Container {
         break
     }
 
-    const focusView = this.skipsOffscreenChildren
-      ? this.screen?.currentFocusView
-      : undefined
-    this.#offscreenChildren.clear()
-
     // stores the leftover rounding errors, and added to view once it exceeds 1
     let correctAmount: number = 0
 
@@ -320,8 +401,9 @@ export class Stack extends Container {
         markers[markerIndex][0] === index
       ) {
         const marker = markers[markerIndex++][1]
-        viewport.clipped(new Rect(origin.copy(), Size.zero), inside => {
-          marker.render(inside)
+        placements.push({
+          view: marker,
+          rect: new Rect(origin.copy(), Size.zero),
         })
       }
     }
@@ -401,27 +483,13 @@ export class Stack extends Container {
       // This makes the child stay fixed in that axis while scrolling.
       if (child.pin === 'horizontal' && this.isVertical) {
         clipSize.width = viewport.visibleRect.size.width
-        clipOrigin.x = viewport.visibleRect.origin.x
+        // The origin is applied during replay, as it changes on every scroll.
       } else if (child.pin === 'vertical' && !this.isVertical) {
         clipSize.height = viewport.visibleRect.size.height
-        clipOrigin.y = viewport.visibleRect.origin.y
+        // The origin is applied during replay, as it changes on every scroll.
       }
 
-      // Offscreen children are rendered into an empty viewport, so that they
-      // still register focus/hotkeys, but skip layout and drawing.
-      if (
-        this.skipsOffscreenChildren &&
-        isOffscreen(new Rect(clipOrigin, clipSize), viewport.visibleRect) &&
-        !containsView(child, focusView)
-      ) {
-        this.#offscreenChildren.add(child)
-        clipSize.width = 0
-        clipSize.height = 0
-      }
-
-      viewport.clipped(new Rect(clipOrigin, clipSize), inside => {
-        child.render(inside)
-      })
+      placements.push({view: child, rect: new Rect(clipOrigin, clipSize)})
 
       if (this.#direction === 'right') {
         origin.x += childSize.width
@@ -434,6 +502,7 @@ export class Stack extends Container {
 
     // trailing markers: the trailing edge of the last view (no trailing gap)
     renderMarkers(flexViews.length)
+    return placements
   }
 }
 

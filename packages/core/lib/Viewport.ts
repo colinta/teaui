@@ -574,9 +574,12 @@ export class Viewport {
     this.#currentRender = view
     // children of `view` are located relative to its origin
     this.#locationOrigin = this.#offset
-    this.clipped(clip, draw)
-    this.#currentRender = prevRender
-    this.#locationOrigin = prevLocationOrigin
+    try {
+      this.clipped(clip, draw)
+    } finally {
+      this.#currentRender = prevRender
+      this.#locationOrigin = prevLocationOrigin
+    }
   }
 
   clipped(clip: Rect, draw: (viewport: Viewport) => void): void
@@ -596,44 +599,6 @@ export class Viewport {
       style = this.#style
     }
 
-    const offsetX = this.#offset.x + clip.origin.x
-    const offsetY = this.#offset.y + clip.origin.y
-    const contentWidth = Math.max(0, clip.size.width)
-    const contentHeight = Math.max(0, clip.size.height)
-
-    // visibleRect.origin doesn't go negative - Math.max(0) prevents that.
-    // The subtraction of clip.origin.x only has an effect when the clipped
-    // origin is *negative*. In that case, the effect is that (0, 0) is outside the
-    // visible space, and so visibleRect.origin represents the first visiblePoint
-    // (in local coordinates). Basically - trust this math, it looks wrong, but I
-    // double checked it.
-    const visibleMinX = Math.max(0, this.#visibleRect.origin.x - clip.origin.x)
-    const visibleMinY = Math.max(0, this.#visibleRect.origin.y - clip.origin.y)
-    const visibleMaxX = Math.min(
-      clip.size.width,
-      this.#visibleRect.origin.x + this.#visibleRect.size.width - clip.origin.x,
-    )
-    const visibleMaxY = Math.min(
-      clip.size.height,
-      this.#visibleRect.origin.y +
-        this.#visibleRect.size.height -
-        clip.origin.y,
-    )
-
-    const contentSize = new Size(contentWidth, contentHeight)
-    const availableRect = new Rect(
-      new Point(
-        this.#availableRect.origin.x - clip.origin.x,
-        this.#availableRect.origin.y - clip.origin.y,
-      ),
-      this.#availableRect.size,
-    )
-    const visibleRect = new Rect(
-      new Point(visibleMinX, visibleMinY),
-      new Size(visibleMaxX - visibleMinX, visibleMaxY - visibleMinY),
-    )
-    const offset = new Point(offsetX, offsetY)
-
     const prevContentSize = this.#contentSize
     const prevAvailableRect = this.#availableRect
     const prevVisibleRect = this.#visibleRect
@@ -641,20 +606,86 @@ export class Viewport {
     const prevLocationOrigin = this.#locationOrigin
     const prevStyle = this.#style
 
-    this.#contentSize = contentSize
-    this.#availableRect = availableRect
-    this.#visibleRect = visibleRect
-    this.#offset = offset
+    // A view's inner render often has the exact same geometry as the clip its
+    // parent just supplied. Avoid allocating a second set of identical objects.
+    // inset() can leave visibility outside the content: that still needs clipping.
+    const unchanged =
+      clip.origin.x === 0 &&
+      clip.origin.y === 0 &&
+      clip.size.isEqual(this.#contentSize) &&
+      this.#visibleRect.minX() >= 0 &&
+      this.#visibleRect.minY() >= 0 &&
+      (this.#visibleRect.size.width === 0 ||
+        this.#visibleRect.maxX() <= clip.size.width) &&
+      (this.#visibleRect.size.height === 0 ||
+        this.#visibleRect.maxY() <= clip.size.height)
+
+    if (!unchanged) {
+      const offsetX = this.#offset.x + clip.origin.x
+      const offsetY = this.#offset.y + clip.origin.y
+      const contentWidth = Math.max(0, clip.size.width)
+      const contentHeight = Math.max(0, clip.size.height)
+
+      // visibleRect.origin doesn't go negative - Math.max(0) prevents that.
+      // The subtraction of clip.origin.x only has an effect when the clipped
+      // origin is *negative*. In that case, the effect is that (0, 0) is outside the
+      // visible space, and so visibleRect.origin represents the first visiblePoint
+      // (in local coordinates). Basically - trust this math, it looks wrong, but I
+      // double checked it.
+      const visibleMinX = Math.max(
+        0,
+        this.#visibleRect.origin.x - clip.origin.x,
+      )
+      const visibleMinY = Math.max(
+        0,
+        this.#visibleRect.origin.y - clip.origin.y,
+      )
+      const visibleMaxX = Math.min(
+        clip.size.width,
+        this.#visibleRect.origin.x +
+          this.#visibleRect.size.width -
+          clip.origin.x,
+      )
+      const visibleMaxY = Math.min(
+        clip.size.height,
+        this.#visibleRect.origin.y +
+          this.#visibleRect.size.height -
+          clip.origin.y,
+      )
+
+      const contentSize = new Size(contentWidth, contentHeight)
+      const availableRect = new Rect(
+        new Point(
+          this.#availableRect.origin.x - clip.origin.x,
+          this.#availableRect.origin.y - clip.origin.y,
+        ),
+        this.#availableRect.size,
+      )
+      const visibleRect = new Rect(
+        new Point(visibleMinX, visibleMinY),
+        new Size(visibleMaxX - visibleMinX, visibleMaxY - visibleMinY),
+      )
+      const offset = new Point(offsetX, offsetY)
+
+      this.#contentSize = contentSize
+      this.#availableRect = availableRect
+      this.#visibleRect = visibleRect
+      this.#offset = offset
+    }
     this.#style = style
 
-    draw(this)
-
-    this.#contentSize = prevContentSize
-    this.#availableRect = prevAvailableRect
-    this.#visibleRect = prevVisibleRect
-    this.#offset = prevOffset
-    this.#locationOrigin = prevLocationOrigin
-    this.#style = prevStyle
+    try {
+      draw(this)
+    } finally {
+      // Even an identity clip is a scope: draw can change the location origin,
+      // style, or throw from a nested clip/inset. Restore every field on exit.
+      this.#contentSize = prevContentSize
+      this.#availableRect = prevAvailableRect
+      this.#visibleRect = prevVisibleRect
+      this.#offset = prevOffset
+      this.#locationOrigin = prevLocationOrigin
+      this.#style = prevStyle
+    }
   }
 
   /**
