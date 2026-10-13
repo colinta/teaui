@@ -51,25 +51,25 @@ exports[`Box > heading > empty title suppresses child heading 1`] = `
 `;
 
 exports[`Box > heading > renders heading on double border 1`] = `
-"╔═Config═══════════╗
+"╔═ Config ═════════╗
 ║Values            ║
 ╚══════════════════╝"
 `;
 
 exports[`Box > heading > renders heading on rounded border 1`] = `
-"╭─Info─────────────╮
+"╭─ Info ───────────╮
 │Details           │
 ╰──────────────────╯"
 `;
 
 exports[`Box > heading > renders heading on single border 1`] = `
-"┌─Title────────────┐
+"┌─ Title ──────────┐
 │Content           │
 └──────────────────┘"
 `;
 
 exports[`Box > heading > renders heading with no border (blank top line) 1`] = `
-"  Section
+"   Section
 Body text"
 `;
 
@@ -80,13 +80,13 @@ exports[`Box > heading > renders without heading when not set 1`] = `
 `;
 
 exports[`Box > heading > title prop overrides child heading 1`] = `
-"┌─Box Title────────┐
+"┌─ Box Title ──────┐
 │Content           │
 └──────────────────┘"
 `;
 
 exports[`Box > heading > truncates long heading to fit 1`] = `
-"┌─This Is A V…┐
+"┌─ This Is A… ┐
 │Hi           │
 └─────────────┘"
 `;

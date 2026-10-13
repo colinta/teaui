@@ -8,19 +8,30 @@ import {ZStack} from './ZStack.js'
 
 type ContainerProps = ConstructorParameters<typeof ZStack>[0] & {}
 
-export type Border =
-  | 'none'
-  | 'single'
-  | 'bold'
-  | 'double'
-  | 'rounded'
-  | 'dotted'
+export const BORDERS = [
+  'single',
+  'bold',
+  'double',
+  'rounded',
+  'dotted',
+  'dashed',
+  'ascii',
+  'mixed',
+  'mixed-alt',
+  'shade',
+  'block',
+  'shadow',
+  'corners',
+  'none',
+] as const
+
+export type Border = (typeof BORDERS)[number]
 
 export type BorderChars =
-  // top, sides, top-left, top-right, bottom-left, bottom-right
+  // top/bottom, left/right, top-left, top-right, bottom-left, bottom-right
   // '─', '│', '┌', '┐', '└', '┘'
   | [string, string, string, string, string, string]
-  // top, sides, …corners…, bottom
+  // top, left/right, …corners…, bottom
   | [string, string, string, string, string, string, string]
   // top, left, …corners…, bottom, right
   | [string, string, string, string, string, string, string, string]
@@ -59,7 +70,7 @@ interface Props extends ContainerProps {
 
 export class Box extends ZStack {
   #border: Border | BorderChars = 'single'
-  #borderChars: CalculatedBorderChars = BORDERS.single
+  #borderChars: CalculatedBorderChars = BORDER_CHARS.single
   #borderSizes: BorderSizes = BORDER_SIZE_ZERO
   #highlight: boolean = false
   #title: string | undefined
@@ -257,14 +268,19 @@ export class Box extends ZStack {
     if (resolvedTitle) {
       const headingText = truncateHeading(
         resolvedTitle,
-        maxX - HEADING_X - HEADING_PAD,
+        maxX -
+          HEADING_X -
+          HEADING_PADDING_WIDTH -
+          HEADING_TRAILING_BORDER_WIDTH,
       )
       const headingY = headingHeight > 0 ? 0 : 0
-      viewport.write(
-        headingText,
-        new Point(HEADING_X, headingY),
-        this.#headingStyle(),
-      )
+      if (headingText) {
+        viewport.write(
+          `${HEADING_PADDING}${headingText}${HEADING_PADDING}`,
+          new Point(HEADING_X, headingY),
+          this.#headingStyle(),
+        )
+      }
     }
   }
 
@@ -281,7 +297,7 @@ function calculateBorder(
 ): [CalculatedBorderChars, BorderSizes] {
   let chars: CalculatedBorderChars
   if (typeof border === 'string') {
-    chars = BORDERS[border]
+    chars = BORDER_CHARS[border]
   } else if (border.length === 8) {
     chars = border
   } else if (border.length === 7) {
@@ -352,13 +368,21 @@ function borderSize(str: string) {
   return unicode.stringSize(str)
 }
 
-const BORDERS: Record<Border, CalculatedBorderChars> = {
-  none: ['', '', '', '', '', '', '', ''],
+const BORDER_CHARS: Record<Border, CalculatedBorderChars> = {
   single: ['─', '│', '┌', '┐', '└', '┘', '─', '│'],
   bold: ['━', '┃', '┏', '┓', '┗', '┛', '━', '┃'],
   double: ['═', '║', '╔', '╗', '╚', '╝', '═', '║'],
   rounded: ['─', '│', '╭', '╮', '╰', '╯', '─', '│'],
   dotted: ['⠒', '⡇', '⡖', '⢲', '⠧', '⠼', '⠤', '⢸'],
+  dashed: ['╌', '┆', '┌', '┐', '└', '┘', '╌', '┆'],
+  ascii: ['-', '|', '+', '+', '+', '+', '-', '|'],
+  mixed: ['═', '│', '╒', '╕', '╘', '╛', '═', '│'],
+  ['mixed-alt']: ['─', '║', '╓', '╖', '╙', '╜', '─', '║'],
+  shade: ['░', '░░', '░░', '░░', '░░', '░░', '░', '░░'],
+  block: ['▀', '▌', '▛', '▜', '▙', '▟', '▄', '▐'],
+  shadow: ['─', '│ ', '┌─', '┐  ', '└─\n  ', '┘▒▒\n▒▒▒', '─\n▒', '│▒▒'],
+  corners: [' ', '   ', '┌──', '──┐', '└──', '──┘', ' ', '   '],
+  none: ['', '', '', '', '', '', '', ''],
 }
 
 function truncateHeading(title: string, maxWidth: number): string {
@@ -383,7 +407,9 @@ function truncateHeading(title: string, maxWidth: number): string {
 }
 
 const HEADING_X = 2
-const HEADING_PAD = 1
+const HEADING_PADDING = ' '
+const HEADING_PADDING_WIDTH = 2
+const HEADING_TRAILING_BORDER_WIDTH = 1
 const ELLIPSIS = '…'
 
 const BORDER_SIZE_ZERO: BorderSizes = {
