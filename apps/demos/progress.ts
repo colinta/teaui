@@ -1,4 +1,4 @@
-import {At, Button, Progress, Spinner, Stack, Text, ZStack} from '@teaui/core'
+import {Button, Progress, Spinner, Stack, Text} from '@teaui/core'
 
 import {demo} from './demo.js'
 
@@ -128,10 +128,22 @@ timer.start()
 
 const spinners = Stack.right(
   [
-    Stack.down([new Text({text: 'Dots'}), new Spinner({style: 'dots', padding: 1})]),
-    Stack.down([new Text({text: 'Bounce'}), new Spinner({style: 'bounce', purpose: 'orange'})]),
-    Stack.down([new Text({text: 'Loop'}), new Spinner({style: 'loop', purpose: 'green'})]),
-    Stack.down([new Text({text: 'KITT'}), new Spinner({style: 'kitt', purpose: 'red'})]),
+    Stack.down([
+      new Text({text: 'Dots'}),
+      new Spinner({style: 'dots', padding: 1}),
+    ]),
+    Stack.down([
+      new Text({text: 'Bounce'}),
+      new Spinner({style: 'bounce', purpose: 'orange'}),
+    ]),
+    Stack.down([
+      new Text({text: 'Loop'}),
+      new Spinner({style: 'loop', purpose: 'green'}),
+    ]),
+    Stack.down([
+      new Text({text: 'KITT'}),
+      new Spinner({style: 'kitt', purpose: 'red'}),
+    ]),
   ],
   {gap: 2, padding: 1},
 )
@@ -160,10 +172,7 @@ const pauseButton = new Button({
 demo(
   Stack.down([
     ...horizontalProgressViews,
-    Stack.right([
-      ...verticalProgressViews,
-      spinners
-    ]),
+    Stack.right([...verticalProgressViews, spinners]),
     Stack.right([decrButton, pauseButton, incrButton]),
   ]),
 )

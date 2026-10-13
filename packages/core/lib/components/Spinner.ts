@@ -88,10 +88,10 @@ export class Spinner extends View {
 
     const textStyle = this.purpose.text({tone: 'accent'})
     viewport.usingPen(textStyle, () => {
-    const frame = SPINNER_FRAMES[this.#style][this.#frame]
-    frame
-      .split('\n')
-      .forEach((line, y) => viewport.write(line, new Point(0, y)))
+      const frame = SPINNER_FRAMES[this.#style][this.#frame]
+      frame
+        .split('\n')
+        .forEach((line, y) => viewport.write(line, new Point(0, y)))
     })
   }
 }
