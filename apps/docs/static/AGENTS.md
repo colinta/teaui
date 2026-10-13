@@ -104,6 +104,7 @@ Core/OOP components are exported by `@teaui/core`. Most have React wrappers with
 - [Progress](https://colinta.github.io/teaui/docs/components/progress) — Use to show determinate completion toward a known total.
 - [Separator](https://colinta.github.io/teaui/docs/components/separator) — Use to divide adjacent regions visually.
 - [Spinner](https://colinta.github.io/teaui/docs/components/spinner) — Use to show indeterminate work in progress.
+- [Skeleton](https://colinta.github.io/teaui/docs/components/skeleton) — Use as an animated placeholder while content is loading.
 - [Text](https://colinta.github.io/teaui/docs/components/text) — Use for styled, aligned, or wrapped text content.
 
 ### Input and interaction

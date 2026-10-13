@@ -40,6 +40,7 @@ import type {
   Progress as WrProgress,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
+  Skeleton as WrSkeleton,
   Slider as WrSlider,
   Space as WrSpace,
   Spinner as WrSpinner,
@@ -111,6 +112,7 @@ export type LegendProps = Simplify<TUIView<typeof WrLegend>>
 export type AutoLegendProps = Simplify<TUIView<typeof WrAutoLegend>>
 export type ProgressProps = Simplify<TUIView<typeof WrProgress>>
 export type SeparatorProps = Simplify<TUIView<typeof WrSeparator>>
+export type SkeletonProps = Simplify<TUIView<typeof WrSkeleton>>
 export type SliderProps = Simplify<TUIView<typeof WrSlider>>
 export type SpaceProps = Simplify<TUIView<typeof WrSpace>>
 export type SpinnerProps = Simplify<TUIView<typeof WrSpinner>>
@@ -195,6 +197,7 @@ declare module 'react' {
       'tui-auto-legend': WithRef<AutoLegendProps, WrAutoLegend>
       'tui-progress': WithRef<ProgressProps, WrProgress>
       'tui-separator': WithRef<SeparatorProps, WrSeparator>
+      'tui-skeleton': WithRef<SkeletonProps, WrSkeleton>
       'tui-slider': WithRef<SliderProps, WrSlider>
       'tui-space': WithRef<SpaceProps, WrSpace>
       'tui-spinner': WithRef<SpinnerProps, WrSpinner>
@@ -518,6 +521,11 @@ Slider.vertical = forwardRef<WrSlider, SliderDirectionProps>(
   },
 )
 
+export const Skeleton = forwardRef<WrSkeleton, SkeletonProps>(
+  function Skeleton(reactProps, ref): JSX.Element {
+    return <tui-skeleton ref={ref} {...reactProps} />
+  },
+)
 export const Space = forwardRef<WrSpace, SpaceProps>(
   function Space(reactProps, ref): JSX.Element {
     return <tui-space ref={ref} {...reactProps} />

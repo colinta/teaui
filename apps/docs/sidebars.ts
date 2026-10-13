@@ -20,6 +20,7 @@ const sidebars: SidebarsConfig = {
             'components/digits',
             'components/progress',
             'components/spinner',
+            'components/skeleton',
             'components/separator',
           ],
         },

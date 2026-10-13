@@ -9,6 +9,7 @@ import {
   Drawer,
   FontStyle,
   Separator,
+  Skeleton,
   Space,
   Stack,
   Scrollable,
@@ -105,6 +106,12 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(<Components.Space />)
       await flush()
       expect(window.children[0]).toBeInstanceOf(Space)
+    })
+
+    it('Skeleton renders a tui-skeleton', async () => {
+      const {window} = renderToWindow(<Components.Skeleton shape="circle" />)
+      await flush()
+      expect(window.children[0]).toBeInstanceOf(Skeleton)
     })
   })
 

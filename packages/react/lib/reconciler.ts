@@ -47,6 +47,7 @@ import {
   type ScreenOptions,
   Scrollable,
   Separator,
+  Skeleton,
   Slider,
   Space,
   Spinner,
@@ -194,6 +195,9 @@ function createInstance(type: string, props: Props): any {
     case 'separator':
     case 'tui-separator':
       return new Separator(props as any)
+    case 'skeleton':
+    case 'tui-skeleton':
+      return new Skeleton(props as any)
     case 'slider':
     case 'tui-slider':
       return new Slider(props as any)

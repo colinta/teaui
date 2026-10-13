@@ -1,0 +1,52 @@
+---
+title: Skeleton
+---
+
+import Example from '@site/src/components/Example'
+
+# Skeleton
+
+An animated placeholder for content that is still loading. A skeleton fills its available space with a pulsing grayscale background and can be rendered as a rectangle, rounded rectangle, circle, row, or column.
+
+<Example name="skeleton" title="Skeleton" />
+
+## Props
+
+| Prop     | Type                                                        | Default  | Description                            |
+| -------- | ----------------------------------------------------------- | -------- | -------------------------------------- |
+| `shape`  | `'rect' \| 'rounded-rect' \| 'circle' \| 'row' \| 'column'` | `'rect'` | Shape drawn within the available space |
+| `width`  | `Dimension`                                                 | —        | Overrides the natural width            |
+| `height` | `Dimension`                                                 | —        | Overrides the natural height           |
+
+## Sizing
+
+`rect`, `rounded-rect`, and `circle` use all available width and height. A `row` uses the available width and has a natural height of one cell. A `column` uses the available height and has a natural width of one cell.
+
+Set `width` and `height` when a skeleton should occupy a specific placeholder size:
+
+```tsx
+<Skeleton shape="rounded-rect" width={20} height={4} />
+```
+
+## Shapes
+
+- **`rect`** fills the complete available area.
+- **`rounded-rect`** fills the area except for its four corner cells.
+- **`circle`** rounds its ends using the terminal cell aspect ratio. Wider sizes render as ellipses.
+- **`row`** is naturally one cell tall.
+- **`column`** is naturally one cell wide.
+
+## Animation
+
+Skeletons animate automatically on a three-second loop. Their background eases from 30% gray to 50% gray and back, lingering near the darker color before the next shimmer.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Skeleton} from '@teaui/core'
+
+new Skeleton({shape: 'rounded-rect', width: 20, height: 4})
+```
+
+</details>
