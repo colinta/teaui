@@ -6,17 +6,18 @@ import Example from '@site/src/components/Example'
 
 # Spinner
 
-An animated loading spinner. Animates when `isAnimating` is true.
+An animated loading spinner with dots, bouncing, looping, and a Knight Rider–style KITT scanner. Animates when `isAnimating` is true.
 
 <Example name="spinner" title="Spinner" />
 
 ## Props
 
-| Prop          | Type      | Default | Description          |
-| ------------- | --------- | ------- | -------------------- |
-| `isAnimating` | `boolean` | `false` | Start/stop animation |
+| Prop          | Type                                     | Default  | Description                 |
+| ------------- | ---------------------------------------- | -------- | --------------------------- |
+| `style`       | `'dots' \| 'bounce' \| 'loop' \| 'kitt'` | `'dots'` | Animation style             |
+| `isAnimating` | `boolean`                                | `true`   | Start or stop the animation |
 
-The spinner is 1×1 cell and cycles through braille animation frames.
+The `dots` spinner is 1×1 cell, `loop` is 5×1, `bounce` is 5×2, and `kitt` is 7×1. Setting `isAnimating` to `false` keeps the current frame visible.
 
 <details>
 <summary>Core API</summary>
@@ -24,7 +25,7 @@ The spinner is 1×1 cell and cycles through braille animation frames.
 ```js
 import {Spinner} from '@teaui/core'
 
-new Spinner({isAnimating: true})
+new Spinner({style: 'kitt', isAnimating: true})
 ```
 
 </details>

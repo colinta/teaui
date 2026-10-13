@@ -40,7 +40,7 @@ Most components use `new Component(props)`. Common view props: `purpose`, `headi
 - `Input` — text input. Props: `value?`, `placeholder?`, `wrap?`, `multiline?`, `font?`, `onChange?`, `onSubmit?`.
 - `Slider` — ranged input. Props: `direction?`, `border?`, `buttons?`, `range?`, `value?`, `step?`, `onChange?`. Helpers: `Slider.horizontal/vertical(...)`.
 - `Progress` — progress bar. Props: `direction?`, `min?`, `max?`, `value?`, `showPercent?`, `location?`.
-- `Spinner` — activity indicator. Props: `isAnimating?`.
+- `Spinner` — activity indicator. Props: `isAnimating?`, `style?` (`'dots' | 'bounce' | 'loop' | 'kitt'`).
 - `Logo` — animated TeaUI logo. Props: `isAnimating?`, `seed?`.
 - `Space` — empty spacer. Props: `background?` (+ usually `width` / `height`). Helpers: `Space.horizontal(...)`, `Space.vertical(...)`.
 - `Separator` — divider line. Props: `direction`, `padding?`, `border?`. Helpers: `Separator.horizontal(...)`, `Separator.vertical(...)`.

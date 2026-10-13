@@ -25,8 +25,7 @@ import {
 
 export function WidgetsTab() {
   const [progressVal, setProgressVal] = useState(42)
-  const [showSpinner, setShowSpinner] = useState(false)
-  const [showCompactSpinner, setShowCompactSpinner] = useState(true)
+  const [spinnersAnimating, setSpinnersAnimating] = useState(true)
   const [progressLocation, cycleProgressLocation] = useReducer<
     Reducer<'left' | 'center' | 'right', void>
   >(location => {
@@ -106,18 +105,28 @@ export function WidgetsTab() {
           </Text>
           <Stack.down gap={1}>
             <Stack.right gap={1}>
-              <Spinner isAnimating={showSpinner} padding={1} />
-              <Toggle value={showSpinner} onChange={setShowSpinner} />
-              <Text>Animate</Text>
+              <Text width={6}>Dots</Text>
+              <Spinner style="dots" isAnimating={spinnersAnimating} />
             </Stack.right>
             <Stack.right gap={1}>
-              <Spinner isAnimating={showCompactSpinner} padding={1} />
+              <Text width={6}>Bounce</Text>
+              <Spinner style="bounce" isAnimating={spinnersAnimating} />
+            </Stack.right>
+            <Stack.right gap={1}>
+              <Text width={6}>Loop</Text>
+              <Spinner style="loop" isAnimating={spinnersAnimating} />
+            </Stack.right>
+            <Stack.right gap={1}>
+              <Text width={6}>KITT</Text>
+              <Spinner style="kitt" isAnimating={spinnersAnimating} />
+            </Stack.right>
+            <Stack.right gap={1}>
               <Toggle
                 height={1}
-                value={showCompactSpinner}
-                onChange={setShowCompactSpinner}
+                value={spinnersAnimating}
+                onChange={setSpinnersAnimating}
               />
-              <Text>Compact</Text>
+              <Text>Animate</Text>
             </Stack.right>
           </Stack.down>
         </Stack.down>

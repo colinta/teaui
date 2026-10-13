@@ -3,3 +3,54 @@
 exports[`Spinner > construction > accepts isAnimating=false 1`] = `"⣾"`;
 
 exports[`Spinner > construction > defaults to animating 1`] = `"⣾"`;
+
+exports[`Spinner > construction > renders the bounce style 1`] = `
+"
+▄ ▄ ▄"
+`;
+
+exports[`Spinner > construction > renders the dots style 1`] = `"⣾"`;
+
+exports[`Spinner > construction > renders the kitt style 1`] = `"━━"`;
+
+exports[`Spinner > construction > renders the loop style 1`] = `" ▀▀▀"`;
+
+exports[`Spinner > rendering > animates the KITT scanner in both directions 1`] = `
+[
+  "━━",
+  "╼━╸",
+  "─━━",
+  "╶╼━╸",
+  " ─━━",
+  " ╶╼━╸",
+  "  ─━━",
+  "  ╶╼━╸",
+  "   ─━━",
+  "   ╶╼━╸",
+  "    ─━━",
+  "    ╶╼━",
+  "     ╺━",
+  "     ╺━",
+  "     ╺━",
+  "     ━━",
+  "    ╺━╾",
+  "    ━━─",
+  "   ╺━╾╴",
+  "   ━━─",
+  "  ╺━╾╴",
+  "  ━━─",
+  " ╺━╾╴",
+  " ━━─",
+  "╺━╾╴",
+  "━━─",
+  "━╾╴",
+  "━╸",
+  "━╸",
+  "━╸",
+]
+`;
+
+exports[`Spinner > rendering > renders both rows of the bounce style 1`] = `
+"▄
+  ▄ ▄"
+`;

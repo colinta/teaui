@@ -279,7 +279,7 @@ export class Palette {
 
     return new Style({
       foreground: this.#textColor(tone),
-      background: this.flatBackgroundColor,
+      background: this.#textBackgroundColor(tone),
       bold: hasFocus,
     })
   }
@@ -294,6 +294,19 @@ export class Palette {
         return this.accentTextColor
       case 'default':
         return this.textColor
+    }
+  }
+
+  #textBackgroundColor(tone: TextTone): Color {
+    switch (tone) {
+      case 'muted':
+        return this.flatBackgroundColor
+      case 'placeholder':
+        return this.flatBackgroundColor
+      case 'accent':
+        return 'default'
+      case 'default':
+        return this.flatBackgroundColor
     }
   }
 

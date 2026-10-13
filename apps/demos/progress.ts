@@ -1,10 +1,11 @@
-import {Button, Stack, Progress} from '@teaui/core'
+import {At, Button, Progress, Spinner, Stack, Text, ZStack} from '@teaui/core'
 
 import {demo} from './demo.js'
 
-const progressViews: Progress[] = []
+const horizontalProgressViews: Progress[] = []
+const verticalProgressViews: Progress[] = []
 
-progressViews.push(
+horizontalProgressViews.push(
   new Progress({
     direction: 'horizontal',
     width: 'fill',
@@ -14,17 +15,7 @@ progressViews.push(
   }),
 )
 
-progressViews.push(
-  new Progress({
-    direction: 'horizontal',
-    width: 'fill',
-    height: 1,
-    value: 0,
-    purpose: 'primary',
-  }),
-)
-
-progressViews.push(
+horizontalProgressViews.push(
   new Progress({
     direction: 'horizontal',
     width: 'fill',
@@ -34,7 +25,17 @@ progressViews.push(
   }),
 )
 
-progressViews.push(
+horizontalProgressViews.push(
+  new Progress({
+    direction: 'horizontal',
+    width: 'fill',
+    height: 1,
+    value: 0,
+    purpose: 'primary',
+  }),
+)
+
+verticalProgressViews.push(
   new Progress({
     direction: 'vertical',
     width: 5,
@@ -44,7 +45,16 @@ progressViews.push(
   }),
 )
 
-progressViews.push(
+verticalProgressViews.push(
+  new Progress({
+    direction: 'vertical',
+    width: 2,
+    height: 20,
+    value: 0,
+  }),
+)
+
+verticalProgressViews.push(
   new Progress({
     direction: 'vertical',
     width: 1,
@@ -54,14 +64,7 @@ progressViews.push(
   }),
 )
 
-progressViews.push(
-  new Progress({
-    direction: 'vertical',
-    width: 2,
-    height: 20,
-    value: 0,
-  }),
-)
+const progressViews = [...horizontalProgressViews, ...verticalProgressViews]
 
 class Timer {
   timerId: ReturnType<typeof setInterval> | undefined
@@ -90,10 +93,14 @@ class Timer {
       } else if (this.value === -10) {
         this.delta = 1
       }
-      for (const progress of progressViews) {
-        progress.value = this.value
-      }
+      this.#update()
     }, 10)
+  }
+
+  #update() {
+    for (const progress of progressViews) {
+      progress.value = this.value
+    }
   }
 
   stop() {
@@ -104,12 +111,46 @@ class Timer {
     clearInterval(this.timerId)
     this.timerId = undefined
   }
+
+  incr() {
+    this.value = Math.min(100, this.value + 1)
+    this.#update()
+  }
+
+  decr() {
+    this.value = Math.max(0, this.value - 1)
+    this.#update()
+  }
 }
 
 const timer = new Timer()
 timer.start()
 
-const button = new Button({
+const spinners = Stack.right(
+  [
+    Stack.down([new Text({text: 'Dots'}), new Spinner({style: 'dots', padding: 1})]),
+    Stack.down([new Text({text: 'Bounce'}), new Spinner({style: 'bounce', purpose: 'orange'})]),
+    Stack.down([new Text({text: 'Loop'}), new Spinner({style: 'loop', purpose: 'green'})]),
+    Stack.down([new Text({text: 'KITT'}), new Spinner({style: 'kitt', purpose: 'red'})]),
+  ],
+  {gap: 2, padding: 1},
+)
+
+const decrButton = new Button({
+  title: '-',
+  onClick() {
+    timer.decr()
+  },
+})
+
+const incrButton = new Button({
+  title: '+',
+  onClick() {
+    timer.incr()
+  },
+})
+
+const pauseButton = new Button({
   title: 'Pause',
   onClick() {
     timer.toggle()
@@ -118,8 +159,11 @@ const button = new Button({
 
 demo(
   Stack.down([
-    ...progressViews.slice(0, 3),
-    Stack.right(progressViews.slice(3)),
-    button,
+    ...horizontalProgressViews,
+    Stack.right([
+      ...verticalProgressViews,
+      spinners
+    ]),
+    Stack.right([decrButton, pauseButton, incrButton]),
   ]),
 )
