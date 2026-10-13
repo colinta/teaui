@@ -45,6 +45,13 @@ describe('unicode', () => {
       expect(charWidth('\u0301')).toBe(0)
     })
 
+    it('counts spacing marks within a grapheme', () => {
+      expect(printableChars('ดำ')).toEqual(['ดำ'])
+      expect(charWidth('ดำ')).toBe(2)
+      expect(charWidth('คำ')).toBe(2)
+      expect(charWidth('นี้')).toBe(1)
+    })
+
     it('treats black and white square emoji variants as double-width', () => {
       expect(charWidth('⬜︎')).toBe(2)
       expect(charWidth('⬛︎')).toBe(2)
@@ -94,6 +101,16 @@ describe('unicode', () => {
     it('counts square emoji variants as double-width', () => {
       expect(lineWidth('⬜︎╶──╴')).toBe(6)
       expect(lineWidth('╶──╴⬛︎')).toBe(6)
+    })
+
+    it('counts Thai spacing marks separately from their graphemes', () => {
+      expect(lineWidth('เก็บ')).toBe(3)
+      expect(lineWidth('เก็บคำ')).toBe(5)
+      expect(
+        lineWidth(
+          'การดำเนินการนี้จะทำเครื่องหมายคำสั่งซื้อว่าจัดการแล้วและส่งการแจ้งเตือนไปยังลูกค้าของคุณ',
+        ),
+      ).toBe(69)
     })
   })
 

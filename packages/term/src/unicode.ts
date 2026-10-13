@@ -20,7 +20,7 @@ export interface AnsiLocation {
 }
 
 /**
- * Returns the number of *cells* that the first character of the string takes up.
+ * Returns the number of *cells* that a grapheme or ANSI sequence takes up.
  *
  * "Cell" refers to a terminal space: ASCII characters take 1 cell, Emoji and Asian
  * characters take 2 cells. ANSI codes (\x1b[...) return 0.
@@ -62,6 +62,18 @@ export function charWidth(str: string): 0 | 1 | 2 {
       return 1
     }
     return 2
+  }
+
+  // A grapheme is an editing unit, not necessarily a single terminal cell.
+  // Sum the widths of its code points so spacing marks such as Thai SARA AM
+  // contribute their own cell while combining marks remain zero-width.
+  const codePoints = [...str]
+  if (codePoints.length > 1) {
+    const width = codePoints.reduce(
+      (total, codePoint) => total + charWidth(codePoint),
+      0,
+    )
+    return Math.min(width, 2) as 0 | 1 | 2
   }
 
   const point = str.codePointAt(0)!
