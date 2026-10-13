@@ -55,6 +55,7 @@ export * from './Spinner.js'
 export {
   Table,
   type Column,
+  type ColumnWidth,
   type SortDirection,
   type Props as TableProps,
 } from './Table.js'

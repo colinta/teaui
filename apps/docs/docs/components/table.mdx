@@ -30,13 +30,22 @@ A data table with sortable column headers, keyboard-navigable and scrollable row
 
 ### Column
 
-| Field      | Type                            | Default  | Description                   |
-| ---------- | ------------------------------- | -------- | ----------------------------- |
-| `key`      | `string`                        | —        | Data field key                |
-| `title`    | `string`                        | —        | Column header text            |
-| `width`    | `number \| 'auto'`              | `'auto'` | Column width in characters    |
-| `align`    | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment                |
-| `sortable` | `boolean`                       | `false`  | Enable sorting on this column |
+| Field      | Type                            | Default  | Description                                   |
+| ---------- | ------------------------------- | -------- | --------------------------------------------- |
+| `key`      | `string`                        | —        | Data field key                                |
+| `title`    | `string`                        | —        | Column header text                            |
+| `width`    | `ColumnWidth`                   | `'auto'` | Column width in characters or as a percentage |
+| `align`    | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment                                |
+| `sortable` | `boolean`                       | `false`  | Enable sorting on this column                 |
+
+```ts
+type ColumnWidth = number | 'auto' | `${number}%`
+```
+
+Percentage widths use the available table width after selection controls, row
+numbers, and column separators are removed. Fixed character widths are applied
+as-is, percentage columns receive their requested share, and any remaining
+width is divided among `auto` columns.
 
 ## Keyboard Navigation
 
@@ -58,8 +67,8 @@ new Table({
     {name: 'Bob', age: 25},
   ],
   columns: [
-    {key: 'name', title: 'Name', sortable: true},
-    {key: 'age', title: 'Age', width: 6, align: 'right'},
+    {key: 'name', title: 'Name', width: '70%', sortable: true},
+    {key: 'age', title: 'Age', width: '30%', align: 'right'},
   ],
   format: (key, row) => String(row[key]),
   onSelect: (row, index) => console.info('Selected:', row.name),

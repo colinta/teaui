@@ -40,6 +40,12 @@ function makeTable(overrides: Partial<TableProps<Row>> = {}) {
   })
 }
 
+function separatorColumns(row: string): number[] {
+  return Array.from(row).flatMap((character, index) =>
+    character === '│' ? [index] : [],
+  )
+}
+
 /** Returns all rows as an array of strings (no trailing whitespace). */
 function renderRows(
   table: Table<Row>,
@@ -482,6 +488,37 @@ describe('Table', () => {
         {width: 20, height: 4},
       )
       expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('uses percentage widths for specified columns', () => {
+      const table = makeTable({
+        columns: [
+          {key: 'name', title: 'Name', width: '10%'},
+          {key: 'age', title: 'Age', width: '50%'},
+          {key: 'city', title: 'City', width: '40%'},
+        ],
+      })
+
+      const narrow = testRender(table, {width: 30, height: 4})
+      expect(separatorColumns(narrow.terminal.textAtRow(0))).toEqual([4, 18])
+
+      const wide = testRender(table, {width: 50, height: 4})
+      expect(separatorColumns(wide.terminal.textAtRow(0))).toEqual([6, 30])
+    })
+
+    it('shares width remaining after fixed and percentage columns with auto columns', () => {
+      const t = testRender(
+        makeTable({
+          columns: [
+            {key: 'name', title: 'Name', width: 4},
+            {key: 'age', title: 'Age', width: '50%'},
+            {key: 'city', title: 'City'},
+          ],
+        }),
+        {width: 40, height: 4},
+      )
+
+      expect(separatorColumns(t.terminal.textAtRow(0))).toEqual([6, 25])
     })
   })
 })

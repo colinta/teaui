@@ -15,10 +15,12 @@ import {
 } from '../events/index.js'
 import {System} from '../System.js'
 
+export type ColumnWidth = number | 'auto' | `${number}%`
+
 export interface Column<_TData> {
   key: string
   title: string
-  width?: number | 'auto'
+  width?: ColumnWidth
   align?: 'left' | 'center' | 'right'
   /**
    * Whether clicking this column header sorts the table. Default: false.
@@ -437,25 +439,42 @@ export class Table<TData> extends Container {
   #calculateColumnWidths(totalWidth: number): number[] {
     const cols = this.#columns
     const separatorWidth = (cols.length - 1) * 3 // ' │ ' between columns
-    const available = totalWidth - separatorWidth
+    const available = Math.max(0, totalWidth - separatorWidth)
 
     let fixedTotal = 0
     let autoCount = 0
+    let percentageTotal = 0
+    let percentageWidthTotal = 0
+    const percentageWidths: (number | undefined)[] = []
 
-    for (const col of cols) {
+    for (const [index, col] of cols.entries()) {
       if (typeof col.width === 'number') {
         fixedTotal += col.width
+      } else if (col.width?.endsWith('%')) {
+        percentageTotal += Math.max(0, Number.parseFloat(col.width))
+        const cumulativeWidth = Math.floor((available * percentageTotal) / 100)
+        const width = cumulativeWidth - percentageWidthTotal
+        percentageWidths[index] = width
+        percentageWidthTotal += width
       } else {
         autoCount += 1
       }
     }
 
     const autoWidth =
-      autoCount > 0 ? Math.floor((available - fixedTotal) / autoCount) : 0
+      autoCount > 0
+        ? Math.floor(
+            Math.max(0, available - fixedTotal - percentageWidthTotal) /
+              autoCount,
+          )
+        : 0
 
-    return cols.map(col => {
+    return cols.map((col, index) => {
       if (typeof col.width === 'number') {
         return col.width
+      }
+      if (percentageWidths[index] !== undefined) {
+        return percentageWidths[index]
       }
       return Math.max(autoWidth, col.title.length)
     })

@@ -290,7 +290,7 @@ describe('component wrappers', () => {
       const {window} = renderToWindow(
         <Components.Table
           data={rows}
-          columns={[{key: 'name', title: 'Name'}]}
+          columns={[{key: 'name', title: 'Name', width: '100%'}]}
           renderItem={row => <Components.Text>{row.name}</Components.Text>}
         />,
       )

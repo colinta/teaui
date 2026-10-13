@@ -200,7 +200,7 @@ const DATA: Person[] = [
 const COLUMNS: Column<Person>[] = [
   {key: 'name', title: 'Name', width: 12, sortable: true},
   {key: 'age', title: 'Age', width: 6, align: 'right', sortable: true},
-  {key: 'email', title: 'Email'},
+  {key: 'email', title: 'Email', width: '50%'},
   {key: 'status', title: 'Status', width: 10, sortable: true},
   {key: 'city', title: 'City', sortable: true},
 ]
