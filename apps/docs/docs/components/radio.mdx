@@ -1,59 +1,47 @@
 ---
-title: Radio
+title: Radio and RadioGroup
 ---
 
-# Radio
+import Example from '@site/src/components/Example'
 
-A boolean control with radio-style marks (`◯` and `⦿`). `Radio` extends [`Checkbox`](./checkbox), so it has the same focus, mouse, keyboard, hotkey, and change behavior.
+# Radio and RadioGroup
 
-:::note Core API only
-`Radio` currently has no `@teaui/react` wrapper. Use `Checkbox` or `ToggleGroup` in React applications.
-:::
+`RadioGroup` manages one selected value across its descendant `Radio` options. Each `Radio` supplies an option value, and the nearest ancestor group compares it with the group's value to determine which mark to show (`◯` or `⦿`).
 
-`Radio` represents one boolean value and does not enforce mutual exclusion. To build a traditional radio group, update every option from each `onChange` callback so only one value is true; use [`ToggleGroup`](./toggle-group) when its segmented appearance is appropriate.
+<Example name="radio" title="Radio" />
 
-## Core Example
+`RadioGroup` is layout-transparent. Put a [`Stack`](./stack) or another layout container inside it to arrange the options. Radios may be nested at any depth, and a nested group takes ownership of its own descendants.
+
+Activating an unselected radio updates the group's value and calls `RadioGroup.onChange`. Activating the selected radio does nothing, so a group cannot be cleared through its radio options. Use unique option values to ensure exactly one radio appears selected.
+
+## RadioGroup props
+
+| Prop       | Type                   | Default     | Description                          |
+| ---------- | ---------------------- | ----------- | ------------------------------------ |
+| `value`    | `T \| undefined`       | `undefined` | Currently selected option value      |
+| `onChange` | `(value: T) => void`   | —           | Called when a new option is selected |
+| `children` | `ReactNode` / `View[]` | —           | Content containing the radio options |
+
+## Radio props
+
+| Prop     | Type     | Default | Description                              |
+| -------- | -------- | ------- | ---------------------------------------- |
+| `value`  | `T`      | —       | Option value compared with the group     |
+| `title`  | `string` | —       | Label text                               |
+| `hotKey` | `HotKey` | —       | Keyboard shortcut that selects the radio |
+
+`onChange` belongs to `RadioGroup`, not `Radio`. A radio outside a group does not throw an error, but it has no group value to update and cannot report selection changes. Using a standalone radio is unsupported and its behavior should not be relied upon.
+
+## Core API
 
 ```ts
-import {Radio, Stack} from '@teaui/core'
+import {Radio, RadioGroup, Stack} from '@teaui/core'
 
-const choices: Radio[] = []
-
-function select(selected: number) {
-  choices.forEach((choice, index) => {
-    choice.value = index === selected
-  })
-}
-
-choices.push(
-  new Radio({
-    title: 'Small',
-    value: true,
-    onChange: value => value && select(0),
-  }),
-  new Radio({
-    title: 'Medium',
-    value: false,
-    onChange: value => value && select(1),
-  }),
-  new Radio({
-    title: 'Large',
-    value: false,
-    onChange: value => value && select(2),
-  }),
+const group = new RadioGroup({value: 'one'})
+group.add(
+  Stack.down([
+    new Radio({value: 'one', title: '1'}),
+    new Radio({value: 'two', title: '2'}),
+  ]),
 )
-
-const view = Stack.down(choices)
 ```
-
-## Props
-
-| Prop       | Type                       | Default | Description                   |
-| ---------- | -------------------------- | ------- | ----------------------------- |
-| `title`    | `string`                   | —       | Label text                    |
-| `value`    | `boolean`                  | —       | Whether the option is chosen  |
-| `onChange` | `(value: boolean) => void` | —       | Called when the value toggles |
-| `hotKey`   | `HotKey`                   | —       | Keyboard shortcut             |
-| `children` | `View[]`                   | —       | Additional label content      |
-
-Click the control or focus it and press a key to toggle its value. When `hotKey` is set, the shortcut is also shown in the label and included in legends.

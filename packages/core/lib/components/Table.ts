@@ -1,8 +1,8 @@
 import * as unicode from '@teaui/term'
 
 import type {Viewport} from '../Viewport.js'
-import {type Props as ViewProps} from '../View.js'
-import {Container} from '../Container.js'
+import {type Props as ViewProps, type View} from '../View.js'
+import {ComposedView} from '../ComposedView.js'
 import {Style} from '../Style.js'
 import {Point, Rect, Size} from '../geometry.js'
 import {
@@ -83,7 +83,7 @@ export interface Props<TData> extends ViewProps {
  *  Charlie      │  35 │ charlie@ex.com     │ Active
  * ```
  */
-export class Table<TData> extends Container {
+export class Table<TData> extends ComposedView {
   #sourceData: TData[] = []
   #data: TData[] = []
   #columns: Column<TData>[] = []
@@ -114,6 +114,16 @@ export class Table<TData> extends Container {
   constructor(props: Props<TData>) {
     super(props)
     this.#update(props)
+  }
+
+  /** Adds a custom view used to render a data row. */
+  addRow(row: View, at?: number) {
+    this.add(row, at)
+  }
+
+  /** Removes a custom data row view. */
+  removeRow(row: View) {
+    this.removeChild(row)
   }
 
   update(props: Partial<Props<TData>>) {

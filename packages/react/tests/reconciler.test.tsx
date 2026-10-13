@@ -3,6 +3,8 @@ import React, {useState} from 'react'
 import {
   Box,
   Checkbox,
+  Radio,
+  RadioGroup,
   Stack,
   Scrollable,
   Separator,
@@ -137,12 +139,16 @@ describe('reconciler', () => {
   describe('element types', () => {
     it('supports both short and tui-prefixed element names', async () => {
       const {window: w1} = renderToWindow(<tui-checkbox />)
-      const {window: w2} = renderToWindow(<tui-separator />)
-      const {window: w3} = renderToWindow(<tui-space />)
+      const {window: w2} = renderToWindow(<tui-radio value="one" />)
+      const {window: w3} = renderToWindow(<tui-radio-group />)
+      const {window: w4} = renderToWindow(<tui-separator />)
+      const {window: w5} = renderToWindow(<tui-space />)
       await flush()
       expect(w1.children[0]).toBeInstanceOf(Checkbox)
-      expect(w2.children[0]).toBeInstanceOf(Separator)
-      expect(w3.children[0]).toBeInstanceOf(Space)
+      expect(w2.children[0]).toBeInstanceOf(Radio)
+      expect(w3.children[0]).toBeInstanceOf(RadioGroup)
+      expect(w4.children[0]).toBeInstanceOf(Separator)
+      expect(w5.children[0]).toBeInstanceOf(Space)
     })
 
     it('throws for unknown element types', async () => {

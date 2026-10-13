@@ -19,6 +19,8 @@ import {
   Calendar,
   Canvas,
   Checkbox,
+  Radio,
+  RadioGroup,
   Collapsible,
   CollapsibleText,
   ConsoleLog,
@@ -139,6 +141,12 @@ function createInstance(type: string, props: Props): any {
     case 'checkbox':
     case 'tui-checkbox':
       return new Checkbox(props as any)
+    case 'radio':
+    case 'tui-radio':
+      return new Radio(props as any)
+    case 'radio-group':
+    case 'tui-radio-group':
+      return new RadioGroup(props as any)
     case 'collapsible-text':
     case 'tui-collapsible-text':
       return new CollapsibleText(props as any)
@@ -315,22 +323,45 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
 
     const parent = textContainer.parent
     textContainer.removeChild(child)
-    if (textContainer.nodes.length === 0 && parent instanceof Container) {
-      parent.removeChild(textContainer)
+    if (textContainer.nodes.length === 0 && acceptsChildren(parent)) {
+      removeManagedChild(parent, textContainer)
     }
     return true
   }
 
-  // Views like Slider extend ComposedView: they are built from child views,
-  // but do not accept children.
-  function assertContainer(parent: View): asserts parent is Container {
-    if (!(parent instanceof Container)) {
+  type ChildHost = Container | Table<any>
+
+  // Most views that accept React children are Containers. Table owns custom row
+  // views as implementation details, but the React wrapper reconciles those
+  // rows through its explicit row-management API.
+  function acceptsChildren(parent: View | undefined): parent is ChildHost {
+    return parent instanceof Container || parent instanceof Table
+  }
+
+  function assertAcceptsChildren(parent: View): asserts parent is ChildHost {
+    if (!acceptsChildren(parent)) {
       throw new Error(`${parent.constructor.name} does not accept children`)
     }
   }
 
-  function removeChild(container: Container, child: View) {
-    assertContainer(container)
+  function addManagedChild(parent: ChildHost, child: View, at?: number) {
+    if (parent instanceof Table) {
+      parent.addRow(child, at)
+    } else {
+      parent.add(child, at)
+    }
+  }
+
+  function removeManagedChild(parent: ChildHost, child: View) {
+    if (parent instanceof Table) {
+      parent.removeRow(child)
+    } else {
+      parent.removeChild(child)
+    }
+  }
+
+  function removeChild(container: ChildHost, child: View) {
+    assertAcceptsChildren(container)
     if (
       (child instanceof TextLiteral || child instanceof TextStyle) &&
       removeFromTextContainer(child)
@@ -341,11 +372,11 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     // Call the logical React parent's implementation even when it differs
     // from child.parent. Proxy containers override removeChild() to forward
     // this operation to their internal child container.
-    container.removeChild(child)
+    removeManagedChild(container, child)
   }
 
-  function appendChild(parentInstance: Container, child: View, before?: View) {
-    assertContainer(parentInstance)
+  function appendChild(parentInstance: ChildHost, child: View, before?: View) {
+    assertAcceptsChildren(parentInstance)
     if (
       parentInstance instanceof TextStyle &&
       (child instanceof TextLiteral || child instanceof TextStyle)
@@ -361,7 +392,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
               previousChild.add(child)
             } else {
               const textContainer = new TextContainer(textBatch)
-              parentInstance.add(textContainer, beforeIndex)
+              addManagedChild(parentInstance, textContainer, beforeIndex)
               textContainer.add(child)
             }
             return
@@ -387,7 +418,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
         textContainer = lastChild
       } else {
         textContainer = new TextContainer(textBatch)
-        parentInstance.add(textContainer)
+        addManagedChild(parentInstance, textContainer)
       }
 
       textContainer.add(child)
@@ -408,7 +439,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       }
     }
 
-    parentInstance.add(child, index)
+    addManagedChild(parentInstance, child, index)
   }
 
   const reconciler = ReactReconciler({
@@ -453,13 +484,13 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       return new TextLiteral(text)
     },
 
-    appendInitialChild(parentInstance: Container, child: View) {
+    appendInitialChild(parentInstance: ChildHost, child: View) {
       appendChild(parentInstance, child, undefined)
     },
-    appendChild(parentInstance: Container, child: View) {
+    appendChild(parentInstance: ChildHost, child: View) {
       appendChild(parentInstance, child, undefined)
     },
-    insertBefore(parentInstance: Container, child: View, beforeChild: View) {
+    insertBefore(parentInstance: ChildHost, child: View, beforeChild: View) {
       appendChild(parentInstance, child, beforeChild)
     },
 
@@ -474,7 +505,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       appendChild(rootWindow, child, beforeChild)
     },
 
-    removeChild(container: Container, child: View) {
+    removeChild(container: ChildHost, child: View) {
       removeChild(container, child)
     },
     removeChildFromContainer(container: Window, child: View) {

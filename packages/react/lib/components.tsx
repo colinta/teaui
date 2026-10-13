@@ -17,6 +17,10 @@ import type {
   Calendar as WrCalendar,
   Canvas as WrCanvas,
   Checkbox as WrCheckbox,
+  Radio as WrRadio,
+  RadioGroup as WrRadioGroup,
+  RadioProps as WrRadioProps,
+  RadioGroupProps as WrRadioGroupProps,
   Collapsible as WrCollapsible,
   CollapsibleText as WrCollapsibleText,
   // Log as WrLog?
@@ -79,6 +83,10 @@ export type BreadcrumbProps = Simplify<TUIView<typeof WrBreadcrumb>>
 export type CalendarProps = Simplify<TUIView<typeof WrCalendar>>
 export type CanvasProps = Simplify<TUIView<typeof WrCanvas>>
 export type CheckboxProps = Simplify<TUIView<typeof WrCheckbox>>
+export type RadioProps<T = unknown> = Simplify<Omit<WrRadioProps<T>, Children>>
+export type RadioGroupProps<T = unknown> = Simplify<
+  Omit<WrRadioGroupProps<T>, Children> & {children?: React.ReactNode}
+>
 export type CollapsibleTextProps = Simplify<TUIView<typeof WrCollapsibleText>>
 export type ConsoleProps = Simplify<TUIView<typeof WrConsoleLog>>
 export type DigitsProps = Simplify<TUIView<typeof WrDigits>>
@@ -177,6 +185,8 @@ declare module 'react' {
       'tui-calendar': WithRef<CalendarProps, WrCalendar>
       'tui-canvas': WithRef<CanvasProps, WrCanvas>
       'tui-checkbox': WithRef<CheckboxProps, WrCheckbox>
+      'tui-radio': WithRef<RadioProps<any>, WrRadio<any>>
+      'tui-radio-group': WithRef<RadioGroupProps<any>, WrRadioGroup<any>>
       'tui-collapsible-text': WithRef<CollapsibleTextProps, WrCollapsibleText>
       'tui-console': WithRef<ConsoleProps, WrConsoleLog>
       'tui-digits': WithRef<DigitsProps, WrDigits>
@@ -358,6 +368,14 @@ export const Checkbox = forwardRef<WrCheckbox, CheckboxProps>(
     return <tui-checkbox ref={ref} {...reactProps} />
   },
 )
+type RadioComponent = <T = unknown>(
+  props: RadioProps<T> & React.RefAttributes<WrRadio<T>>,
+) => JSX.Element
+export const Radio = forwardRef<WrRadio<any>, RadioProps<any>>(
+  function Radio(reactProps, ref): JSX.Element {
+    return <tui-radio ref={ref} {...reactProps} />
+  },
+) as RadioComponent
 export const Toggle = forwardRef<WrToggle, ToggleProps>(
   function Toggle(reactProps, ref): JSX.Element {
     return <tui-toggle ref={ref} {...reactProps} />
@@ -866,6 +884,19 @@ export const Modal = forwardRef<WrModal, ModalProps>(function Modal(
 ////
 /// "Simple" containers
 //
+
+type RadioGroupComponent = <T = unknown>(
+  props: RadioGroupProps<T> & React.RefAttributes<WrRadioGroup<T>>,
+) => JSX.Element
+export const RadioGroup = forwardRef<WrRadioGroup<any>, RadioGroupProps<any>>(
+  function RadioGroup({children, ...props}, ref): JSX.Element {
+    return (
+      <tui-radio-group ref={ref} {...props}>
+        {children}
+      </tui-radio-group>
+    )
+  },
+) as RadioGroupComponent
 
 export function Alert({
   children,

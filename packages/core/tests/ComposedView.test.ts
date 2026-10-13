@@ -3,6 +3,12 @@ import {testRender} from '../lib/TestScreen.js'
 import {ComposedView} from '../lib/ComposedView.js'
 import {Container} from '../lib/Container.js'
 import {Slider} from '../lib/components/Slider.js'
+import {Checkbox} from '../lib/components/Checkbox.js'
+import {Radio} from '../lib/components/Radio.js'
+import {Header} from '../lib/components/Header.js'
+import {Log} from '../lib/components/Log.js'
+import {Table} from '../lib/components/Table.js'
+import {ToggleGroup} from '../lib/components/ToggleGroup.js'
 import {Stack} from '../lib/components/Stack.js'
 import {Text} from '../lib/components/Text.js'
 import type {View} from '../lib/View.js'
@@ -159,6 +165,24 @@ describe('ComposedView', () => {
       expect(container.children).toEqual([child])
       container.removeChild(child)
       expect(container.children).toEqual([])
+    })
+  })
+
+  describe('components with owned children', () => {
+    it('use ComposedView rather than Container', () => {
+      const views = [
+        new Checkbox({value: false}),
+        new Radio({value: 'one'}),
+        new Header({text: 'Heading', border: 'single'}),
+        new Log(),
+        new Table({data: [], columns: [], format: () => ''}),
+        new ToggleGroup({titles: [], selected: []}),
+      ]
+
+      for (const view of views) {
+        expect(view).toBeInstanceOf(ComposedView)
+        expect(view).not.toBeInstanceOf(Container)
+      }
     })
   })
 

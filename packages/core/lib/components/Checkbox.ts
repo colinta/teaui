@@ -1,6 +1,6 @@
 import type {Viewport} from '../Viewport.js'
-import {type View} from '../View.js'
-import {type Props as ContainerProps, Container} from '../Container.js'
+import {type Props as ViewProps, type View} from '../View.js'
+import {ComposedView} from '../ComposedView.js'
 import {Text} from './Text.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {
@@ -20,9 +20,9 @@ interface StyleProps {
   hotKey?: HotKey
 }
 
-type Props = StyleProps & ContainerProps
+type Props = StyleProps & ViewProps
 
-export class Checkbox extends Container {
+export class Checkbox extends ComposedView {
   #value: boolean = false
   #hotKey?: HotKey
   #onChange: StyleProps['onChange']
@@ -132,52 +132,18 @@ export class Checkbox extends Container {
       Math.round((viewport.contentSize.height - naturalSize.height) / 2),
     )
 
-    const chars = hasFocus ? BOX_FOCUS : BOX
-    const box = chars[this.boxStyle()][this.#value ? 'checked' : 'unchecked']
+    const box = BOX[this.#value ? 'checked' : 'unchecked']
     const textStyle = hasFocus ? uiStyle.merge({underline: true}) : uiStyle
     viewport.write(box, new Point(0, offset.y), textStyle)
     viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
       super.render(inside)
     })
   }
-
-  boxStyle(): 'checkbox' | 'radio' {
-    return 'checkbox'
-  }
 }
 
-export class Radio extends Checkbox {
-  boxStyle(): 'checkbox' | 'radio' {
-    return 'radio'
-  }
-}
-
-const BOX: Record<
-  'checkbox' | 'radio',
-  Record<'unchecked' | 'checked', string>
-> = {
-  checkbox: {
-    unchecked: '☐ ',
-    checked: '◼︎ ',
-  },
-  radio: {
-    unchecked: '◯ ',
-    checked: '⦿ ',
-  },
-}
-
-const BOX_FOCUS: Record<
-  'checkbox' | 'radio',
-  Record<'unchecked' | 'checked', string>
-> = {
-  checkbox: {
-    unchecked: '☐ ',
-    checked: '◼︎ ',
-  },
-  radio: {
-    unchecked: '◯ ',
-    checked: '⦿ ',
-  },
+const BOX: Record<'unchecked' | 'checked', string> = {
+  unchecked: '☐ ',
+  checked: '◼︎ ',
 }
 
 const CHECKBOX_WIDTH = 2

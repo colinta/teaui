@@ -78,6 +78,7 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 | --------------------- | ------------------------ | ---------------------------------------- |
 | `<Br />`              | `<tui-br>`               | Line break in text                       |
 | `<Checkbox />`        | `<tui-checkbox>`         | Toggle checkbox                          |
+| `<Radio />`           | `<tui-radio>`            | Option managed by a RadioGroup           |
 | `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse |
 | `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.*` output  |
 | `<Digits />`          | `<tui-digits>`           | Large-font digit display                 |
@@ -97,6 +98,7 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 | `<Box />`         | `<tui-box>`         | Box with optional border and padding              |
 | `<Button />`      | `<tui-button>`      | Clickable button                                  |
 | `<Collapsible />` | `<tui-collapsible>` | Toggle between `collapsed` and `expanded` content |
+| `<RadioGroup />`  | `<tui-radio-group>` | Manage selection across nested radio options      |
 | `<Scrollable />`  | `<tui-scrollable>`  | Scrollable content region                         |
 | `<Stack />`       | `<tui-stack>`       | Linear layout                                     |
 | `<Text />`        | `<tui-text>`        | Text container (sets font, alignment, wrap)       |

@@ -1,4 +1,4 @@
-import {Container} from '../Container.js'
+import {ComposedView} from '../ComposedView.js'
 import {Point, Size} from '../geometry.js'
 import {Style} from '../Style.js'
 import {Viewport} from '../Viewport.js'
@@ -14,7 +14,7 @@ interface Props extends ViewProps {
   dim?: boolean
 }
 
-export class Header extends Container {
+export class Header extends ComposedView {
   #text: Text
   #style: Style
   #border: Props['border'] = 'single'

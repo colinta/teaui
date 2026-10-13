@@ -119,7 +119,7 @@ Core/OOP components are exported by `@teaui/core`. Most have React wrappers with
 - [Input](https://colinta.github.io/teaui/docs/components/input) — Use to edit single-line or multiline text.
 - [Keyboard](https://colinta.github.io/teaui/docs/components/keyboard) — Use for fallback raw key handling around child content.
 - [Mouse](https://colinta.github.io/teaui/docs/components/mouse) — Use for fallback raw mouse handling around child content.
-- [Radio](https://colinta.github.io/teaui/docs/components/radio) — Use for a boolean choice presented with radio-style marks.
+- [Radio and RadioGroup](https://colinta.github.io/teaui/docs/components/radio) — Use for exclusive selection among options arranged by another layout container.
 - [Slider](https://colinta.github.io/teaui/docs/components/slider) — Use to choose a numeric value from a bounded range.
 - [Toggle](https://colinta.github.io/teaui/docs/components/toggle) — Use for an immediately applied on/off setting.
 - [ToggleGroup](https://colinta.github.io/teaui/docs/components/toggle-group) — Use for one-or-many selection among a small visible set of options.

@@ -3,7 +3,7 @@ import type {Viewport} from '../Viewport.js'
 import {Style} from '../Style.js'
 
 import {type Props as ViewProps} from '../View.js'
-import {Container} from '../Container.js'
+import {ComposedView} from '../ComposedView.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {
   type MouseEvent,
@@ -27,7 +27,7 @@ interface Props extends ViewProps {
 // [lines, width]
 type TitleCache = [string, {width: number; height: number}]
 
-export class ToggleGroup extends Container {
+export class ToggleGroup extends ComposedView {
   #multiple = false
   #padding = 1
   #offAxisPadding = 0

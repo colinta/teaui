@@ -5,6 +5,8 @@ import {
   Button,
   Pressable,
   Checkbox,
+  Radio,
+  RadioGroup,
   Collapsible,
   Drawer,
   FontStyle,
@@ -63,6 +65,12 @@ describe('component wrappers', () => {
       expect(window.children[0]).toBeInstanceOf(Checkbox)
     })
 
+    it('Radio renders a tui-radio', async () => {
+      const {window} = renderToWindow(<Components.Radio value="one" />)
+      await flush()
+      expect(window.children[0]).toBeInstanceOf(Radio)
+    })
+
     it('Toggle renders a tui-toggle', async () => {
       const {window} = renderToWindow(<Components.Toggle />)
       await flush()
@@ -116,6 +124,48 @@ describe('component wrappers', () => {
   })
 
   describe('simple containers', () => {
+    it('RadioGroup renders with nested Radio children', async () => {
+      const {window} = renderToWindow(
+        <Components.RadioGroup value="one">
+          <Components.Stack.down>
+            <Components.Radio value="one" title="One" />
+            <Components.Radio value="two" title="Two" />
+          </Components.Stack.down>
+        </Components.RadioGroup>,
+      )
+      await flush()
+      const group = window.children[0] as RadioGroup<string>
+      expect(group).toBeInstanceOf(RadioGroup)
+      expect(group.children[0]).toBeInstanceOf(Stack)
+      expect((group.children[0] as Stack).children[0]).toBeInstanceOf(Radio)
+    })
+
+    it('RadioGroup controls selection through onChange', async () => {
+      function App() {
+        const [value, setValue] = React.useState('one')
+        return (
+          <Components.RadioGroup value={value} onChange={setValue}>
+            <Components.Stack.down>
+              <Components.Radio value="one" title="One" />
+              <Components.Radio value="two" title="Two" />
+            </Components.Stack.down>
+          </Components.RadioGroup>
+        )
+      }
+
+      const {window} = renderToWindow(<App />)
+      await flush()
+      const t = testRender(window, {width: 12, height: 2})
+      expect(t.terminal.textContent()).toBe('⦿ One\n◯ Two')
+
+      t.sendMouse('mouse.button.down', {x: 0, y: 1})
+      t.sendMouse('mouse.button.up', {x: 0, y: 1})
+      await flush()
+      t.render()
+
+      expect(t.terminal.textContent()).toBe('◯ One\n⦿ Two')
+    })
+
     it('Box renders with children', async () => {
       const {window} = renderToWindow(
         <Components.Box width={10} height={5}>

@@ -11,13 +11,13 @@ import {Viewport} from '../Viewport.js'
 import {View, type Props as ViewProps} from '../View.js'
 import {Screen} from '../Screen.js'
 
-import {Container} from '../Container.js'
+import {ComposedView} from '../ComposedView.js'
 import {Text} from './Text.js'
 import {ScrollableList} from './ScrollableList.js'
 import {Collapsible} from './Collapsible.js'
 import {Stack} from './Stack.js'
 
-export class Log extends Container {
+export class Log extends ComposedView {
   #logs: LogLine[] = []
   #scrollableList = new ScrollableList({
     data: this.#logs,
@@ -53,7 +53,7 @@ interface LogLineViewProps {
   args: any[]
 }
 
-class LogLineView extends Container {
+class LogLineView extends ComposedView {
   constructor({level, args}: LogLineViewProps) {
     super({})
 

@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Radio > does not throw when used without a RadioGroup 1`] = `"◯ Orphan"`;
+
+exports[`RadioGroup > renders the selected Radio through an intervening layout container 1`] = `
+"⦿ One
+◯ Two"
+`;
+
+exports[`RadioGroup > selects a Radio on click and calls onChange on the group 1`] = `
+"◯ One
+⦿ Two"
+`;

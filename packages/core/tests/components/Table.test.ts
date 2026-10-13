@@ -68,8 +68,8 @@ describe('Table', () => {
 
     it('renders child views for data rows when provided', () => {
       const table = makeTable()
-      table.add(new Text({text: 'Custom Alice'}))
-      table.add(new Text({text: 'Custom Bob'}))
+      table.addRow(new Text({text: 'Custom Alice'}))
+      table.addRow(new Text({text: 'Custom Bob'}))
 
       const t = testRender(table, {width: 30, height: 5})
 
