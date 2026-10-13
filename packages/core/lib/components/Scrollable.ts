@@ -198,8 +198,8 @@ export class Scrollable extends Stack {
       return
     }
 
-    const tooWide = this.#contentSize.width > this.contentSize.width
-    const tooTall = this.#contentSize.height > this.contentSize.height
+    const tooWide = this.#showHorizontalScrollbar() && this.#contentSize.width > this.contentSize.width
+    const tooTall = this.#showVerticalScrollbar() && this.#contentSize.height > this.contentSize.height
 
     if (
       tooWide &&
@@ -221,16 +221,8 @@ export class Scrollable extends Stack {
       }
     }
 
-    this.receiveMouseDown(event)
-  }
-
-  receiveMouseDown(event: MouseEvent) {
-    const tooWide = this.#contentSize.width > this.contentSize.width
-    const tooTall = this.#contentSize.height > this.contentSize.height
-    const showVBar = this.#showVerticalScrollbar() && tooTall
-    const showHBar = this.#showHorizontalScrollbar() && tooWide
-    const visibleWidth = this.contentSize.width - (showVBar ? 1 : 0)
-    const visibleHeight = this.contentSize.height - (showHBar ? 1 : 0)
+    const visibleWidth = this.contentSize.width - (tooWide ? 1 : 0)
+    const visibleHeight = this.contentSize.height - (tooTall ? 1 : 0)
 
     if (tooWide && this.#prevMouseDown === 'horizontal') {
       const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth - 1)
@@ -506,13 +498,15 @@ export class Scrollable extends Stack {
   }
 
   #showHorizontalScrollbar(): boolean {
-    return (
-      this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
-    )
+    const show = this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
+    const enabled = this.#scrollable !== 'vertical'
+    return show && enabled
   }
 
   #showVerticalScrollbar(): boolean {
-    return this.#showScrollbars === true || this.#showScrollbars === 'vertical'
+    const show = this.#showScrollbars === true || this.#showScrollbars === 'vertical'
+    const enabled = this.#scrollable !== 'horizontal'
+    return show && enabled
   }
 
   #scrollbarStyle(): Style {
@@ -609,8 +603,8 @@ export class Scrollable extends Stack {
     }
     this.#contentSize = contentSize
 
-    const canScrollHoriz = this.#scrollable !== 'vertical'
-    const canScrollVert = this.#scrollable !== 'horizontal'
+    const canScrollHoriz = this.#showHorizontalScrollbar()
+    const canScrollVert = this.#showVerticalScrollbar()
     const tooWide =
       canScrollHoriz && contentSize.width > viewport.contentSize.width
     const tooTall =
