@@ -3,7 +3,7 @@ import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
 import {Point, Size} from '../geometry.js'
 
-export type SpinnerStyle = 'dots' | 'bounce' | 'loop' | 'kitt'
+export type SpinnerStyle = 'dots' | 'bounce' | 'loop' | 'kitt' | 'snake'
 
 interface Props extends ViewProps {
   isAnimating?: boolean
@@ -181,17 +181,39 @@ const KITT = [
   '━╸     ',
 ] as const
 
+const SNAKE = [
+  `╶─╴\n   \n  •`,
+  ` ─┐\n   \n  •`,
+  ` ╶┐\n  ╵\n  •`,
+  `  ┐\n  │\n  •`,
+  `• ╷\n  │\n  ╵`,
+  `•  \n  │\n  ┘`,
+  `•  \n  ╷\n ╶┘`,
+  `•  \n   \n └┘`,
+  `•  \n ╷ \n └╴`,
+  `•  \n ┐ \n └ `,
+  `•  \n ┐ \n └ `,
+  `•  \n╶┐ \n ╵ `,
+  `•  \n└┐ \n   `,
+  `╷  \n└╴ \n  •`,
+  `┌  \n└  \n  •`,
+  `┌╴ \n╵  \n  •`,
+  `┌─ \n   \n  •`,
+] as const
+
 const SPINNER_FRAMES: Record<SpinnerStyle, readonly string[]> = {
   dots: DOTS,
   bounce: BOUNCE,
   loop: LOOP,
   kitt: KITT,
+  snake: SNAKE,
 }
 const SPINNER_SIZES: Record<SpinnerStyle, Size> = {
   dots: new Size(1, 1),
   bounce: new Size(5, 2),
   loop: new Size(5, 1),
   kitt: new Size(7, 1),
+  snake: new Size(3, 3),
 }
 const SLOW_HZ = 1000 / 10
 const FAST_HZ = 1000 / 20

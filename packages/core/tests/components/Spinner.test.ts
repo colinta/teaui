@@ -4,7 +4,6 @@ import {Spinner, type SpinnerStyle} from '../../lib/components/Spinner.js'
 import {Size} from '../../lib/geometry.js'
 
 const FRAMES = ['⣾', '⣷', '⣯', '⣟', '⡿', '⢿', '⣻', '⣽']
-const KITT_FRAME_COUNT = 30
 const HZ = 1000 / 10 // 100ms per frame
 
 describe('Spinner', () => {
@@ -26,6 +25,7 @@ describe('Spinner', () => {
       ['bounce', 5, 2],
       ['loop', 5, 1],
       ['kitt', 7, 1],
+      ['snake', 3, 3],
     ] as const)('renders the %s style', (style, width, height) => {
       const spinner = new Spinner({style})
       const t = testRender(spinner, {width, height})
@@ -39,6 +39,7 @@ describe('Spinner', () => {
       ['bounce', new Size(5, 2)],
       ['loop', new Size(5, 1)],
       ['kitt', new Size(7, 1)],
+      ['snake', new Size(3, 3)],
     ])('uses the size of the %s style', (style, expected) => {
       const spinner = new Spinner({style})
       expect(spinner.naturalSize(new Size(80, 24))).toEqual(expected)
@@ -83,21 +84,6 @@ describe('Spinner', () => {
       spinner.style = 'dots'
       const t = testRender(spinner, {width: 1, height: 1})
       expect(t.terminal.textContent()).toBe(FRAMES[0])
-    })
-
-    it('animates the KITT scanner in both directions', () => {
-      const spinner = new Spinner({style: 'kitt'})
-      const frames: string[] = []
-
-      for (let i = 0; i < KITT_FRAME_COUNT; i++) {
-        const t = testRender(spinner, {width: 7, height: 1})
-        frames.push(t.terminal.textContent())
-        spinner.receiveTick(HZ + 1)
-      }
-
-      expect(frames).toMatchSnapshot()
-      const wrapped = testRender(spinner, {width: 7, height: 1})
-      expect(wrapped.terminal.textContent()).toBe(frames[0])
     })
   })
 

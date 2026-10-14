@@ -121,6 +121,10 @@ export function WidgetsTab() {
               <Spinner style="kitt" isAnimating={spinnersAnimating} />
             </Stack.right>
             <Stack.right gap={1}>
+              <Text width={4}>SNAKE</Text>
+              <Spinner style="snake" isAnimating={spinnersAnimating} />
+            </Stack.right>
+            <Stack.right gap={1}>
               <Toggle
                 height={1}
                 value={spinnersAnimating}

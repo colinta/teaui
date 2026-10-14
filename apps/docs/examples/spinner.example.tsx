@@ -20,6 +20,10 @@ function App() {
         <Spinner style="kitt" />
         <Text>KITT</Text>
       </Stack.right>
+      <Stack.right gap={1}>
+        <Spinner style="snake" />
+        <Text>KITT</Text>
+      </Stack.right>
     </Stack.down>
   )
 }

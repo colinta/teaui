@@ -15,16 +15,16 @@ export const spinnerExample: ComponentExample = {
   props: [
     {
       name: 'style',
-      type: "'dots' | 'bounce' | 'loop' | 'kitt'",
+      type: "'dots' | 'bounce' | 'loop' | 'kitt' | 'snake'",
       description:
-        'Defaults to dots. Natural sizes are dots 1x1, bounce 5x2, loop 5x1, and kitt 7x1. Changing style resets the frame and elapsed time; Core style assignment invalidates sizing, while React updates the style prop',
+        'Defaults to dots. Style options are dots, bounce, loop, kitt, and snake. Changing style resets the frame and elapsed time; Core style assignment invalidates sizing, while React updates the style prop',
       availability: 'both',
     },
     {
       name: 'isAnimating',
       type: 'boolean',
       description:
-        'Defaults to true. False pauses on the current frame without hiding or resetting it. Dots, bounce, and loop animate at approximately 10 frames per second; kitt uses approximately 20. Core isAnimating assignment invalidates rendering; React updates the prop',
+        'Defaults to true. False pauses on the current frame without hiding or resetting it. Core isAnimating assignment invalidates rendering; React updates the prop',
       availability: 'both',
     },
     {
@@ -32,20 +32,6 @@ export const spinnerExample: ComponentExample = {
       type: 'Palette | Purpose',
       description:
         'Uses the palette accent text color with the default background, even when paused; inherits from its parent, otherwise plain',
-      availability: 'both',
-    },
-    {
-      name: 'width',
-      type: 'Dimension',
-      description:
-        'Width in columns or fill/shrink/natural; naturally 1 for dots, 5 for bounce and loop, or 7 for kitt',
-      availability: 'both',
-    },
-    {
-      name: 'height',
-      type: 'Dimension',
-      description:
-        'Height in rows or fill/shrink/natural; naturally 2 for bounce and 1 for all other styles',
       availability: 'both',
     },
     {

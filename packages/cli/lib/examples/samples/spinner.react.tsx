@@ -11,8 +11,10 @@ function App() {
       <Spinner style="bounce" isAnimating={true} purpose="proceed" />
       <Text>loop (5x1)</Text>
       <Spinner style="loop" purpose="secondary" />
-      <Text>kitt: faster animation (7x1)</Text>
-      <Spinner style="kitt" purpose="cancel" />
+      <Text>kitt (7x1)</Text>
+      <Spinner style="kitt" purpose="red" />
+      <Text>snake (3x3)</Text>
+      <Spinner style="snake" purpose="green" />
       <Text>Paused dots: still visible, same accent</Text>
       <Spinner isAnimating={false} purpose="primary" />
     </Stack.down>

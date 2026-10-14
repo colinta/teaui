@@ -144,6 +144,10 @@ const spinners = Stack.right(
       new Text({text: 'KITT'}),
       new Spinner({style: 'kitt', purpose: 'red'}),
     ]),
+    Stack.down([
+      new Text({text: 'Snake'}),
+      new Spinner({style: 'snake', purpose: 'green'}),
+    ]),
   ],
   {gap: 2, padding: 1},
 )
