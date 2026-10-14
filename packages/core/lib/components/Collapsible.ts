@@ -5,6 +5,7 @@ import {type Props as ContainerProps, Container} from '../Container.js'
 import {Text} from './Text.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {type MouseEvent, isMouseClicked} from '../events/index.js'
+import {Style} from '../Style.js'
 
 interface StyleProps {
   /**
@@ -173,5 +174,15 @@ export class Collapsible extends Container {
         this.#expandedView?.render(inside)
       }
     })
+
+    if (this.isHover || this.isPressed) {
+      viewport.restyle(this.#highlightStyle(textStyle), undefined, {
+        merge: true,
+      })
+    }
+  }
+
+  #highlightStyle(style: Style): Style {
+    return new Style({background: style.background})
   }
 }

@@ -101,6 +101,7 @@ export class CollapsibleText extends View {
     }
 
     const startingStyle = Style.NONE
+    let textStyle: Style | undefined
     viewport.usingPen(this.#style, pen => {
       const {width, height} = unicode.stringSize(
         lines,
@@ -111,7 +112,7 @@ export class CollapsibleText extends View {
       if (viewport.contentSize.width < width || height > 1) {
         // Like Collapsible, the whole area highlights on hover and press
         viewport.registerMouse(['mouse.button.left', 'mouse.move'])
-        const textStyle = this.purpose.ui({
+        textStyle = this.purpose.ui({
           variant: 'flat',
           isPressed: this.isPressed,
           isHover: this.isHover,
@@ -165,5 +166,15 @@ export class CollapsibleText extends View {
         point.x = offsetX
       }
     })
+
+    if (textStyle && (this.isHover || this.isPressed)) {
+      viewport.restyle(this.#highlightStyle(textStyle), undefined, {
+        merge: true,
+      })
+    }
+  }
+
+  #highlightStyle(style: Style): Style {
+    return new Style({background: style.background})
   }
 }
