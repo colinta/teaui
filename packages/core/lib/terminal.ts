@@ -9,7 +9,7 @@ export interface Terminal {
     width?: 1 | 2,
     inheritBackground?: boolean,
   ): void
-  restyleChar(x: number, y: number, style: Style): void
+  restyleChar(x: number, y: number, style: Style, merge?: boolean): void
   writeMeta(str: string): void
   paintRect(
     style: Style,

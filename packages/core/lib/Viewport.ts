@@ -20,6 +20,10 @@ interface WriteOptions {
   inheritBackground?: boolean
 }
 
+interface RestyleOptions {
+  merge?: boolean
+}
+
 /**
  * Defines a region (contentSize) in which to draw, and a subset (visibleRect) that
  * is on-screen. Anything not in the visibleRect is considered invisible (and any
@@ -385,11 +389,12 @@ export class Viewport {
   }
 
   /**
-   * Replaces the style of existing cells without changing their text content.
+   * Restyles existing cells without changing their text content. By default,
+   * the style is replaced; pass `merge` to preserve unspecified attributes.
    * Useful for dimming background content (e.g. modal overlays).
    * If no region is provided, the entire visibleRect is restyled.
    */
-  restyle(style: Style, region?: Rect) {
+  restyle(style: Style, region?: Rect, {merge = false}: RestyleOptions = {}) {
     region ??= this.visibleRect
     const minX = Math.max(region.minX(), this.#visibleRect.minX())
     const maxX = Math.min(region.maxX(), this.#visibleRect.maxX())
@@ -401,6 +406,7 @@ export class Viewport {
           x + this.#offset.x,
           y + this.#offset.y,
           style,
+          merge,
         )
       }
     }

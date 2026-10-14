@@ -3,6 +3,7 @@ import {testRender} from '../../lib/TestScreen.js'
 import {CollapsibleText} from '../../lib/components/CollapsibleText.js'
 import {Collapsible} from '../../lib/components/Collapsible.js'
 import {Text} from '../../lib/components/Text.js'
+import {Style} from '../../lib/Style.js'
 
 const multiline = 'one\ntwo\nthree'
 
@@ -38,6 +39,41 @@ describe('CollapsibleText', () => {
   describe('hover', () => {
     const background = (t: ReturnType<typeof testRender>, x: number, y = 0) =>
       t.terminal.styleAt(x, y).background
+
+    it.each([
+      [
+        'CollapsibleText',
+        () =>
+          new CollapsibleText({
+            text: `plain ${new Style({
+              foreground: 'green',
+              background: 'default',
+            }).toSGR(Style.NONE, 'green')}\nnext`,
+          }),
+      ],
+      [
+        'Collapsible',
+        () =>
+          new Collapsible({
+            collapsed: new Text({
+              text: `plain ${new Style({
+                foreground: 'green',
+                background: 'default',
+              }).toSGR(Style.NONE, 'green')}\nnext`,
+            }),
+          }),
+      ],
+    ])('highlights colored text in %s', (_name, createView) => {
+      const t = testRender(createView(), {width: 20, height: 2})
+      const coloredX = 8
+      expect(t.terminal.styleAt(coloredX, 0).foreground).toBe('green')
+      expect(background(t, coloredX)).toBe('default')
+
+      t.sendMouse('mouse.move.in', {x: coloredX, y: 0})
+
+      expect(background(t, coloredX)).toEqual(background(t, 2))
+      expect(t.terminal.styleAt(coloredX, 0).foreground).toBe('green')
+    })
 
     it('highlights the whole area on hover, and clears on exit', () => {
       const view = new CollapsibleText({text: multiline})

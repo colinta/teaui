@@ -269,10 +269,10 @@ export class Buffer implements Terminal {
   }
 
   /**
-   * Replaces the style of an existing cell without changing its character.
-   * If no cell exists at (x, y), writes a space with the given style.
+   * Replaces or merges the style of an existing cell without changing its
+   * character. If no cell exists at (x, y), writes a space with the given style.
    */
-  restyleChar(x: number, y: number, style: Style) {
+  restyleChar(x: number, y: number, style: Style, merge = false) {
     x = ~~x
     y = ~~y
     if (x < 0 || x >= this.size.width || y < 0 || y >= this.size.height) {
@@ -288,7 +288,10 @@ export class Buffer implements Terminal {
 
     const existing = line.get(x)
     if (existing) {
-      line.set(x, {...existing, style})
+      line.set(x, {
+        ...existing,
+        style: merge ? existing.style.merge(style) : style,
+      })
     } else {
       line.set(x, {char: ' ', width: 1, style})
     }
