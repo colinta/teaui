@@ -107,6 +107,11 @@ export type DigitsProps = Simplify<TUIView<typeof WrDigits>>
 export type FontStyleProps = Simplify<TUIView<typeof WrFontStyle>>
 export type FontStyleValue = WrFontStyle['value']
 export type GeometryProps = Simplify<TUIContainer<typeof WrGeometry>>
+type HeaderViewProps = TUIView<typeof WrHeader>
+export type HeaderProps = Simplify<
+  Omit<HeaderViewProps, 'text'> & {text?: string; children?: string}
+>
+export type HeadingProps = {text?: string; children?: string}
 export interface SharedDropdownProps<T> extends ViewProps {
   choices: [string, T][]
   title?: string
@@ -125,7 +130,6 @@ export interface DropdownSelectMultiple<T> extends SharedDropdownProps<T> {
 }
 
 export type DropdownProps<T> = DropdownSelectOne<T> | DropdownSelectMultiple<T>
-export type HeaderProps = {text?: string; children?: string}
 export type HotKeyProps = Simplify<TUIView<typeof WrHotKey>>
 export type KeyboardProps = Simplify<TUIContainer<typeof WrKeyboard>>
 export type MouseProps = Simplify<TUIContainer<typeof WrMouse>>
@@ -210,15 +214,16 @@ declare module 'react' {
       'tui-dropdown': WithRef<DropdownProps<any>, WrDropdown<any, any>>
       'tui-font-style': WithRef<FontStyleProps, WrFontStyle>
       'tui-geometry': WithRef<GeometryProps, WrGeometry>
+      'tui-header': WithRef<HeaderProps, WrHeader>
       'tui-hotkey': WithRef<HotKeyProps, WrHotKey>
       'tui-keyboard': WithRef<KeyboardProps, WrKeyboard>
       'tui-mouse': WithRef<MouseProps, WrMouse>
-      'tui-h1': WithRef<HeaderProps, WrHeader>
-      'tui-h2': WithRef<HeaderProps, WrHeader>
-      'tui-h3': WithRef<HeaderProps, WrHeader>
-      'tui-h4': WithRef<HeaderProps, WrHeader>
-      'tui-h5': WithRef<HeaderProps, WrHeader>
-      'tui-h6': WithRef<HeaderProps, WrHeader>
+      'tui-h1': WithRef<HeadingProps, WrHeader>
+      'tui-h2': WithRef<HeadingProps, WrHeader>
+      'tui-h3': WithRef<HeadingProps, WrHeader>
+      'tui-h4': WithRef<HeadingProps, WrHeader>
+      'tui-h5': WithRef<HeadingProps, WrHeader>
+      'tui-h6': WithRef<HeadingProps, WrHeader>
       'tui-input': WithRef<InputProps, WrInput>
       'tui-legend': WithRef<LegendProps, WrLegend>
       'tui-auto-legend': WithRef<AutoLegendProps, WrAutoLegend>
@@ -476,37 +481,43 @@ export const Mouse = forwardRef<WrMouse, MouseProps>(function Mouse(
     </tui-mouse>
   )
 })
-export const H1 = forwardRef<WrHeader, HeaderProps>(function H1(
+export const Header = forwardRef<WrHeader, HeaderProps>(function Header(
+  {children, text, ...props},
+  ref,
+): JSX.Element {
+  return <tui-header ref={ref} {...props} text={children ?? text ?? ''} />
+})
+export const H1 = forwardRef<WrHeader, HeadingProps>(function H1(
   {children, ...reactProps},
   ref,
 ): JSX.Element {
   return <tui-h1 ref={ref} text={children ?? reactProps.text} {...reactProps} />
 })
-export const H2 = forwardRef<WrHeader, HeaderProps>(function H2(
+export const H2 = forwardRef<WrHeader, HeadingProps>(function H2(
   {children, ...reactProps},
   ref,
 ): JSX.Element {
   return <tui-h2 ref={ref} text={children ?? reactProps.text} {...reactProps} />
 })
-export const H3 = forwardRef<WrHeader, HeaderProps>(function H3(
+export const H3 = forwardRef<WrHeader, HeadingProps>(function H3(
   {children, ...reactProps},
   ref,
 ): JSX.Element {
   return <tui-h3 ref={ref} text={children ?? reactProps.text} {...reactProps} />
 })
-export const H4 = forwardRef<WrHeader, HeaderProps>(function H4(
+export const H4 = forwardRef<WrHeader, HeadingProps>(function H4(
   {children, ...reactProps},
   ref,
 ): JSX.Element {
   return <tui-h4 ref={ref} text={children ?? reactProps.text} {...reactProps} />
 })
-export const H5 = forwardRef<WrHeader, HeaderProps>(function H5(
+export const H5 = forwardRef<WrHeader, HeadingProps>(function H5(
   {children, ...reactProps},
   ref,
 ): JSX.Element {
   return <tui-h5 ref={ref} text={children ?? reactProps.text} {...reactProps} />
 })
-export const H6 = forwardRef<WrHeader, HeaderProps>(function H6(
+export const H6 = forwardRef<WrHeader, HeadingProps>(function H6(
   {children, ...reactProps},
   ref,
 ): JSX.Element {

@@ -7,7 +7,6 @@ function App() {
 
   return (
     <Calendar
-      width={22}
       date={date}
       visibleDate={visibleDate}
       onChangeVisible={setVisibleDate}

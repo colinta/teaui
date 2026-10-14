@@ -84,7 +84,8 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 | `<CollapsibleText />` | `<tui-collapsible-text>` | Text that truncates with expand/collapse |
 | `<ConsoleLog />`      | `<tui-console>`          | Displays intercepted `console.*` output  |
 | `<Digits />`          | `<tui-digits>`           | Large-font digit display                 |
-| `<H1 />`–`<H6 />`     | `<tui-h1>`–`<tui-h6>`    | Header text                              |
+| `<Header />`          | `<tui-header>`           | Configurable header text                 |
+| `<H1 />`–`<H6 />`     | `<tui-h1>`–`<tui-h6>`    | Header presets                           |
 | `<Input />`           | `<tui-input>`            | Text input field                         |
 | `<Separator />`       | `<tui-separator>`        | Horizontal or vertical line              |
 | `<Slider />`          | `<tui-slider>`           | Value slider                             |

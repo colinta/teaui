@@ -10,6 +10,7 @@ import {
   Collapsible,
   Drawer,
   FontStyle,
+  Header,
   Separator,
   Skeleton,
   Space,
@@ -90,6 +91,21 @@ describe('component wrappers', () => {
       )
       await flush()
       expect(window.children[0]).toBeInstanceOf(FontStyle)
+    })
+
+    it('Header renders a configurable core Header', async () => {
+      const {window} = renderToWindow(
+        <Components.Header border="double" font="double-struck" dim>
+          Custom font
+        </Components.Header>,
+      )
+      await flush()
+      expect(window.children[0]).toBeInstanceOf(Header)
+
+      const t = testRender(window.children[0], {width: 20, height: 2})
+      expect(t.terminal.textContent()).toContain('ℂ𝕦𝕤𝕥𝕠𝕞 𝕗𝕠𝕟𝕥')
+      expect(t.terminal.textContent()).toContain('═════════════')
+      expect(t.terminal.styleOf('ℂ')).toMatchObject({dim: true})
     })
 
     it('Separator renders a tui-separator', async () => {

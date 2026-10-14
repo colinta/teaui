@@ -1,5 +1,5 @@
 import React from 'react'
-import {H1, H2, H3, H4, H5, H6, Stack} from '@teaui/react'
+import {H1, H2, H3, H4, H5, H6, Header, Stack} from '@teaui/react'
 
 function App() {
   return (
@@ -10,8 +10,11 @@ function App() {
       <H4>Heading 4</H4>
       <H5>Heading 5</H5>
       <H6>Heading 6</H6>
+      <Header border="double" font="double-struck" dim>
+        Custom font
+      </Header>
     </Stack.down>
   )
 }
 
-export default {width: 20, height: 11, title: 'Header', App}
+export default {width: 20, height: 13, title: 'Header', App}

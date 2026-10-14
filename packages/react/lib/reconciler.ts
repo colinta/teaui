@@ -32,6 +32,7 @@ import {
   Dropdown,
   FontStyle,
   Geometry,
+  Header,
   H1,
   HotKey,
   Modal,
@@ -180,6 +181,9 @@ function createInstance(type: string, props: Props): any {
     case 'geometry':
     case 'tui-geometry':
       return new Geometry(props as any)
+    case 'header':
+    case 'tui-header':
+      return new Header(props as any)
     case 'hotkey':
     case 'tui-hotkey':
       return new HotKey(props as any)
