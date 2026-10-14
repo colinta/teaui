@@ -20,6 +20,16 @@ exports[`Image > renders a 4x4 image after loading 1`] = `
    ▀▀▀▀"
 `;
 
+exports[`Image > renders cover across the full viewport 1`] = `
+"▀▀▀▀
+▀▀▀▀"
+`;
+
 exports[`Image > renders empty before image loads 1`] = `""`;
 
 exports[`Image > renders empty when no source 1`] = `""`;
+
+exports[`Image > renders stretch across the full viewport 1`] = `
+"▀▀▀▀
+▀▀▀▀"
+`;

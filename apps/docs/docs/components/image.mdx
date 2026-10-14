@@ -39,22 +39,21 @@ run(<App />)
 ## Behavior
 
 - **Loading is asynchronous.** The view is blank until the image has been decoded, then re-renders itself. If loading fails, it stays blank.
-- **Sizing:** before loading, the view requests all available space. The image is scaled down to fit that space, preserves its aspect ratio, and is never enlarged beyond its original resolution. The result is centered.
+- **Sizing:** before loading, the view requests all available space. The selected `fit` controls how the image is resized within that space.
+  - `contain` (default) preserves the aspect ratio, scales down to fit without enlarging the source, and centers the result.
+  - `cover` preserves the aspect ratio, scales to fill the available space, and crops overflow from the center.
+  - `stretch` scales independently on each axis to fill the available space exactly, which can change the aspect ratio.
 - **Resizing:** when the view's size changes, the image is reloaded at the new size.
-- Changing `source` discards the loaded image and loads the new one.
+- Changing `source` or `fit` discards the loaded image and loads it again.
 
 ## Props
 
-| Prop     | Type                                | Default     | Description                    |
-| -------- | ----------------------------------- | ----------- | ------------------------------ |
-| `source` | `string \| Buffer`                  | —           | Image file path or image bytes |
-| `fit`    | `'contain' \| 'cover' \| 'stretch'` | `'contain'` | Not yet implemented; see below |
+| Prop     | Type                                | Default     | Description                                  |
+| -------- | ----------------------------------- | ----------- | -------------------------------------------- |
+| `source` | `string \| Buffer`                  | —           | Image file path or image bytes               |
+| `fit`    | `'contain' \| 'cover' \| 'stretch'` | `'contain'` | How the image is resized in its layout space |
 
 `Image` also accepts the common [View props](../core-api#views), such as `width`, `height`, `flex`, and `padding`.
-
-:::note
-`fit` is accepted but currently ignored; images always use the `contain` behavior described above.
-:::
 
 <details>
 <summary>Core API</summary>

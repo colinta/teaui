@@ -23,6 +23,17 @@ function make2x2Image() {
   }
 }
 
+function makeSolidImage(width: number, height: number) {
+  const pixels = Buffer.alloc(width * height * 4)
+  for (let offset = 0; offset < pixels.length; offset += 4) {
+    pixels[offset] = 255
+    pixels[offset + 1] = 255
+    pixels[offset + 2] = 255
+    pixels[offset + 3] = 255
+  }
+  return {pixels, width, height}
+}
+
 function make4x4Image() {
   const pixels = Buffer.alloc(4 * 4 * 4)
   for (let i = 0; i < 16; i++) {
@@ -126,7 +137,97 @@ describe('Image', () => {
       'photo.jpg',
       20, // viewport width
       20, // viewport height * 2 (2 pixels per terminal row)
+      'contain',
     )
+  })
+
+  it.each(['cover', 'stretch'] as const)(
+    'passes the %s fit to the image loader',
+    fit => {
+      mockedLoadImageResized.mockResolvedValue(make2x2Image())
+
+      testRender(new Image({source: 'photo.jpg', fit}), {
+        width: 20,
+        height: 10,
+      })
+
+      expect(mockedLoadImageResized).toHaveBeenCalledWith(
+        'photo.jpg',
+        20,
+        20,
+        fit,
+      )
+    },
+  )
+
+  it.each(['cover', 'stretch'] as const)(
+    'renders %s across the full viewport',
+    async fit => {
+      mockedLoadImageResized.mockResolvedValue(makeSolidImage(4, 4))
+      const image = new Image({source: 'photo.jpg', fit})
+      const t = testRender(image, {width: 4, height: 2})
+
+      await vi.waitFor(() => {
+        t.render()
+        expect(t.terminal.textContent()).toContain('▀▀▀▀')
+      })
+
+      expect(t.terminal.textContent()).toMatchSnapshot()
+      const resized = image.naturalSize(new Size(8, 4))
+      expect(resized.width).toBe(8)
+      expect(resized.height).toBe(4)
+    },
+  )
+
+  it('reloads the image when fit changes', () => {
+    mockedLoadImageResized.mockResolvedValue(make2x2Image())
+    const image = new Image({source: 'photo.jpg'})
+    const t = testRender(image, {width: 20, height: 10})
+
+    image.update({source: 'photo.jpg', fit: 'cover'})
+    t.render()
+
+    expect(mockedLoadImageResized).toHaveBeenNthCalledWith(
+      2,
+      'photo.jpg',
+      20,
+      20,
+      'cover',
+    )
+  })
+
+  it('ignores a stale load after fit changes', async () => {
+    let resolveContain!: (image: ReturnType<typeof make2x2Image>) => void
+    let resolveCover!: (image: ReturnType<typeof make2x2Image>) => void
+    const containLoad = new Promise<ReturnType<typeof make2x2Image>>(
+      resolve => {
+        resolveContain = resolve
+      },
+    )
+    const coverLoad = new Promise<ReturnType<typeof make2x2Image>>(resolve => {
+      resolveCover = resolve
+    })
+    mockedLoadImageResized
+      .mockReturnValueOnce(containLoad)
+      .mockReturnValueOnce(coverLoad)
+
+    const image = new Image({source: 'photo.jpg'})
+    const t = testRender(image, {width: 10, height: 5})
+    image.update({source: 'photo.jpg', fit: 'cover'})
+    t.render()
+
+    resolveCover(make4x4Image())
+    await vi.waitFor(() => {
+      t.render()
+      expect(t.terminal.textContent()).toContain('▀▀▀▀')
+    })
+
+    resolveContain(make2x2Image())
+    await Promise.resolve()
+    t.render()
+
+    expect(t.terminal.textContent()).toContain('▀▀▀▀')
+    expect(mockedLoadImageResized).toHaveBeenCalledTimes(2)
   })
 
   it('naturalSize returns zero for empty source', () => {

@@ -1,7 +1,7 @@
 import type {Viewport} from '@teaui/core'
 import {View, Style, Point, Size} from '@teaui/core'
 import type {ViewProps} from '@teaui/core'
-import type {ImageData} from './loadImage.js'
+import type {ImageData, ImageFit} from './loadImage.js'
 import {loadImageResized} from './loadImage.js'
 import {renderPixels} from './render.js'
 import type {RenderedCell} from './render.js'
@@ -15,7 +15,7 @@ interface ImageProps {
    * - 'cover': Scale to fill, cropping as needed
    * - 'stretch': Stretch to fill exactly
    */
-  fit?: 'contain' | 'cover' | 'stretch'
+  fit?: ImageFit
 }
 
 export type Props = ImageProps & ViewProps
@@ -30,6 +30,7 @@ export type Props = ImageProps & ViewProps
  */
 export class Image extends View {
   #source: string | Buffer = ''
+  #fit: ImageFit = 'contain'
 
   /** The loaded & resized image data */
   #image: ImageData | undefined
@@ -39,6 +40,8 @@ export class Image extends View {
   #renderedSize: Size = Size.zero
   /** Current load promise (to avoid duplicate loads) */
   #loading: Promise<void> | undefined
+  /** Identifies the latest load so stale requests cannot replace its result */
+  #loadGeneration = 0
   /** The size we requested the image be resized to */
   #requestedSize: Size = Size.zero
 
@@ -52,16 +55,18 @@ export class Image extends View {
     super.update(props)
   }
 
-  #update({source}: ImageProps) {
-    const sourceChanged = source !== this.#source
+  #update({source, fit = 'contain'}: ImageProps) {
+    const imageChanged = source !== this.#source || fit !== this.#fit
     this.#source = source ?? ''
+    this.#fit = fit
 
-    if (sourceChanged) {
+    if (imageChanged) {
       this.#image = undefined
       this.#cells = []
       this.#renderedSize = Size.zero
       this.#requestedSize = Size.zero
       this.#loading = undefined
+      this.#loadGeneration++
     }
   }
 
@@ -70,7 +75,12 @@ export class Image extends View {
       return Size.zero
     }
 
-    // If we have loaded image data, report the terminal cell size
+    // Cover and stretch always occupy all available space, including after a
+    // resize. Contain can shrink to the dimensions of the rendered image.
+    if (this.#fit !== 'contain') {
+      return new Size(available.width, available.height)
+    }
+
     if (this.#cells.length > 0) {
       return new Size(this.#renderedSize.width, this.#renderedSize.height)
     }
@@ -126,9 +136,9 @@ export class Image extends View {
   }
 
   /**
-   * Trigger an async image load if needed. The image will be resized to fit
-   * the given pixel dimensions. When loading completes, the view invalidates
-   * itself to trigger a re-render.
+   * Trigger an async image load if needed. The image will be resized using the
+   * configured fit within the given pixel dimensions. When loading completes,
+   * the view invalidates itself to trigger a re-render.
    */
   #ensureLoaded(targetWidth: number, targetPixelHeight: number) {
     const targetSize = new Size(targetWidth, targetPixelHeight)
@@ -141,16 +151,34 @@ export class Image extends View {
     }
 
     this.#requestedSize = targetSize
-    this.#loading = this.#load(targetWidth, targetPixelHeight)
+    const generation = ++this.#loadGeneration
+    this.#loading = this.#load(
+      this.#source,
+      this.#fit,
+      targetWidth,
+      targetPixelHeight,
+      generation,
+    )
   }
 
-  async #load(targetWidth: number, targetPixelHeight: number) {
+  async #load(
+    source: string | Buffer,
+    fit: ImageFit,
+    targetWidth: number,
+    targetPixelHeight: number,
+    generation: number,
+  ) {
     try {
       const image = await loadImageResized(
-        this.#source,
+        source,
         targetWidth,
         targetPixelHeight,
+        fit,
       )
+
+      if (generation !== this.#loadGeneration) {
+        return
+      }
 
       this.#image = image
       this.#cells = renderPixels(image)
@@ -159,11 +187,17 @@ export class Image extends View {
       // Trigger re-render now that image data is available
       this.invalidateSize()
     } catch {
+      if (generation !== this.#loadGeneration) {
+        return
+      }
+
       this.#image = undefined
       this.#cells = []
       this.#renderedSize = Size.zero
     } finally {
-      this.#loading = undefined
+      if (generation === this.#loadGeneration) {
+        this.#loading = undefined
+      }
     }
   }
 }
