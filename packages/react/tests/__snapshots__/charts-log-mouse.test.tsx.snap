@@ -1,5 +1,41 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Log wrapper > renders supplied entries and replaces, clears, and removes controlled logs > empty log scrollbar 1`] = `
+"                             █
+                             █
+                             █
+                             █
+                             █
+                             █"
+`;
+
+exports[`Log wrapper > renders supplied entries and replaces, clears, and removes controlled logs > empty log scrollbar 2`] = `
+"                             █
+                             █
+                             █
+                             █
+                             █
+                             █"
+`;
+
+exports[`Log wrapper > renders supplied entries and replaces, clears, and removes controlled logs > replacement entry 1`] = `
+" DEBUG  Replacement          █
+                             █
+                             █
+                             █
+                             █
+                             █"
+`;
+
+exports[`Log wrapper > renders supplied entries and replaces, clears, and removes controlled logs > structured entries 1`] = `
+" INFO   Server started       █
+ WARN   Slow connection      █
+ ERROR  ▼ Failed             █
+          Try again          █
+                             █
+                             █"
+`;
+
 exports[`Plot wrapper > composes chart children from fragments and updates plot options > axes and title 1`] = `
 "           Sales
 4 │         ⡠⠊⠢⢄
@@ -31,6 +67,22 @@ exports[`Plot wrapper > composes chart children from fragments and updates plot 
     ⢀⠎     ██     ██
    ▆⠁      ██     ██
    ██      ██     ██"
+`;
+
+exports[`TrackMouse wrapper > renders rulers and children, tracks pointer movement, and reconciles child/children props > pointer coordinates 1`] = `
+" 0123456789⠁1234
+0Content
+1
+2
+3           4, 2"
+`;
+
+exports[`TrackMouse wrapper > renders rulers and children, tracks pointer movement, and reconciles child/children props > rulers and content 1`] = `
+" 0123456789⠁1234
+0Content
+1
+2
+3           0, 0"
 `;
 
 exports[`chart wrappers > renders BarChart and updates data, extract, labels, width, and style in place > default width restored 1`] = `

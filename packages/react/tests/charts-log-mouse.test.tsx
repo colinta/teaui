@@ -3,21 +3,29 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   BarChart as CoreBarChart,
   LineChart as CoreLineChart,
+  Log as CoreLog,
   Plot as CorePlot,
+  TrackMouse as CoreTrackMouse,
   Style,
   Window,
   testRender,
   type Screen,
+  type LogLine,
 } from '@teaui/core'
 import {
   BarChart,
   LineChart,
+  Log,
   Plot,
   Space,
+  Text,
+  TrackMouse,
   render,
   type BarChartProps,
   type LineChartProps,
+  type LogProps,
   type PlotProps,
+  type TrackMouseProps,
 } from '../lib/index.js'
 
 function mount(element: React.ReactNode, width = 24, height = 8) {
@@ -290,5 +298,126 @@ describe('Plot wrapper', () => {
     } finally {
       error.mockRestore()
     }
+  })
+})
+
+describe('Log wrapper', () => {
+  it('renders supplied entries and replaces, clears, and removes controlled logs', async () => {
+    const ref = React.createRef<CoreLog>()
+    let update!: React.Dispatch<React.SetStateAction<LogProps>>
+    const logs: LogLine[] = [
+      {level: 'info', args: ['Server started']},
+      {level: 'warn', args: ['Slow connection']},
+      {level: 'error', args: ['Failed\nTry again']},
+    ]
+    function App() {
+      const [props, setProps] = React.useState<LogProps>({logs})
+      update = setProps
+      return <Log ref={ref} {...props} />
+    }
+    const {t} = mount(<App />, 30, 6)
+    const log = ref.current!
+    expect(log).toBeInstanceOf(CoreLog)
+    expect(t.terminal.textContent()).toContain('Server started')
+    expect(t.terminal.textContent()).toContain('Try again')
+    expect(t.terminal.textContent()).toMatchSnapshot('structured entries')
+    expect(t.terminal.styleOf('Slow connection')?.foreground).toBe('yellow')
+
+    update({logs: [{level: 'debug', args: ['Replacement']}]})
+    await flush()
+    t.render()
+    expect(ref.current).toBe(log)
+    expect(t.terminal.textContent()).not.toContain('Server started')
+    expect(t.terminal.textContent()).toContain('Replacement')
+    expect(t.terminal.textContent()).toMatchSnapshot('replacement entry')
+
+    update({logs: []})
+    await flush()
+    t.render()
+    expect(t.terminal.textContent()).not.toContain('Replacement')
+    expect(t.terminal.textContent()).toMatchSnapshot('empty log scrollbar')
+
+    update({logs})
+    await flush()
+    update({})
+    await flush()
+    t.render()
+    expect(t.terminal.textContent()).not.toContain('Server started')
+    expect(t.terminal.textContent()).toMatchSnapshot('empty log scrollbar')
+  })
+
+  it('supports imperative Core methods through a ref when logs are uncontrolled', async () => {
+    const ref = React.createRef<CoreLog>()
+    let update!: React.Dispatch<React.SetStateAction<number>>
+    function App() {
+      const [height, setHeight] = React.useState(3)
+      update = setHeight
+      return <Log ref={ref} height={height} />
+    }
+    const {t, unmount} = mount(<App />, 30, 4)
+    ref.current!.setLogs([{level: 'info', args: ['Imperative']}])
+    update(4)
+    await flush()
+    t.render()
+    expect(t.terminal.textContent()).toContain('Imperative')
+    ref.current!.appendLog({level: 'log', args: ['Appended']})
+    t.render()
+    expect(t.terminal.textContent()).toContain('Appended')
+    ref.current!.clear()
+    t.render()
+    expect(t.terminal.textContent()).not.toContain('Imperative')
+    expect(t.terminal.textContent()).not.toContain('Appended')
+    unmount()
+    expect(ref.current).toBeNull()
+  })
+})
+
+describe('TrackMouse wrapper', () => {
+  it('renders rulers and children, tracks pointer movement, and reconciles child/children props', async () => {
+    const ref = React.createRef<CoreTrackMouse>()
+    const listener = vi.fn()
+    let update!: React.Dispatch<React.SetStateAction<TrackMouseProps>>
+    function App() {
+      const [props, setProps] = React.useState<TrackMouseProps>({
+        children: <Text>Content</Text>,
+      })
+      update = setProps
+      return <TrackMouse ref={ref} mouseListener={listener} {...props} />
+    }
+    const {t, unmount} = mount(<App />, 16, 5)
+    const view = ref.current!
+    expect(view).toBeInstanceOf(CoreTrackMouse)
+    expect(view.children).toHaveLength(1)
+    expect(t.terminal.textContent()).toContain('Content')
+    expect(t.terminal.textContent()).toMatchSnapshot('rulers and content')
+
+    t.sendMouse('mouse.move.in', {x: 4, y: 2})
+    t.render()
+    expect(listener).toHaveBeenCalled()
+    expect(t.terminal.textContent()).toContain('4, 2')
+    expect(t.terminal.styleAt(4, 0).inverse).toBe(true)
+    expect(t.terminal.styleAt(0, 2).inverse).toBe(true)
+    expect(t.terminal.textContent()).toMatchSnapshot('pointer coordinates')
+
+    update({child: <Text>Replacement</Text>})
+    await flush()
+    t.render()
+    expect(ref.current).toBe(view)
+    expect(view.children).toHaveLength(1)
+    expect(t.terminal.textContent()).toContain('Replacement')
+    expect(t.terminal.textContent()).not.toContain('Content')
+
+    update({children: 'Plain text'})
+    await flush()
+    t.render()
+    expect(t.terminal.textContent()).toContain('Plain text')
+
+    update({})
+    await flush()
+    t.render()
+    expect(view.children).toHaveLength(0)
+    expect(t.terminal.textContent()).not.toContain('Plain text')
+    unmount()
+    expect(ref.current).toBeNull()
   })
 })

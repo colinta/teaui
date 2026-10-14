@@ -47,6 +47,7 @@ import {
   Input,
   Legend,
   LineChart,
+  Log,
   AutoLegend,
   Progress,
   Plot,
@@ -69,6 +70,7 @@ import {
   Toggle,
   ToggleGroup,
   Tree,
+  TrackMouse,
   View,
   Window,
 } from '@teaui/core'
@@ -81,7 +83,7 @@ import {
 } from './components/TextReact.js'
 
 import {isSame} from './isSame.js'
-import type {BarChartProps, LineChartProps} from './components.js'
+import type {BarChartProps, LineChartProps, LogProps} from './components.js'
 
 type Props = {}
 interface HostContext {
@@ -119,8 +121,18 @@ function createInstance(type: string, props: Props): any {
       const {data, ...options} = props as LineChartProps
       return new LineChart(data, options)
     }
+    case 'tui-log': {
+      const {logs, ...options} = props as LogProps
+      const log = new Log(options)
+      if (logs !== undefined) {
+        log.setLogs(logs)
+      }
+      return log
+    }
     case 'tui-plot':
       return new Plot(props)
+    case 'tui-track-mouse':
+      return new TrackMouse(props)
     case 'at':
     case 'tui-at':
       return new At(props as any)
@@ -632,8 +644,8 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     commitUpdate(
       node: View,
       _updatePayload: [PropertyKey, any][],
-      _type: string,
-      _oldProps: Props,
+      type: string,
+      oldProps: Props,
       newProps: Props,
       _internalInstanceHandle: object,
     ) {
@@ -642,7 +654,15 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       //   updates.text = childrenToText(children)
       // }
 
-      node.update(updates)
+      if (type === 'tui-log' && node instanceof Log) {
+        const {logs, ...viewProps} = updates as LogProps
+        if ('logs' in newProps || 'logs' in oldProps) {
+          node.setLogs(logs ?? [])
+        }
+        node.update(viewProps)
+      } else {
+        node.update(updates)
+      }
     },
 
     supportsMutation: true,

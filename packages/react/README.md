@@ -78,6 +78,7 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 | --------------------- | ------------------------ | ---------------------------------------- |
 | `<BarChart />`        | `<tui-bar-chart>`        | Bars from a typed `data` prop            |
 | `<LineChart />`       | `<tui-line-chart>`       | Lines from a typed `data` prop           |
+| `<Log />`             | `<tui-log>`              | Application-supplied `logs` entries      |
 | `<Br />`              | `<tui-br>`               | Line break in text                       |
 | `<Checkbox />`        | `<tui-checkbox>`         | Toggle checkbox                          |
 | `<Radio />`           | `<tui-radio>`            | Option managed by a RadioGroup           |
@@ -107,6 +108,7 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 | `<Text />`        | `<tui-text>`        | Text container (sets font, alignment, wrap)       |
 | `<Style />`       | `<tui-style>`       | Inline text styles (bold, italic, etc.)           |
 | `<Plot />`        | `<tui-plot>`        | Shared axes and labels; chart children only       |
+| `<TrackMouse />`  | `<tui-track-mouse>` | Debugging rulers around React children            |
 
 `Stack` has `.down`, `.up`, `.left`, and `.right` variants.
 

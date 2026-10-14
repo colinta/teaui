@@ -25,7 +25,8 @@ import type {
   RadioGroupProps as WrRadioGroupProps,
   Collapsible as WrCollapsible,
   CollapsibleText as WrCollapsibleText,
-  // Log as WrLog?
+  Log as WrLog,
+  LogLine,
   LineChart as WrLineChart,
   LineChartProps as WrLineChartProps,
   ConsoleLog as WrConsoleLog,
@@ -54,6 +55,7 @@ import type {
   Space as WrSpace,
   Spinner as WrSpinner,
   Tree as WrTree,
+  TrackMouse as WrTrackMouse,
   Page as WrPage,
   Placement as WrPlacement,
   Tabs as WrTabs,
@@ -90,9 +92,11 @@ export type BarChartProps<T = unknown> = Simplify<
 export type LineChartProps<T = unknown> = Simplify<
   WrLineChartProps<T> & {data: T[]}
 >
+export type LogProps = Simplify<TUIView<typeof WrLog> & {logs?: LogLine[]}>
 export type PlotProps = Simplify<
   TUIView<typeof WrPlot> & {children?: React.ReactNode}
 >
+export type TrackMouseProps = Simplify<TUIContainer<typeof WrTrackMouse>>
 export type BreadcrumbProps = Simplify<TUIView<typeof WrBreadcrumb>>
 export type CalendarProps = Simplify<TUIView<typeof WrCalendar>>
 export type CanvasProps = Simplify<TUIView<typeof WrCanvas>>
@@ -196,7 +200,9 @@ declare module 'react' {
       'tui-badge': WithRef<BadgeProps, WrBadge>
       'tui-bar-chart': WithRef<BarChartProps<any>, WrBarChart<any>>
       'tui-line-chart': WithRef<LineChartProps<any>, WrLineChart<any>>
+      'tui-log': WithRef<LogProps, WrLog>
       'tui-plot': WithRef<PlotProps, WrPlot>
+      'tui-track-mouse': WithRef<TrackMouseProps, WrTrackMouse>
       'tui-align-row': WithRef<AlignRowProps, WrAlignRow>
       'tui-alignment': WithRef<AlignmentProps, WrAlignment>
       'tui-alignment-scope': WithRef<AlignmentScopeProps, WrAlignmentScope>
@@ -385,6 +391,12 @@ export const LineChart = forwardRef<WrLineChart<any>, LineChartProps<any>>(
   },
 ) as LineChartComponent
 
+export const Log = forwardRef<WrLog, LogProps>(
+  function Log(reactProps, ref): JSX.Element {
+    return <tui-log ref={ref} {...reactProps} />
+  },
+)
+
 export const Plot = forwardRef<WrPlot, PlotProps>(function Plot(
   {children, ...props},
   ref,
@@ -395,6 +407,17 @@ export const Plot = forwardRef<WrPlot, PlotProps>(function Plot(
     </tui-plot>
   )
 })
+
+export const TrackMouse = forwardRef<WrTrackMouse, TrackMouseProps>(
+  function TrackMouse({children, child, ...props}, ref): JSX.Element {
+    return (
+      <tui-track-mouse ref={ref} {...props}>
+        {child}
+        {children}
+      </tui-track-mouse>
+    )
+  },
+)
 
 export const Breadcrumb = forwardRef<WrBreadcrumb, BreadcrumbProps>(
   function Breadcrumb(reactProps, ref): JSX.Element {

@@ -8,7 +8,7 @@ Scrollable, color-coded views for diagnostic messages. Use `Log` when the applic
 
 | Component    | Source of entries                                     | API availability |
 | ------------ | ----------------------------------------------------- | ---------------- |
-| `Log`        | Entries supplied with `setLogs()` or `appendLog()`    | Core only        |
+| `Log`        | Application-supplied entries                          | Core and React   |
 | `ConsoleLog` | `console.*` calls captured by `interceptConsoleLog()` | Core and React   |
 
 Both views keep the latest entries visible, support mouse-wheel scrolling, wrap long messages, and color entries by level.
@@ -73,9 +73,26 @@ Screen.start(
 
 `Log` does not read from `console` and does not require interception. Populate it with `LogLine` values when logs come from another process, a socket, a file, or application-owned state.
 
-:::note Core API only
-`Log` currently has no `@teaui/react` wrapper. React applications can use `ConsoleLog` for intercepted console output or build a custom view from `ScrollableList`.
-:::
+In React, pass application-owned entries with the `logs` prop. Replacing it replaces the displayed entries; an empty array clears the view. `Log` does not accept children.
+
+```tsx
+import React from 'react'
+import type {LogLine} from '@teaui/core'
+import {Log} from '@teaui/react'
+
+const entries: LogLine[] = [
+  {level: 'info', args: ['Server started']},
+  {level: 'warn', args: ['Connection is slow']},
+]
+
+function Messages() {
+  return <Log logs={entries} height={10} />
+}
+```
+
+For imperative updates, omit `logs` and use a ref to call the Core methods below. Do not mix controlled `logs` with imperative entry changes.
+
+### Core Example
 
 ```ts
 import {Log, Screen, Window, type LogLine} from '@teaui/core'

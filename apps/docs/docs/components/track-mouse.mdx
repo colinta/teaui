@@ -4,13 +4,28 @@ title: TrackMouse
 
 # TrackMouse
 
-A debugging container that surrounds its content with coordinate rulers and displays the current pointer position. Use it to inspect layout bounds, clipping, and mouse coordinates while developing a Core/OOP application.
+A debugging container that surrounds its content with coordinate rulers and displays the current pointer position. Use it to inspect layout bounds, clipping, and mouse coordinates while developing a Core or React application.
 
 The top ruler shows x coordinates, the left ruler shows y coordinates, and the row and column under the pointer are highlighted. The bottom-right label reports the current position.
 
-:::note Core API only
-`TrackMouse` currently has no `@teaui/react` wrapper.
-:::
+## React Example
+
+```tsx
+import React from 'react'
+import {Box, Text, TrackMouse} from '@teaui/react'
+
+function DebugContent() {
+  return (
+    <TrackMouse>
+      <Box border="single">
+        <Text>Move the pointer over this view</Text>
+      </Box>
+    </TrackMouse>
+  )
+}
+```
+
+The React wrapper accepts React content through `children` or `child` and forwards its ref to the Core `TrackMouse` instance.
 
 ## Core Example
 
