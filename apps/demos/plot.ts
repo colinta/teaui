@@ -28,12 +28,12 @@ const linePlot = new Plot({
   title: 'Monthly Sales (Line Chart)',
   width: 'fill',
   height: 'fill',
+  yLabels: value => `$${Math.round(value)}`,
 })
 
 const lineChart = new LineChart<SalesData>(salesData, {
   extract: row => [salesData.indexOf(row), row.sales],
   xLabels: row => row.month,
-  yLabels: value => `$${Math.round(value)}`,
 })
 
 linePlot.add(lineChart)
@@ -43,14 +43,13 @@ const barPlot = new Plot({
   title: 'Monthly Sales (Bar Chart)',
   width: 'fill',
   height: 'fill',
+  yLabels: value => `$${Math.round(value)}`,
 })
 
 const barChart = new BarChart<SalesData>(salesData, {
-  extract: row => row.sales,
+  extract: (row, index) => [index, row.sales],
   xLabels: row => row.month,
-  yLabels: value => `$${Math.round(value)}`,
   barWidth: 2,
-  gap: 1,
 })
 
 barPlot.add(barChart)

@@ -1,0 +1,69 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Plot wrapper > composes chart children from fragments and updates plot options > axes and title 1`] = `
+"           Sales
+4 │         ⡠⠊⠢⢄
+3 │       ⡠⠊██  ⠑⠢⡀
+2 │     ⡠⠊  ██    ⠈⠑⠄
+1 │  ▂⠠⠊    ██     ██
+0 │  ██     ██     ██
+  └─────────────────────
+      A      B      C"
+`;
+
+exports[`Plot wrapper > composes chart children from fragments and updates plot options > defaults restored 1`] = `
+"   4 │        ⡰⠑⢄
+3.20 │      ⢀⠎██ ⠱⡀
+2.40 │     ⡠⠃ ██  ⠈⠢⡀
+1.60 │   ⢀⠔⠁  ██   █⠈
+0.80 │  ▄⠊    ██   ██
+   0 │  ██    ██   ██
+     └──────────────────
+         A     B    C"
+`;
+
+exports[`Plot wrapper > composes chart children from fragments and updates plot options > no axes or labels 1`] = `
+"          Bare
+           ⡔⠑⢄
+         ⡠⠊██ ⠑⢄⡀
+       ⢀⠔⠁ ██   ⠈⠢⡀
+      ⡠⠃   ██     ⠈⠢
+    ⢀⠎     ██     ██
+   ▆⠁      ██     ██
+   ██      ██     ██"
+`;
+
+exports[`chart wrappers > renders BarChart and updates data, extract, labels, width, and style in place > default width restored 1`] = `
+"      █
+      █
+      █  █
+  █   █  █"
+`;
+
+exports[`chart wrappers > renders BarChart and updates data, extract, labels, width, and style in place > updated green bars 1`] = `
+"       ███
+       ███
+       ███
+  ███  ███"
+`;
+
+exports[`chart wrappers > renders BarChart and updates data, extract, labels, width, and style in place > wide red bars 1`] = `
+"     ██
+     ██
+     ██ ██
+ ██  ██ ██"
+`;
+
+exports[`chart wrappers > renders LineChart braille and updates its data, extraction, and formatters in place > initial line 1`] = `
+"⠀⠀⠀⠀⠀⡔⠑⢄⠀⠀⠀⠀
+⠀⠀⠀⡠⠊⠀⠀⠀⠑⠢⡀⠀
+⠀⢀⠔⠁⠀⠀⠀⠀⠀⠀⠈⠢
+⡠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+`;
+
+exports[`chart wrappers > renders LineChart braille and updates its data, extraction, and formatters in place > updated line 1`] = `
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊
+⠀⠀⠀⠀⠀⠀⣀⠔⠊⠀⠀⠀
+⠀⠀⠀⡠⠔⠉⠀⠀⠀⠀⠀⠀
+⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+`;

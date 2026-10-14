@@ -3,6 +3,7 @@ import {interceptConsoleLog} from '@teaui/core'
 import {Box, Logo, At, Stack, ZStack, Tabs, run, AutoLegend} from '@teaui/react'
 import {BreadcrumbTab} from './breadcrumb.js'
 import {CalendarTab} from './calendar.js'
+import {ChartsTab} from './charts.js'
 import {LegendTab} from './legend.js'
 import {YamlTab} from './yaml.js'
 import {MoreTab} from './more.js'
@@ -49,6 +50,9 @@ function Demo() {
             </Tabs.Section>
             <Tabs.Section title="Calendar">
               <CalendarTab />
+            </Tabs.Section>
+            <Tabs.Section title="Charts">
+              <ChartsTab />
             </Tabs.Section>
             <Tabs.Section title="Legend">
               <LegendTab />

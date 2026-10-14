@@ -2,17 +2,17 @@
 
 exports[`Plot > snapshot rendering > renders a bar chart 1`] = `
 "                  Revenue
-30 │                  █
-26 │                ▄ █
-21 │                █ █
-17 │                █ ██
-   │                █▄██
-13 │                ████
- 9 │               █████
- 4 │               █████
- 0 │               █████
+30 │                         █
+26 │           ▄             █
+21 │           █             █
+17 │           █             █      █
+   │           █      ▄      █      █
+13 │           █      █      █      █
+ 9 │    █      █      █      █      █
+ 4 │    █      █      █      █      █
+ 0 │    █      █      █      █      █
    └────────────────────────────────────
-    Jan      Feb      Mar     Apr      M"
+        Jan    Feb    Mar    Apr    May"
 `;
 
 exports[`Plot > snapshot rendering > renders a line chart 1`] = `

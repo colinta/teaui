@@ -7,6 +7,7 @@ export interface Terminal {
     y: number,
     style: Style,
     width?: 1 | 2,
+    inheritBackground?: boolean,
   ): void
   restyleChar(x: number, y: number, style: Style): void
   writeMeta(str: string): void

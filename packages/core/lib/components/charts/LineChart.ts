@@ -3,23 +3,29 @@ import type {Props as ViewProps} from '../../View.js'
 import {Style} from '../../Style.js'
 import {interpolate} from '../../geometry.js'
 import {Canvas} from '../Canvas.js'
-import {Chart, type ChartRange, type ChartLayout} from './Chart.js'
+import {
+  Chart,
+  type ChartLabel,
+  type ChartRange,
+  type ChartXLabel,
+  type ChartLayout,
+} from './Chart.js'
 
 export interface LineChartProps<T> extends ViewProps {
   /** Extract [x, y] numeric values from each data row */
   extract: (row: T) => [number, number]
-  /** Generate x-axis label from a data row */
-  xLabels?: (row: T) => string
-  /** Generate y-axis label from a numeric value */
-  yLabels?: (value: number) => string
+  /** Generate x-axis label from a data row, or skip it */
+  xLabels?: (row: T, index: number) => ChartLabel
+  /** @deprecated Configure yLabels on Plot instead. */
+  yLabels?: (value: number) => ChartLabel
   /** Style for the line */
   style?: Style
 }
 
 export class LineChart<T> extends Chart<T> {
   #extract: (row: T) => [number, number]
-  #xLabelsFn: ((row: T) => string) | undefined
-  #yLabelsFn: ((value: number) => string) | undefined
+  #xLabelsFn: ((row: T, index: number) => ChartLabel) | undefined
+  #yLabelsFn: ((value: number) => ChartLabel) | undefined
   #canvas: Canvas = new Canvas()
 
   constructor(data: T[], props: LineChartProps<T>) {
@@ -28,6 +34,13 @@ export class LineChart<T> extends Chart<T> {
     this.#extract = extract
     this.#xLabelsFn = xLabels
     this.#yLabelsFn = yLabels
+  }
+
+  update(props: Partial<LineChartProps<T>> & {data?: T[]}) {
+    this.#extract = props.extract ?? this.#extract
+    this.#xLabelsFn = props.xLabels
+    this.#yLabelsFn = props.yLabels
+    super.update(props)
   }
 
   getXRange(): ChartRange {
@@ -72,24 +85,29 @@ export class LineChart<T> extends Chart<T> {
     return {min, max}
   }
 
-  getXLabels(): string[] {
+  getXLabels(): ChartLabel[] {
     if (!this.#xLabelsFn) {
       return []
     }
     return this.data.map(this.#xLabelsFn)
   }
 
-  getYLabels(count: number): string[] {
+  getXLabelEntries(): ChartXLabel[] {
+    const xLabels = this.#xLabelsFn
+    if (!xLabels) {
+      return []
+    }
+    return this.data.map((row, index) => ({
+      value: this.#extract(row)[0],
+      label: xLabels(row, index),
+    }))
+  }
+
+  formatYLabel(value: number): ChartLabel {
     if (!this.#yLabelsFn) {
-      return defaultYLabels(this.getYRange(), count)
+      return super.formatYLabel(value)
     }
-    const range = this.getYRange()
-    const labels: string[] = []
-    for (let i = 0; i < count; i++) {
-      const value = interpolate(i, [0, count - 1], [range.max, range.min])
-      labels.push(this.#yLabelsFn(value))
-    }
-    return labels
+    return this.#yLabelsFn(value)
   }
 
   renderChart(viewport: Viewport, layout: ChartLayout): void {
@@ -137,28 +155,10 @@ export class LineChart<T> extends Chart<T> {
       }
     })
 
-    this.#canvas.render(viewport)
+    if (layout.transparent) {
+      this.#canvas.renderTransparent(viewport)
+    } else {
+      this.#canvas.render(viewport)
+    }
   }
-}
-
-function defaultYLabels(range: ChartRange, count: number): string[] {
-  const labels: string[] = []
-  for (let i = 0; i < count; i++) {
-    const value = interpolate(i, [0, count - 1], [range.max, range.min])
-    labels.push(formatNumber(value))
-  }
-  return labels
-}
-
-function formatNumber(n: number): string {
-  if (Number.isInteger(n)) {
-    return String(n)
-  }
-  if (Math.abs(n) >= 100) {
-    return String(Math.round(n))
-  }
-  if (Math.abs(n) >= 10) {
-    return n.toFixed(1)
-  }
-  return n.toFixed(2)
 }

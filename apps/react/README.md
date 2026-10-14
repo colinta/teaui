@@ -28,7 +28,7 @@ The demo renders a `Drawer.bottom` layout with a component showcase on top and a
 - **Text** — `H1`–`H6` headers, `Text` with alignment/wrap, `Style` (bold, italic, underline, strikeout), `Br` line breaks
 - **Inputs** — `Input` fields, `Checkbox` toggles, `Slider` (horizontal/vertical), `ToggleGroup`, `Button` with click handlers
 - **Containers** — `Scrollable` content, `Collapsible` / `CollapsibleText`, `Accordion` with multiple sections, `Tabs`
-- **Data display** — `Digits` large-font numbers, `Separator` lines, `Space` spacers
+- **Data display** — combined `BarChart` and `LineChart` plots, `Digits` large-font numbers, `Separator` lines, `Space` spacers
 - **Debug** — `ConsoleLog` component (toggled at runtime) showing intercepted `console.info` output
 - **React features** — `useState`, `useReducer` for interactive state, conditional rendering
 
@@ -36,9 +36,11 @@ The demo renders a `Drawer.bottom` layout with a component showcase on top and a
 
 ```
 apps/react/
-├── index.tsx       # Demo application (single-file)
+├── index.tsx       # Tabbed demo application
+├── charts.tsx      # Combined BarChart and LineChart example
+├── *.tsx           # Additional component tabs and standalone demos
 ├── package.json
 └── tsconfig.json
 ```
 
-The entire demo is a single `<Demo />` component in `index.tsx` that uses React hooks for all interactive state. It calls `run(<Demo />)` from `@teaui/react` to mount and enter fullscreen.
+`index.tsx` assembles the component tabs into the main demo. Each tab can also run independently; for example, `pnpm demo charts` launches the chart example directly.

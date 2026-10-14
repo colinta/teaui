@@ -2,46 +2,82 @@ import type {Viewport} from '../../Viewport.js'
 import type {Props as ViewProps} from '../../View.js'
 import {Style} from '../../Style.js'
 import {Point, interpolate} from '../../geometry.js'
-import {Chart, type ChartRange, type ChartLayout} from './Chart.js'
+import {
+  Chart,
+  type ChartLabel,
+  type ChartRange,
+  type ChartLayout,
+  type ChartXLabel,
+} from './Chart.js'
 
 // Block characters for sub-cell height resolution (8 levels per row)
 // Index 0 = empty, 1 = ▁ (1/8), 2 = ▂ (2/8), ... 8 = █ (full)
 const BLOCKS = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█']
 
+export type BarChartStyle<T> = Style | ((row: T, index: number) => Style)
+
 export interface BarChartProps<T> extends ViewProps {
-  /** Extract the y-value from each data row */
-  extract: (row: T) => number
-  /** Generate x-axis label for a data row */
-  xLabels?: (row: T, index: number) => string
-  /** Generate y-axis label from a numeric value */
-  yLabels?: (value: number) => string
+  /** Extract the [x, y] numeric values from each data row */
+  extract: (row: T, index: number) => [number, number]
+  /** Generate x-axis label for a data row, or skip it */
+  xLabels?: (row: T, index: number) => ChartLabel
+  /** @deprecated Configure yLabels on Plot instead. */
+  yLabels?: (value: number) => ChartLabel
   /** Terminal columns per bar (default 1) */
   barWidth?: number
-  /** Gap between bars in terminal columns (default 0) */
-  gap?: number
-  /** Style for the bars */
-  style?: Style
+  /** Style for every bar, or a function that styles each bar */
+  style?: BarChartStyle<T>
 }
 
 export class BarChart<T> extends Chart<T> {
-  #extract: (row: T) => number
-  #xLabelsFn: ((row: T, index: number) => string) | undefined
-  #yLabelsFn: ((value: number) => string) | undefined
+  #extract: (row: T, index: number) => [number, number]
+  #xLabelsFn: ((row: T, index: number) => ChartLabel) | undefined
+  #yLabelsFn: ((value: number) => ChartLabel) | undefined
+  #barStyle: BarChartStyle<T> | undefined
   #barWidth: number
-  #gap: number
 
   constructor(data: T[], props: BarChartProps<T>) {
-    const {extract, xLabels, yLabels, barWidth, gap, ...rest} = props
-    super(data, rest)
+    const {extract, xLabels, yLabels, style, barWidth, ...rest} = props
+    super(data, {
+      ...rest,
+      style: typeof style === 'function' ? undefined : style,
+    })
     this.#extract = extract
     this.#xLabelsFn = xLabels
     this.#yLabelsFn = yLabels
+    this.#barStyle = style
     this.#barWidth = barWidth ?? 1
-    this.#gap = gap ?? 0
+  }
+
+  update(props: Partial<BarChartProps<T>> & {data?: T[]}) {
+    const {style, ...rest} = props
+    this.#extract = props.extract ?? this.#extract
+    this.#xLabelsFn = props.xLabels
+    this.#yLabelsFn = props.yLabels
+    this.#barStyle = style
+    this.#barWidth = props.barWidth ?? 1
+    super.update({
+      ...rest,
+      style: typeof style === 'function' ? undefined : style,
+    })
   }
 
   getXRange(): ChartRange {
-    return {min: 0, max: Math.max(1, this.data.length - 1)}
+    if (this.data.length === 0) {
+      return {min: 0, max: 1}
+    }
+    const values = [
+      ...new Set(this.data.map((row, index) => this.#extract(row, index)[0])),
+    ].sort((a, b) => a - b)
+    if (values.length === 1) {
+      return {min: values[0] - 0.5, max: values[0] + 0.5}
+    }
+    const min = values[0]
+    const max = values[values.length - 1]
+    return {
+      min: min - (values[1] - min) / 2,
+      max: max + (max - values[values.length - 2]) / 2,
+    }
   }
 
   getYRange(): ChartRange {
@@ -50,8 +86,8 @@ export class BarChart<T> extends Chart<T> {
     }
     let min = 0 // bars always start from 0
     let max = -Infinity
-    for (const row of this.data) {
-      const y = this.#extract(row)
+    for (let index = 0; index < this.data.length; index++) {
+      const [, y] = this.#extract(this.data[index], index)
       if (y > max) {
         max = y
       }
@@ -62,24 +98,29 @@ export class BarChart<T> extends Chart<T> {
     return {min, max}
   }
 
-  getXLabels(): string[] {
+  getXLabels(): ChartLabel[] {
     if (!this.#xLabelsFn) {
       return []
     }
     return this.data.map(this.#xLabelsFn)
   }
 
-  getYLabels(count: number): string[] {
+  getXLabelEntries(): ChartXLabel[] {
+    const xLabels = this.#xLabelsFn
+    if (!xLabels) {
+      return []
+    }
+    return this.data.map((row, index) => ({
+      value: this.#extract(row, index)[0],
+      label: xLabels(row, index),
+    }))
+  }
+
+  formatYLabel(value: number): ChartLabel {
     if (!this.#yLabelsFn) {
-      return defaultYLabels(this.getYRange(), count)
+      return super.formatYLabel(value)
     }
-    const range = this.getYRange()
-    const labels: string[] = []
-    for (let i = 0; i < count; i++) {
-      const value = interpolate(i, [0, count - 1], [range.max, range.min])
-      labels.push(this.#yLabelsFn(value))
-    }
-    return labels
+    return this.#yLabelsFn(value)
   }
 
   renderChart(viewport: Viewport, layout: ChartLayout): void {
@@ -87,24 +128,24 @@ export class BarChart<T> extends Chart<T> {
       return
     }
 
-    const style = this.chartStyle ?? this.purpose.ui({isHover: true}).invert()
+    const chartStyle = this.#barStyle
+    const defaultStyle = this.purpose.ui({isHover: true}).invert()
     const emptyStyle = this.purpose.text()
 
-    const totalBarSlots = this.data.length
     const totalWidth = layout.width
     const totalHeight = layout.height
-
-    // Calculate bar positions
-    const barStep = this.#barWidth + this.#gap
-    const usedWidth = totalBarSlots * barStep - this.#gap
-    const startX = Math.max(0, Math.floor((totalWidth - usedWidth) / 2))
 
     // Each terminal row gives 8 sub-levels of height via block chars
     const maxSubRows = totalHeight * 8
 
     const pt = new Point(0, 0).mutableCopy()
-    for (let i = 0; i < totalBarSlots; i++) {
-      const value = this.#extract(this.data[i])
+    for (let i = 0; i < this.data.length; i++) {
+      const row = this.data[i]
+      const [xValue, value] = this.#extract(row, i)
+      const style =
+        typeof chartStyle === 'function'
+          ? chartStyle(row, i)
+          : (chartStyle ?? defaultStyle)
       const barSubHeight = Math.round(
         interpolate(
           value,
@@ -114,11 +155,22 @@ export class BarChart<T> extends Chart<T> {
         ),
       )
 
-      const barX = startX + i * barStep
+      const centerX = Math.round(
+        interpolate(
+          xValue,
+          [layout.xRange.min, layout.xRange.max],
+          [0, totalWidth - 1],
+          true,
+        ),
+      )
+      const barX = centerX - Math.floor(this.#barWidth / 2)
 
       // For each column of this bar
       for (let bx = 0; bx < this.#barWidth; bx++) {
         const x = barX + bx
+        if (x < 0) {
+          continue
+        }
         if (x >= totalWidth) {
           break
         }
@@ -141,7 +193,7 @@ export class BarChart<T> extends Chart<T> {
           } else if (rowFromBottom === fullRows && partialEighths > 0) {
             // Partial block
             viewport.write(BLOCKS[partialEighths], pt, style)
-          } else {
+          } else if (!layout.transparent) {
             // Empty
             viewport.write(' ', pt, emptyStyle)
           }
@@ -149,26 +201,4 @@ export class BarChart<T> extends Chart<T> {
       }
     }
   }
-}
-
-function defaultYLabels(range: ChartRange, count: number): string[] {
-  const labels: string[] = []
-  for (let i = 0; i < count; i++) {
-    const value = interpolate(i, [0, count - 1], [range.max, range.min])
-    labels.push(formatNumber(value))
-  }
-  return labels
-}
-
-function formatNumber(n: number): string {
-  if (Number.isInteger(n)) {
-    return String(n)
-  }
-  if (Math.abs(n) >= 100) {
-    return String(Math.round(n))
-  }
-  if (Math.abs(n) >= 10) {
-    return n.toFixed(1)
-  }
-  return n.toFixed(2)
 }

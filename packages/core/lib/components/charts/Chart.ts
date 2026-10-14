@@ -2,11 +2,18 @@ import type {Viewport} from '../../Viewport.js'
 import type {Props as ViewProps} from '../../View.js'
 import {View} from '../../View.js'
 import {Style} from '../../Style.js'
-import {Size} from '../../geometry.js'
+import {Size, interpolate} from '../../geometry.js'
 
 export interface ChartRange {
   min: number
   max: number
+}
+
+export type ChartLabel = string | null | undefined
+
+export interface ChartXLabel {
+  value: number
+  label: ChartLabel
 }
 
 export interface ChartLayout {
@@ -18,6 +25,8 @@ export interface ChartLayout {
   xRange: ChartRange
   /** Data Y range */
   yRange: ChartRange
+  /** Preserve existing cells where this chart has no content */
+  transparent?: boolean
 }
 
 /**
@@ -29,11 +38,23 @@ export abstract class Chart<T = unknown> extends View {
   #data: T[] = []
   #style: Style | undefined
 
+  static formatYLabel(value: number): string {
+    return formatNumber(value)
+  }
+
   constructor(data: T[], props: ViewProps & {style?: Style} = {}) {
     const {style, ...viewProps} = props
     super(viewProps)
     this.#data = data
     this.#style = style
+  }
+
+  update(props: ViewProps & {data?: T[]; style?: Style}) {
+    if (props.data !== undefined) {
+      this.#data = props.data
+    }
+    this.#style = props.style
+    super.update(props)
   }
 
   get data(): T[] {
@@ -51,8 +72,35 @@ export abstract class Chart<T = unknown> extends View {
 
   abstract getXRange(): ChartRange
   abstract getYRange(): ChartRange
-  abstract getXLabels(): string[]
-  abstract getYLabels(count: number): string[]
+  abstract getXLabels(): ChartLabel[]
+
+  getXLabelEntries(): ChartXLabel[] {
+    const labels = this.getXLabels()
+    const range = this.getXRange()
+    return labels.map((label, index) => ({
+      value: interpolate(
+        index,
+        [0, Math.max(1, labels.length - 1)],
+        [range.min, range.max],
+      ),
+      label,
+    }))
+  }
+
+  formatYLabel(value: number): ChartLabel {
+    return Chart.formatYLabel(value)
+  }
+
+  /** @deprecated Configure yLabels on Plot instead. */
+  getYLabels(count: number): ChartLabel[] {
+    const range = this.getYRange()
+    const labels: ChartLabel[] = []
+    for (let i = 0; i < count; i++) {
+      const value = interpolate(i, [0, count - 1], [range.max, range.min])
+      labels.push(this.formatYLabel(value))
+    }
+    return labels
+  }
 
   /**
    * Render the chart into the given viewport area. The viewport is already
@@ -78,4 +126,17 @@ export abstract class Chart<T = unknown> extends View {
       yRange,
     })
   }
+}
+
+function formatNumber(n: number): string {
+  if (Number.isInteger(n)) {
+    return String(n)
+  }
+  if (Math.abs(n) >= 100) {
+    return String(Math.round(n))
+  }
+  if (Math.abs(n) >= 10) {
+    return n.toFixed(1)
+  }
+  return n.toFixed(2)
 }

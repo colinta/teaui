@@ -10,6 +10,8 @@ import type {
   Alert as WrAlert,
   At as WrAt,
   Badge as WrBadge,
+  BarChart as WrBarChart,
+  BarChartProps as WrBarChartProps,
   Box as WrBox,
   Breadcrumb as WrBreadcrumb,
   Button as WrButton,
@@ -24,6 +26,8 @@ import type {
   Collapsible as WrCollapsible,
   CollapsibleText as WrCollapsibleText,
   // Log as WrLog?
+  LineChart as WrLineChart,
+  LineChartProps as WrLineChartProps,
   ConsoleLog as WrConsoleLog,
   Digits as WrDigits,
   Drawer as WrDrawer,
@@ -42,6 +46,7 @@ import type {
   Legend as WrLegend,
   AutoLegend as WrAutoLegend,
   Progress as WrProgress,
+  Plot as WrPlot,
   Scrollable as WrScrollable,
   Separator as WrSeparator,
   Skeleton as WrSkeleton,
@@ -79,6 +84,15 @@ type Simplify<T> = {[Key in keyof T]: T[Key]} & {}
 type WithRef<Props, T> = Props & {ref?: React.Ref<T>}
 
 export type BadgeProps = Simplify<TUIView<typeof WrBadge>>
+export type BarChartProps<T = unknown> = Simplify<
+  WrBarChartProps<T> & {data: T[]}
+>
+export type LineChartProps<T = unknown> = Simplify<
+  WrLineChartProps<T> & {data: T[]}
+>
+export type PlotProps = Simplify<
+  TUIView<typeof WrPlot> & {children?: React.ReactNode}
+>
 export type BreadcrumbProps = Simplify<TUIView<typeof WrBreadcrumb>>
 export type CalendarProps = Simplify<TUIView<typeof WrCalendar>>
 export type CanvasProps = Simplify<TUIView<typeof WrCanvas>>
@@ -176,6 +190,9 @@ declare module 'react' {
       // views
       'tui-align': WithRef<AlignProps, WrAlign>
       'tui-badge': WithRef<BadgeProps, WrBadge>
+      'tui-bar-chart': WithRef<BarChartProps<any>, WrBarChart<any>>
+      'tui-line-chart': WithRef<LineChartProps<any>, WrLineChart<any>>
+      'tui-plot': WithRef<PlotProps, WrPlot>
       'tui-align-row': WithRef<AlignRowProps, WrAlignRow>
       'tui-alignment': WithRef<AlignmentProps, WrAlignment>
       'tui-alignment-scope': WithRef<AlignmentScopeProps, WrAlignmentScope>
@@ -345,6 +362,35 @@ export const Badge = forwardRef<WrBadge, BadgeProps>(
     return <tui-badge ref={ref} {...reactProps} />
   },
 )
+type BarChartComponent = <T = unknown>(
+  props: BarChartProps<T> & React.RefAttributes<WrBarChart<T>>,
+) => JSX.Element
+export const BarChart = forwardRef<WrBarChart<any>, BarChartProps<any>>(
+  function BarChart(reactProps, ref): JSX.Element {
+    return <tui-bar-chart ref={ref} {...reactProps} />
+  },
+) as BarChartComponent
+
+type LineChartComponent = <T = unknown>(
+  props: LineChartProps<T> & React.RefAttributes<WrLineChart<T>>,
+) => JSX.Element
+export const LineChart = forwardRef<WrLineChart<any>, LineChartProps<any>>(
+  function LineChart(reactProps, ref): JSX.Element {
+    return <tui-line-chart ref={ref} {...reactProps} />
+  },
+) as LineChartComponent
+
+export const Plot = forwardRef<WrPlot, PlotProps>(function Plot(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-plot ref={ref} {...props}>
+      {children}
+    </tui-plot>
+  )
+})
+
 export const Breadcrumb = forwardRef<WrBreadcrumb, BreadcrumbProps>(
   function Breadcrumb(reactProps, ref): JSX.Element {
     return <tui-breadcrumb ref={ref} {...reactProps} />

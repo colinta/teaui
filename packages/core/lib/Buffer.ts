@@ -94,6 +94,7 @@ export class Buffer implements Terminal {
     y: number,
     style: Style,
     knownWidth?: 1 | 2,
+    inheritBackground: boolean = false,
   ) {
     x = ~~x
     y = ~~y
@@ -124,6 +125,8 @@ export class Buffer implements Terminal {
       const prev = line.get(x)
       if (prev?.char === BG_DRAW) {
         style = this.#mergeBackgroundStyle(style, prev.style)
+      } else if (inheritBackground && prev) {
+        style = this.#inheritBackground(style, prev.style)
       } else if (!prev) {
         const paintStyle = this.#paintStyleAt(x, y)
         if (paintStyle) {
@@ -168,6 +171,16 @@ export class Buffer implements Terminal {
       line = new Map([[x, {char, width, style}]])
       this.#canvas.set(y, line)
     }
+  }
+
+  #inheritBackground(style: Style, previousStyle: Style): Style {
+    if (
+      style.background !== undefined ||
+      previousStyle.background === undefined
+    ) {
+      return style
+    }
+    return style.merge({background: previousStyle.background})
   }
 
   /**

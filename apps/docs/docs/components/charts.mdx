@@ -6,9 +6,47 @@ title: Charts
 
 Data visualization components: `Plot`, `LineChart`, and `BarChart`. Charts render using Unicode block characters and braille dots for sub-cell resolution.
 
-:::note Core API Only
-Charts are currently available only through the core API. The chart constructors take a `data` array as a positional argument and use `Plot.add(chart)` for composition, which doesn't map directly to React's declarative model. React wrappers are planned for a future release.
-:::
+Charts are available in both Core and React. Core constructors take `data` as a positional argument and use `Plot.add(chart)` for composition. React charts take a `data` prop and are composed as children of `Plot`.
+
+## React Example
+
+```tsx
+import React from 'react'
+import {Style} from '@teaui/core'
+import {BarChart, LineChart, Plot} from '@teaui/react'
+
+const data = [
+  {x: 0, month: 'Jan', sales: 120},
+  {x: 1, month: 'Feb', sales: 200},
+  {x: 2, month: 'Mar', sales: 150},
+]
+
+function Sales() {
+  return (
+    <Plot
+      title="Monthly Sales"
+      height={12}
+      yLabels={value => `$${Math.round(value)}`}
+    >
+      <BarChart
+        data={data}
+        extract={row => [row.x, row.sales]}
+        xLabels={(row, index) => (index % 2 === 0 ? row.month : null)}
+        style={(_row, index) => {
+          const color = index % 2 === 0 ? 'cyan' : 'magenta'
+          return new Style({foreground: color, background: color})
+        }}
+        barWidth={3}
+      />
+      <LineChart data={data} extract={row => [row.x, row.sales]} />
+    </Plot>
+  )
+}
+```
+
+Both chart wrappers infer the row type from `data` and support refs to the Core chart instance. Changes to `data`, `extract`, labels, and chart options update the existing chart. Charts can also render independently without a `Plot`.
+
+`Plot` accepts chart children only (including charts returned by components or fragments), not text or arbitrary views. Their order determines drawing order and which chart supplies the X-axis labels. Y-axis ticks always use the combined range of every chart.
 
 ## Plot
 
@@ -16,12 +54,13 @@ The container for chart(s). Draws axes, labels, and a title. Add one or more cha
 
 ### Props
 
-| Prop          | Type      | Default | Description                     |
-| ------------- | --------- | ------- | ------------------------------- |
-| `title`       | `string`  | —       | Title displayed above the chart |
-| `xAxisLabels` | `boolean` | `true`  | Show x-axis tick labels         |
-| `yAxisLabels` | `boolean` | `true`  | Show y-axis tick labels         |
-| `showAxes`    | `boolean` | `true`  | Show border/axes lines          |
+| Prop          | Type                                     | Default | Description                                           |
+| ------------- | ---------------------------------------- | ------- | ----------------------------------------------------- |
+| `title`       | `string`                                 | —       | Title displayed above the chart                       |
+| `xAxisLabels` | `boolean`                                | `true`  | Show x-axis tick labels                               |
+| `yAxisLabels` | `boolean`                                | `true`  | Show y-axis tick labels                               |
+| `yLabels`     | `(value) => string \| null \| undefined` | —       | Format combined-range Y ticks; return nullish to skip |
+| `showAxes`    | `boolean`                                | `true`  | Show border/axes lines                                |
 
 ## LineChart
 
@@ -32,8 +71,7 @@ Renders data points connected by lines using braille-dot resolution (Canvas).
 ```ts
 new LineChart(data, {
   extract: (row) => [x, y],  // Extract [x, y] from each row
-  xLabels?: (row) => string, // X-axis label per row
-  yLabels?: (value) => string, // Y-axis label formatter
+  xLabels?: (row, index) => string | null | undefined, // X-axis label per row
   style?: Style,              // Line style
 })
 ```
@@ -46,46 +84,54 @@ Renders vertical bars using Unicode block characters (▁▂▃▄▅▆▇█) 
 
 ```ts
 new BarChart(data, {
-  extract: (row) => number,            // Extract y-value from each row
-  xLabels?: (row, index) => string,    // X-axis label per row
-  yLabels?: (value) => string,         // Y-axis label formatter
-  barWidth?: number,                    // Columns per bar (default 1)
-  gap?: number,                         // Gap between bars (default 0)
-  style?: Style,                        // Bar style
+  extract: (row) => [x, y],                           // Extract bar position and height
+  xLabels?: (row, index) => string | null | undefined, // X-axis label per row
+  barWidth?: number,                                   // Columns per bar (default 1)
+  style?: Style | ((row, index) => Style),             // Shared or per-bar style
 })
 ```
+
+`BarChart.extract` returns `[x, y]`, matching `LineChart`, so bars, lines, and X-axis labels share the same numeric X scale. Returning `null` or `undefined` from `xLabels` or `Plot.yLabels` skips that label while preserving its position. A `BarChart` style function receives the original row and zero-based index for each bar.
+
+`Plot` calculates Y-axis tick values from the combined range of all its charts and then passes each value to `yLabels`. This keeps the axis correct regardless of child order or differences between chart ranges.
 
 ## Usage Example
 
 ```ts
-import {Plot, LineChart, BarChart} from '@teaui/core'
+import {Plot, LineChart, BarChart, Style} from '@teaui/core'
 
 const data = [
-  {month: 'Jan', sales: 120},
-  {month: 'Feb', sales: 200},
-  {month: 'Mar', sales: 150},
-  {month: 'Apr', sales: 300},
-  {month: 'May', sales: 250},
+  {x: 0, month: 'Jan', sales: 120},
+  {x: 1, month: 'Feb', sales: 200},
+  {x: 2, month: 'Mar', sales: 150},
+  {x: 3, month: 'Apr', sales: 300},
+  {x: 4, month: 'May', sales: 250},
 ]
 
 // Line chart
-const plot = new Plot({title: 'Monthly Sales'})
+const plot = new Plot({
+  title: 'Monthly Sales',
+  yLabels: value => `$${Math.round(value)}`,
+})
 plot.add(
   new LineChart(data, {
-    extract: (row, i) => [i, row.sales],
+    extract: row => [row.x, row.sales],
     xLabels: row => row.month,
-    yLabels: v => `$${v}`,
   }),
 )
 
 // Bar chart
-const barPlot = new Plot({title: 'Sales Bars'})
+const barPlot = new Plot({
+  title: 'Sales Bars',
+  yLabels: value => `$${Math.round(value)}`,
+})
 barPlot.add(
   new BarChart(data, {
-    extract: row => row.sales,
-    xLabels: row => row.month,
+    extract: row => [row.x, row.sales],
+    xLabels: (row, index) => (index % 2 === 0 ? row.month : null),
+    style: (_row, index) =>
+      new Style({foreground: index % 2 === 0 ? 'cyan' : 'magenta'}),
     barWidth: 3,
-    gap: 1,
   }),
 )
 ```

@@ -1,51 +1,63 @@
 import type {Viewport} from '../Viewport.js'
 import type {Props as ViewProps} from '../View.js'
 import {View} from '../View.js'
-import {Point, Rect, Size} from '../geometry.js'
+import {Point, Rect, Size, interpolate} from '../geometry.js'
 import {Style} from '../Style.js'
-import {Chart, type ChartRange} from './charts/Chart.js'
+import {Chart, type ChartLabel, type ChartRange} from './charts/Chart.js'
 
-interface Props extends ViewProps {
+export interface PlotProps extends ViewProps {
   /** Title displayed above the chart */
   title?: string
   /** Show x-axis tick labels (default true) */
   xAxisLabels?: boolean
   /** Show y-axis tick labels (default true) */
   yAxisLabels?: boolean
+  /** Format y-axis labels calculated from the combined chart range */
+  yLabels?: (value: number) => ChartLabel
   /** Show border/axes lines (default true) */
   showAxes?: boolean
 }
 
 export class Plot extends View {
-  #charts: Chart[] = []
+  #charts: Chart<any>[] = []
   #title: string | undefined
   #xAxisLabels: boolean = true
   #yAxisLabels: boolean = true
+  #yLabelsFn: ((value: number) => ChartLabel) | undefined
   #showAxes: boolean = true
 
-  constructor(props: Props = {}) {
+  constructor(props: PlotProps = {}) {
     super(props)
     this.#update(props)
   }
 
-  update(props: Props) {
+  update(props: PlotProps) {
     this.#update(props)
     super.update(props)
   }
 
-  #update({title, xAxisLabels, yAxisLabels, showAxes}: Props) {
+  #update({title, xAxisLabels, yAxisLabels, yLabels, showAxes}: PlotProps) {
     this.#title = title
     this.#xAxisLabels = xAxisLabels ?? true
     this.#yAxisLabels = yAxisLabels ?? true
+    this.#yLabelsFn = yLabels
     this.#showAxes = showAxes ?? true
   }
 
-  add(chart: Chart): void {
-    this.#charts.push(chart)
+  get charts(): readonly Chart<any>[] {
+    return this.#charts
+  }
+
+  add(chart: Chart<any>, at?: number): void {
+    const index = this.#charts.indexOf(chart)
+    if (index !== -1) {
+      this.#charts.splice(index, 1)
+    }
+    this.#charts.splice(at ?? this.#charts.length, 0, chart)
     this.invalidateRender()
   }
 
-  remove(chart: Chart): void {
+  remove(chart: Chart<any>): void {
     const idx = this.#charts.indexOf(chart)
     if (idx !== -1) {
       this.#charts.splice(idx, 1)
@@ -78,7 +90,7 @@ export class Plot extends View {
 
     // Y-axis labels on the left
     let yLabelWidth = 0
-    let yLabels: string[] = []
+    let yLabels: ChartLabel[] = []
     const chartHeight =
       totalH -
       titleHeight -
@@ -86,10 +98,15 @@ export class Plot extends View {
       (this.#showAxes ? 1 : 0)
 
     if (this.#yAxisLabels && chartHeight > 0) {
-      // Get labels from first chart
+      // Generate labels from the combined Y range.
       const labelCount = Math.max(2, Math.min(chartHeight, 8))
-      yLabels = this.#charts[0].getYLabels(labelCount)
-      yLabelWidth = Math.max(0, ...yLabels.map(l => l.length)) + 1 // +1 for space
+      yLabels = this.#getYLabels(yRange, labelCount)
+      const labelWidths = yLabels.flatMap(label =>
+        label == null ? [] : [label.length],
+      )
+      if (labelWidths.length > 0) {
+        yLabelWidth = Math.max(...labelWidths) + 1 // +1 for space
+      }
     }
 
     // Axis line takes 1 column if shown
@@ -118,12 +135,19 @@ export class Plot extends View {
     // Draw y-axis labels
     if (this.#yAxisLabels && yLabels.length > 0 && chartH > 0) {
       for (let i = 0; i < yLabels.length; i++) {
+        const label = yLabels[i]
+        if (label == null) {
+          continue
+        }
         const labelY =
           chartY +
           Math.round((i * (chartH - 1)) / Math.max(1, yLabels.length - 1))
         if (labelY < chartY + chartH) {
-          const label = yLabels[i].padStart(yLabelWidth - 1)
-          viewport.write(label, new Point(0, labelY), textStyle)
+          viewport.write(
+            label.padStart(yLabelWidth - 1),
+            new Point(0, labelY),
+            textStyle,
+          )
         }
       }
     }
@@ -155,20 +179,30 @@ export class Plot extends View {
 
     // Draw x-axis labels
     if (this.#xAxisLabels && this.#charts.length > 0) {
-      const xLabels = this.#charts[0].getXLabels()
+      const xLabels = this.#charts[0].getXLabelEntries()
       if (xLabels.length > 0) {
         const xAxisY = chartY + chartH + (this.#showAxes ? 1 : 0)
         if (xAxisY < totalH) {
-          // Distribute labels evenly
+          // Sample labels, then position them on the shared numeric X scale.
           const labelCount = Math.min(xLabels.length, Math.floor(chartW / 4))
           for (let i = 0; i < labelCount; i++) {
             const dataIdx = Math.round(
               (i * (xLabels.length - 1)) / Math.max(1, labelCount - 1),
             )
-            const label = xLabels[dataIdx]
+            const {value, label} = xLabels[dataIdx]
+            if (label == null) {
+              continue
+            }
             const labelX =
               chartX +
-              Math.round((i * (chartW - 1)) / Math.max(1, labelCount - 1))
+              Math.round(
+                interpolate(
+                  value,
+                  [xRange.min, xRange.max],
+                  [0, chartW - 1],
+                  true,
+                ),
+              )
             const truncated = label.slice(
               0,
               Math.min(label.length, chartW - (labelX - chartX)),
@@ -191,9 +225,26 @@ export class Plot extends View {
           height: chartH,
           xRange,
           yRange,
+          transparent: this.#charts.length > 1,
         })
       })
     }
+  }
+
+  #getYLabels(range: ChartRange, count: number): ChartLabel[] {
+    const labels: ChartLabel[] = []
+    for (let i = 0; i < count; i++) {
+      const value = interpolate(i, [0, count - 1], [range.max, range.min])
+      if (this.#yLabelsFn) {
+        labels.push(this.#yLabelsFn(value))
+      } else if (this.#charts.length === 1) {
+        // Preserve the deprecated chart formatter when there is no ambiguity.
+        labels.push(this.#charts[0].formatYLabel(value))
+      } else {
+        labels.push(Chart.formatYLabel(value))
+      }
+    }
+    return labels
   }
 
   #combinedXRange(): ChartRange {

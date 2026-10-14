@@ -5,6 +5,8 @@ import {Size} from '../geometry.js'
 
 // Braille bit mapping for (px % 2, py % 4)
 // Each terminal cell is a 2×4 pixel grid
+const INHERIT_BACKGROUND = {inheritBackground: true}
+
 const BRAILLE_BITS = [
   [0x01, 0x02, 0x04, 0x40], // dx=0: dots 1,2,3,7
   [0x08, 0x10, 0x20, 0x80], // dx=1: dots 4,5,6,8
@@ -24,6 +26,7 @@ export class Canvas extends View {
   #cellRows: number = 0
   #pixels: Uint8Array = new Uint8Array(0)
   #draw: ((canvas: Canvas) => void) | undefined
+  #isTransparent: boolean = false
 
   constructor(props: Props = {}) {
     super(props)
@@ -58,6 +61,24 @@ export class Canvas extends View {
    * specific size without needing a full render cycle.
    */
   render(viewport: Viewport) {
+    this.#render(viewport, this.#isTransparent)
+  }
+
+  /**
+   * Render set pixels without replacing empty underlying cells. Drawn pixels
+   * inherit the background color of the cell they replace.
+   */
+  renderTransparent(viewport: Viewport) {
+    const wasTransparent = this.#isTransparent
+    this.#isTransparent = true
+    try {
+      this.render(viewport)
+    } finally {
+      this.#isTransparent = wasTransparent
+    }
+  }
+
+  #render(viewport: Viewport, transparent: boolean) {
     if (viewport.isEmpty) {
       return
     }
@@ -71,13 +92,23 @@ export class Canvas extends View {
       this.#draw(this)
     }
 
-    const style = this.purpose.text()
+    const style = transparent
+      ? this.purpose.text().merge({background: null})
+      : this.purpose.text()
 
     viewport.visibleRect.forEachPoint(pt => {
       const cellIndex = pt.y * this.#cellCols + pt.x
       const bits = this.#pixels[cellIndex] ?? 0
+      if (transparent && bits === 0) {
+        return
+      }
       const char = String.fromCharCode(0x2800 | bits)
-      viewport.write(char, pt, style)
+      viewport.write(
+        char,
+        pt,
+        style,
+        transparent ? INHERIT_BACKGROUND : undefined,
+      )
     })
   }
 

@@ -1,6 +1,10 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
+import {View} from '../../lib/View.js'
+import type {Viewport} from '../../lib/Viewport.js'
 import {Canvas} from '../../lib/components/Canvas.js'
+import {Point, Size} from '../../lib/geometry.js'
+import {Style} from '../../lib/Style.js'
 
 describe('Canvas', () => {
   describe('braille encoding', () => {
@@ -11,6 +15,30 @@ describe('Canvas', () => {
       expect(t.terminal.charAt(0, 0)).toBe(String.fromCharCode(0x2800))
       expect(t.terminal.charAt(1, 0)).toBe(String.fromCharCode(0x2800))
       expect(t.terminal.charAt(2, 1)).toBe(String.fromCharCode(0x2800))
+    })
+
+    it('transparent rendering preserves underlying cells', () => {
+      const canvas = new Canvas()
+      class LayeredCanvas extends View {
+        naturalSize(available: Size): Size {
+          return available
+        }
+
+        render(viewport: Viewport) {
+          viewport.write(
+            '██',
+            Point.zero,
+            new Style({foreground: 'cyan', background: 'cyan'}),
+          )
+          canvas.withContext(2, 1, context => context.set(2, 0))
+          canvas.renderTransparent(viewport)
+        }
+      }
+
+      const t = testRender(new LayeredCanvas(), {width: 2, height: 1})
+      expect(t.terminal.charAt(0, 0)).toBe('█')
+      expect(t.terminal.charAt(1, 0)).toBe('⠁')
+      expect(t.terminal.styleAt(1, 0).background).toBe('cyan')
     })
 
     it('pixel (0,0) → bit 0 → U+2801 ⠁', () => {

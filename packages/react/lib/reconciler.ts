@@ -11,6 +11,8 @@ import {
   At,
   Alert,
   Badge,
+  BarChart,
+  Chart,
   Box,
   Breadcrumb,
   Button,
@@ -43,8 +45,10 @@ import {
   H6,
   Input,
   Legend,
+  LineChart,
   AutoLegend,
   Progress,
+  Plot,
   Screen,
   type ScreenOptions,
   Scrollable,
@@ -76,6 +80,7 @@ import {
 } from './components/TextReact.js'
 
 import {isSame} from './isSame.js'
+import type {BarChartProps, LineChartProps} from './components.js'
 
 type Props = {}
 interface HostContext {
@@ -105,6 +110,16 @@ function createInstance(type: string, props: Props): any {
 
   switch (type) {
     // views
+    case 'tui-bar-chart': {
+      const {data, ...options} = props as BarChartProps
+      return new BarChart(data, options)
+    }
+    case 'tui-line-chart': {
+      const {data, ...options} = props as LineChartProps
+      return new LineChart(data, options)
+    }
+    case 'tui-plot':
+      return new Plot(props)
     case 'at':
     case 'tui-at':
       return new At(props as any)
@@ -329,13 +344,16 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     return true
   }
 
-  type ChildHost = Container | Table<any>
+  type ChildHost = Container | Table<any> | Plot
 
-  // Most views that accept React children are Containers. Table owns custom row
-  // views as implementation details, but the React wrapper reconciles those
-  // rows through its explicit row-management API.
+  // Most views that accept React children are Containers. Table manages rows,
+  // while Plot is a View with its own chart-only add/remove API.
   function acceptsChildren(parent: View | undefined): parent is ChildHost {
-    return parent instanceof Container || parent instanceof Table
+    return (
+      parent instanceof Container ||
+      parent instanceof Table ||
+      parent instanceof Plot
+    )
   }
 
   function assertAcceptsChildren(parent: View): asserts parent is ChildHost {
@@ -344,16 +362,32 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     }
   }
 
+  function managedChildren(parent: ChildHost): readonly View[] {
+    return parent instanceof Plot ? parent.charts : parent.children
+  }
+
   function addManagedChild(parent: ChildHost, child: View, at?: number) {
-    if (parent instanceof Table) {
+    if (parent instanceof Plot) {
+      assertChart(child)
+      parent.add(child, at)
+    } else if (parent instanceof Table) {
       parent.addRow(child, at)
     } else {
       parent.add(child, at)
     }
   }
 
+  function assertChart(child: View): asserts child is Chart {
+    if (!(child instanceof Chart)) {
+      throw new Error('Plot only accepts Chart children')
+    }
+  }
+
   function removeManagedChild(parent: ChildHost, child: View) {
-    if (parent instanceof Table) {
+    if (parent instanceof Plot) {
+      assertChart(child)
+      parent.remove(child)
+    } else if (parent instanceof Table) {
       parent.removeRow(child)
     } else {
       parent.removeChild(child)
@@ -377,6 +411,9 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
 
   function appendChild(parentInstance: ChildHost, child: View, before?: View) {
     assertAcceptsChildren(parentInstance)
+    if (parentInstance instanceof Plot) {
+      assertChart(child)
+    }
     if (
       parentInstance instanceof TextStyle &&
       (child instanceof TextLiteral || child instanceof TextStyle)
@@ -385,9 +422,11 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     } else if (child instanceof TextLiteral || child instanceof TextStyle) {
       if (before) {
         if (before.parent === parentInstance) {
-          const beforeIndex = parentInstance.children.indexOf(before)
+          const beforeIndex = managedChildren(parentInstance).indexOf(before)
           if (~beforeIndex) {
-            const previousChild = parentInstance.children.at(beforeIndex - 1)
+            const previousChild = managedChildren(parentInstance).at(
+              beforeIndex - 1,
+            )
             if (previousChild instanceof TextContainer) {
               previousChild.add(child)
             } else {
@@ -412,7 +451,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
         }
       }
 
-      const lastChild = parentInstance.children.at(-1)
+      const lastChild = managedChildren(parentInstance).at(-1)
       let textContainer: TextContainer
       if (lastChild instanceof TextContainer) {
         textContainer = lastChild
@@ -426,14 +465,14 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     }
 
     let index: number | undefined = before
-      ? parentInstance.children.indexOf(before)
+      ? managedChildren(parentInstance).indexOf(before)
       : -1
     if (index === -1) {
       index = undefined
-    } else if (child.parent === parentInstance) {
-      // Container.add removes an existing child before inserting it. The
-      // before-child index was measured before that removal.
-      const oldIndex = parentInstance.children.indexOf(child)
+    } else {
+      // Adding a child removes its old slot before inserting it. Plot does not
+      // set child.parent, so use its chart list to detect keyed moves too.
+      const oldIndex = managedChildren(parentInstance).indexOf(child)
       if (oldIndex !== -1 && oldIndex < index) {
         index -= 1
       }

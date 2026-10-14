@@ -59,8 +59,8 @@ Most components use `new Component(props)`. Common view props: `purpose`, `headi
 - `CollapsibleText` — expandable multi-line text. Props: `text`, `style?`.
 - `Log` — log viewer container. Props: common view props only.
 - `ConsoleLog` — live console/log output view. Props: common view props only.
-- `Plot` — chart host; add/remove `Chart` instances. Props: `title?`, `xAxisLabels?`, `yAxisLabels?`, `showAxes?`.
+- `Plot` — chart host; add/remove `Chart` instances. Props: `title?`, `xAxisLabels?`, `yAxisLabels?`, `yLabels?`, `showAxes?`.
 - `Chart<T>` — abstract plot series base. Constructor: `new Subclass(data, {style?, ...viewProps})`.
-- `LineChart<T>` — line series for `Plot`. Constructor: `new LineChart(data, {extract, xLabels?, yLabels?, style?, ...viewProps})`.
-- `BarChart<T>` — bar series for `Plot`. Constructor: `new BarChart(data, {extract, xLabels?, yLabels?, barWidth?, gap?, style?, ...viewProps})`.
+- `LineChart<T>` — line series for `Plot`. Constructor: `new LineChart(data, {extract, xLabels?, style?, ...viewProps})`.
+- `BarChart<T>` — bar series for `Plot`. Constructor: `new BarChart(data, {extract, xLabels?, barWidth?, style?, ...viewProps})`; `extract(row)` returns `[x, y]`.
 - `TrackMouse` — utility wrapper that shows mouse coordinates around content. Props: `content`.

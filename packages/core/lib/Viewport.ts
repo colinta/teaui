@@ -16,6 +16,10 @@ import type {
 import {define} from './util.js'
 import type {AlignmentContext} from './alignment.js'
 
+interface WriteOptions {
+  inheritBackground?: boolean
+}
+
 /**
  * Defines a region (contentSize) in which to draw, and a subset (visibleRect) that
  * is on-screen. Anything not in the visibleRect is considered invisible (and any
@@ -444,7 +448,12 @@ export class Viewport {
    * Does not support newlines (no default wrapping behavior),
    * always prints left-to-right.
    */
-  write(input: string, to: Point, style?: Style) {
+  write(
+    input: string,
+    to: Point,
+    style?: Style,
+    {inheritBackground = false}: WriteOptions = {},
+  ) {
     const minX = this.#visibleRect.minX(),
       maxX = this.#visibleRect.maxX(),
       minY = this.#visibleRect.minY(),
@@ -465,6 +474,7 @@ export class Viewport {
           this.#offset.y + to.y,
           style,
           1,
+          inheritBackground,
         )
         if (
           // if the currentRender wasn't added as a child to the screen's tree,
@@ -509,6 +519,8 @@ export class Viewport {
           this.#offset.x + x,
           this.#offset.y + y,
           style,
+          undefined,
+          inheritBackground,
         )
 
         if (
