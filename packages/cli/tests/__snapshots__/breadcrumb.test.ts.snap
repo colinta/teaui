@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`breadcrumb CLI example > core displays the exact executable sample and captures a fixed viewport 1`] = `" 🏠 Home  Products  Electronics      "`;
+
+exports[`breadcrumb CLI example > react displays the exact executable sample and captures a fixed viewport 1`] = `" 🏠 Home  Products  Electronics      "`;

@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`alignment CLI component example > core displays and captures the exact runnable sample at 40 by 6 1`] = `
+"This text stops one column       ┌─────┐
+before the widest card.          │Ready│
+                                 └─────┘
+                             ┌─────────┐
+                             │Next step│
+                             └─────────┘"
+`;
+
+exports[`alignment CLI component example > react displays and captures the exact runnable sample at 40 by 6 1`] = `
+"This text stops one column       ┌─────┐
+before the widest card.          │Ready│
+                                 └─────┘
+                             ┌─────────┐
+                             │Next step│
+                             └─────────┘"
+`;

@@ -1,0 +1,33 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bar-chart CLI component example > core displays and captures its exact executable sample > bars 1`] = `
+"            ██  
+        ▆▆  ██  
+     ▄▄ ██  ██  
+ ▂▂  ██ ██  ██  
+ ██  ██ ██  ██  "
+`;
+
+exports[`bar-chart CLI component example > core displays and captures its exact executable sample > exact styled capture 1`] = `
+" [49;39m    [49;39m   [49;39m    [35m██[39m  
+ [49;39m    [49;39m   [36m▆▆[39m  [35m██[39m  
+ [49;39m    [35m▄▄[39m [36m██[39m  [35m██[39m  
+ [36m▂▂[39m  [35m██[39m [36m██[39m  [35m██[39m  
+ [36m██[39m  [35m██[39m [36m██[39m  [35m██[39m  [0m"
+`;
+
+exports[`bar-chart CLI component example > react displays and captures its exact executable sample > bars 1`] = `
+"            ██  
+        ▆▆  ██  
+     ▄▄ ██  ██  
+ ▂▂  ██ ██  ██  
+ ██  ██ ██  ██  "
+`;
+
+exports[`bar-chart CLI component example > react displays and captures its exact executable sample > exact styled capture 1`] = `
+" [49;39m           [38;2;97;97;97;49m██  
+ [49;39m       [38;2;97;97;97;49m▆▆  ██  
+ [49;39m    [38;2;97;97;97;49m▄▄ ██  ██  
+ ▂▂  ██ ██  ██  
+ ██  ██ ██  ██  [0m"
+`;

@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toggle-group CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"Single selection (click to toggle)  
+╭──────┲━━━━━━━━┱───────╮           
+│ Left ┃ Center ┃ Right │           
+╰──────┺━━━━━━━━┹───────╯           
+Single: Center                      
+Multiple selection                  
+┏━━━━━━┱────────┲━━━━━━━━━━━┓       
+┃ Bold ┃ Italic ┃ Underline ┃       
+┗━━━━━━┹────────┺━━━━━━━━━━━┛       
+Multiple: Bold, Underline           
+Click again to clear an option      "
+`;
+
+exports[`toggle-group CLI component example > core executable sample replaces, adds, and clears selections through public mouse input 1`] = `
+"Single selection (click to toggle)
+╭──────┬────────┬───────╮
+│ Left │ Center │ Right │
+╰──────┴────────┴───────╯
+Single: none
+Multiple selection
+┏━━━━━━┏━━━━━━━━┓━━━━━━━━━━━┓
+┃ Bold ┃ Italic ┃ Underline ┃
+┗━━━━━━┗━━━━━━━━┛━━━━━━━━━━━┛
+Multiple: Bold, Underline, Italic
+Click again to clear an option"
+`;
+
+exports[`toggle-group CLI component example > core executable sample replaces, adds, and clears selections through public mouse input 2`] = `
+"Single selection (click to toggle)
+╭──────┬────────┬───────╮
+│ Left │ Center │ Right │
+╰──────┴────────┴───────╯
+Single: none
+Multiple selection
+╭──────┌────────┐───────────╮
+│ Bold │ Italic │ Underline │
+╰──────└────────┘───────────╯
+Multiple: none
+Click again to clear an option"
+`;
+
+exports[`toggle-group CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"Single selection (click to toggle)  
+╭──────┲━━━━━━━━┱───────╮           
+│ Left ┃ Center ┃ Right │           
+╰──────┺━━━━━━━━┹───────╯           
+Single: Center                      
+Multiple selection                  
+┏━━━━━━┱────────┲━━━━━━━━━━━┓       
+┃ Bold ┃ Italic ┃ Underline ┃       
+┗━━━━━━┹────────┺━━━━━━━━━━━┛       
+Multiple: Bold, Underline           
+Click again to clear an option      "
+`;
+
+exports[`toggle-group CLI component example > react executable sample replaces, adds, and clears selections through public mouse input 1`] = `
+"Single selection (click to toggle)
+╭──────┬────────┬───────╮
+│ Left │ Center │ Right │
+╰──────┴────────┴───────╯
+Single: none
+Multiple selection
+┏━━━━━━┏━━━━━━━━┓━━━━━━━━━━━┓
+┃ Bold ┃ Italic ┃ Underline ┃
+┗━━━━━━┗━━━━━━━━┛━━━━━━━━━━━┛
+Multiple: Bold, Underline, Italic
+Click again to clear an option"
+`;
+
+exports[`toggle-group CLI component example > react executable sample replaces, adds, and clears selections through public mouse input 2`] = `
+"Single selection (click to toggle)
+╭──────┬────────┬───────╮
+│ Left │ Center │ Right │
+╰──────┴────────┴───────╯
+Single: none
+Multiple selection
+╭──────┌────────┐───────────╮
+│ Bold │ Italic │ Underline │
+╰──────└────────┘───────────╯
+Multiple: none
+Click again to clear an option"
+`;

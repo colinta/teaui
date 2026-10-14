@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`radio CLI component example > core displays and captures the exact deterministic executable sample 1`] = `
+"Choose a density            
+◯ Compact ⌥c                
+⦿ Comfortable ⌥o            
+◯ Spacious ⌥s               
+Selected: comfortable       "
+`;
+
+exports[`radio CLI component example > react displays and captures the exact deterministic executable sample 1`] = `
+"Choose a density            
+◯ Compact ⌥c                
+⦿ Comfortable ⌥o            
+◯ Spacious ⌥s               
+Selected: comfortable       "
+`;

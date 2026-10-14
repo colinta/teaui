@@ -345,13 +345,37 @@ importers:
 
   packages/cli:
     dependencies:
+      '@teaui/code':
+        specifier: workspace:*
+        version: link:../code
+      '@teaui/core':
+        specifier: workspace:*
+        version: link:../core
+      '@teaui/image':
+        specifier: workspace:*
+        version: link:../image
+      '@teaui/react':
+        specifier: workspace:*
+        version: link:../react
+      '@teaui/subprocess':
+        specifier: workspace:*
+        version: link:../subprocess
       commander:
         specifier: ^14.0.0
         version: 14.0.3
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-reconciler:
+        specifier: ^0.29.0
+        version: 0.29.2(react@18.3.1)
     devDependencies:
       '@teaui/shared':
         specifier: workspace:*
         version: link:../../shared
+      '@types/react':
+        specifier: ^18.2.39
+        version: 18.3.12
 
   packages/code:
     dependencies:

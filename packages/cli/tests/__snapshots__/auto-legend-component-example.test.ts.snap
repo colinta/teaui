@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`auto-legend component example > core displays and captures the exact runnable sample 1`] = `
+"Search docs                                     
+                                                
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start      
+⌥. End   ⌃z Undo   ⌃⇧z Redo   ⌃c Quit           "
+`;
+
+exports[`auto-legend component example > react displays and captures the exact runnable sample 1`] = `
+"Search docs                                     
+                                                
+⌃a/↖ Line Start   ⌃e/↘ Line End   ⌥, Start      
+⌥. End   ⌃z Undo   ⌃⇧z Redo   ⌃c Quit           "
+`;

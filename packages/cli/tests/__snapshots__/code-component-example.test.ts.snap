@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`code CLI component example > core displays and captures the exact runnable public sample at 40 by 7 1`] = `
+"1│const message = 'Syntax-highlighted co
+  de can wrap too.'                     
+2│function greet(name) {                
+3│  return \`Hello, \${name}!\`            
+4│}                                     
+5│greet('TeaUI')                        
+                                        "
+`;
+
+exports[`code CLI component example > react displays and captures the exact runnable public sample at 40 by 7 1`] = `
+"1│const message = 'Syntax-highlighted co
+  de can wrap too.'                     
+2│function greet(name) {                
+3│  return \`Hello, \${name}!\`            
+4│}                                     
+5│greet('TeaUI')                        
+                                        "
+`;

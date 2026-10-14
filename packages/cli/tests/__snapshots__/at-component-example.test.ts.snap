@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`at CLI component example > renders identical 28-column by 5-row anchored output 1`] = `
+"Start                  Ready
+                            
+            TeaUI           
+                            
+Help                    Exit"
+`;

@@ -1,0 +1,237 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`image CLI component example > core displays and captures the exact executable sample after real image decoding > centered image text 1`] = `
+"                
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+                "
+`;
+
+exports[`image CLI component example > core displays and captures the exact executable sample after real image decoding > top and bottom pixel colors 1`] = `
+[
+  [
+    {
+      "background": [
+        224,
+        64,
+        64,
+      ],
+      "foreground": [
+        224,
+        64,
+        64,
+      ],
+    },
+    {
+      "background": [
+        64,
+        192,
+        128,
+      ],
+      "foreground": [
+        64,
+        192,
+        128,
+      ],
+    },
+  ],
+  [
+    {
+      "background": [
+        64,
+        112,
+        224,
+      ],
+      "foreground": [
+        224,
+        64,
+        64,
+      ],
+    },
+    {
+      "background": [
+        64,
+        192,
+        128,
+      ],
+      "foreground": [
+        64,
+        192,
+        128,
+      ],
+    },
+  ],
+  [
+    {
+      "background": [
+        64,
+        112,
+        224,
+      ],
+      "foreground": [
+        64,
+        112,
+        224,
+      ],
+    },
+    {
+      "background": [
+        224,
+        176,
+        64,
+      ],
+      "foreground": [
+        64,
+        192,
+        128,
+      ],
+    },
+  ],
+  [
+    {
+      "background": [
+        64,
+        112,
+        224,
+      ],
+      "foreground": [
+        64,
+        112,
+        224,
+      ],
+    },
+    {
+      "background": [
+        224,
+        176,
+        64,
+      ],
+      "foreground": [
+        224,
+        176,
+        64,
+      ],
+    },
+  ],
+]
+`;
+
+exports[`image CLI component example > react displays and captures the exact executable sample after real image decoding > centered image text 1`] = `
+"                
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+  ▀▀▀▀▀▀▀▀▀▀▀▀  
+                "
+`;
+
+exports[`image CLI component example > react displays and captures the exact executable sample after real image decoding > top and bottom pixel colors 1`] = `
+[
+  [
+    {
+      "background": [
+        224,
+        64,
+        64,
+      ],
+      "foreground": [
+        224,
+        64,
+        64,
+      ],
+    },
+    {
+      "background": [
+        64,
+        192,
+        128,
+      ],
+      "foreground": [
+        64,
+        192,
+        128,
+      ],
+    },
+  ],
+  [
+    {
+      "background": [
+        64,
+        112,
+        224,
+      ],
+      "foreground": [
+        224,
+        64,
+        64,
+      ],
+    },
+    {
+      "background": [
+        64,
+        192,
+        128,
+      ],
+      "foreground": [
+        64,
+        192,
+        128,
+      ],
+    },
+  ],
+  [
+    {
+      "background": [
+        64,
+        112,
+        224,
+      ],
+      "foreground": [
+        64,
+        112,
+        224,
+      ],
+    },
+    {
+      "background": [
+        224,
+        176,
+        64,
+      ],
+      "foreground": [
+        64,
+        192,
+        128,
+      ],
+    },
+  ],
+  [
+    {
+      "background": [
+        64,
+        112,
+        224,
+      ],
+      "foreground": [
+        64,
+        112,
+        224,
+      ],
+    },
+    {
+      "background": [
+        224,
+        176,
+        64,
+      ],
+      "foreground": [
+        224,
+        176,
+        64,
+      ],
+    },
+  ],
+]
+`;

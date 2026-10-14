@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`input CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"Name (Enter submits)                
+TeaUI                               
+Ready                               
+Empty placeholder                   
+Type a note...                      
+Wrapped single line                 
+Wrapping keeps this one             
+logical line.                       
+Multiline (Enter adds a line)       
+first line⤦                         
+second line                         
+                                    
+Unicode font                        
+𝕋𝕖𝕒𝕌𝕀 𝟙𝟚𝟛                           
+ANSI format (value unchanged)       
+Styled text                         
+                                    "
+`;
+
+exports[`input CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"Name (Enter submits)                
+TeaUI                               
+Ready                               
+Empty placeholder                   
+Type a note...                      
+Wrapped single line                 
+Wrapping keeps this one             
+logical line.                       
+Multiline (Enter adds a line)       
+first line⤦                         
+second line                         
+                                    
+Unicode font                        
+𝕋𝕖𝕒𝕌𝕀 𝟙𝟚𝟛                           
+ANSI format (value unchanged)       
+Styled text                         
+                                    "
+`;

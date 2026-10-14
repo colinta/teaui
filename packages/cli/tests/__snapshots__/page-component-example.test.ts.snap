@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`page CLI component example > core displays and captures the exact deterministic executable sample 1`] = `
+"Title falls back to child heading   
+PageUp / PageDown changes section   
+Home / End jumps to an edge         
+                                    
+              Details               
+              ○  ●  ○               
+                                    
+Untitled pages: dots without a title
+                                    
+                                    
+                ●  ○                "
+`;
+
+exports[`page CLI component example > react displays and captures the exact deterministic executable sample 1`] = `
+"Title falls back to child heading   
+PageUp / PageDown changes section   
+Home / End jumps to an edge         
+                                    
+              Details               
+              ○  ●  ○               
+                                    
+Untitled pages: dots without a title
+                                    
+                                    
+                ●  ○                "
+`;

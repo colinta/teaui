@@ -26,7 +26,7 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "clean": "rm -rf .dist/",
-    "_build": "pnpm clean && pnpm tsc && cp -r frameworks .dist/",
+    "_build": "pnpm clean && pnpm tsc && cp -r frameworks .dist/ && cp lib/examples/samples/*.core.js lib/examples/samples/*.react.tsx .dist/examples/samples/",
     "build": "node ../../shared/check.js"
   },
   "keywords": [
@@ -45,10 +45,18 @@
     "node": ">= 18.12.0"
   },
   "dependencies": {
-    "commander": "^14.0.0"
+    "@teaui/code": "workspace:*",
+    "@teaui/core": "workspace:*",
+    "@teaui/image": "workspace:*",
+    "@teaui/react": "workspace:*",
+    "@teaui/subprocess": "workspace:*",
+    "commander": "^14.0.0",
+    "react": "^18.2.0",
+    "react-reconciler": "^0.29.0"
   },
   "devDependencies": {
-    "@teaui/shared": "workspace:*"
+    "@teaui/shared": "workspace:*",
+    "@types/react": "^18.2.39"
   },
   "publishConfig": {
     "access": "public"

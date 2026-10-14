@@ -1,0 +1,33 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`log CLI component example > core displays and captures the exact executable sample > ANSI output 1`] = `
+"[30;47m INFO  [49;39m [37mServer started[39m             [48;2;97;97;97;38;2;97;97;97m█
+[30;43m WARN  [49;39m [33mSlow connection[39m            [48;2;97;97;97;38;2;97;97;97m█
+[30;41m ERROR [49;39m [49;39m▼ [49;31mRetry needed[49;39m             [48;2;97;97;97;38;2;97;97;97m█
+[49;39m        [49;39m  [49;31mCheck the network[39m        [48;2;97;97;97;38;2;97;97;97m█
+[49;39m                                   [48;2;97;97;97;38;2;97;97;97m█[0m"
+`;
+
+exports[`log CLI component example > core displays and captures the exact executable sample 1`] = `
+" INFO   Server started             █
+ WARN   Slow connection            █
+ ERROR  ▼ Retry needed             █
+          Check the network        █
+                                   █"
+`;
+
+exports[`log CLI component example > react displays and captures the exact executable sample > ANSI output 1`] = `
+"[30;47m INFO   [49;37mServer started             [48;2;97;97;97;38;2;97;97;97m█
+[30;43m WARN   [49;33mSlow connection            [48;2;97;97;97;38;2;97;97;97m█
+[30;41m ERROR  [49;39m▼ [49;31mRetry needed[49;39m             [48;2;97;97;97;38;2;97;97;97m█
+        [49;39m  [49;31mCheck the network        [48;2;97;97;97;38;2;97;97;97m█
+                                   █[0m"
+`;
+
+exports[`log CLI component example > react displays and captures the exact executable sample 1`] = `
+" INFO   Server started             █
+ WARN   Slow connection            █
+ ERROR  ▼ Retry needed             █
+          Check the network        █
+                                   █"
+`;

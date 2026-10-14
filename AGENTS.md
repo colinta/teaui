@@ -98,6 +98,15 @@ pnpm run test               # Run all tests
 4. Add JSX type declarations and wrapper component in
    `packages/react/lib/components.tsx`
 5. Add tests in `packages/core/tests/components/`
+6. Add the component definition and runnable Core/React CLI samples in
+   `packages/cli/lib/examples/samples/` and register the component in
+   `packages/cli/lib/examples.ts`. React samples use TSX and JSX, not
+   `createElement`.
+
+Whenever an existing component's props, behavior, or rendered output changes,
+update its CLI example at the same time. Keep the prop metadata (including Core,
+React, or shared availability), runnable snippets, render implementation, and
+CLI example tests in sync with the component.
 
 ### Component implementation rules
 

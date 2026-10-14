@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`modal CLI component example > core captures the exact executable sample with a visible requested modal 1`] = `
+"Document editor                     
+Draft: quarterly report             
+    ╭─ Publish document? ──────╮    
+    │                          │    
+    │ Review the changes.      │    
+    │ Click outside to close.  │    
+    │                          │    
+    ╰──────────────────────────╯    
+Underlying content stays put        
+Click outside to dismiss            "
+`;
+
+exports[`modal CLI component example > react captures the exact executable sample with a visible requested modal 1`] = `
+"Document editor                     
+Draft: quarterly report             
+    ╭─ Publish document? ──────╮    
+    │                          │    
+    │ Review the changes.      │    
+    │ Click outside to close.  │    
+    │                          │    
+    ╰──────────────────────────╯    
+Underlying content stays put        
+Click outside to dismiss            "
+`;

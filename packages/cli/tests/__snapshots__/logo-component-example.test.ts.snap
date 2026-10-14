@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`logo CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"     ) ) )      
+    ( ( (       
+ ┌────────┐──╮  
+ │╼╼╼╼╼╼╼╼│  │  
+ │ TeaUI  │  │  
+ │╼╼╼╼╼╼╼╼│──╯  
+ ╰▄▄▄▄▄▄▄▄╯     "
+`;
+
+exports[`logo CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"     ) ) )      
+    ( ( (       
+ ┌────────┐──╮  
+ │╼╼╼╼╼╼╼╼│  │  
+ │ TeaUI  │  │  
+ │╼╼╼╼╼╼╼╼│──╯  
+ ╰▄▄▄▄▄▄▄▄╯     "
+`;

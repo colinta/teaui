@@ -1,0 +1,47 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`separator CLI component example > core displays and captures its exact deterministic executable sample 1`] = `
+"Horizontal borders                  
+single    ──────────────────────────
+leading   ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+trailing  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+bold      ━━━━━━━━━━━━━━━━━━━━━━━━━━
+dash      ╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴
+dash2     ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+dash3     ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+dash4     ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+double    ══════════════════════════
+Vertical: single / bold / double    
+Left    │Middle  ┃Right   ║         
+        │        ┃        ║         
+        │        ┃        ║         
+Numeric padding: 1 (five rows)      
+                                    
+                                    
+ ══════════════════════════════════ 
+                                    
+                                    "
+`;
+
+exports[`separator CLI component example > react displays and captures its exact deterministic executable sample 1`] = `
+"Horizontal borders                  
+single    ──────────────────────────
+leading   ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+trailing  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+bold      ━━━━━━━━━━━━━━━━━━━━━━━━━━
+dash      ╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴╴
+dash2     ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+dash3     ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+dash4     ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+double    ══════════════════════════
+Vertical: single / bold / double    
+Left    │Middle  ┃Right   ║         
+        │        ┃        ║         
+        │        ┃        ║         
+Numeric padding: 1 (five rows)      
+                                    
+                                    
+ ══════════════════════════════════ 
+                                    
+                                    "
+`;

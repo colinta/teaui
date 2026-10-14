@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pane CLI component example > core displays and captures the exact executable sample 1`] = `
+"╭───────┰───────┰──────────────────────────╮
+│Folders┃Files  ┃Preview                   │
+│Inbox  ┃One.txt┃Selected message          │
+│Drafts ┃Two.txt┃Drag separators to resize │
+╰───────┸───────┸──────────────────────────╯
+Pinned┃Non-collapsible                      
+Home  ┃Click keeps the sidebar open         
+Help  ┃Drag minimum: 4 columns              "
+`;
+
+exports[`pane CLI component example > react displays and captures the exact executable sample 1`] = `
+"╭───────┰───────┰──────────────────────────╮
+│Folders┃Files  ┃Preview                   │
+│Inbox  ┃One.txt┃Selected message          │
+│Drafts ┃Two.txt┃Drag separators to resize │
+╰───────┸───────┸──────────────────────────╯
+Pinned┃Non-collapsible                      
+Home  ┃Click keeps the sidebar open         
+Help  ┃Drag minimum: 4 columns              "
+`;

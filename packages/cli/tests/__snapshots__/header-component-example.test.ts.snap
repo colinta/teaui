@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`header CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+" H1: Double / bold                              
+═══════════════════                             
+                                                
+ H2: Heavy / bold                               
+━━━━━━━━━━━━━━━━━━                              
+                                                
+ H3: Single / bold                              
+───────────────────                             
+                                                
+ H4: Single / normal                            
+─────────────────────                           
+                                                
+ H5: Single / dim                               
+──────────────────                              
+                                                
+ H6: No border / dim                            
+                                                
+ ℂ𝕦𝕤𝕥𝕠𝕞 𝕗𝕠𝕟𝕥                                    
+═════════════                                   "
+`;
+
+exports[`header CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+" H1: Double / bold                              
+═══════════════════                             
+                                                
+ H2: Heavy / bold                               
+━━━━━━━━━━━━━━━━━━                              
+                                                
+ H3: Single / bold                              
+───────────────────                             
+                                                
+ H4: Single / normal                            
+─────────────────────                           
+                                                
+ H5: Single / dim                               
+──────────────────                              
+                                                
+ H6: No border / dim                            
+                                                
+ ℂ𝕦𝕤𝕥𝕠𝕞 𝕗𝕠𝕟𝕥                                    
+═════════════                                   "
+`;

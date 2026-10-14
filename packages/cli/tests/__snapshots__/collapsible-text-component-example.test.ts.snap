@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`collapsible-text CLI component example > core displays and captures the exact executable two-line preview 1`] = `
+"► Deployment summary            
+  3 checks passed               
+                                
+                                "
+`;
+
+exports[`collapsible-text CLI component example > react displays and captures the exact executable two-line preview 1`] = `
+"► Deployment summary            
+  3 checks passed               
+                                
+                                "
+`;

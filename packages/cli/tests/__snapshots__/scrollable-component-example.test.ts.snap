@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`scrollable CLI component example > core captures the exact executable sample and deterministic public scrolling APIs > exact styled capture 1`] = `
+"Vertical: reveal item 7                 
+Item 4: scroll to reveal               [48;2;48;48;48;38;2;48;48;48m 
+[49;39mItem [49;39m5: scroll to reveal               [48;2;97;97;97;38;2;97;97;97m█
+[49;39mItem 6: scroll to reveal               [48;2;97;97;97;38;2;97;97;97m█
+[49;39mItem [49;39m7: scroll to reveal               [48;2;48;48;48;38;2;48;48;48m 
+[49;39mHorizontal: scrollBy(22, 0)             
+Two: abcdefghijklmno  Three: QRSTUVWXYZa
+[48;2;48;48;48;38;2;48;48;48m              ███████████[48;2;97;97;97;38;2;97;97;97m██████████████ 
+[49;39mBoth axes: scrollBy(5, 2)               
+[49;39mRow 3: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;48;48;48;38;2;48;48;48m 
+[49;39mRow 4: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;97;97;97;38;2;97;97;97m█
+[49;39mRow 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;48;48;48;38;2;48;48;48m 
+[48;2;48;48;48;38;2;48;48;48m   ██████████████████████[48;2;97;97;97;38;2;97;97;97m███           █
+[49;39mNo scrollbar: advancePage(1)            
+Quiet item [49;39m3                            
+Quiet item 4                            
+Quiet item 5                            [0m"
+`;
+
+exports[`scrollable CLI component example > core captures the exact executable sample and deterministic public scrolling APIs > text and scrollbars 1`] = `
+"Vertical: reveal item 7                 
+Item 4: scroll to reveal                
+Item 5: scroll to reveal               █
+Item 6: scroll to reveal               █
+Item 7: scroll to reveal                
+Horizontal: scrollBy(22, 0)             
+Two: abcdefghijklmno  Three: QRSTUVWXYZa
+              █████████████████████████ 
+Both axes: scrollBy(5, 2)               
+Row 3: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234 
+Row 4: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234█
+Row 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234 
+   █████████████████████████           █
+No scrollbar: advancePage(1)            
+Quiet item 3                            
+Quiet item 4                            
+Quiet item 5                            "
+`;
+
+exports[`scrollable CLI component example > react captures the exact executable sample and deterministic public scrolling APIs > exact styled capture 1`] = `
+"Vertical: reveal item 7                 
+Item [0m4: scroll to reveal               [48;2;48;48;48;38;2;48;48;48m 
+[49;39mItem [49;39m5: scroll to reveal               [48;2;97;97;97;38;2;97;97;97m█
+[49;39mItem 6: scroll to reveal               [48;2;97;97;97;38;2;97;97;97m█
+[49;39mItem [49;39m7: scroll to reveal               [48;2;48;48;48;38;2;48;48;48m 
+[49;39mHorizontal: scrollBy(22, 0)             
+Two: abcdefghijklmno  Three: QRSTUVWXYZa
+[48;2;48;48;48;38;2;48;48;48m              ███████████[48;2;97;97;97;38;2;97;97;97m██████████████ 
+[49;39mBoth axes: scrollBy(5, 2)               
+[49;39mRow 3: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;48;48;48;38;2;48;48;48m 
+[49;39mRow 4: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;97;97;97;38;2;97;97;97m█
+[49;39mRow 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;48;48;48;38;2;48;48;48m 
+[48;2;48;48;48;38;2;48;48;48m   ██████████████████████[48;2;97;97;97;38;2;97;97;97m███           █
+[49;39mNo scrollbar: advancePage(1)            
+Quiet item [49;39m3                            
+Quiet item 4                            
+Quiet item 5                            [0m"
+`;
+
+exports[`scrollable CLI component example > react captures the exact executable sample and deterministic public scrolling APIs > text and scrollbars 1`] = `
+"Vertical: reveal item 7                 
+Item 4: scroll to reveal                
+Item 5: scroll to reveal               █
+Item 6: scroll to reveal               █
+Item 7: scroll to reveal                
+Horizontal: scrollBy(22, 0)             
+Two: abcdefghijklmno  Three: QRSTUVWXYZa
+              █████████████████████████ 
+Both axes: scrollBy(5, 2)               
+Row 3: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234 
+Row 4: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234█
+Row 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234 
+   █████████████████████████           █
+No scrollbar: advancePage(1)            
+Quiet item 3                            
+Quiet item 4                            
+Quiet item 5                            "
+`;

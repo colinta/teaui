@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`geometry CLI component example > core displays and captures the exact runnable public sample 1`] = `
+"                                
+ Content: 30×4                  
+ 1. Tea                         
+ 2. Coffee                      
+ 3. Cocoa                       
+                                "
+`;
+
+exports[`geometry CLI component example > core recomputes content from a different measured viewport 1`] = `
+"                    
+ Content: 18×3      
+ 1. Tea             
+ 2. Coffee          
+                    "
+`;
+
+exports[`geometry CLI component example > react displays and captures the exact runnable public sample 1`] = `
+"                                
+ Content: 30×4                  
+ 1. Tea                         
+ 2. Coffee                      
+ 3. Cocoa                       
+                                "
+`;
+
+exports[`geometry CLI component example > react recomputes content from a different measured viewport 1`] = `
+"                    
+ Content: 18×3      
+ 1. Tea             
+ 2. Coffee          
+                    "
+`;

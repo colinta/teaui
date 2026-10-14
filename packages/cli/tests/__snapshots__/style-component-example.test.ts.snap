@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`style CLI component example > displays and captures the exact deterministic executable public JSX sample 1`] = `
+"Inline: plain bold italic underlined struck             
+Nested: outer nested override restored plain            
+Object: object wins plain                               
+Flags: dim inverse bold wins dim wins plain             
+Link: TeaUI plain                                       "
+`;

@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`placement CLI component example > renders the same filled, clipped and natural-sized rectangles in both frameworks 1`] = `
+"Placement: edges, not insets            
+                                        
+ ┌────────────────────────┐ ┌──────┐    
+ │Both edges fill.        │ │Anchor│    
+ │Children are clipped.   │ └──────┘    
+ └────────────────────────┘             
+                            Leading     
+             Trailing edges             "
+`;

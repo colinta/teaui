@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`radio-group CLI component example > assigns nested Radios to their nearest group, not the enclosing group 1`] = `
+"⦿ Economy
+◯ Standard
+⦿ Express"
+`;
+
+exports[`radio-group CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"◯ Economy                       
+⦿ Standard                      
+◯ Express                       
+                                
+Shipping: Standard              "
+`;
+
+exports[`radio-group CLI component example > core executable sample changes the shared selection and summary by keyboard and mouse 1`] = `
+"◯ Economy
+◯ Standard
+⦿ Express
+
+Shipping: Express"
+`;
+
+exports[`radio-group CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"◯ Economy                       
+⦿ Standard                      
+◯ Express                       
+                                
+Shipping: Standard              "
+`;
+
+exports[`radio-group CLI component example > react executable sample changes the shared selection and summary by keyboard and mouse 1`] = `
+"◯ Economy
+◯ Standard
+⦿ Express
+
+Shipping: Express"
+`;

@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`subprocess CLI component example > core captures the exact executable public sample with a real short-lived PTY and cleanup > child SGR and overlay styles 1`] = `
+{
+  "body": Style {
+    "bold": false,
+    "dim": false,
+    "foreground": "default",
+  },
+  "exit": Style {
+    "dim": true,
+    "foreground": "default",
+    "inverse": true,
+  },
+  "title": Style {
+    "bold": true,
+    "foreground": "green",
+  },
+}
+`;
+
+exports[`subprocess CLI component example > core captures the exact executable public sample with a real short-lived PTY and cleanup > parsed child output and exit overlay 1`] = `
+"Subprocess in a PTY                     
+message: hello from child               
+one command, no shell                   
+                                        
+                                        
+      [Process exited with code 0]      "
+`;
+
+exports[`subprocess CLI component example > react captures the exact executable public sample with a real short-lived PTY and cleanup > child SGR and overlay styles 1`] = `
+{
+  "body": Style {
+    "bold": false,
+    "dim": false,
+    "foreground": "default",
+  },
+  "exit": Style {
+    "dim": true,
+    "foreground": "default",
+    "inverse": true,
+  },
+  "title": Style {
+    "bold": true,
+    "foreground": "green",
+  },
+}
+`;
+
+exports[`subprocess CLI component example > react captures the exact executable public sample with a real short-lived PTY and cleanup > parsed child output and exit overlay 1`] = `
+"Subprocess in a PTY                     
+message: hello from child               
+one command, no shell                   
+                                        
+                                        
+      [Process exited with code 0]      "
+`;

@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`console-log CLI component example > core displays and captures the exact executable sample without leaking interception 1`] = `
+"  LOG   Application ready          █
+ INFO   Server started             █
+ WARN   Slow connection            █
+ ERROR  ▼ Retry needed             █
+          Check the network        █"
+`;
+
+exports[`console-log CLI component example > react displays and captures the exact executable sample without leaking interception 1`] = `
+"  LOG   Application ready          █
+ INFO   Server started             █
+ WARN   Slow connection            █
+ ERROR  ▼ Retry needed             █
+          Check the network        █"
+`;

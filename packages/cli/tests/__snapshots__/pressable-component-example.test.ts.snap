@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pressable CLI component example > core displays and captures the exact deterministic executable sample 1`] = `
+"Custom surfaces (no button decoration)  
+Keyboard + mouse                        
+Activations: 0                          
+Mouse only (focusable: false)           
+Activations: 0                          
+Tab then Enter, or click; Ctrl+C quits  "
+`;
+
+exports[`pressable CLI component example > core sample activates custom content by Enter and left click, skipping mouse-only focus > activated 1`] = `
+"Custom surfaces (no button decoration)  
+Keyboard + mouse                        
+Activations: 2                          
+Mouse only (focusable: false)           
+Activations: 1                          
+Tab then Enter, or click; Ctrl+C quits  "
+`;
+
+exports[`pressable CLI component example > react displays and captures the exact deterministic executable sample 1`] = `
+"Custom surfaces (no button decoration)  
+Keyboard + mouse                        
+Activations: 0                          
+Mouse only (focusable: false)           
+Activations: 0                          
+Tab then Enter, or click; Ctrl+C quits  "
+`;
+
+exports[`pressable CLI component example > react sample activates custom content by Enter and left click, skipping mouse-only focus > activated 1`] = `
+"Custom surfaces (no button decoration)  
+Keyboard + mouse                        
+Activations: 2                          
+Mouse only (focusable: false)           
+Activations: 1                          
+Tab then Enter, or click; Ctrl+C quits  "
+`;

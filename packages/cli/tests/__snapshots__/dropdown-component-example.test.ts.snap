@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`dropdown CLI component example > core displays and captures the exact executable sample 1`] = `
+"Single selection              
+ Pick a fruit              ▏▽ 
+Multiple selection            
+ Apple, Cherry             ▏▽ 
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              "
+`;
+
+exports[`dropdown CLI component example > react displays and captures the exact executable sample 1`] = `
+"Single selection              
+ Pick a fruit              ▏▽ 
+Multiple selection            
+ Apple, Cherry             ▏▽ 
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              "
+`;

@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`br component example > displays and captures the exact public React sample deterministically 1`] = `
+"First line      
+Second line     
+                
+After blank line"
+`;

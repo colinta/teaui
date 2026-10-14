@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`collapsible CLI component example > core displays and captures the exact executable sample 1`] = `
+"► Two-line preview              
+  Click to expand               
+                                
+▼ Expanded content              
+  Click to collapse             
+                                
+▼ Summary stays visible         
+  Additional details            "
+`;
+
+exports[`collapsible CLI component example > react displays and captures the exact executable sample 1`] = `
+"► Two-line preview              
+  Click to expand               
+                                
+▼ Expanded content              
+  Click to collapse             
+                                
+▼ Summary stays visible         
+  Additional details            "
+`;

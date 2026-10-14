@@ -1,0 +1,129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`spinner CLI component example > core displays and captures the exact public sample at the initial frame with deterministic ANSI styles 1`] = `
+{
+  "accents": [
+    {
+      "background": "default",
+      "foreground": [
+        90,
+        122,
+        194,
+      ],
+      "row": 2,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        88,
+        168,
+        119,
+      ],
+      "row": 5,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        208,
+        146,
+        75,
+      ],
+      "row": 7,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        196,
+        98,
+        100,
+      ],
+      "row": 9,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        90,
+        122,
+        194,
+      ],
+      "row": 11,
+    },
+  ],
+  "text": "Spinner styles (initial frame)              
+dots: default style and animation (1x1)     
+⣾                                           
+bounce: isAnimating = true (5x2)            
+                                            
+▄ ▄ ▄                                       
+loop (5x1)                                  
+ ▀▀▀                                        
+kitt: faster animation (7x1)                
+━━                                          
+Paused dots: still visible, same accent     
+⣾                                           ",
+}
+`;
+
+exports[`spinner CLI component example > react displays and captures the exact public sample at the initial frame with deterministic ANSI styles 1`] = `
+{
+  "accents": [
+    {
+      "background": "default",
+      "foreground": [
+        90,
+        122,
+        194,
+      ],
+      "row": 2,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        88,
+        168,
+        119,
+      ],
+      "row": 5,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        208,
+        146,
+        75,
+      ],
+      "row": 7,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        196,
+        98,
+        100,
+      ],
+      "row": 9,
+    },
+    {
+      "background": "default",
+      "foreground": [
+        90,
+        122,
+        194,
+      ],
+      "row": 11,
+    },
+  ],
+  "text": "Spinner styles (initial frame)              
+dots: default style and animation (1x1)     
+⣾                                           
+bounce: isAnimating = true (5x2)            
+                                            
+▄ ▄ ▄                                       
+loop (5x1)                                  
+ ▀▀▀                                        
+kitt: faster animation (7x1)                
+━━                                          
+Paused dots: still visible, same accent     
+⣾                                           ",
+}
+`;

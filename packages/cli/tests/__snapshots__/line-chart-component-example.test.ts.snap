@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`line-chart CLI component example > core displays and captures its exact executable sample > exact styled capture 1`] = `
+"[49;39m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊
+⠀⠀⠀⠀⠀⠀⠀⢀⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀
+⠀⠀⠀⠀⠀⢀⠔⠁⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀
+⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠑⠢⡀⠀⢀⠔⠁⠀⠀⠀⠀⠀
+⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠁⠀⠀⠀⠀⠀⠀⠀
+⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[0m"
+`;
+
+exports[`line-chart CLI component example > core displays and captures its exact executable sample > line geometry 1`] = `
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊
+⠀⠀⠀⠀⠀⠀⠀⢀⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀
+⠀⠀⠀⠀⠀⢀⠔⠁⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀
+⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠑⠢⡀⠀⢀⠔⠁⠀⠀⠀⠀⠀
+⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠁⠀⠀⠀⠀⠀⠀⠀
+⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+`;
+
+exports[`line-chart CLI component example > react displays and captures its exact executable sample > exact styled capture 1`] = `
+"[49;39m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊
+⠀⠀⠀⠀⠀⠀⠀⢀⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀
+⠀⠀⠀⠀⠀⢀⠔⠁⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀
+⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠑⠢⡀⠀⢀⠔⠁⠀⠀⠀⠀⠀
+⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠁⠀⠀⠀⠀⠀⠀⠀
+⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[0m"
+`;
+
+exports[`line-chart CLI component example > react displays and captures its exact executable sample > line geometry 1`] = `
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊
+⠀⠀⠀⠀⠀⠀⠀⢀⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀
+⠀⠀⠀⠀⠀⢀⠔⠁⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀
+⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠑⠢⡀⠀⢀⠔⠁⠀⠀⠀⠀⠀
+⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠁⠀⠀⠀⠀⠀⠀⠀
+⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+`;

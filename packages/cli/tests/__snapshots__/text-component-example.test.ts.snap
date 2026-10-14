@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`text CLI component example > core displays and captures the exact deterministic executable public sample 1`] = `
+"Text: style, wrap, alignment        
+Left aligned                        
+              Centered              
+                       Right aligned
+Wrap: words stay                    
+together with room                  
+to spare                            
+No wrap: this line                  
+First source line                   
+Second source line                  
+𝚃𝚎𝚊𝚄𝙸 𝟷𝟸𝟹                           "
+`;
+
+exports[`text CLI component example > react displays and captures the exact deterministic executable public sample 1`] = `
+"Text: style, wrap, alignment        
+Left aligned                        
+              Centered              
+                       Right aligned
+Wrap: words stay                    
+together with room                  
+to spare                            
+No wrap: this line                  
+First source line                   
+Second source line                  
+𝚃𝚎𝚊𝚄𝙸 𝟷𝟸𝟹                           "
+`;

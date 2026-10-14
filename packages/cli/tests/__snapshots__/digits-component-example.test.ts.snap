@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`digits CLI component example > core displays and captures the exact runnable public sample 1`] = `
+"╶┬╴┌─╴╭─╮   
+ │ ├─ ├─┤   
+ ╵ └─╴╵ ╵   
+╶─╮  ┐ ╷ ╷  
+ ─┤  │ └─┤  
+╶─╯.╶┴╴  ╵  
+            
+╺━┓┏━┓╺━┓┏━╸
+┏━┛┃▞┃┏━┛┣━┓
+┗━╸┗━┛┗━╸┗━┛"
+`;
+
+exports[`digits CLI component example > react displays and captures the exact runnable public sample 1`] = `
+"╶┬╴┌─╴╭─╮   
+ │ ├─ ├─┤   
+ ╵ └─╴╵ ╵   
+╶─╮  ┐ ╷ ╷  
+ ─┤  │ └─┤  
+╶─╯.╶┴╴  ╵  
+            
+╺━┓┏━┓╺━┓┏━╸
+┏━┛┃▞┃┏━┛┣━┓
+┗━╸┗━┛┗━╸┗━┛"
+`;

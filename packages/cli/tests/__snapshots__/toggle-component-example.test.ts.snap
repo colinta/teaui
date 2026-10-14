@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toggle CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"Normal: off / on                
+┏━┓──┐  ┌──▗▄▖                  
+┗━┛──┘  └──▝▀▘                  
+Compact: off / on               
+⬜︎╶──╴  ╶──╴⬛︎                  
+Notifications: off              
+┏━┓──┐                          
+┗━┛──┘                          
+Click, or Tab then Space/Enter  "
+`;
+
+exports[`toggle CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"Normal: off / on                
+┏━┓──┐  ┌──▗▄▖                  
+┗━┛──┘  └──▝▀▘                  
+Compact: off / on               
+⬜︎╶──╴  ╶──╴⬛︎                  
+Notifications: off              
+┏━┓──┐                          
+┗━┛──┘                          
+Click, or Tab then Space/Enter  "
+`;

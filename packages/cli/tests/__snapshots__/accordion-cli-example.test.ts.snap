@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`accordion CLI example > core displays and captures the exact executable sample 1`] = `
+" Overview                   △ 
+Hello, world!                 
+╶────────────────────────────╴
+ Details                    ▽ 
+╶────────────────────────────╴"
+`;
+
+exports[`accordion CLI example > react displays and captures the exact executable sample 1`] = `
+" Overview                   △ 
+Hello, world!                 
+╶────────────────────────────╴
+ Details                    ▽ 
+╶────────────────────────────╴"
+`;

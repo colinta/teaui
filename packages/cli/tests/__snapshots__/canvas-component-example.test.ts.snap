@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`canvas CLI component example > core displays and captures the exact runnable sample at 24 by 8 1`] = `
+"⡏⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⣉⠝⢻
+⡇⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠤⠤⠤⣀⠀⠀⠀⣀⠔⠊⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀⠀⠀⠀⣑⢔⠊⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀⣀⠔⠊⠀⠈⡆⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⠀⡇⠀⡠⠔⠉⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⡠⠜⢍⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⡠⠔⠉⠀⠀⠀⠑⠢⠤⠤⠤⠒⠁⠀⠀⠀⠀⠀⠀⠀⢸
+⣧⣔⣉⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣸"
+`;
+
+exports[`canvas CLI component example > react displays and captures the exact runnable sample at 24 by 8 1`] = `
+"⡏⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⣉⠝⢻
+⡇⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠤⠤⠤⣀⠀⠀⠀⣀⠔⠊⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀⠀⠀⠀⣑⢔⠊⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀⣀⠔⠊⠀⠈⡆⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⠀⡇⠀⡠⠔⠉⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⠀⠀⠀⡠⠜⢍⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀⠀⠀⢸
+⡇⠀⠀⡠⠔⠉⠀⠀⠀⠑⠢⠤⠤⠤⠒⠁⠀⠀⠀⠀⠀⠀⠀⢸
+⣧⣔⣉⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣸"
+`;

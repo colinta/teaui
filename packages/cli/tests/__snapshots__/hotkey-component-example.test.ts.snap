@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`hotkey CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"HotKey registers without drawing                
+Press x to count; Ctrl+R to reset               
+Count: 0 | Last key: none                       "
+`;
+
+exports[`hotkey CLI component example > core sample handles string and object shortcuts with no focused control > counted 1`] = `
+"HotKey registers without drawing                
+Press x to count; Ctrl+R to reset               
+Count: 2 | Last key: x                          "
+`;
+
+exports[`hotkey CLI component example > core sample handles string and object shortcuts with no focused control > reset 1`] = `
+"HotKey registers without drawing                
+Press x to count; Ctrl+R to reset               
+Count: 0 | Last key: C-r                        "
+`;
+
+exports[`hotkey CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"HotKey registers without drawing                
+Press x to count; Ctrl+R to reset               
+Count: 0 | Last key: none                       "
+`;
+
+exports[`hotkey CLI component example > react sample handles string and object shortcuts with no focused control > counted 1`] = `
+"HotKey registers without drawing                
+Press x to count; Ctrl+R to reset               
+Count: 2 | Last key: x                          "
+`;
+
+exports[`hotkey CLI component example > react sample handles string and object shortcuts with no focused control > reset 1`] = `
+"HotKey registers without drawing                
+Press x to count; Ctrl+R to reset               
+Count: 0 | Last key: C-r                        "
+`;

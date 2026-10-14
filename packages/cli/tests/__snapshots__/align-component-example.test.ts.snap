@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`align component example > renders identical 21-column by 4-row aligned output 1`] = `
+"TeaUI project details
+Name     │ TeaUI     
+Language │ TypeScript
+Status   │ Ready     "
+`;

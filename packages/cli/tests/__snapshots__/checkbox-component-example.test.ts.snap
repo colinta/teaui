@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`checkbox CLI component example > core displays and captures the exact executable sample 1`] = `"☐ Notifications: off    "`;
+
+exports[`checkbox CLI component example > react displays and captures the exact executable sample 1`] = `"☐ Notifications: off    "`;

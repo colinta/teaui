@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`zstack CLI component example > produces identical Core and JSX React output with every location visible 1`] = `
+"Later children overwrite earlier ones       
+OVER456789                                  
+location: natural-size layers in 14x3 cells 
+top-left       top-center     top-right     
+OK............ ......OK...... ............OK
+.............. .............. ..............
+.............. .............. ..............
+left           center         right         
+.............. .............. ..............
+OK............ ......OK...... ............OK
+.............. .............. ..............
+bottom-left    bottom-center  bottom-right  
+.............. .............. ..............
+.............. .............. ..............
+OK............ ......OK...... ............OK"
+`;

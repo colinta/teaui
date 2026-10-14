@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`font-style CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"┏━━━┱───┲━━━┱───╮                               
+┃ B ┃ I ┃ U ┃ S │                               
+┗━━━┹───┺━━━┹───╯                               
+                                                
+Enabled: bold, underline                        "
+`;
+
+exports[`font-style CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"┏━━━┱───┲━━━┱───╮                               
+┃ B ┃ I ┃ U ┃ S │                               
+┗━━━┹───┺━━━┹───╯                               
+                                                
+Enabled: bold, underline                        "
+`;

@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mouse CLI component example > core displays and captures the exact executable region sample 1`] = `
+"Click or scroll this region             
+Last event: none                        
+Position: none                          
+Ctrl+C quits                            "
+`;
+
+exports[`mouse CLI component example > core handles left clicks and wheel events with region-local positions only 1`] = `
+"Click or scroll this region             
+Last event: mouse.wheel.down            
+Position: 5, 2                          
+Ctrl+C quits                            "
+`;
+
+exports[`mouse CLI component example > react displays and captures the exact executable region sample 1`] = `
+"Click or scroll this region             
+Last event: none                        
+Position: none                          
+Ctrl+C quits                            "
+`;
+
+exports[`mouse CLI component example > react handles left clicks and wheel events with region-local positions only 1`] = `
+"Click or scroll this region             
+Last event: mouse.wheel.down            
+Position: 5, 2                          
+Ctrl+C quits                            "
+`;

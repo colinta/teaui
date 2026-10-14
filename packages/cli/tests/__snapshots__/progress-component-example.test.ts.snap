@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`progress CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"Default: empty, no percentage       
+╶──────────────────────────────────╴
+Half: no percentage                 
+███████████████████────────────────╴
+Centered percentage                 
+████████████████65%█████───────────╴
+Left: external percentage           
+  5% ███───────────────────────────╴
+Right: clamped above maximum        
+███████████████████████████████ 100%
+Custom range: 10..30, value 20      
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄────────────────╮
+████████████████50%                │
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀────────────────╯
+Vertical: fills bottom to top       
+╭─╮                                 
+│ │                                 
+▐█▌                                 
+▐█▌                                 "
+`;
+
+exports[`progress CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"Default: empty, no percentage       
+╶──────────────────────────────────╴
+Half: no percentage                 
+███████████████████────────────────╴
+Centered percentage                 
+████████████████65%█████───────────╴
+Left: external percentage           
+  5% ███───────────────────────────╴
+Right: clamped above maximum        
+███████████████████████████████ 100%
+Custom range: 10..30, value 20      
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄────────────────╮
+████████████████50%                │
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀────────────────╯
+Vertical: fills bottom to top       
+╭─╮                                 
+│ │                                 
+▐█▌                                 
+▐█▌                                 "
+`;

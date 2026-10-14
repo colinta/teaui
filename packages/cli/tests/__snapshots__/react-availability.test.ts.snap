@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`new Core and React examples > 'bar-chart' ('core') displays and captures its exact executable sample 1`] = `
+"           ██   
+        ▆▆ ██   
+     ▄▄ ██ ██   
+  ▂▂ ██ ██ ██   
+  ██ ██ ██ ██   "
+`;
+
+exports[`new Core and React examples > 'bar-chart' ('react') displays and captures its exact executable sample 1`] = `
+"           ██   
+        ▆▆ ██   
+     ▄▄ ██ ██   
+  ▂▂ ██ ██ ██   
+  ██ ██ ██ ██   "
+`;
+
+exports[`new Core and React examples > 'line-chart' ('core') displays and captures its exact executable sample 1`] = `
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊
+⠀⠀⠀⠀⠀⠀⠀⢀⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀
+⠀⠀⠀⠀⠀⢀⠔⠁⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀
+⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠑⠢⡀⠀⢀⠔⠁⠀⠀⠀⠀⠀
+⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠁⠀⠀⠀⠀⠀⠀⠀
+⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+`;
+
+exports[`new Core and React examples > 'line-chart' ('react') displays and captures its exact executable sample 1`] = `
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊
+⠀⠀⠀⠀⠀⠀⠀⢀⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀
+⠀⠀⠀⠀⠀⢀⠔⠁⠀⠈⠢⢄⠀⠀⠀⠀⠀⠀⢀⠜⠀⠀⠀⠀
+⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠑⠢⡀⠀⢀⠔⠁⠀⠀⠀⠀⠀
+⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠁⠀⠀⠀⠀⠀⠀⠀
+⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+`;
+
+exports[`new Core and React examples > 'log' ('core') displays and captures its exact executable sample 1`] = `
+" INFO   Server started             █
+ WARN   Slow connection            █
+ ERROR  ▼ Retry needed             █
+          Check the network        █
+                                   █"
+`;
+
+exports[`new Core and React examples > 'log' ('react') displays and captures its exact executable sample 1`] = `
+" INFO   Server started             █
+ WARN   Slow connection            █
+ ERROR  ▼ Retry needed             █
+          Check the network        █
+                                   █"
+`;
+
+exports[`new Core and React examples > 'plot' ('core') displays and captures its exact executable sample 1`] = `
+"         Daily orders      
+8 │                     ███
+6 │                     ███
+5 │       ▆▆▆           ███
+  │       ███    ▂▂▂    ███
+  │▄▄▄    ███    ███    ███
+  │███    ███    ███    ███
+  └────────────────────────
+   1              3        "
+`;
+
+exports[`new Core and React examples > 'plot' ('react') displays and captures its exact executable sample 1`] = `
+"         Daily orders      
+8 │                     ███
+6 │                     ███
+5 │       ▆▆▆           ███
+  │       ███    ▂▂▂    ███
+  │▄▄▄    ███    ███    ███
+  │███    ███    ███    ███
+  └────────────────────────
+   1              3        "
+`;
+
+exports[`new Core and React examples > 'track-mouse' ('core') displays and captures its exact executable sample 1`] = `
+" 0123456789⠁123456789⠉12
+0Move over this panel   
+1Rulers show position.  
+2                       
+3                   0, 0"
+`;
+
+exports[`new Core and React examples > 'track-mouse' ('react') displays and captures its exact executable sample 1`] = `
+" 0123456789⠁123456789⠉12
+0Move over this panel   
+1Rulers show position.  
+2                       
+3                   0, 0"
+`;

@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tree CLI component example > core captures its exact executable public sample with nested branches expanded > exact styled capture 1`] = `
+"Project                       
+[0m├─╴▿src                       
+│   ├─╴▿components            
+│   [22m│   ├──╴App.tsx           
+│   │   └──╴Button.tsx        
+│   └──╴index.ts              
+├─╴▹assets                    
+└──╴package.json              
+                              
+                              [0m"
+`;
+
+exports[`tree CLI component example > core captures its exact executable public sample with nested branches expanded > expanded hierarchy and collapsed sibling 1`] = `
+"Project                       
+├─╴▿src                       
+│   ├─╴▿components            
+│   │   ├──╴App.tsx           
+│   │   └──╴Button.tsx        
+│   └──╴index.ts              
+├─╴▹assets                    
+└──╴package.json              
+                              
+                              "
+`;
+
+exports[`tree CLI component example > react captures its exact executable public sample with nested branches expanded > exact styled capture 1`] = `
+"Project                       
+├─╴▿src                       
+│   ├─╴▿components            
+│   │   ├──╴App.tsx           
+│   │   └──╴Button.tsx        
+│   └──╴index.ts              
+├─╴▹assets                    
+└──╴package.json              
+                              
+                              [0m"
+`;
+
+exports[`tree CLI component example > react captures its exact executable public sample with nested branches expanded > expanded hierarchy and collapsed sibling 1`] = `
+"Project                       
+├─╴▿src                       
+│   ├─╴▿components            
+│   │   ├──╴App.tsx           
+│   │   └──╴Button.tsx        
+│   └──╴index.ts              
+├─╴▹assets                    
+└──╴package.json              
+                              
+                              "
+`;

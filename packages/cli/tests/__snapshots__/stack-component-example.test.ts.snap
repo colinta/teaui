@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`stack CLI component example > produces identical Core and JSX React output 1`] = `
+"Directions: same children A, B, C           
+down (gap 1)           up (gap 1)           
+A                      C                    
+                                            
+B                      B                    
+                                            
+C                      A                    
+right (gap 2)                               
+A  B  C                                     
+left (gap 2)                                
+                                     C  B  A
+fill=true       A             B             
+fill=false      AB                          "
+`;

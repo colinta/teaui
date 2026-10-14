@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`drawer CLI component example > core displays and captures the exact executable sample 1`] = `
+"Messages          ╭───Folders───
+Pick a folder     │›Inbox       
+Alt+D toggles     │›Drafts      
+                  │›Archive     
+                  │›            
+                  ╰─────────────
+                                
+Hidden when closed              
+Alt+H opens hidden panel        
+Full-width content, no chrome   "
+`;
+
+exports[`drawer CLI component example > react displays and captures the exact executable sample 1`] = `
+"Messages          ╭───Folders───
+Pick a folder     │›Inbox       
+Alt+D toggles     │›Drafts      
+                  │›Archive     
+                  │›            
+                  ╰─────────────
+                                
+Hidden when closed              
+Alt+H opens hidden panel        
+Full-width content, no chrome   "
+`;

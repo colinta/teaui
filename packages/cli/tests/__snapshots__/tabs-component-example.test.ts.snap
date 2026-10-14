@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tabs CLI component example > core displays and captures the exact deterministic executable sample 1`] = `
+"Bordered: second tab selected       
+   Info  Settings  Help             
+┌╴─────╴━━━━━━━━━━╶─────╶──────────┐
+│Change your preferences.          │
+└──────────────────────────────────┘
+                                    
+Borderless: first tab selected      
+ Overview  Details                  
+━━━━━━━━━━╶────────                 
+Welcome to TeaUI.                   "
+`;
+
+exports[`tabs CLI component example > matches public defaults and supports title changes and selecting sections > borderless renamed first tab 1`] = `
+" Overview  Settings
+━━━━━━━━━━╶─────────
+Information panel"
+`;
+
+exports[`tabs CLI component example > matches public defaults and supports title changes and selecting sections > clicked second tab 1`] = `
+"   Info  Settings
+┌╴─────╴━━━━━━━━━━╶────────────────┐
+│Settings panel                    │
+└──────────────────────────────────┘"
+`;
+
+exports[`tabs CLI component example > matches public defaults and supports title changes and selecting sections > default bordered first tab 1`] = `
+"   Info  Settings
+┌╴━━━━━━╶─────────╶────────────────┐
+│Information panel                 │
+└──────────────────────────────────┘"
+`;
+
+exports[`tabs CLI component example > matches public defaults and supports title changes and selecting sections > updated borderless second tab 1`] = `
+" Overview  Settings
+─────────╴━━━━━━━━━━
+Settings panel"
+`;
+
+exports[`tabs CLI component example > react displays and captures the exact deterministic executable sample 1`] = `
+"Bordered: second tab selected       
+   Info  Settings  Help             
+┌╴─────╴━━━━━━━━━━╶─────╶──────────┐
+│Change your preferences.          │
+└──────────────────────────────────┘
+                                    
+Borderless: first tab selected      
+ Overview  Details                  
+━━━━━━━━━━╶────────                 
+Welcome to TeaUI.                   "
+`;
