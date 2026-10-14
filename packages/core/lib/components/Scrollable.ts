@@ -97,7 +97,8 @@ export class Scrollable extends Stack {
   #contentSize: Size = Size.zero
   #contentSizeOverride?: {width?: number; height?: number}
   #viewportSize: Size = Size.zero
-  #visibleSize: Size = Size.zero
+  #hasHorizontalScrollbar = false
+  #hasVerticalScrollbar = false
   #prevMouseDown?: Orientation = undefined
   #isReflowing = false
   #onOffsetChange?: (offset: Point) => void
@@ -174,17 +175,11 @@ export class Scrollable extends Stack {
   }
 
   #maxOffsetX() {
-    const tooTall = this.#contentSize.height > this.contentSize.height
-
-    return this.#visibleSize.width - this.#contentSize.width + (tooTall ? 0 : 1)
+    return Math.min(0, this.#viewportSize.width - this.#contentSize.width)
   }
 
   #maxOffsetY() {
-    const tooWide = this.#contentSize.width > this.contentSize.width
-
-    return (
-      this.#visibleSize.height - this.#contentSize.height + (tooWide ? 0 : 1)
-    )
+    return Math.min(0, this.#viewportSize.height - this.#contentSize.height)
   }
 
   receiveMouse(event: MouseEvent) {
@@ -198,38 +193,44 @@ export class Scrollable extends Stack {
       return
     }
 
-    const tooWide =
-      this.#showHorizontalScrollbar() &&
-      this.#contentSize.width > this.contentSize.width
-    const tooTall =
-      this.#showVerticalScrollbar() &&
-      this.#contentSize.height > this.contentSize.height
+    const showHBar = this.#hasHorizontalScrollbar
+    const showVBar = this.#hasVerticalScrollbar
+    const canScrollHoriz = this.#canScrollHorizontal()
+    const canScrollVert = this.#canScrollVertical()
 
     if (
-      tooWide &&
-      tooTall &&
-      event.position.y === this.contentSize.height - 1 &&
-      event.position.x === this.contentSize.width - 1
+      showHBar &&
+      showVBar &&
+      event.position.y === this.#viewportSize.height &&
+      event.position.x === this.#viewportSize.width
     ) {
       // bottom-right corner click
       return
     }
 
     if (this.#prevMouseDown === undefined) {
-      if (tooWide && event.position.y === this.contentSize.height) {
+      if (
+        canScrollHoriz &&
+        showHBar &&
+        event.position.y === this.#viewportSize.height
+      ) {
         this.#prevMouseDown = 'horizontal'
-      } else if (tooTall && event.position.x === this.contentSize.width) {
+      } else if (
+        canScrollVert &&
+        showVBar &&
+        event.position.x === this.#viewportSize.width
+      ) {
         this.#prevMouseDown = 'vertical'
       } else {
         return
       }
     }
 
-    const visibleWidth = this.contentSize.width - (tooWide ? 1 : 0)
-    const visibleHeight = this.contentSize.height - (tooTall ? 1 : 0)
+    const visibleWidth = this.#viewportSize.width - (showVBar ? 1 : 0)
+    const visibleHeight = this.#viewportSize.height - (showHBar ? 1 : 0)
 
-    if (tooWide && this.#prevMouseDown === 'horizontal') {
-      const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth - 1)
+    if (canScrollHoriz && showHBar && this.#prevMouseDown === 'horizontal') {
+      const maxOffsetX = Math.max(0, this.#contentSize.width - visibleWidth)
       const thumbWidth = this.#scrollbarThumbLength(
         visibleWidth,
         this.#contentSize.width,
@@ -240,7 +241,11 @@ export class Scrollable extends Stack {
         Math.min(
           maxScrollbarX,
           event.position.x -
-            interpolate(event.position.x, [0, visibleWidth], [0, thumbWidth]),
+            interpolate(
+              event.position.x,
+              [0, visibleWidth],
+              [0, thumbWidth - 1],
+            ),
         ),
       )
       const offsetX = this.#scrollbarThumbPosition(
@@ -252,11 +257,12 @@ export class Scrollable extends Stack {
         x: -offsetX,
         y: this.#contentOffset.y,
       }
-    } else if (tooTall && this.#prevMouseDown === 'vertical') {
-      const maxOffsetY = Math.max(
-        0,
-        this.#contentSize.height - visibleHeight - 1,
-      )
+    } else if (
+      canScrollVert &&
+      showVBar &&
+      this.#prevMouseDown === 'vertical'
+    ) {
+      const maxOffsetY = Math.max(0, this.#contentSize.height - visibleHeight)
       const thumbHeight = this.#scrollbarThumbLength(
         visibleHeight,
         this.#contentSize.height,
@@ -267,7 +273,11 @@ export class Scrollable extends Stack {
         Math.min(
           maxScrollbarY,
           event.position.y -
-            interpolate(event.position.y, [0, visibleHeight], [0, thumbHeight]),
+            interpolate(
+              event.position.y,
+              [0, visibleHeight],
+              [0, thumbHeight - 1],
+            ),
         ),
       )
       const offsetY = this.#scrollbarThumbPosition(
@@ -302,7 +312,9 @@ export class Scrollable extends Stack {
       deltaX *= 5
     }
 
-    const tooTall = (this.#contentSize?.height ?? 0) > this.contentSize.height
+    const canScrollVert = this.#canScrollVertical()
+    const tooTall =
+      canScrollVert && this.#contentSize.height > this.#viewportSize.height
     if (!tooTall && deltaX === 0) {
       deltaX = deltaY
     }
@@ -501,18 +513,22 @@ export class Scrollable extends Stack {
     }
   }
 
+  #canScrollHorizontal(): boolean {
+    return this.#scrollable !== 'vertical'
+  }
+
+  #canScrollVertical(): boolean {
+    return this.#scrollable !== 'horizontal'
+  }
+
   #showHorizontalScrollbar(): boolean {
-    const show =
+    return (
       this.#showScrollbars === true || this.#showScrollbars === 'horizontal'
-    const enabled = this.#scrollable !== 'vertical'
-    return show && enabled
+    )
   }
 
   #showVerticalScrollbar(): boolean {
-    const show =
-      this.#showScrollbars === true || this.#showScrollbars === 'vertical'
-    const enabled = this.#scrollable !== 'horizontal'
-    return show && enabled
+    return this.#showScrollbars === true || this.#showScrollbars === 'vertical'
   }
 
   #scrollbarStyle(): Style {
@@ -559,8 +575,8 @@ export class Scrollable extends Stack {
   }
 
   get contentSize(): Size {
-    const deltaW = this.#showVerticalScrollbar() ? 1 : 0
-    const deltaH = this.#showHorizontalScrollbar() ? 1 : 0
+    const deltaW = this.#hasVerticalScrollbar ? 1 : 0
+    const deltaH = this.#hasHorizontalScrollbar ? 1 : 0
     return super.contentSize.shrink(deltaW, deltaH)
   }
 
@@ -609,28 +625,20 @@ export class Scrollable extends Stack {
     }
     this.#contentSize = contentSize
 
-    const canScrollHoriz = this.#showHorizontalScrollbar()
-    const canScrollVert = this.#showVerticalScrollbar()
-    const tooWide =
-      canScrollHoriz && contentSize.width > viewport.contentSize.width
-    const tooTall =
-      canScrollVert && contentSize.height > viewport.contentSize.height
-
-    // keepAtBottom: snap to end when content grows and we were at the bottom
-    if (this.#keepAtBottom && this.#isAtBottom && tooTall) {
-      // Use this render's visible height: #visibleSize is only set at the end of
-      // render, so on the first render it is still zero and the content would
-      // scroll up by its whole height (a blank viewport).
-      const maxY =
-        viewport.visibleRect.size.height -
-        1 -
-        contentSize.height +
-        (tooWide ? 0 : 1)
-      this.#contentOffset = {x: this.#contentOffset.x, y: Math.min(0, maxY)}
+    // One scrollbar can make the other necessary by reducing the visible area,
+    // so resolve visibility until both axes stabilize.
+    let showVBar = false
+    let showHBar = false
+    for (let iteration = 0; iteration < 2; iteration++) {
+      showVBar =
+        this.#showVerticalScrollbar() &&
+        contentSize.height > viewport.contentSize.height - (showHBar ? 1 : 0)
+      showHBar =
+        this.#showHorizontalScrollbar() &&
+        contentSize.width > viewport.contentSize.width - (showVBar ? 1 : 0)
     }
-
-    const showVBar = this.#showVerticalScrollbar() && tooTall
-    const showHBar = this.#showHorizontalScrollbar() && tooWide
+    this.#hasVerticalScrollbar = showVBar
+    this.#hasHorizontalScrollbar = showHBar
 
     // #contentOffset is _negative_ (indicates the amount to move the view away
     // from the origin, which will always be up/left of 0,0)
@@ -641,16 +649,22 @@ export class Scrollable extends Stack {
     const visibleWidth = viewport.contentSize.width - (showVBar ? 1 : 0)
     const visibleHeight = viewport.contentSize.height - (showHBar ? 1 : 0)
     this.#viewportSize = new Size(visibleWidth, visibleHeight)
+    const tooTall = contentSize.height > visibleHeight
+
+    // keepAtBottom: snap to end when content grows and we were at the bottom.
+    if (
+      this.#keepAtBottom &&
+      this.#isAtBottom &&
+      this.#canScrollVertical() &&
+      tooTall
+    ) {
+      this.#contentOffset = {
+        x: this.#contentOffset.x,
+        y: this.#maxOffsetY(),
+      }
+    }
 
     this.#renderContent(viewport)
-
-    // Note: #visibleSize is used in #maxOffsetX/#maxOffsetY calculations.
-    // The formula requires shrinking by overflow status (not scrollbar visibility)
-    // because the +1 correction in the offset formulas compensates for this.
-    this.#visibleSize = viewport.visibleRect.size.shrink(
-      tooWide ? 1 : 0,
-      tooTall ? 1 : 0,
-    )
 
     if (showVBar || showHBar) {
       const scrollBar = this.#scrollbarStyle()

@@ -123,14 +123,47 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Install */}
-        <section className="install-section">
-          <div className="install-box">
-            <div className="install-label">│ Installation │</div>
-            <pre>
-              <code>npx @teaui/cli create 'app-name' -f react</code>
-            </pre>
+        {/* CLI */}
+        <section className="cli-section" aria-labelledby="cli-title">
+          <div className="cli-heading">
+            <h2 id="cli-title">TeaUI CLI</h2>
+            <p>
+              Scaffold a new application or inspect runnable component examples
+              and their terminal output without leaving your shell.
+            </p>
           </div>
+          <div className="cli-steps">
+            <article className="cli-step">
+              <div className="cli-step-number">01</div>
+              <h3>Install the CLI</h3>
+              <p>Install the command globally with your package manager.</p>
+              <CodeBlock language="bash">
+                npm install --global @teaui/cli
+              </CodeBlock>
+            </article>
+            <article className="cli-step">
+              <div className="cli-step-number">02</div>
+              <h3>Generate an app</h3>
+              <p>Create a ready-to-run TeaUI project using React and JSX.</p>
+              <CodeBlock language="bash">
+                teaui create my-app --framework react
+              </CodeBlock>
+            </article>
+            <article className="cli-step">
+              <div className="cli-step-number">03</div>
+              <h3>Show an example</h3>
+              <p>
+                Print a component's props, exact source, and rendered terminal
+                output. Use <code>--core</code> for the OOP version.
+              </p>
+              <CodeBlock language="bash">
+                teaui example button --react
+              </CodeBlock>
+            </article>
+          </div>
+          <p className="cli-hint">
+            Run <code>teaui example</code> to list every available component.
+          </p>
         </section>
 
         {/* Features */}

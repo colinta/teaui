@@ -1008,6 +1008,57 @@ describe('Scrollable', () => {
   })
 
   describe('scrollable prop restricts scrolling direction', () => {
+    it('does not control scrollbar visibility', () => {
+      const horizontal = new Scrollable({
+        scrollable: 'horizontal',
+        contentSize: {width: 20, height: 10},
+        children: [],
+      })
+      const horizontalRender = testRender(horizontal, {width: 10, height: 5})
+
+      expect(horizontalRender.terminal.charAt(9, 0)).toBe('█')
+      expect(horizontalRender.terminal.charAt(0, 4)).toBe('█')
+      expect(horizontalRender.terminal.charAt(9, 4)).toBe('█')
+
+      const vertical = new Scrollable({
+        scrollable: 'vertical',
+        contentSize: {width: 20, height: 10},
+        children: [],
+      })
+      const verticalRender = testRender(vertical, {width: 10, height: 5})
+
+      expect(verticalRender.terminal.charAt(9, 0)).toBe('█')
+      expect(verticalRender.terminal.charAt(0, 4)).toBe('█')
+      expect(verticalRender.terminal.charAt(9, 4)).toBe('█')
+    })
+
+    it('shows a scrollbar when the other scrollbar causes overflow', () => {
+      const scrollable = new Scrollable({
+        contentSize: {width: 10, height: 6},
+        children: [],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+
+      expect(t.terminal.charAt(9, 0)).toBe('█')
+      expect(t.terminal.charAt(0, 4)).toBe('█')
+      expect(t.terminal.charAt(9, 4)).toBe('█')
+    })
+
+    it('disabled scrollbar tracks do not scroll', () => {
+      const scrollable = new Scrollable({
+        scrollable: 'horizontal',
+        contentSize: {width: 20, height: 20},
+        children: [new Progress({value: 50})],
+      })
+      const t = testRender(scrollable, {width: 10, height: 5})
+      const before = t.terminal.textContent()
+
+      t.sendMouse('mouse.button.down', {x: 9, y: 3})
+      t.render()
+
+      expect(t.terminal.textContent()).toBe(before)
+    })
+
     it('horizontal-only scrollable ignores vertical scroll', () => {
       const scrollable = new Scrollable({
         scrollable: 'horizontal',

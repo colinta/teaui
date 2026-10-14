@@ -93,27 +93,77 @@
   padding: 0.75rem !important;
 }
 
-/* Install */
-.install-section {
+/* CLI */
+.cli-section {
   margin: 3rem 0;
-  text-align: center;
+  padding: 1.5rem;
+  border: 1px solid #808080;
+  background: #343434;
 }
 
-.install-box {
-  display: inline-block;
-  text-align: left;
+.cli-heading {
+  max-width: 720px;
+  margin-bottom: 1.5rem;
 }
 
-.install-label {
-  color: #9f9f9f;
-  font-size: 13px;
-  text-align: center;
-  margin-bottom: 0.25rem;
+.cli-heading h2 {
+  margin-bottom: 0.5rem;
 }
 
-.install-box pre {
-  padding: 0.75rem 1.5rem !important;
-  font-size: 14px;
+.cli-heading p,
+.cli-step p,
+.cli-hint {
+  color: #b8b8b8;
+}
+
+.cli-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.cli-step {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #606060;
+  background: #303030;
+}
+
+.cli-step-number {
+  color: #8cd0d3;
+  font-size: 12px;
+}
+
+.cli-step h3 {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+.cli-step p {
+  min-height: 4.5em;
+  margin-bottom: 1rem;
+  font-size: 12px;
+}
+
+.cli-step pre {
+  margin-bottom: 0;
+  padding: 0.75rem !important;
+  font-size: 12px !important;
+}
+
+.cli-hint {
+  margin: 1rem 0 0;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .cli-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .cli-step p {
+    min-height: 0;
+  }
 }
 
 /* Features */
