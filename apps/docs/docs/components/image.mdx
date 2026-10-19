@@ -2,6 +2,8 @@
 title: Image
 ---
 
+import Example from '@site/src/components/Example'
+
 # Image
 
 Renders an image file or buffer as colored terminal cells. Each cell draws two vertical pixels with a half-block character (`▀`), using the foreground for the top pixel and the background for the bottom pixel.
@@ -20,21 +22,7 @@ Decoding and resizing use [sharp](https://sharp.pixelplumbing.com/), which suppo
 
 Import from the `/react` subpath; importing it registers the component with the reconciler.
 
-```tsx
-import React from 'react'
-import {Box, run} from '@teaui/react'
-import {Image} from '@teaui/image/react'
-
-function App() {
-  return (
-    <Box border="rounded" flex={1}>
-      <Image source="./photo.png" flex={1} />
-    </Box>
-  )
-}
-
-run(<App />)
-```
+<Example name="image" title="Image" />
 
 ## Behavior
 

@@ -67,7 +67,9 @@ export default {width: 30, height: 3, title: 'Button', App}
 
 Each example exports a default object with `{width, height, title, App}`. The
 `App` component is the React element to render, and `width`/`height`/`title`
-configure the headless terminal size and screenshot title bar.
+configure the headless terminal size and screenshot title bar. Set `async: true`
+for examples whose content loads asynchronously (e.g. `Image`); the build script
+re-renders until the output changes from the initial blank render.
 
 **Example files must not have side effects** — no `run()` or
 `interceptConsoleLog()` calls at the top level, since the build script imports

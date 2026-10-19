@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "screenshots": "tsx scripts/build-screenshots.ts",
-    "prebuild": "pnpm --filter '@teaui/react...' --filter '@teaui/code...' build && pnpm screenshots",
+    "prebuild": "pnpm --filter '@teaui/react...' --filter '@teaui/code...' --filter '@teaui/image...' build && pnpm screenshots",
     "build": "docusaurus build",
     "start": "pnpm screenshots && docusaurus start",
     "serve": "docusaurus serve",
@@ -17,6 +17,7 @@
     "@docusaurus/preset-classic": "^3.7.0",
     "@teaui/code": "workspace:*",
     "@teaui/core": "workspace:*",
+    "@teaui/image": "workspace:*",
     "@teaui/react": "workspace:*",
     "ansi-to-html": "^0.7.2",
     "clsx": "^2.1.1",

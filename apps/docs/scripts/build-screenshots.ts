@@ -29,6 +29,9 @@ const COLORS_16: Record<number, string> = {
   15: '#FFFFFF',
 }
 
+const ASYNC_RENDER_POLL_MS = 25
+const ASYNC_RENDER_TIMEOUT_MS = 5000
+
 const DEFAULT_FG = '#DEDEDE'
 const DEFAULT_BG = '#393939'
 
@@ -231,6 +234,29 @@ function renderAnsiToHtmlFragment(ansi: string): string {
   return `<pre style="background:${DEFAULT_BG};color:${DEFAULT_FG};font-family:'Fira Code',monospace;padding:8px;margin:0;line-height:1.2;overflow-x:auto;">${html}</pre>`
 }
 
+/**
+ * Some views (e.g. Image) load content asynchronously and render blank until
+ * it arrives. Re-render until the output differs from the initial render.
+ */
+async function waitForAsyncRender(
+  view: Parameters<typeof renderToAnsi>[0],
+  size: {width: number; height: number},
+  initial: string,
+): Promise<string> {
+  const deadline = Date.now() + ASYNC_RENDER_TIMEOUT_MS
+  while (Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, ASYNC_RENDER_POLL_MS))
+    const ansi = renderToAnsi(view, size)
+    if (ansi !== initial) {
+      return ansi
+    }
+  }
+
+  throw new Error(
+    `async render did not change within ${ASYNC_RENDER_TIMEOUT_MS}ms`,
+  )
+}
+
 async function buildExamples() {
   mkdirSync(EXAMPLES_OUTPUT_DIR, {recursive: true})
 
@@ -265,7 +291,10 @@ async function buildExamples() {
       // Render the React component
       const {createElement} = await import('react')
       const view = renderReact(createElement(App), {width, height})
-      const ansi = renderToAnsi(view, {width, height})
+      let ansi = renderToAnsi(view, {width, height})
+      if (spec.async) {
+        ansi = await waitForAsyncRender(view, {width, height}, ansi)
+      }
       const fragment = renderAnsiToHtmlFragment(ansi)
 
       // Write the rendered HTML
