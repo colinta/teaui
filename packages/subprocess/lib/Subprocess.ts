@@ -6,7 +6,7 @@ import type * as ptyNs from 'node-pty'
 import type {Terminal as XtermTerminal, IBufferCell} from '@xterm/headless'
 
 import {keyEventToAnsi} from './keyEventToAnsi.js'
-import {mouseEventToAnsi} from './mouseEventToAnsi.js'
+import {mouseEventToAnsi, shouldReportMouse} from './mouseEventToAnsi.js'
 import {StyleCache} from './xtermBridge.js'
 
 export interface SubprocessProps {
@@ -46,6 +46,12 @@ export class Subprocess extends View {
   #lastCols = 0
   #lastRows = 0
   #styleCache = new StyleCache()
+  // DECTCEM (CSI ?25 h/l) — xterm-headless doesn't expose cursor visibility
+  #cursorVisible = true
+  // Last reported mouse-move position. MouseManager sends a synthetic
+  // 'mouse.move.in' after renders; reporting those to the child would cause
+  // output → render → move → output… forever.
+  #lastMove: {x: number; y: number} | null = null
 
   constructor(props: SubprocessProps) {
     super({
@@ -107,6 +113,23 @@ export class Subprocess extends View {
 
     // Pre-allocate a reusable cell reference for render performance
     this.#cellRef = xterm.buffer.active.getNullCell()
+
+    const trackCursor =
+      (visible: boolean) => (params: (number | number[])[]) => {
+        if (params.includes(DECTCEM)) {
+          this.#cursorVisible = visible
+        }
+        // let xterm handle the sequence, too
+        return false
+      }
+    xterm.parser.registerCsiHandler(
+      {prefix: '?', final: 'h'},
+      trackCursor(true),
+    )
+    xterm.parser.registerCsiHandler(
+      {prefix: '?', final: 'l'},
+      trackCursor(false),
+    )
 
     try {
       this.#pty = ptyMod.spawn(this.#command, this.#args, {
@@ -229,6 +252,9 @@ export class Subprocess extends View {
     }
 
     this.#renderXtermBuffer(viewport, cols, rows)
+    if (hasFocus) {
+      this.#renderCursor(viewport, cols, rows)
+    }
   }
 
   #renderMessage(
@@ -250,8 +276,11 @@ export class Subprocess extends View {
     const cellRef = this.#cellRef ?? buffer.getNullCell()
     const styleCache = this.#styleCache
 
+    // getLine() indexes the whole buffer, including scrollback; the visible
+    // screen starts at viewportY.
+    const top = buffer.viewportY
     for (let y = 0; y < rows; y++) {
-      const line = buffer.getLine(y)
+      const line = buffer.getLine(top + y)
       if (!line) {
         for (let x = 0; x < cols; x++) {
           viewport.write(' ', new Point(x, y))
@@ -282,6 +311,44 @@ export class Subprocess extends View {
         x += width
       }
     }
+  }
+
+  #renderCursor(viewport: Viewport, cols: number, rows: number) {
+    const buffer = this.#xterm!.buffer.active
+    // cursorY is relative to baseY; hide the cursor if it's scrolled out of view
+    const y = buffer.cursorY + buffer.baseY - buffer.viewportY
+    if (!this.#cursorVisible || y < 0 || y >= rows || cols <= 0) {
+      return
+    }
+
+    const x = Math.min(buffer.cursorX, cols - 1)
+    const cell = buffer
+      .getLine(buffer.viewportY + y)
+      ?.getCell(x, this.#cellRef ?? undefined)
+    const chars = cell?.getChars() || ' '
+    const style = cell ? this.#styleCache.styleForCell(cell) : Style.NONE
+    viewport.write(chars, new Point(x, y), this.#cursorStyle(style, cell))
+  }
+
+  #cursorStyle(style: Style, cell: IBufferCell | undefined): Style {
+    return style.merge(new Style({inverse: !cell?.isInverse()}))
+  }
+
+  #shouldReportMouse(event: MouseEvent): boolean {
+    const mode = this.#xterm?.modes.mouseTrackingMode ?? 'none'
+    if (!shouldReportMouse(event, mode)) {
+      return false
+    }
+
+    if (event.name.startsWith('mouse.move.')) {
+      const {x, y} = event.position
+      if (this.#lastMove?.x === x && this.#lastMove?.y === y) {
+        return false
+      }
+      this.#lastMove = {x, y}
+    }
+
+    return true
   }
 
   didFocus() {
@@ -317,9 +384,16 @@ export class Subprocess extends View {
       return
     }
 
+    if (!this.#shouldReportMouse(event)) {
+      return
+    }
+
     const bytes = mouseEventToAnsi(event)
     if (bytes) {
       this.#pty.write(bytes)
     }
   }
 }
+
+// DECTCEM private mode: show/hide cursor
+const DECTCEM = 25

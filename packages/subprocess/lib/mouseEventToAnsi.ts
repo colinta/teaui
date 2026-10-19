@@ -1,6 +1,46 @@
 import type {MouseEvent} from '@teaui/core'
 
 /**
+ * The mouse reporting mode requested by the child (DECSET 9/1000/1002/1003),
+ * as reported by xterm's `terminal.modes.mouseTrackingMode`.
+ */
+export type MouseTrackingMode = 'none' | 'x10' | 'vt200' | 'drag' | 'any'
+
+/**
+ * Whether a mouse event should be reported to a child that requested the given
+ * tracking mode. Children that haven't enabled mouse tracking (e.g. a shell)
+ * would otherwise echo the escape sequences as text.
+ *
+ * - x10: button presses only
+ * - vt200 (1000): presses, releases, and wheel
+ * - drag (1002): …plus motion while a button is held
+ * - any (1003): …plus all motion
+ */
+export function shouldReportMouse(
+  event: MouseEvent,
+  mode: MouseTrackingMode,
+): boolean {
+  const name = event.name
+  switch (mode) {
+    case 'none':
+      return false
+    case 'x10':
+      return name === 'mouse.button.down'
+  }
+
+  if (name.startsWith('mouse.move.')) {
+    // 'enter', 'exit' and 'below' duplicate the position of a 'mouse.move.in'
+    return mode === 'any' && name === 'mouse.move.in'
+  }
+
+  if (DRAG_EVENTS.has(name)) {
+    return mode === 'drag' || mode === 'any'
+  }
+
+  return true
+}
+
+/**
  * Convert a TeaUI MouseEvent to an SGR mouse escape sequence
  * for forwarding to a child PTY.
  *
@@ -89,3 +129,11 @@ export function mouseEventToAnsi(event: MouseEvent): string {
 
   return `\x1b[<${button};${x};${y}${final}`
 }
+
+// Pointer motion while a button is held
+const DRAG_EVENTS: ReadonlySet<MouseEvent['name']> = new Set([
+  'mouse.button.dragInside',
+  'mouse.button.dragOutside',
+  'mouse.button.enter',
+  'mouse.button.exit',
+])

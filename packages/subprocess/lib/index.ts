@@ -1,5 +1,6 @@
 export {keyEventToAnsi} from './keyEventToAnsi.js'
-export {mouseEventToAnsi} from './mouseEventToAnsi.js'
+export {mouseEventToAnsi, shouldReportMouse} from './mouseEventToAnsi.js'
+export type {MouseTrackingMode} from './mouseEventToAnsi.js'
 export {xtermCellToStyle, StyleCache} from './xtermBridge.js'
 export type {XtermCell} from './xtermBridge.js'
 export {Subprocess} from './Subprocess.js'

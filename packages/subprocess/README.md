@@ -75,7 +75,11 @@ Extends `View`. Spawns a child process in a PTY and renders its output.
 - **Rendering:** Reads the xterm-headless buffer cell-by-cell and paints characters with
   full SGR styling (colors, bold, italic, underline, etc.) to the TeaUI viewport.
 - **Input forwarding:** When focused, keyboard events are serialized back to ANSI escape
-  sequences and written to the PTY. Mouse events are forwarded as SGR mouse sequences.
+  sequences and written to the PTY. Mouse events are forwarded as SGR mouse sequences,
+  but only those the child asked for via its mouse tracking mode (see
+  `shouldReportMouse`) — a shell that hasn't enabled mouse tracking receives none.
+- **Cursor:** When focused, the child's cursor is drawn (inverted cell), unless the child
+  hid it (`CSI ?25 l`).
 - **Resize:** Automatically resizes the PTY and xterm terminal when the viewport size changes.
 - **Lifecycle:** The PTY is spawned on `didMount` and killed on `didUnmount`.
 - **Exit handling:** When the child exits, the final buffer is preserved with an overlay
@@ -99,6 +103,17 @@ Converts a TeaUI `KeyEvent` back to the raw bytes a terminal would send. Handles
 
 Converts a TeaUI `MouseEvent` to an SGR mouse escape sequence for forwarding to a
 child PTY. Handles button press/release, scroll wheel, drag, and modifier keys.
+
+### `shouldReportMouse(event: MouseEvent, mode: MouseTrackingMode): boolean`
+
+Whether a mouse event should be sent to a child in the given xterm
+`mouseTrackingMode`:
+
+- `none` — nothing
+- `x10` — button presses
+- `vt200` (DECSET 1000) — presses, releases, wheel
+- `drag` (1002) — …plus motion while a button is held
+- `any` (1003) — …plus all motion
 
 ### `xtermCellToStyle(cell: XtermCell): Style`
 

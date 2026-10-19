@@ -1,5 +1,6 @@
 import {describe, it, expect} from 'vitest'
-import {mouseEventToAnsi} from '../lib/mouseEventToAnsi.js'
+import {mouseEventToAnsi, shouldReportMouse} from '../lib/mouseEventToAnsi.js'
+import type {MouseTrackingMode} from '../lib/mouseEventToAnsi.js'
 import type {MouseEvent as TeaMouseEvent} from '@teaui/core'
 import {Point} from '@teaui/core'
 
@@ -158,5 +159,70 @@ describe('mouseEventToAnsi', () => {
       // button=2+4+8+16=30
       expect(result).toBe('\x1b[<30;1;1M')
     })
+  })
+})
+
+describe('shouldReportMouse', () => {
+  const MODES: MouseTrackingMode[] = ['none', 'x10', 'vt200', 'drag', 'any']
+  const EVENTS: TeaMouseEvent['name'][] = [
+    'mouse.button.down',
+    'mouse.button.up',
+    'mouse.button.cancel',
+    'mouse.button.dragInside',
+    'mouse.button.dragOutside',
+    'mouse.button.enter',
+    'mouse.button.exit',
+    'mouse.wheel.up',
+    'mouse.wheel.down',
+    'mouse.move.in',
+    'mouse.move.enter',
+    'mouse.move.exit',
+    'mouse.move.below',
+  ]
+
+  function reported(mode: MouseTrackingMode) {
+    return EVENTS.filter(name =>
+      shouldReportMouse(mouseEvent(name, 0, 0), mode),
+    )
+  }
+
+  it('reports nothing when the child has not enabled mouse tracking', () => {
+    expect(reported('none')).toEqual([])
+  })
+
+  it('x10 reports button presses only', () => {
+    expect(reported('x10')).toEqual(['mouse.button.down'])
+  })
+
+  it('vt200 reports presses, releases, and wheel', () => {
+    expect(reported('vt200')).toEqual([
+      'mouse.button.down',
+      'mouse.button.up',
+      'mouse.button.cancel',
+      'mouse.wheel.up',
+      'mouse.wheel.down',
+    ])
+  })
+
+  it('drag adds motion while a button is held', () => {
+    expect(reported('drag')).toEqual([
+      'mouse.button.down',
+      'mouse.button.up',
+      'mouse.button.cancel',
+      'mouse.button.dragInside',
+      'mouse.button.dragOutside',
+      'mouse.button.enter',
+      'mouse.button.exit',
+      'mouse.wheel.up',
+      'mouse.wheel.down',
+    ])
+  })
+
+  it('any adds hover motion, without the duplicate move events', () => {
+    expect(reported('any')).toEqual([...reported('drag'), 'mouse.move.in'])
+  })
+
+  it('every mode is covered', () => {
+    expect(MODES.map(mode => reported(mode).length)).toEqual([0, 1, 5, 9, 10])
   })
 })
