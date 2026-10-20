@@ -87,4 +87,11 @@ export {
   type DesktopLayout,
   type TiledLayoutOptions,
 } from './DesktopLayout.js'
+export {
+  TilingControls,
+  type TilingControlsDelegate,
+  type TilingDirection,
+  type TilingMode,
+  type TilingOrder,
+} from './TilingControls.js'
 export * from './utility/index.js'

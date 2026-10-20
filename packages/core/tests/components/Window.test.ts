@@ -483,18 +483,123 @@ describe('Window', () => {
     })
 
     it('focusing a view inside the window activates it', () => {
+      const input = new Input({value: 'text'})
       const first = new Window({
         title: 'First',
         width: 20,
         height: 3,
-        child: new Input({value: 'text'}),
+        child: input,
       })
       const second = new Window({title: 'Second', width: 20, height: 3})
-      testRender(Stack.right({children: [first, second]}), {
+      const t = testRender(Stack.right({children: [first, second]}), {
         width: 40,
         height: 3,
       })
+      expect(first.isActive).toBe(false)
+      first.screen!.requestFocus(input)
+      t.render()
       expect(first.isActive).toBe(true)
+      expect(input.hasFocus).toBe(true)
     })
+  })
+
+  describe('focus', () => {
+    function windows() {
+      const first = new Input({value: 'one'})
+      const second = new Input({value: 'two'})
+      const firstWindow = new Window({
+        title: 'First',
+        width: 20,
+        height: 4,
+        child: Stack.down([new Text('text'), first]),
+      })
+      const secondWindow = new Window({
+        title: 'Second',
+        width: 20,
+        height: 4,
+        child: Stack.down([new Text('text'), second]),
+      })
+      const t = testRender(
+        Stack.right({children: [firstWindow, secondWindow]}),
+        {width: 40, height: 4},
+      )
+      return {first, second, firstWindow, secondWindow, t}
+    }
+
+    it('views in inactive windows cannot take focus', () => {
+      const {first, second, t} = windows()
+      // the second window is active: only its input took the default focus
+      expect(second.hasFocus).toBe(true)
+      expect(first.hasFocus).toBe(false)
+      // tab doesn't reach the first window's input
+      t.sendKey('tab')
+      expect(first.hasFocus).toBe(false)
+      t.sendKey('tab')
+      expect(second.hasFocus).toBe(true)
+    })
+
+    it('activating another window unfocuses the input', () => {
+      const {first, second, firstWindow, t} = windows()
+      click(t, 10, 1)
+      expect(firstWindow.isActive).toBe(true)
+      expect(second.hasFocus).toBe(false)
+      // the focus doesn't move to another view
+      expect(first.hasFocus).toBe(false)
+      t.sendKey('x')
+      expect(first.value).toBe('one')
+      expect(second.value).toBe('two')
+    })
+
+    it('activating a window restores the focus inside it', () => {
+      const {first, second, t} = windows()
+      // focus the first input (by clicking it), then activate the second
+      // window, and then the first one again
+      click(t, 5, 2)
+      expect(first.hasFocus).toBe(true)
+      click(t, 30, 1)
+      expect(second.hasFocus).toBe(true)
+      click(t, 10, 1)
+      expect(first.hasFocus).toBe(true)
+      t.sendKey('!')
+      expect(first.value).toBe('one!')
+    })
+
+    it('clicking an input in an inactive window focuses it', () => {
+      const {first, firstWindow, t} = windows()
+      click(t, 5, 2)
+      expect(firstWindow.isActive).toBe(true)
+      expect(first.hasFocus).toBe(true)
+    })
+  })
+})
+
+describe('Window overlays', () => {
+  it('draws overlays over the window, and keeps them on update', () => {
+    const window = new Window({title: 'Win', child: new Text('content')})
+    const overlay = new Text('OVER')
+    window.addOverlay(overlay)
+    const t = testRender(window, {width: 20, height: 3})
+    expect(t.terminal.textAtRow(0)).toBe('OVER Win ═══╡-╞═╡+╞╗')
+    expect(window.contentViews).not.toContain(overlay)
+
+    window.update({title: 'Win', children: [new Text('other')]})
+    t.render()
+    expect(window.overlays).toEqual([overlay])
+    expect(t.terminal.textAtRow(1)).toBe('║other             ║')
+
+    window.removeOverlay(overlay)
+    t.render()
+    expect(window.children).not.toContain(overlay)
+    expect(t.terminal.textAtRow(0)).toBe('╔╡x│ Win ═══╡-╞═╡+╞╗')
+  })
+
+  it('toggleMaximized calls onMaximize', () => {
+    const onMaximize = vi.fn()
+    const window = new Window({onMaximize})
+    window.toggleMaximized()
+    expect(window.isMaximized).toBe(true)
+    expect(onMaximize).toHaveBeenCalledWith(true)
+    window.isMaximized = false
+    expect(onMaximize).toHaveBeenCalledOnce()
   })
 })

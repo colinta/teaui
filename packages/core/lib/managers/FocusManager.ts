@@ -15,7 +15,17 @@ export type KeyTap = {
   deliver: (event: KeyEvent) => void
 }
 
+export interface FocusManagerOptions {
+  /**
+   * Called when a view requests focus (`requestFocus`), before the focus
+   * changes. `Window` uses this to activate itself, so that the view isn't in a
+   * focus-disabled region when it renders.
+   */
+  onRequestFocus?: (view: View) => void
+}
+
 export class FocusManager {
+  #onRequestFocus: FocusManagerOptions['onRequestFocus']
   #didCommit = false
   #currentFocusView: FocusView
   #prevFocusView: FocusView
@@ -31,6 +41,13 @@ export class FocusManager {
   #nativeFocus = new Set<View>()
   #explicitFocus = new Set<View>()
   #lastCommittedNative = true
+  // Views that tried to register for focus in a focus-disabled region this
+  // frame (see `Viewport.withFocusDisabled`).
+  #disabledFocus = new Set<View>()
+
+  constructor({onRequestFocus}: FocusManagerOptions = {}) {
+    this.#onRequestFocus = onRequestFocus
+  }
 
   /**
    * If the previous focus-view is not mounted, we can clear out the current
@@ -43,6 +60,7 @@ export class FocusManager {
   reset(isRootView: boolean) {
     if (isRootView) {
       this.#prevFocusView = this.#currentFocusView
+      this.#disabledFocus = new Set()
     }
     this.#currentFocusView = undefined
     this.#focusRing = []
@@ -63,8 +81,13 @@ export class FocusManager {
     return this.#nativeFocus.has(view) || !this.#explicitFocus.has(view)
   }
 
-  trigger(event: KeyEvent) {
-    this.#triggerNative(event)
+  /**
+   * @param original The key event before Screen translated it (see
+   *   `translateKeyEvent`). Hotkeys match either one, so that a hotkey for
+   *   'A-f' still works when 'A-f' is translated to 'A-right'.
+   */
+  trigger(event: KeyEvent, original: KeyEvent = event) {
+    this.#triggerNative(event, original)
 
     for (const tap of this.#keyTaps) {
       if (tap.spec === 'all' || match(tap.spec, event)) {
@@ -73,9 +96,11 @@ export class FocusManager {
     }
   }
 
-  #triggerNative(event: KeyEvent) {
+  #triggerNative(event: KeyEvent, original: KeyEvent) {
     for (const [view, key] of this.#hotKeys) {
-      if (match(key, event)) {
+      if (match(key, original)) {
+        return view._deliverKey(original)
+      } else if (match(key, event)) {
         return view._deliverKey(event)
       }
     }
@@ -186,8 +211,18 @@ export class FocusManager {
   }
 
   requestFocus(view: View) {
+    this.#onRequestFocus?.(view)
     this.#currentFocusView = view
     return true
+  }
+
+  /**
+   * The view is in a focus-disabled region: it isn't added to the focus ring,
+   * and if it had focus, it loses it (and the focus isn't moved to another
+   * view).
+   */
+  registerDisabledFocus(view: View) {
+    this.#disabledFocus.add(view)
   }
 
   /**
@@ -205,6 +240,15 @@ export class FocusManager {
 
   determineFocus() {
     if (this.#prevFocusView === UNFOCUS && !this.#currentFocusView) {
+      this.#currentFocusView = UNFOCUS
+    } else if (
+      this.#prevFocusView &&
+      this.#prevFocusView !== UNFOCUS &&
+      !this.#currentFocusView &&
+      this.#disabledFocus.has(this.#prevFocusView)
+    ) {
+      // The previously-focused view is in a focus-disabled region (e.g. an
+      // inactive Window): it loses focus, and nothing else gains it.
       this.#currentFocusView = UNFOCUS
     } else if (
       this.#focusRing.length > 0 &&

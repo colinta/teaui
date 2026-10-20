@@ -1,0 +1,137 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TiledLayout > controls > adds a button to the bottom-left of the active window 1`] = `
+"╭┤x│ Win 1 ───┤-├─┤+├╮╭┤x│ Win 2 ───┤-├─┤+├╮
+│content 1           ││content 2           │
+│                    ││                    │
+│                    ││                    │
+│                    ││                    │
+│                    ││                    │
+│                    │╰────────────────────╯
+│                    │╔╡x│ Win 3 ═══╡-╞═╡+╞╗
+│                    │║content 3           ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+╰────────────────────╯╚╡⊞╞═════════════════╝"
+`;
+
+exports[`TiledLayout > controls > expands into the keys panel 1`] = `
+"╭┤x│ Win 1 ───┤-├─┤+├╮╔╡x│ Win 2 ═══╡-╞═╡+╞╗
+│content 1           │║content 2           ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║╭─keys───╮          ║
+│                    │║│⌥w focus│          ║
+│                    │║│⌥r size │          ║
+│                    │║│⌥m move │          ║
+│                    │║│⌥z full │          ║
+│                    │║│⌥t modal│          ║
+│                    │║╰────────╯          ║
+╰────────────────────╯╚╣⊞╠═════════════════╝"
+`;
+
+exports[`TiledLayout > controls > the ⌥m move keys open that mode in the panel 1`] = `
+"╭┤x│ Win 1 ───┤-├─┤+├╮╔╡x│ Win 2 ═══╡-╞═╡+╞╗
+│content 1           │║content 2           ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║╭─move─╮            ║
+│                    │║│h ▲ j │            ║
+│                    │║│◀   ▶ │            ║
+│                    │║│k ▼ l │            ║
+│                    │║│ esc  │            ║
+│                    │║╰──────╯            ║
+╰────────────────────╯╚╣⊞╠═════════════════╝"
+`;
+
+exports[`TiledLayout > controls > the ⌥r size keys open that mode in the panel 1`] = `
+"╭┤x│ Win 1 ───┤-├─┤+├╮╔╡x│ Win 2 ═══╡-╞═╡+╞╗
+│content 1           │║content 2           ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║╭─size─╮            ║
+│                    │║│(⇧)▲  │            ║
+│                    │║│ ◀   ▶│            ║
+│                    │║│   ▼  │            ║
+│                    │║│ esc  │            ║
+│                    │║╰──────╯            ║
+╰────────────────────╯╚╣⊞╠═════════════════╝"
+`;
+
+exports[`TiledLayout > controls > the ⌥w focus keys open that mode in the panel 1`] = `
+"╭┤x│ Win 1 ───┤-├─┤+├╮╔╡x│ Win 2 ═══╡-╞═╡+╞╗
+│content 1           │║content 2           ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║╭─focus╮            ║
+│                    │║│h ▲ j │            ║
+│                    │║│◀   ▶ │            ║
+│                    │║│k ▼ l │            ║
+│                    │║│ esc  │            ║
+│                    │║╰──────╯            ║
+╰────────────────────╯╚╣⊞╠═════════════════╝"
+`;
+
+exports[`TiledLayout > move mode (⌥m) > moves the active window to the window in a direction 1`] = `
+"╔╡x│ Win 3 ═══╡-╞═╡+╞╗╭┤x│ Win 2 ───┤-├─┤+├╮
+║content 3           ║│content 2           │
+║                    ║│                    │
+║                    ║│                    │
+║                    ║│                    │
+║                    ║│                    │
+║                    ║╰────────────────────╯
+║                    ║╭┤x│ Win 1 ───┤-├─┤+├╮
+║                    ║│content 1           │
+║                    ║│                    │
+║                    ║│                    │
+║                    ║│                    │
+║                    ║│                    │
+╚╣⊞╠═════════════════╝╰────────────────────╯"
+`;
+
+exports[`TiledLayout > ⌥t modal (floating) > floats the active window above the tiles, and back 1`] = `
+"╭┤x│ Win 1 ───┤-├─┤+├╮╭┤x│ Win 2 ───┤-├─┤+├╮
+│content 1           ││content 2           │
+│                    ││                    │
+│        ╔╡x│ Win 3 ═══════╡-╞═╡+╞╗        │
+│        ║content 3               ║        │
+│        ║                        ║        │
+│        ║                        ║        │
+│        ║                        ║        │
+│        ║                        ║        │
+│        ║                        ║        │
+│        ╚╡⊞╞═════════════════════╝        │
+│                    ││                    │
+│                    ││                    │
+╰────────────────────╯╰────────────────────╯"
+`;
+
+exports[`TiledLayout > ⌥z fullscreen > toggles the active window fullscreen 1`] = `
+"╔╡x│ Win 3 ═════════════════════════╡-╞═╡+╞╗
+║content 3                                 ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+║                                          ║
+╚╡⊞╞═══════════════════════════════════════╝"
+`;

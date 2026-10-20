@@ -149,7 +149,7 @@ exports[`Desktop > tiled layout > accepts layout options 1`] = `
 "╭┤x│┤-├┤+├╮╔╡x│═════════════════╡-╞═╡+╞╗
 │         │║                           ║
 │         │║                           ║
-╰─────────╯╚═══════════════════════════╝"
+╰─────────╯╚╡⊞╞════════════════════════╝"
 `;
 
 exports[`Desktop > tiled layout > changes the ratio by dragging the border between the tiles 1`] = `
@@ -164,7 +164,7 @@ exports[`Desktop > tiled layout > changes the ratio by dragging the border betwe
 ║                    ║│                │
 ║                    ║│                │
 ║                    ║│                │
-╚════════════════════╝╰────────────────╯"
+╚╡⊞╞═════════════════╝╰────────────────╯"
 `;
 
 exports[`Desktop > tiled layout > covers the tiles with a maximized window 1`] = `
@@ -179,7 +179,7 @@ exports[`Desktop > tiled layout > covers the tiles with a maximized window 1`] =
 ║                                      ║
 ║                                      ║
 ║                                      ║
-╚══════════════════════════════════════╝"
+╚╡⊞╞═══════════════════════════════════╝"
 `;
 
 exports[`Desktop > tiled layout > fills the desktop with a single window 1`] = `
@@ -194,7 +194,7 @@ exports[`Desktop > tiled layout > fills the desktop with a single window 1`] = `
 ║                                      ║
 ║                                      ║
 ║                                      ║
-╚══════════════════════════════════════╝"
+╚╡⊞╞═══════════════════════════════════╝"
 `;
 
 exports[`Desktop > tiled layout > keeps the minimum width of the windows when changing the ratio 1`] = `
@@ -209,7 +209,7 @@ exports[`Desktop > tiled layout > keeps the minimum width of the windows when ch
 ║                     ║│               │
 ║                     ║│               │
 ║                     ║│               │
-╚═════════════════════╝╰───────────────╯"
+╚╡⊞╞══════════════════╝╰───────────────╯"
 `;
 
 exports[`Desktop > tiled layout > lines up minimized windows along the bottom 1`] = `
@@ -223,7 +223,7 @@ exports[`Desktop > tiled layout > lines up minimized windows along the bottom 1`
 ║                                      ║
 ║                                      ║
 ║                                      ║
-╚══════════════════════════════════════╝
+╚╡⊞╞═══════════════════════════════════╝
 ╭ Win 2 ┤↔├╮╭ Win 3 ┤↔├╮"
 `;
 
@@ -239,7 +239,7 @@ exports[`Desktop > tiled layout > places the first window on the left, the rest 
 │                  │║                  ║
 │                  │║                  ║
 │                  │║                  ║
-╰──────────────────╯╚══════════════════╝"
+╰──────────────────╯╚╡⊞╞═══════════════╝"
 `;
 
 exports[`Desktop > tiled layout > tiles the windows that are not minimized 1`] = `
@@ -253,6 +253,6 @@ exports[`Desktop > tiled layout > tiles the windows that are not minimized 1`] =
 │                  │║                  ║
 │                  │║                  ║
 │                  │║                  ║
-╰──────────────────╯╚══════════════════╝
+╰──────────────────╯╚╡⊞╞═══════════════╝
 ╭ Win 1 ┤↔├╮"
 `;

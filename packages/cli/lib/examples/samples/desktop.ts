@@ -16,7 +16,7 @@ export const desktopExample: ComponentExample = {
       name: 'layout',
       type: "'floating' | 'tiled' | DesktopLayout",
       description:
-        "Defaults to 'floating': overlapping windows that move and resize. 'tiled' puts the first window on the left and stacks the rest. Pass a DesktopLayout for custom window management; it is only replaced when the prop changes",
+        "Defaults to 'floating': overlapping windows that move and resize. 'tiled' puts the first window on the left and stacks the rest, and gives the active window placement controls: a ⊞ button in its bottom-left corner that lists the keys, and ⌥w (focus), ⌥m (move), ⌥r (size), ⌥z (fullscreen), ⌥t (modal/floating). Pass a DesktopLayout for custom window management; it is only replaced when the prop changes",
       availability: 'both',
     },
     {

@@ -45,6 +45,8 @@ export class Viewport {
   // probe viewports are layout viewports that also leave the views' committed
   // geometry alone, see `Viewport.isProbe`
   #isProbe = false
+  // see withFocusDisabled
+  #isFocusDisabled = false
   #alignmentContext: AlignmentContext | undefined
   /**
    * For modals, this is the Rect of the view that presented the modal, in absolute
@@ -112,6 +114,7 @@ export class Viewport {
     probe.#locationOrigin = this.#locationOrigin
     probe.#style = this.#style
     probe.#alignmentContext = this.#alignmentContext
+    probe.#isFocusDisabled = this.#isFocusDisabled
     probe.parentRect = this.parentRect
     draw(probe)
   }
@@ -256,10 +259,44 @@ export class Viewport {
   }
 
   /**
+   * Whether views drawn in this viewport can take keyboard focus, see
+   * `withFocusDisabled`.
+   */
+  get isFocusDisabled(): boolean {
+    return this.#isFocusDisabled
+  }
+
+  /**
+   * Draws with focus disabled: views drawn inside `draw` (and their children)
+   * can't take keyboard focus. `registerFocus()` returns false, they're not
+   * added to the focus ring (tab skips them), and a view that had focus loses
+   * it - the focus isn't moved to another view. Hotkeys and mouse events still
+   * work. `Window` draws its contents this way when it isn't the active window.
+   *
+   *     viewport.withFocusDisabled(inside => child.render(inside))
+   */
+  withFocusDisabled(draw: (viewport: Viewport) => void): void {
+    const prev = this.#isFocusDisabled
+    this.#isFocusDisabled = true
+    try {
+      draw(this)
+    } finally {
+      this.#isFocusDisabled = prev
+    }
+  }
+
+  /**
    * @return boolean Whether the current render target is the focus view
    */
   registerFocus(opts?: {isDefault?: boolean}): boolean {
     if (!this.#currentRender) {
+      return false
+    }
+
+    if (this.#isFocusDisabled) {
+      if (!this.#isLayout) {
+        this.#screen.registerDisabledFocus(this.#currentRender)
+      }
       return false
     }
 
@@ -337,6 +374,11 @@ export class Viewport {
    */
   _registerFocus(isDefault: boolean) {
     if (!this.#currentRender || this.#isLayout) {
+      return
+    }
+
+    if (this.#isFocusDisabled) {
+      this.#screen.registerDisabledFocus(this.#currentRender)
       return
     }
 

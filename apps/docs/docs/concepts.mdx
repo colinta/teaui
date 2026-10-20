@@ -103,6 +103,17 @@ Views join the focus ring with `viewport.registerFocus()` and handle keys in
 `viewport.registerHotKey()`, so its shortcut works regardless of which view is
 focused.
 
+A container can disable focus for part of the tree by drawing it with
+`viewport.withFocusDisabled(inside => child.render(inside))`. Views drawn
+inside can't take focus: they aren't in the focus ring, and a view that had
+focus loses it (the focus doesn't move to another view). Hotkeys and mouse
+events still work. Inactive [`Window`](/docs/components/window)s draw their
+contents this way.
+
+Hotkeys match the key as it was received, before TeaUI translates it (e.g.
+`⌥b` and `⌥f`, which some terminals send for `⌥←` and `⌥→`, are translated
+to `⌥←` and `⌥→`). The focused view receives the translated key.
+
 A matching hotkey is exclusive: the focused view does not also receive that
 key. For example, if an `Input` is focused and a `HotKey` matches Enter, the
 hotkey runs; the input neither submits nor inserts a newline. If multiple

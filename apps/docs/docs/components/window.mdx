@@ -10,6 +10,13 @@ A movable, resizable window with a title bar. The close button is on the left; t
 
 The active window is drawn with a double border; other windows use a rounded single border. Pressing a window — or pressing or focusing a view inside it — makes it the active window. Minimized windows are never active.
 
+Only the active window's views can have keyboard focus. Inactive windows draw their contents with focus disabled (`viewport.withFocusDisabled`), so:
+
+- Tab only moves between the views of the active window (and views outside of windows).
+- Activating another window unfocuses the input you were typing in; the focus isn't moved to some other view.
+- Activating a window gives the focus back to the view inside it that last had focus.
+- Focusing a view inside an inactive window (clicking an input, or `screen.requestFocus(view)`) activates the window first.
+
 A minimized window is just its title bar, one row tall, with only the title and a restore button:
 
 ```
@@ -83,6 +90,13 @@ window.position // Point | undefined
 window.minimumSize // Size
 window.isActive
 window.activate()
+window.toggleMaximized() // like the maximize button: calls onMaximize
+window.activate({restoreFocus: false}) // don't give the focus back to the window's view
+window.restoreFocus() // focus the view inside the window that last had focus
+
+// views drawn over the whole window, after the content (see DesktopLayout.focus)
+window.addOverlay(view)
+window.removeOverlay(view)
 ```
 
 `titleBar` views are held by a `Window.TitleBar` container, which can also be added as a child.

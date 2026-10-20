@@ -200,6 +200,10 @@ export class Window extends Container {
   #onActivate: Props['onActivate']
 
   #activatedAt = 0
+  // views drawn over the window, see addOverlay
+  #overlays: View[] = []
+  // the last view inside this window that had keyboard focus
+  #lastFocused: View | undefined
   // the size the window was drawn at (can be smaller than contentSize)
   #frameSize = Size.zero
   #hover: Region | undefined
@@ -394,9 +398,11 @@ export class Window extends Container {
   }
 
   /**
-   * Makes this the active window (and raises it, in a `Desktop`).
+   * Makes this the active window (and raises it, in a `Desktop`). When the
+   * window becomes active, the view inside it that last had keyboard focus gets
+   * it back (see `restoreFocus`), unless `restoreFocus` is false.
    */
-  activate() {
+  activate({restoreFocus = true}: {restoreFocus?: boolean} = {}) {
     const wasActive = this.isActive
     const host = windowHost(this.parent)
     if (host) {
@@ -407,6 +413,9 @@ export class Window extends Container {
     }
 
     if (!wasActive && this.isActive) {
+      if (restoreFocus) {
+        this.restoreFocus()
+      }
       this.#onActivate?.()
     }
   }
@@ -460,8 +469,37 @@ export class Window extends Container {
 
   get contentViews(): View[] {
     return this.children.filter(
-      child => child !== this.#titleView && !(child instanceof WindowTitleBar),
+      child =>
+        child !== this.#titleView &&
+        !(child instanceof WindowTitleBar) &&
+        !this.#overlays.includes(child),
     )
+  }
+
+  /**
+   * Views drawn over the whole window (border included), after the content and
+   * the title bar. `Desktop` layouts use these to add controls to the active
+   * window (see `TiledLayout`). Each overlay is given the window's frame, and
+   * draws (and registers mouse events) only where it needs to.
+   */
+  get overlays(): readonly View[] {
+    return this.#overlays
+  }
+
+  addOverlay(view: View) {
+    if (this.#overlays.includes(view)) {
+      return
+    }
+    this.#overlays = [...this.#overlays, view]
+    super.add(view)
+  }
+
+  removeOverlay(view: View) {
+    if (!this.#overlays.includes(view)) {
+      return
+    }
+    this.#overlays = this.#overlays.filter(overlay => overlay !== view)
+    super.removeChild(view)
   }
 
   add(child: View, at?: number) {
@@ -478,7 +516,8 @@ export class Window extends Container {
   removeChild(child: View) {
     if (
       child === this.#titleView ||
-      (child === this.#titleBar && this.#ownsTitleBar)
+      (child === this.#titleBar && this.#ownsTitleBar) ||
+      this.#overlays.includes(child)
     ) {
       return
     }
@@ -506,17 +545,42 @@ export class Window extends Container {
 
   didMount(screen: Screen) {
     this.#unsubscribe = [
+      // pressing anywhere in the window activates it
       screen.on('mousePress', view => {
         if (this.#contains(view)) {
           this.activate()
         }
       }),
+      // focusing a view in the window activates it - before the focus
+      // changes, because inactive windows disable focus
+      screen.on('focusRequest', view => {
+        if (this.#contains(view)) {
+          this.#lastFocused = view
+          this.activate({restoreFocus: false})
+        }
+      }),
       screen.on('focusChange', view => {
         if (view && this.#contains(view)) {
-          this.activate()
+          this.#lastFocused = view
+          this.activate({restoreFocus: false})
         }
       }),
     ]
+  }
+
+  /**
+   * Gives keyboard focus back to the view inside this window that last had it
+   * (if it's still in the window). Used when a window is activated from the
+   * keyboard, so that typing goes to the window that is now active.
+   *
+   * @return Whether a view was focused.
+   */
+  restoreFocus(): boolean {
+    const view = this.#lastFocused
+    if (!view || !this.#contains(view) || !this.screen) {
+      return false
+    }
+    return this.screen.requestFocus(view)
   }
 
   didUnmount(_screen: Screen) {
@@ -591,7 +655,20 @@ export class Window extends Container {
     return new Size(width, height)
   }
 
+  /**
+   * Inactive windows draw their contents with focus disabled
+   * (`viewport.withFocusDisabled`): the views inside can't take keyboard focus
+   * until the window is activated.
+   */
   render(viewport: Viewport) {
+    if (this.isActive) {
+      this.#render(viewport)
+    } else {
+      viewport.withFocusDisabled(inside => this.#render(inside))
+    }
+  }
+
+  #render(viewport: Viewport) {
     if (viewport.isEmpty) {
       // children still register their hotkeys and focus
       this.#renderContent(viewport, EMPTY_RECT)
@@ -599,6 +676,7 @@ export class Window extends Container {
         const titleBar = this.#titleBar
         viewport.clipped(EMPTY_RECT, inside => titleBar.render(inside))
       }
+      this.#renderOverlays(viewport)
       return
     }
 
@@ -669,6 +747,15 @@ export class Window extends Container {
     })
 
     this.#renderTitleBar(viewport, isActive)
+    this.#renderOverlays(viewport)
+  }
+
+  #renderOverlays(viewport: Viewport) {
+    for (const overlay of this.#overlays) {
+      if (overlay.isVisible) {
+        overlay.render(viewport)
+      }
+    }
   }
 
   #renderContent(viewport: Viewport, rect: Rect) {
@@ -970,6 +1057,15 @@ export class Window extends Container {
       this.#hover = region
       this.invalidateRender()
     }
+  }
+
+  /**
+   * Like pressing the maximize button: toggles `isMaximized` (restoring a
+   * minimized window), and calls `onMaximize`. The `isMaximized` setter doesn't
+   * call `onMaximize`.
+   */
+  toggleMaximized() {
+    this.#pressButton('maximize')
   }
 
   #pressButton(button: WindowButton) {

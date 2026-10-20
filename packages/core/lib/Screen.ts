@@ -50,6 +50,13 @@ interface ScreenEventMap {
    * this to react to presses on their descendants, e.g. `Window` raises itself.
    */
   mousePress: (view: View, event: SystemMouseEvent) => void
+  /**
+   * A view requested keyboard focus (`screen.requestFocus`,
+   * `system.requestFocus`). Emitted before the focus changes, so that
+   * containers can make sure the view can take focus (e.g. `Window` activates
+   * itself, because inactive windows disable focus).
+   */
+  focusRequest: (view: View) => void
 }
 
 export class Screen {
@@ -67,7 +74,9 @@ export class Screen {
   rootView: View
 
   #buffer: Buffer
-  #focusManager = new FocusManager()
+  #focusManager = new FocusManager({
+    onRequestFocus: view => this.#emit('focusRequest', view),
+  })
   #modalManager = new ModalManager()
   #mouseManager = new MouseManager({
     onPress: (view, event) => this.#emit('mousePress', view, event),
@@ -78,6 +87,7 @@ export class Screen {
   } = {
     focusChange: new Set(),
     mousePress: new Set(),
+    focusRequest: new Set(),
   }
 
   static async start(): Promise<[Screen, TerminalProgram, Root]>
@@ -383,6 +393,11 @@ export class Screen {
     return this.#focusManager.registerFocus(view, isDefault, native)
   }
 
+  /** @see FocusManager.registerDisabledFocus */
+  registerDisabledFocus(view: View) {
+    this.#focusManager.registerDisabledFocus(view)
+  }
+
   registerHotKey(view: View, key: HotKeyDef) {
     return this.#focusManager.registerHotKey(view, key)
   }
@@ -443,8 +458,7 @@ export class Screen {
   }
 
   triggerKeyboard(event: KeyEvent) {
-    event = translateKeyEvent(event)
-    this.#focusManager.trigger(event)
+    this.#focusManager.trigger(translateKeyEvent(event), event)
   }
 
   triggerPaste(text: string) {

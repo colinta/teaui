@@ -139,7 +139,7 @@ Core/OOP components are exported by `@teaui/core`. Most have React wrappers with
 - [Tabs](https://colinta.github.io/teaui/docs/components/tabs) — Use to switch among a small set of peer views.
 - [Tabs.Section](https://colinta.github.io/teaui/docs/components/tabs) — Use for one titled view within a tab set.
 - [Window](https://colinta.github.io/teaui/docs/components/window) — Use for a movable, resizable panel with a title bar and close/minimize/maximize buttons.
-- [Desktop](https://colinta.github.io/teaui/docs/components/desktop) — Use to manage overlapping or tiled Windows: placement, z-order, and the active window. Minimized windows are lined up along the bottom.
+- [Desktop](https://colinta.github.io/teaui/docs/components/desktop) — Use to manage overlapping or tiled Windows: placement, z-order, and the active window. Minimized windows are lined up along the bottom. The tiled layout has keys: ⌥w focus, ⌥m move, ⌥r size, ⌥z fullscreen, ⌥t modal (floating).
 - [Tree](https://colinta.github.io/teaui/docs/components/tree) — Use to browse expandable hierarchical data.
 
 ### Drawing and charts

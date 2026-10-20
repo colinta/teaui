@@ -13,7 +13,7 @@ Minimized windows are arranged by the Desktop, whatever the layout: they're line
 Placement is done by a layout plugin:
 
 - `'floating'` (default) — overlapping windows. Drag the title bar to move a window and its borders to resize it. Windows without `x`/`y` are cascaded from the top-left. Maximized windows fill the Desktop.
-- `'tiled'` — the first window fills the left side and the others are stacked on the right. Drag the border between the two sides to change the ratio.
+- `'tiled'` — the first window fills the left side and the others are stacked on the right. Drag the borders between the tiles to resize them. See [Tiled layout](#tiled-layout).
 - a `DesktopLayout` object — your own window management.
 
 Children that aren't windows are drawn behind the windows, filling the Desktop.
@@ -28,6 +28,50 @@ Children that aren't windows are drawn behind the windows, filling the Desktop.
 | `children` | `ReactNode`                              | —            | Windows, and background views |
 
 Layouts can hold state (the tiled ratio, for instance), so the layout is only replaced when the `layout` prop changes. Create custom layouts once (`useMemo`, or outside the component).
+
+## Tiled layout
+
+The active window gets placement controls: a `╡⊞╞` button in its bottom-left corner, on the bottom border. Press it to expand it into a panel that lists the keys:
+
+```
+║╭─keys───╮      ║
+║│⌥w focus│      ║
+║│⌥r size │      ║
+║│⌥m move │      ║
+║│⌥z full │      ║
+║│⌥t modal│      ║
+║╰────────╯      ║
+╚╣⊞╠═════════════╝
+```
+
+Press a key (or a row of the panel) to activate that mode, and the panel shows its keys, which can be pressed, too:
+
+```
+╭─focus╮   ╭─move─╮   ╭─size─╮
+│h ▲ j │   │h ▲ j │   │(⇧)▲  │
+│◀   ▶ │   │◀   ▶ │   │ ◀   ▶│
+│k ▼ l │   │k ▼ l │   │   ▼  │
+│ esc  │   │ esc  │   │ esc  │
+╰──────╯   ╰──────╯   ╰──────╯
+```
+
+| Keys | Mode      | Then                                                                                                          |
+| ---- | --------- | ------------------------------------------------------------------------------------------------------------- |
+| `⌥w` | **focus** | `↑` `↓` `←` `→` focus the window in that direction; `h`/`j`/`k`/`l` focus the first/previous/next/last window |
+| `⌥m` | **move**  | the same keys, but the active window swaps places with that window                                            |
+| `⌥r` | **size**  | `↑` `↓` `←` `→` grow the window on that side; `⇧↑` `⇧↓` `⇧←` `⇧→` shrink it from the opposite side            |
+| `⌥z` |           | toggle fullscreen (zoom)                                                                                      |
+| `⌥t` |           | toggle modal (floating)                                                                                       |
+
+A mode stays active (so that you can press several keys) until `esc`. `esc` closes the mode, and then the panel; pressing `⊞` closes both. The keys work whether or not the panel is open: activating a mode from the keyboard doesn't open the panel (the `⊞` button is highlighted while a mode is active). The panel isn't shown if the window is too short for it.
+
+In size mode, the edge always moves in the direction of the arrow: `↑` moves the top edge up (`height += 1, y -= 1`), `⇧↑` moves the bottom edge up (`height -= 1`), and so on. In the panel, `(⇧)` makes the arrows shrink (or shift-click them). Keys have no effect when the window can't grow or shrink in that direction: edges along the Desktop's border don't move, and windows don't shrink below their minimum size.
+
+Modal (floating) windows are drawn above the tiles, and can be moved and resized like floating windows; they keep their place in the tiles. Fullscreen windows are drawn above everything. Moving changes the layout's order, not the Desktop's children.
+
+The keys follow other tools: `⌥w` like Vim's `⌃W` window commands, `⌥r` like i3's resize mode, `⌥z` like tmux's zoom, and `⌥t` like xmonad's tiled/floating toggle. They avoid the `⌥` keys that terminals and text fields already use: `⌥b` and `⌥f` (word left and right in readline, and what macOS terminals send for `⌥←` and `⌥→`), `⌥d`, and the letters that `Input` uses for accents (`⌥a` `⌥c` `⌥e` `⌥i` `⌥n` `⌥o` `⌥s` `⌥u`).
+
+On macOS, the `⌥` keys need a terminal that sends Option as Meta (Alt); otherwise `⌥w` types `∑`.
 
 ## Custom layouts
 
@@ -53,8 +97,11 @@ const columns: DesktopLayout = {
 | `canResize(window)`           | Whether the borders can be dragged. Default: false                                                                                                                                                           |
 | `move(window, origin, size)`  | The user dragged the title bar to `origin`. Usually sets `window.position`                                                                                                                                   |
 | `resize(window, frame, size)` | The user dragged a border; `frame` already respects the window's minimum and maximum size                                                                                                                    |
+| `focus(window, desktop)`      | `window` became the active window. Add controls with `window.addOverlay(view)`                                                                                                                               |
+| `blur(window, desktop)`       | `window` is no longer active (or the layout was replaced). Remove what `focus` added                                                                                                                         |
+| `layer(window)`               | Higher layers are drawn above lower layers, regardless of z-order. Default: 0                                                                                                                                |
 
-`FloatingLayout` and `TiledLayout` (with a `ratio` option) are exported if you want to configure or extend them.
+`FloatingLayout` and `TiledLayout` (with a `ratio` option) are exported if you want to configure or extend them. `TilingControls` (the tiled layout's controls) works with any layout that implements `TilingControlsDelegate`.
 
 <details>
 <summary>Core API</summary>
@@ -73,6 +120,12 @@ const desktop = new Desktop({
 desktop.windows // in z-order, bottom to top
 desktop.activeWindow
 desktop.activateWindow(window)
+
+const tiled = desktop.layout
+tiled.setFloating(window, true)
+tiled.isFloating(window)
+tiled.setMode('move') // 'focus' | 'move' | 'size' | undefined
+tiled.setExpanded(true) // show the panel
 ```
 
 </details>

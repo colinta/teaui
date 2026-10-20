@@ -40,7 +40,11 @@ const desktop = new Desktop({
   children: [
     // non-window children are drawn behind the windows
     new Text({
-      text: 'Drag title bars to move windows, and borders to resize them.',
+      lines: [
+        'Drag title bars to move windows, and borders to resize them.',
+        'Tiled: press ⊞ (bottom-left of the active window) for the keys:',
+        '⌥w focus, ⌥m move, ⌥r size, ⌥z fullscreen, ⌥t modal; esc closes.',
+      ],
       alignment: 'center',
     }),
   ],

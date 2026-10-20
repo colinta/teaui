@@ -44,6 +44,8 @@ export class Desktop extends Container implements WindowHost {
   #minimized: Window[] = []
   // the area available to the layout (above the minimized windows)
   #layoutSize = Size.zero
+  // the window the layout was told is focused (see DesktopLayout.focus)
+  #focused: Window | undefined
 
   constructor({child, children, ...props}: Props = {}) {
     super(props)
@@ -73,6 +75,10 @@ export class Desktop extends Container implements WindowHost {
   set layout(value: DesktopLayoutName | DesktopLayout) {
     if (value === this.#layoutProp) {
       return
+    }
+    if (this.#focused) {
+      this.#layout.blur?.(this.#focused, this)
+      this.#focused = undefined
     }
     this.#layoutProp = value
     this.#layout = createLayout(value)
@@ -114,6 +120,10 @@ export class Desktop extends Container implements WindowHost {
   }
 
   render(viewport: Viewport) {
+    if (!viewport.isProbe) {
+      this.#updateFocused()
+    }
+
     const windows = this.windows
     if (viewport.isEmpty) {
       super.render(viewport)
@@ -144,14 +154,37 @@ export class Desktop extends Container implements WindowHost {
     const frames = this.#layout.layout(tiled, this.#layoutSize)
     tiled.forEach((window, index) => frameMap.set(window, frames[index]))
 
-    for (const window of windows) {
-      if (!window.isVisible) {
-        continue
-      }
-
+    // windows are drawn in z-order, within their layer
+    const layer = (window: Window) =>
+      window.isMinimized ? 0 : (this.#layout.layer?.(window) ?? 0)
+    const ordered = windows
+      .filter(window => window.isVisible)
+      .map((window, index) => ({window, index, layer: layer(window)}))
+      .sort((a, b) => a.layer - b.layer || a.index - b.index)
+    for (const {window} of ordered) {
       // windows without a frame still register their hotkeys and focus
       const frame = frameMap.get(window) ?? EMPTY_RECT
       viewport.clipped(frame, inside => window.render(inside))
+    }
+  }
+
+  /**
+   * Tells the layout when the active window changes (`DesktopLayout.focus` and
+   * `blur`).
+   */
+  #updateFocused() {
+    const active = this.activeWindow
+    if (active === this.#focused) {
+      return
+    }
+
+    const prev = this.#focused
+    this.#focused = active
+    if (prev) {
+      this.#layout.blur?.(prev, this)
+    }
+    if (active) {
+      this.#layout.focus?.(active, this)
     }
   }
 

@@ -6,7 +6,7 @@ exports[`Desktop > lays out windows with the tiled layout 1`] = `
 │                  │║                  ║
 │                  │║                  ║
 │                  │║                  ║
-╰──────────────────╯╚══════════════════╝"
+╰──────────────────╯╚╡⊞╞═══════════════╝"
 `;
 
 exports[`Window > closes a window from React state 1`] = `

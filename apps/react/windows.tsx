@@ -37,6 +37,9 @@ export function WindowsTab() {
           New Window
         </Button>
       </Stack.right>
+      {layout === 'tiled' ? (
+        <Text>⊞ · ⌥w focus · ⌥m move · ⌥r size · ⌥z full · ⌥t modal · esc</Text>
+      ) : null}
       <Desktop layout={layout} flex={1}>
         {windows.map((id, index) => (
           <Window
