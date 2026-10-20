@@ -14,6 +14,7 @@ export type Purpose =
   | 'proceed' // aka green
   | 'green'
   | 'cancel' // aka red
+  | 'destructive' // aka cancel, red
   | 'red'
   | 'selected'
   | 'plain'
@@ -162,6 +163,7 @@ export class Palette {
     checkedSelectionBackground: '#a7b8dc',
   })
   static red = Palette.cancel
+  static destructive = Palette.cancel
   static green = Palette.proceed
   static blue = Palette.primary
   static orange = Palette.secondary

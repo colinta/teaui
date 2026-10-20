@@ -4,13 +4,13 @@ import {captureExample} from './capture.js'
 import type {ComponentExample} from './types.js'
 
 const WIDTH = 36
-const HEIGHT = 17
+const HEIGHT = 19
 
 export const inputExample: ComponentExample = {
   name: 'input',
   availability: 'both',
   description:
-    'Editable text with selection, undo/redo, wrapping, multiline editing, and display-only formatting',
+    'Editable text with selection, undo/redo, wrapping, multiline editing, display-only formatting, and secret (password) masking',
   props: [
     {
       name: 'value',
@@ -51,6 +51,13 @@ export const inputExample: ComponentExample = {
       type: '(text: string) => string',
       description:
         'Optional display-only ANSI styling function; return the same text with SGR escapes, not replacement characters. Does not change value and is not applied to the placeholder',
+      availability: 'both',
+    },
+    {
+      name: 'secret',
+      type: 'boolean',
+      description:
+        "Defaults to false; masks every character as '•' for passwords while value stays the real text. Forces single-line without wrapping, ignores format, and word movement treats the value as one word. The placeholder is not masked",
       availability: 'both',
     },
     {

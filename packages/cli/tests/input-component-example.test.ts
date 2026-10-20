@@ -5,7 +5,7 @@ import {lineWidth, removeAnsi, TestTerminal} from '@teaui/core'
 import {inputExample} from '../lib/examples/samples/input.js'
 import * as capture from '../lib/examples/samples/capture.js'
 
-const SIZE = {width: 36, height: 17}
+const SIZE = {width: 36, height: 19}
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -28,6 +28,7 @@ describe('input CLI component example', () => {
         'multiline',
         'font',
         'format',
+        'secret',
         'onChange',
         'onSubmit',
         'purpose',
@@ -57,6 +58,8 @@ describe('input CLI component example', () => {
       expect(prop('format')?.description).toContain(
         'not applied to the placeholder',
       )
+      expect(prop('secret')?.type).toBe('boolean')
+      expect(prop('secret')?.description).toContain('value stays the real text')
       expect(prop('onChange')?.type).toBe('(text: string) => void')
       expect(prop('onChange')?.description).toContain('paste and undo/redo')
       expect(prop('onSubmit')?.type).toBe('(text: string) => void')
@@ -92,7 +95,8 @@ describe('input CLI component example', () => {
       if (framework === 'core') {
         for (const snippet of [
           'width: 36',
-          'height: 17',
+          'height: 19',
+          'secret: true',
           'width: 24',
           'height: 2',
           'wrap: true',
@@ -110,7 +114,8 @@ describe('input CLI component example', () => {
       } else {
         for (const snippet of [
           "import React, {useState} from 'react'",
-          '<Stack.down width={36} height={17}>',
+          '<Stack.down width={36} height={19}>',
+          'secret',
           '<Input',
           '<Text>{status}</Text>',
           'width={24}',
@@ -141,6 +146,7 @@ describe('input CLI component example', () => {
           'setMultiline',
           'setFont',
           'setStyled',
+          'setPassword',
         ]) {
           expect(source).toContain(`onChange={${callback}}`)
         }
@@ -161,6 +167,9 @@ describe('input CLI component example', () => {
       expect(rendered).toContain('second line')
       expect(rendered).toContain('𝕋𝕖𝕒𝕌𝕀 𝟙𝟚𝟛')
       expect(rendered).toContain('Styled text')
+      expect(rendered).toContain('Secret (password)')
+      expect(rendered).toContain('•••••••')
+      expect(rendered).not.toContain('hunter2')
       const lines = rendered.split('\n')
       expect(lines).toHaveLength(SIZE.height)
       expect(lines.map(line => lineWidth(line))).toEqual(

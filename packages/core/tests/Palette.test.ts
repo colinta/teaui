@@ -2,6 +2,11 @@ import {describe, expect, it} from 'vitest'
 import {Palette} from '../lib/Palette.js'
 
 describe('Palette', () => {
+  it("aliases 'destructive' to 'cancel' (and 'red')", () => {
+    expect(Palette.destructive).toBe(Palette.cancel)
+    expect(Palette.destructive).toBe(Palette.red)
+  })
+
   describe('ui', () => {
     it('uses flat controls by default and raises controls explicitly', () => {
       expect(Palette.primary.ui().background).toBe('#273F70')

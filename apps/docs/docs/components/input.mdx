@@ -27,12 +27,25 @@ Clicks past a rendered row clamp to its last position, including the end-of-line
 
 ## Props
 
-| Prop          | Type                     | Default     | Description            |
-| ------------- | ------------------------ | ----------- | ---------------------- |
-| `value`       | `string`                 | `''`        | Current text           |
-| `placeholder` | `string`                 | —           | Placeholder when empty |
-| `onChange`    | `(text: string) => void` | —           | Text change callback   |
-| `onSubmit`    | `(text: string) => void` | —           | Enter key callback     |
-| `wrap`        | `boolean`                | `false`     | Wrap long lines        |
-| `multiline`   | `boolean`                | `false`     | Allow multiple lines   |
-| `font`        | `FontFamily`             | `'default'` | Text font              |
+| Prop          | Type                     | Default     | Description                                |
+| ------------- | ------------------------ | ----------- | ------------------------------------------ |
+| `value`       | `string`                 | `''`        | Current text                               |
+| `placeholder` | `string`                 | —           | Placeholder when empty                     |
+| `onChange`    | `(text: string) => void` | —           | Text change callback                       |
+| `onSubmit`    | `(text: string) => void` | —           | Enter key callback                         |
+| `wrap`        | `boolean`                | `false`     | Wrap long lines                            |
+| `multiline`   | `boolean`                | `false`     | Allow multiple lines                       |
+| `font`        | `FontFamily`             | `'default'` | Text font                                  |
+| `secret`      | `boolean`                | `false`     | Mask characters (for passwords); see below |
+
+## Secret input
+
+`secret` masks every character as `•` while `value` (and `onChange`/`onSubmit`)
+still report the real text. A secret input is always single-line and never
+wraps, ignores `format`, and treats its whole value as one word for Alt+←→,
+Alt+Backspace, and double-click, so cursor movement can't reveal spaces or
+punctuation. The placeholder is shown unmasked.
+
+```tsx
+<Input value={password} onChange={setPassword} placeholder="Password" secret />
+```

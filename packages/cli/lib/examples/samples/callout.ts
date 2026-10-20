@@ -21,7 +21,7 @@ export const calloutExample: ComponentExample = {
     },
     {
       name: 'purpose',
-      type: "'primary' | 'blue' | 'secondary' | 'orange' | 'proceed' | 'green' | 'cancel' | 'red' | 'selected' | 'plain'",
+      type: "'primary' | 'blue' | 'secondary' | 'orange' | 'proceed' | 'green' | 'cancel' | 'red' | 'destructive' | 'selected' | 'plain'",
       description:
         'Named color palette for the accent bar and tinted background',
       availability: 'both',

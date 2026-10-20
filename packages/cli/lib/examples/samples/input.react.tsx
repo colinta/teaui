@@ -11,9 +11,10 @@ function App() {
   const [multiline, setMultiline] = useState('first line\nsecond line')
   const [font, setFont] = useState('TeaUI 123')
   const [styled, setStyled] = useState('Styled text')
+  const [password, setPassword] = useState('hunter2')
 
   return (
-    <Stack.down width={36} height={17}>
+    <Stack.down width={36} height={19}>
       <Text>Name (Enter submits)</Text>
       <Input
         value={name}
@@ -53,6 +54,8 @@ function App() {
         format={text => `\x1b[1;36m${text}\x1b[0m`}
         height={1}
       />
+      <Text>Secret (password)</Text>
+      <Input value={password} onChange={setPassword} secret height={1} />
     </Stack.down>
   )
 }

@@ -14,7 +14,7 @@ const name = new Input({
 
 const examples = Stack.down({
   width: 36,
-  height: 17,
+  height: 19,
   children: [
     new Text({text: 'Name (Enter submits)'}),
     name,
@@ -43,6 +43,8 @@ const examples = Stack.down({
       format: text => `\x1b[1;36m${text}\x1b[0m`,
       height: 1,
     }),
+    new Text({text: 'Secret (password)'}),
+    new Input({value: 'hunter2', secret: true, height: 1}),
   ],
 })
 

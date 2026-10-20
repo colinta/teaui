@@ -231,6 +231,21 @@ describe('Input', () => {
       expect(value).toBe('xabc')
     })
 
+    it('end on an empty input without a placeholder keeps typing in order', () => {
+      let value = ''
+      const input = new Input({
+        onChange(v) {
+          value = v
+        },
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      t.sendKey('end')
+      for (const ch of 'dave') {
+        t.sendKey(ch as any)
+      }
+      expect(value).toBe('dave')
+    })
+
     it('ctrl+e moves to end', () => {
       let value = ''
       const input = new Input({

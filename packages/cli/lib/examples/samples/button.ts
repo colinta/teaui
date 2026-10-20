@@ -58,7 +58,7 @@ export const buttonExample: ComponentExample = {
       name: 'purpose',
       type: 'Palette | Purpose',
       description:
-        "Semantic palette, such as 'primary', 'proceed', or 'cancel'",
+        "Semantic palette, such as 'primary', 'proceed', or 'cancel' (aka 'destructive')",
       availability: 'both',
     },
     {

@@ -24,6 +24,12 @@ interface StyleProps {
   multiline?: boolean
   font?: FontFamily
   format?: (text: string) => string
+  /**
+   * Mask the value (for passwords): every character is drawn as '•', the input
+   * is single-line, `format` is ignored, and word movement/selection treats the
+   * whole value as one word so it doesn't reveal the text's structure.
+   */
+  secret?: boolean
 }
 
 interface Cursor {
@@ -94,6 +100,7 @@ export class Input extends View {
   #wrap: boolean = false
   #multiline: boolean = false
   #font: FontFamily = 'default'
+  #secret: boolean = false
   #format?: (text: string) => string
   #formatStyles: Style[] = []
   #showInvisibles: boolean = true
@@ -139,17 +146,19 @@ export class Input extends View {
     placeholder,
     onChange,
     onSubmit,
+    secret,
   }: Props) {
+    this.#secret = secret ?? false
     if (
-      this.#wrap !== (wrap ?? false) ||
-      this.#multiline !== (multiline ?? false)
+      this.#wrap !== this.#wrapAllowed(wrap ?? false) ||
+      this.#multiline !== this.#multilineAllowed(multiline ?? false)
     ) {
       this.#resetMouseSelection()
     }
     this.#onChange = onChange
     this.#onSubmit = onSubmit
-    this.#wrap = wrap ?? false
-    this.#multiline = multiline ?? false
+    this.#wrap = this.#wrapAllowed(wrap ?? false)
+    this.#multiline = this.#multilineAllowed(multiline ?? false)
     this.#format = format
     this.#updatePlaceholderLines(placeholder ?? '')
     this.#updateLines(unicode.printableChars(value ?? ''), font ?? 'default')
@@ -212,7 +221,9 @@ export class Input extends View {
         [[], []] as [string[][], string[]],
       )
       this.#printableLines = charLines.map((printableLine, index, all) => {
-        const displayLine = printableLine
+        const displayLine = this.#secret
+          ? printableLine.map(maskChar)
+          : printableLine
         // every line needs a ' ' or NL_SIGIL at the end, for the EOL cursor
         return [
           displayLine.concat(index === all.length - 1 ? ' ' : NL_SIGIL),
@@ -257,7 +268,7 @@ export class Input extends View {
    * a flat Style[] array with one entry per character in #chars.
    */
   #updateFormatStyles() {
-    if (!this.#format || !this.#chars.length) {
+    if (!this.#format || !this.#chars.length || this.#secret) {
       this.#formatStyles = []
       return
     }
@@ -323,6 +334,7 @@ export class Input extends View {
   }
 
   set wrap(wrap: boolean) {
+    wrap = this.#wrapAllowed(wrap)
     if (wrap !== this.#wrap) {
       this.#resetMouseSelection()
       this.#wrap = wrap
@@ -335,11 +347,46 @@ export class Input extends View {
   }
 
   set multiline(multiline: boolean) {
+    multiline = this.#multilineAllowed(multiline)
     if (multiline !== this.#multiline) {
       this.#resetMouseSelection()
       this.#multiline = multiline
       this.#updateLines(undefined, undefined)
     }
+  }
+
+  get secret() {
+    return this.#secret
+  }
+
+  set secret(secret: boolean) {
+    if (secret !== this.#secret) {
+      this.#resetMouseSelection()
+      this.#secret = secret
+      this.#wrap = this.#wrapAllowed(this.#wrap)
+      this.#multiline = this.#multilineAllowed(this.#multiline)
+      this.#updateLines(undefined, undefined)
+    }
+  }
+
+  /** Secret inputs are always single-line. */
+  #multilineAllowed(multiline: boolean) {
+    return multiline && !this.#secret
+  }
+
+  #wrapAllowed(wrap: boolean) {
+    return wrap && !this.#secret
+  }
+
+  /**
+   * Word segments for word movement and double-click selection. A secret input
+   * is one opaque word, so cursor jumps can't reveal spaces or punctuation.
+   */
+  #words(): [string[], number][] {
+    if (this.#secret) {
+      return this.#chars.length ? [[this.#chars, 0]] : []
+    }
+    return unicode.words(this.#chars)
   }
 
   legendItems(): LegendItem[] {
@@ -689,11 +736,9 @@ export class Input extends View {
   #selectWord(offset: number) {
     // Use the same grapheme-aware segmentation as alt+arrow. Whitespace and
     // punctuation select their own segment; the trailing cursor cell is empty.
-    const word = unicode
-      .words(this.#chars)
-      .find(
-        ([chars, start]) => offset >= start && offset < start + chars.length,
-      )
+    const word = this.#words().find(
+      ([chars, start]) => offset >= start && offset < start + chars.length,
+    )
     this.#setMouseCursor(
       word
         ? {start: word[1], end: word[1] + word[0].length}
@@ -1308,7 +1353,8 @@ export class Input extends View {
       this.#cursor.end,
       this.#visibleWidth,
     ).mutableCopy()
-    if (cursorPosition.y === this.#wrappedLines.length - 1) {
+    // `>=`: an empty input without a placeholder has no wrapped lines yet.
+    if (cursorPosition.y >= this.#wrappedLines.length - 1) {
       dest = this.#chars.length
     } else {
       dest =
@@ -1426,7 +1472,7 @@ export class Input extends View {
     }
 
     let prevWordOffset: number = 0
-    for (const [chars, offset] of unicode.words(this.#chars)) {
+    for (const [chars, offset] of this.#words()) {
       prevWordOffset = offset
       if (cursor <= offset + chars.length) {
         break
@@ -1447,7 +1493,7 @@ export class Input extends View {
     }
 
     let nextWordOffset: number = 0
-    for (const [chars, offset] of unicode.words(this.#chars)) {
+    for (const [chars, offset] of this.#words()) {
       nextWordOffset = offset + chars.length
       if (cursor < offset + chars.length) {
         break
@@ -1739,9 +1785,15 @@ function isEmptySelection(cursor: Cursor) {
 
 const DBL_CLICK = 300
 const NL_SIGIL = '⤦'
+const SECRET_CHAR = '•'
 const TAB_WIDTH = 2
 const TAB_SIGIL = '⭾ '
 const TAB_SPACES = ' '.repeat(TAB_WIDTH)
+
+/** Secret inputs show pending accent keys (so dead keys are usable), mask the rest. */
+function maskChar(char: string) {
+  return isAccentChar(char) ? char : SECRET_CHAR
+}
 
 function isAccentChar(char: string) {
   return ACCENTS[char] !== undefined

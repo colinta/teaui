@@ -19,7 +19,7 @@ export const badgeExample: ComponentExample = {
     },
     {
       name: 'purpose',
-      type: "'primary' | 'blue' | 'secondary' | 'orange' | 'proceed' | 'green' | 'cancel' | 'red' | 'selected' | 'plain'",
+      type: "'primary' | 'blue' | 'secondary' | 'orange' | 'proceed' | 'green' | 'cancel' | 'red' | 'destructive' | 'selected' | 'plain'",
       description: 'Color palette; inherits from its parent, otherwise plain',
       availability: 'both',
     },
