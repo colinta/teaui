@@ -153,6 +153,53 @@ describe('TiledLayout', () => {
       expect(frame(windows[1])).toEqual(new Rect([23, 0], [21, 14]))
     })
 
+    it.each([
+      ['focus', FOCUS],
+      ['move', MOVE],
+      ['size', SIZE],
+    ] as const)('the %s key turns its mode off again', (mode, key) => {
+      const {t, layout} = tiled(2)
+      toggle(t)
+      t.sendKey(key, ALT)
+      expect(layout.mode).toBe(mode)
+      t.sendKey(key, ALT)
+      expect(layout.mode).toBeUndefined()
+      // the panel stays open, showing the keys
+      expect(t.terminal.textContent()).toContain('╭─keys───╮')
+    })
+
+    it('another mode key switches modes', () => {
+      const {t, layout} = tiled()
+      t.sendKey(FOCUS, ALT)
+      t.sendKey(MOVE, ALT)
+      expect(layout.mode).toBe('move')
+    })
+
+    it('enter turns the mode off', () => {
+      const {t, layout, desktop} = tiled()
+      t.sendKey(FOCUS, ALT)
+      t.sendKey('k')
+      expect(desktop.activeWindow?.title).toBe('Win 1')
+      t.sendKey('return')
+      expect(layout.mode).toBeUndefined()
+    })
+
+    it('enter is not captured without a mode', () => {
+      const onKey = vi.fn()
+      const input = new Input({value: ''})
+      input.addKeyboardListener(onKey)
+      const desktop = new Desktop({
+        layout: 'tiled',
+        children: [new Window({title: 'One', child: input})],
+      })
+      const t = testRender(desktop, {width: 30, height: 10})
+      t.sendKey('return')
+      expect(onKey).toHaveBeenCalledWith(
+        expect.objectContaining({name: 'return'}),
+        expect.anything(),
+      )
+    })
+
     it('modes from the keyboard do not open the panel', () => {
       const {t, layout} = tiled()
       t.sendKey(FOCUS, ALT)

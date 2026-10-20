@@ -32,7 +32,7 @@ Most components accept common view props: `purpose`, `heading`, `x/y`, `width/he
 - `Modal` — modal overlay. Props: `children`, `dim?`, `dimStyle?`, `dismissOnClick?`, `dismissOnEsc?`, `onDismiss?`.
 - `Drawer` — slide-out panel. Props: `content?`, `drawer?`, `children`, `location?`, `isOpen?`, `onToggle?`, `hotKey?`, `title?`. Helpers: `.top/.right/.bottom/.left`.
 - `Window` — movable, resizable window with a title bar. Props: `title?`, `titleBar?: ReactNode`, `children`, `showClose?`/`showMinimize?`/`showMaximize?`, `resizable?`, `movable?`, `isMinimized?`, `isMaximized?`, `x?`/`y?`/`width?`/`height?`, `onClose?`, `onMinimize?`, `onMaximize?`, `onMove?`, `onResize?`, `onActivate?`.
-- `Desktop` — manages Window children (placement, z-order, active window; minimized windows are lined up along the bottom, one row each). Props: `layout?: 'floating' | 'tiled' | DesktopLayout` (tiled: ⌥w focus, ⌥m move, ⌥r size modes, then arrows/hjkl, esc closes; ⌥z fullscreen; ⌥t modal/floating), `children`.
+- `Desktop` — manages Window children (placement, z-order, active window; minimized windows are lined up along the bottom, one row each). Props: `layout?: 'floating' | 'tiled' | DesktopLayout` (tiled: ⌥w focus, ⌥m move, ⌥r size modes, then arrows/hjkl; the same key, esc, or enter turns the mode off; ⌥z fullscreen; ⌥t modal/floating), `children`.
 - `Accordion` — expandable sections. Props: `children`, `multiple?`. `Accordion.Section`: `children`, `title?`, `isOpen?`.
 - `Tabs` — tabbed sections. Props/API: `children`, `border?`, `selected?`; ref supports `select(index)` and `update({selected})`. `Tabs.Section`: `children`, `title?`.
 - `Page` — full-page section switcher. Props: `children`, `activeIndex?`, `onChange?`. `Page.Section`: `children`, `title?`.

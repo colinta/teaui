@@ -63,7 +63,7 @@ Press a key (or a row of the panel) to activate that mode, and the panel shows i
 | `⌥z` |           | toggle fullscreen (zoom)                                                                                      |
 | `⌥t` |           | toggle modal (floating)                                                                                       |
 
-A mode stays active (so that you can press several keys) until `esc`. `esc` closes the mode, and then the panel; pressing `⊞` closes both. The keys work whether or not the panel is open: activating a mode from the keyboard doesn't open the panel (the `⊞` button is highlighted while a mode is active). The panel isn't shown if the window is too short for it.
+A mode stays active (so that you can press several keys) until you turn it off: press the mode's key again, `esc`, or `enter` (or press another mode's key to switch modes). If the panel is open, it goes back to the list of keys; pressing `esc` again closes it, and pressing `⊞` closes both. `enter` is only captured while a mode is active. The keys work whether or not the panel is open: activating a mode from the keyboard doesn't open the panel (the `⊞` button is highlighted while a mode is active). The panel isn't shown if the window is too short for it.
 
 In size mode, the edge always moves in the direction of the arrow: `↑` moves the top edge up (`height += 1, y -= 1`), `⇧↑` moves the bottom edge up (`height -= 1`), and so on. In the panel, `(⇧)` makes the arrows shrink (or shift-click them). Keys have no effect when the window can't grow or shrink in that direction: edges along the Desktop's border don't move, and windows don't shrink below their minimum size.
 

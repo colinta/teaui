@@ -43,7 +43,7 @@ const desktop = new Desktop({
       lines: [
         'Drag title bars to move windows, and borders to resize them.',
         'Tiled: press ⊞ (bottom-left of the active window) for the keys:',
-        '⌥w focus, ⌥m move, ⌥r size, ⌥z fullscreen, ⌥t modal; esc closes.',
+        '⌥w focus, ⌥m move, ⌥r size, ⌥z fullscreen, ⌥t modal; esc/enter ends a mode.',
       ],
       alignment: 'center',
     }),

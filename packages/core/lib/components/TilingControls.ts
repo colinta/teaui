@@ -78,7 +78,8 @@ type Hover = 'toggle' | Target | undefined
  *   window.
  * - ⌥r: size (resize) mode. Arrows move the edge on that side outward;
  *   ⇧arrows move the opposite edge inward.
- * - esc: closes the mode (then the panel).
+ * - pressing the mode's key again, esc, or enter: turns off the mode (esc,
+ *   pressed again, closes the panel).
  * - ⌥z: fullscreen (zoom). ⌥t: modal (floating).
  *
  * The keys avoid the ⌥ keys that terminals and text fields use: ⌥b and ⌥f
@@ -121,6 +122,8 @@ export class TilingControls extends View {
       this.#perform({type: 'escape'})
     } else if (!mode) {
       return
+    } else if (event.name === 'return') {
+      delegate.setMode(undefined)
     } else if (isDirection(event.name)) {
       delegate.direction(event.name, event.shift)
     } else if (mode !== 'size' && event.name in ORDER_KEYS) {
@@ -133,7 +136,10 @@ export class TilingControls extends View {
     switch (action.type) {
       case 'mode':
         this.#isShiftLatched = false
-        delegate.setMode(action.mode)
+        // the mode's key turns it off again
+        delegate.setMode(
+          delegate.mode === action.mode ? undefined : action.mode,
+        )
         break
       case 'fullscreen':
         delegate.toggleFullscreen()
@@ -369,14 +375,17 @@ const ORDER_KEYS: Record<string, TilingOrder> = {
 
 const DIRECTIONS: readonly TilingDirection[] = ['up', 'down', 'left', 'right']
 const ESCAPE_KEY: HotKeyDef = {char: 'escape'}
+const RETURN_KEY: HotKeyDef = {char: 'return'}
 const ARROW_KEYS: HotKeyDef[] = DIRECTIONS.map(char => ({char}))
 const MOVE_MODE_KEYS: readonly HotKeyDef[] = [
   ESCAPE_KEY,
+  RETURN_KEY,
   ...ARROW_KEYS,
   ...Object.keys(ORDER_KEYS).map(char => ({char})),
 ]
 const SIZE_MODE_KEYS: readonly HotKeyDef[] = [
   ESCAPE_KEY,
+  RETURN_KEY,
   ...ARROW_KEYS,
   ...DIRECTIONS.map(char => ({char, shift: true})),
 ]
