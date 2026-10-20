@@ -1,0 +1,98 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Window > buttons > maximizes and restores 1`] = `
+"╔╡x│ Editor ══════╡-╞═╣+╠╗
+║                        ║
+║                        ║
+║                        ║
+╚════════════════════════╝"
+`;
+
+exports[`Window > buttons > minimizes and restores 1`] = `"╭ Editor ─────────────┤↔├╮"`;
+
+exports[`Window > props > keeps the title bar views when children are updated 1`] = `
+"╔╡x│ Notes ════════[a]╡-╞═╡+╞╗
+║two                         ║
+║                            ║
+╚════════════════════════════╝"
+`;
+
+exports[`Window > rendering > draws a minimized window as its title bar, one row tall 1`] = `"╭ Small ────────┤↔├╮"`;
+
+exports[`Window > rendering > draws content inside the border 1`] = `
+"╔╡x│ Content ╡-╞╡+╞╗
+║one               ║
+║two               ║
+║                  ║
+╚══════════════════╝"
+`;
+
+exports[`Window > rendering > draws inactive windows with a rounded single border 1`] = `
+"╭┤x│ First ─┤-├─┤+├╮╔╡x│ Second ╡-╞═╡+╞╗
+│                  │║                  ║
+│                  │║                  ║
+╰──────────────────╯╚══════════════════╝"
+`;
+
+exports[`Window > rendering > draws the title bar, buttons, and a double border 1`] = `
+"╔╡x│ Editor ══════╡-╞═╡+╞╗
+║hello                   ║
+║                        ║
+║                        ║
+╚════════════════════════╝"
+`;
+
+exports[`Window > rendering > draws without a title 1`] = `
+"╔╡x│════╡-╞═╡+╞╗
+║              ║
+╚══════════════╝"
+`;
+
+exports[`Window > rendering > hides buttons: no buttons 1`] = `
+"╔ Tools ═══════════════╗
+║                      ║
+╚══════════════════════╝"
+`;
+
+exports[`Window > rendering > hides buttons: no close 1`] = `
+"╔ Tools ════════╡-╞═╡+╞╗
+║                      ║
+╚══════════════════════╝"
+`;
+
+exports[`Window > rendering > hides buttons: no maximize 1`] = `
+"╔╡x│ Tools ═════════╡-╞╗
+║                      ║
+╚══════════════════════╝"
+`;
+
+exports[`Window > rendering > hides buttons: no minimize 1`] = `
+"╔╡x│ Tools ═════════╡+╞╗
+║                      ║
+╚══════════════════════╝"
+`;
+
+exports[`Window > rendering > places title bar views between the title and the buttons 1`] = `
+"╔╡x│ Notes ═════[a][b]╡-╞═╡+╞╗
+║content                     ║
+║                            ║
+╚════════════════════════════╝"
+`;
+
+exports[`Window > resizing without a host > resizes from the bottom-right corner 1`] = `
+"╔╡x│ Win ════════╡-╞═╡+╞╗
+║                       ║
+║                       ║
+║                       ║
+║                       ║
+║                       ║
+║                       ║
+╚═══════════════════════╝"
+`;
+
+exports[`Window > sizing > keeps its own size in a Stack that stretches it 1`] = `
+"╔╡x│ Win ═══╡-╞═╡+╞╗
+║                  ║
+║                  ║
+╚══════════════════╝"
+`;

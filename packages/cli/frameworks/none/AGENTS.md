@@ -28,6 +28,8 @@ Most components use `new Component(props)`. Common view props: `purpose`, `headi
 - `Geometry` — reports available size. Props: `child?`/`children?`, `onLayout?`.
 - `Modal` — modal overlay. Props: `child?`/`children?`, `dim?`, `dimStyle?`, `dismissOnClick?`, `dismissOnEsc?`, `onDismiss?`.
 - `Drawer` — slide-out panel. Props: `content?`, `drawer?`, `child?`/`children?`, `location?`, `isOpen?`, `onToggle?`, `hotKey?`, `title?`.
+- `Window` — movable, resizable window with a title bar. Props: `title?`, `titleBar?: View[]`, `child?`/`children?`, `showClose?`/`showMinimize?`/`showMaximize?`, `resizable?`, `movable?`, `isMinimized?`, `isMaximized?`, `x?`/`y?`/`width?`/`height?`, `onClose?`, `onMinimize?`, `onMaximize?`, `onMove?`, `onResize?`, `onActivate?`.
+- `Desktop` — manages Window children (placement, z-order, active window; minimized windows are lined up along the bottom, one row each). Props: `layout?: 'floating' | 'tiled' | DesktopLayout`, `child?`/`children?`.
 - `Accordion` — expandable sections. Props: `child?`/`children?`, `multiple?`. `Accordion.Section`: `title?`, `isOpen?`, `child?`/`children?`.
 - `Tabs` — tabbed sections. Props/API: `child?`/`children?`, `border?`, `selected?`, `select(index)`, `update({selected})`. `Tabs.Section`: `title?`, `child?`/`children?`.
 - `Page` — animated page/section switcher. Props: `child?`/`children?`, `activeIndex?`, `onChange?`. `Page.Section`: `title?`, `child?`/`children?`.

@@ -19,6 +19,7 @@ import {codeExample} from './examples/samples/code.js'
 import {collapsibleExample} from './examples/samples/collapsible.js'
 import {collapsibleTextExample} from './examples/samples/collapsible-text.js'
 import {consoleLogExample} from './examples/samples/console-log.js'
+import {desktopExample} from './examples/samples/desktop.js'
 import {digitsExample} from './examples/samples/digits.js'
 import {drawerExample} from './examples/samples/drawer.js'
 import {dropdownExample} from './examples/samples/dropdown.js'
@@ -60,6 +61,7 @@ import {toggleExample} from './examples/samples/toggle.js'
 import {toggleGroupExample} from './examples/samples/toggle-group.js'
 import {trackMouseExample} from './examples/samples/track-mouse.js'
 import {treeExample} from './examples/samples/tree.js'
+import {windowExample} from './examples/samples/window.js'
 import {zstackExample} from './examples/samples/zstack.js'
 import {COMPONENTS} from './examples/catalog.js'
 import type {
@@ -93,6 +95,7 @@ export const EXAMPLES: readonly ComponentExample<Availability>[] = [
   collapsibleExample,
   collapsibleTextExample,
   consoleLogExample,
+  desktopExample,
   digitsExample,
   drawerExample,
   dropdownExample,
@@ -134,6 +137,7 @@ export const EXAMPLES: readonly ComponentExample<Availability>[] = [
   toggleGroupExample,
   trackMouseExample,
   treeExample,
+  windowExample,
   zstackExample,
 ]
 const PROPS_TABLE_WIDTH = 118

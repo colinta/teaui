@@ -161,4 +161,56 @@ describe('Text', () => {
     const t = testRender(new Text({text: ''}), {width: 10, height: 1})
     expect(t.terminal.textContent()).toBe('')
   })
+
+  describe('ellipsis', () => {
+    it('truncates lines that are too wide', () => {
+      const t = testRender(
+        new Text({text: 'hello world\nshort', ellipsis: true}),
+        {width: 8, height: 2},
+      )
+      expect(t.terminal.textContent()).toBe('hello w…\nshort')
+    })
+
+    it('clips without ellipsis', () => {
+      const t = testRender(new Text({text: 'hello world'}), {
+        width: 8,
+        height: 1,
+      })
+      expect(t.terminal.textContent()).toBe('hello wo')
+    })
+
+    it('keeps the style of styled text', () => {
+      const t = testRender(
+        new Text({text: 'ab\x1b[1mcdefgh\x1b[22mij', ellipsis: true}),
+        {width: 6, height: 1},
+      )
+      expect(t.terminal.textContent()).toBe('abcde…')
+      expect(t.terminal.styleAt(0, 0).bold).toBeFalsy()
+      expect(t.terminal.styleAt(3, 0).bold).toBe(true)
+    })
+
+    it('does not split wide characters', () => {
+      const t = testRender(new Text({text: '日本語テキスト', ellipsis: true}), {
+        width: 6,
+        height: 1,
+      })
+      expect(t.terminal.textContent()).toBe('日本…')
+    })
+
+    it('is ignored when wrapping', () => {
+      const t = testRender(
+        new Text({text: 'hello world', wrap: true, ellipsis: true}),
+        {width: 8, height: 2},
+      )
+      expect(t.terminal.textContent()).toBe('hello\nworld')
+    })
+
+    it('can be toggled', () => {
+      const text = new Text({text: 'hello world'})
+      const t = testRender(text, {width: 8, height: 1})
+      text.ellipsis = true
+      t.render()
+      expect(t.terminal.textContent()).toBe('hello w…')
+    })
+  })
 })

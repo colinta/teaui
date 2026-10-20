@@ -1,0 +1,78 @@
+---
+title: Desktop
+---
+
+import Example from '@site/src/components/Example'
+
+# Desktop
+
+Manages [`Window`](./window) children: where they're placed, which one is on top, and which one is active. Pressing a window (or pressing or focusing a view inside it) raises it to the top; the topmost window that isn't minimized is the active window.
+
+Minimized windows are arranged by the Desktop, whatever the layout: they're lined up along the bottom, one row tall (just the title and a restore button), in the order they were minimized. They can't be dragged or resized from there, and raising one doesn't rearrange them. The layout arranges the other windows in the space above them, and a restored window returns to where it was.
+
+Placement is done by a layout plugin:
+
+- `'floating'` (default) — overlapping windows. Drag the title bar to move a window and its borders to resize it. Windows without `x`/`y` are cascaded from the top-left. Maximized windows fill the Desktop.
+- `'tiled'` — the first window fills the left side and the others are stacked on the right. Drag the border between the two sides to change the ratio.
+- a `DesktopLayout` object — your own window management.
+
+Children that aren't windows are drawn behind the windows, filling the Desktop.
+
+<Example name="desktop" title="Desktop" />
+
+## Props
+
+| Prop       | Type                                     | Default      | Description                   |
+| ---------- | ---------------------------------------- | ------------ | ----------------------------- |
+| `layout`   | `'floating' \| 'tiled' \| DesktopLayout` | `'floating'` | How windows are placed        |
+| `children` | `ReactNode`                              | —            | Windows, and background views |
+
+Layouts can hold state (the tiled ratio, for instance), so the layout is only replaced when the `layout` prop changes. Create custom layouts once (`useMemo`, or outside the component).
+
+## Custom layouts
+
+```ts
+import type {DesktopLayout} from '@teaui/core'
+import {Rect} from '@teaui/core'
+
+// windows side by side, in equal columns
+const columns: DesktopLayout = {
+  layout(windows, size) {
+    const width = Math.floor(size.width / windows.length)
+    return windows.map(
+      (_, index) => new Rect([index * width, 0], [width, size.height]),
+    )
+  },
+}
+```
+
+| Method                        | Description                                                                                                                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `layout(windows, size)`       | Required. One frame per window (or `undefined` to hide it). `windows` are the windows that aren't minimized, in the order they were added (not z-order); `size` excludes the rows used by minimized windows. |
+| `canMove(window)`             | Whether the title bar can be dragged. Default: false                                                                                                                                                         |
+| `canResize(window)`           | Whether the borders can be dragged. Default: false                                                                                                                                                           |
+| `move(window, origin, size)`  | The user dragged the title bar to `origin`. Usually sets `window.position`                                                                                                                                   |
+| `resize(window, frame, size)` | The user dragged a border; `frame` already respects the window's minimum and maximum size                                                                                                                    |
+
+`FloatingLayout` and `TiledLayout` (with a `ratio` option) are exported if you want to configure or extend them.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Desktop, TiledLayout, Text, Window} from '@teaui/core'
+
+const desktop = new Desktop({
+  layout: new TiledLayout({ratio: 0.6}),
+  children: [
+    new Window({title: 'Main', child: new Text('...')}),
+    new Window({title: 'Side', child: new Text('...')}),
+  ],
+})
+
+desktop.windows // in z-order, bottom to top
+desktop.activeWindow
+desktop.activateWindow(window)
+```
+
+</details>

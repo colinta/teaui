@@ -114,16 +114,20 @@ All components are typed wrappers around TeaUI core views. They accept the same 
 
 ### Complex Containers
 
-| Component               | Element                   | Description                       |
-| ----------------------- | ------------------------- | --------------------------------- |
-| `<Accordion />`         | `<tui-accordion>`         | Expandable section group          |
-| `<Accordion.Section />` | `<tui-accordion-section>` | Section within an accordion       |
-| `<Drawer />`            | `<tui-drawer>`            | Panel that slides in from an edge |
-| `<Tabs />`              | `<tui-tabs>`              | Tabbed container                  |
-| `<Tabs.Section />`      | `<tui-tabs-section>`      | Tab within tabs                   |
-| `<Tree />`              | `<tui-tree>`              | Tree view with expandable nodes   |
+| Component               | Element                   | Description                                |
+| ----------------------- | ------------------------- | ------------------------------------------ |
+| `<Accordion />`         | `<tui-accordion>`         | Expandable section group                   |
+| `<Accordion.Section />` | `<tui-accordion-section>` | Section within an accordion                |
+| `<Drawer />`            | `<tui-drawer>`            | Panel that slides in from an edge          |
+| `<Desktop />`           | `<tui-desktop>`           | Manages Window placement and z-order       |
+| `<Window />`            | `<tui-window>`            | Movable, resizable window with a title bar |
+| `<Tabs />`              | `<tui-tabs>`              | Tabbed container                           |
+| `<Tabs.Section />`      | `<tui-tabs-section>`      | Tab within tabs                            |
+| `<Tree />`              | `<tui-tree>`              | Tree view with expandable nodes            |
 
 `Drawer` has `.top`, `.right`, `.bottom`, and `.left` variants. Each accepts `content` and `drawer` props for the two panes.
+
+`Window` accepts a `titleBar` prop for content drawn in its title bar. `Desktop` accepts `layout="floating" | "tiled"` or a custom `DesktopLayout`.
 
 ### Intrinsic Elements
 

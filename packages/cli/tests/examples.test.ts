@@ -40,7 +40,7 @@ describe('component examples', () => {
     const names = EXAMPLES.map(example => example.name)
     expect(names).toEqual(COMPONENTS.map(component => component.name))
     expect(names).toEqual([...names].sort())
-    expect(new Set(names).size).toBe(62)
+    expect(new Set(names).size).toBe(64)
     for (const example of EXAMPLES) {
       const frameworks =
         example.availability === 'both'
@@ -97,8 +97,8 @@ describe('component examples', () => {
     expect(react).toMatch(/button\s+ready/)
     expect(all).not.toMatch(/\s+todo$/m)
     expect(react).not.toMatch(/\s+todo$/m)
-    expect(all.match(/\s+ready$/gm)).toHaveLength(62)
-    expect(react.match(/\s+ready$/gm)).toHaveLength(62)
+    expect(all.match(/\s+ready$/gm)).toHaveLength(64)
+    expect(react.match(/\s+ready$/gm)).toHaveLength(64)
     expect(react).toContain('br')
     expect(react).not.toMatch(/^\s+(?:container|root)\s/m)
 
@@ -108,7 +108,7 @@ describe('component examples', () => {
     expect(core).toContain('bar-chart')
     expect(core).not.toMatch(/^\s+(br|style)\s/m)
     expect(core).not.toMatch(/\s+todo$/m)
-    expect(core.match(/\s+ready$/gm)).toHaveLength(60)
+    expect(core.match(/\s+ready$/gm)).toHaveLength(62)
   })
 
   it('shows the props, runnable React source, and rendered output', async () => {

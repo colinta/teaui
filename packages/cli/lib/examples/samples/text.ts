@@ -47,6 +47,13 @@ export const textExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'ellipsis',
+      type: 'boolean',
+      description:
+        'Core only: end lines that are too wide with an ellipsis (…) instead of clipping them. Ignored when wrap is true. Defaults to false',
+      availability: 'core',
+    },
+    {
       name: 'font',
       type: 'FontFamily',
       description:

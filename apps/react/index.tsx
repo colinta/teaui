@@ -9,6 +9,7 @@ import {YamlTab} from './yaml.js'
 import {MoreTab} from './more.js'
 import {DigitsTab} from './digits.js'
 import {DrawerTab} from './drawer.js'
+import {WindowsTab} from './windows.js'
 import {StylesTab} from './styles.js'
 import {ListTab} from './scrollable-list.js'
 import {WidgetsTab} from './widgets.js'
@@ -44,6 +45,9 @@ function Demo() {
             </Tabs.Section>
             <Tabs.Section title="Drawer">
               <DrawerTab />
+            </Tabs.Section>
+            <Tabs.Section title="Windows">
+              <WindowsTab />
             </Tabs.Section>
             <Tabs.Section title="Breadcrumbs">
               <BreadcrumbTab />

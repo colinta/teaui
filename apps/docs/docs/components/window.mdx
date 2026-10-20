@@ -1,0 +1,90 @@
+---
+title: Window
+---
+
+import Example from '@site/src/components/Example'
+
+# Window
+
+A movable, resizable window with a title bar. The close button is on the left; the minimize and maximize buttons are on the right. The title is drawn with a space on either side, underlined, and is truncated with `…` when it doesn't fit. Views in `titleBar` are drawn to the right of the title, before the buttons.
+
+The active window is drawn with a double border; other windows use a rounded single border. Pressing a window — or pressing or focusing a view inside it — makes it the active window. Minimized windows are never active.
+
+A minimized window is just its title bar, one row tall, with only the title and a restore button:
+
+```
+╭ Title ────┤↔├╮
+```
+
+The restore button is always shown on a minimized window. It isn't affected by `showClose`, `showMinimize`, or `showMaximize`: hiding the minimize button doesn't restore the window. The title bar views aren't shown while the window is minimized. In a `Desktop`, minimized windows are lined up along the bottom, and can't be moved or resized.
+
+Windows are usually children of a [`Desktop`](./desktop), which moves, resizes, and layers them. A Window can also be placed in any other container (e.g. a `Stack`): it can still be resized from its right and bottom borders, but it can't be moved.
+
+```
+╔╡x│ Title ═══════╡-╞═╡+╞╗   active
+╭┤x│ Title ───────┤-├─┤+├╮   inactive
+╔╣x║ Title ═══════╡-╞═╡+╞╗   hovering the close button
+```
+
+<Example name="window" title="Window" />
+
+## Props
+
+| Prop           | Type                             | Default | Description                                                         |
+| -------------- | -------------------------------- | ------- | ------------------------------------------------------------------- |
+| `title`        | `string`                         | —       | Title, truncated with an ellipsis                                   |
+| `titleBar`     | `ReactNode`                      | —       | Content drawn in the title bar, between the title and the buttons   |
+| `showClose`    | `boolean`                        | `true`  | Show the close button                                               |
+| `showMinimize` | `boolean`                        | `true`  | Show the minimize button                                            |
+| `showMaximize` | `boolean`                        | `true`  | Show the maximize button                                            |
+| `resizable`    | `boolean`                        | `true`  | Drag the borders to resize                                          |
+| `movable`      | `boolean`                        | `true`  | Drag the title bar to move (only in a `Desktop`)                    |
+| `isMinimized`  | `boolean`                        | `false` | Collapse to a one-row title bar, with a restore button              |
+| `isMaximized`  | `boolean`                        | `false` | Fill the parent                                                     |
+| `x`, `y`       | `number`                         | —       | Location in the `Desktop` (cascaded when unset)                     |
+| `width`        | `number`                         | content | Width, including the border                                         |
+| `height`       | `number`                         | content | Height, including the border                                        |
+| `minWidth`     | `number`                         | —       | Used when larger than the absolute minimum width (see below)        |
+| `minHeight`    | `number`                         | —       | Used when larger than the absolute minimum height of 2              |
+| `maxWidth`     | `number`                         | —       | Largest width                                                       |
+| `maxHeight`    | `number`                         | —       | Largest height                                                      |
+| `onClose`      | `() => void`                     | —       | Close button. Without it, the window removes itself from its parent |
+| `onMinimize`   | `(isMinimized: boolean) => void` | —       | Minimize and restore buttons                                        |
+| `onMaximize`   | `(isMaximized: boolean) => void` | —       | Maximize button                                                     |
+| `onMove`       | `(position: Point) => void`      | —       | The user moved the window                                           |
+| `onResize`     | `(size: Size) => void`           | —       | The user resized the window                                         |
+| `onActivate`   | `() => void`                     | —       | The window became the active window                                 |
+| `children`     | `ReactNode`                      | —       | Content, drawn inside the border                                    |
+
+`x`, `y`, `width`, `height`, `isMinimized`, and `isMaximized` are applied when they _change_. Re-rendering with the same values keeps the user's changes (moving, resizing, minimizing), and `onMove`/`onResize`/`onMinimize`/`onMaximize` let you keep track of them.
+
+In React, handle `onClose` and stop rendering the window.
+
+### Minimum size
+
+The absolute minimum width is `2 + 3 × (number of buttons) + (title ? 6 : 0) + (width of the titleBar views)`, and the minimum height is 2 (the title bar and the bottom border). `minWidth` and `minHeight` are used when they're larger. `window.minimumSize` returns the result.
+
+<details>
+<summary>Core API</summary>
+
+```js
+import {Button, Text, Window} from '@teaui/core'
+
+const window = new Window({
+  title: 'Notes',
+  width: 30,
+  height: 8,
+  titleBar: [new Button({title: 'save', border: 'none'})],
+  child: new Text('...'),
+})
+
+window.isMinimized = true // setters don't call the callbacks
+window.position // Point | undefined
+window.minimumSize // Size
+window.isActive
+window.activate()
+```
+
+`titleBar` views are held by a `Window.TitleBar` container, which can also be added as a child.
+
+</details>

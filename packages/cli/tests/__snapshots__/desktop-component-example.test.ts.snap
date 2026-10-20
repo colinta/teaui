@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`desktop CLI component example > produces identical Core and JSX React text 1`] = `
+"╭┤x│ Notes ─────┤-├─┤+├╮                    
+│floating layout       │                    
+│                 ╔╡x│ Tools ═══════╡-╞═╡+╞╗
+│                 ║drag the title bar      ║
+│                 ║                        ║
+╰─────────────────║                        ║
+                  ║                        ║
+                  ╚════════════════════════╝
+╭ Help ┤↔├╮                                 
+╭┤x│ Main ────┤-├─┤+├╮╔╡x│ Stacked ═╡-╞═╡+╞╗
+│tiled layout        │║drag the border     ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+│                    │║                    ║
+╰────────────────────╯╚════════════════════╝
+╭ Minimized ┤↔├╮                            "
+`;

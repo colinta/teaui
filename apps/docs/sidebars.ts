@@ -75,6 +75,12 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: '░ Windows',
+          collapsed: false,
+          items: ['components/window', 'components/desktop'],
+        },
+        {
+          type: 'category',
           label: '░ Navigation',
           collapsed: false,
           items: [

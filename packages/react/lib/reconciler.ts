@@ -73,6 +73,9 @@ import {
   TrackMouse,
   View,
   Root,
+  Desktop,
+  Window,
+  WindowTitleBar,
 } from '@teaui/core'
 import {
   TextBatch,
@@ -316,6 +319,15 @@ function createInstance(type: string, props: Props): any {
     case 'drawer':
     case 'tui-drawer':
       return new Drawer(props as any)
+    case 'desktop':
+    case 'tui-desktop':
+      return new Desktop(props as any)
+    case 'window':
+    case 'tui-window':
+      return new Window(props as any)
+    case 'window-title-bar':
+    case 'tui-window-title-bar':
+      return new WindowTitleBar(props as any)
     case 'tabs':
     case 'tui-tabs':
       return new Tabs(props as any)

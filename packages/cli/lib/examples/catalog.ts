@@ -21,6 +21,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
   component('collapsible'),
   component('collapsible-text'),
   component('console-log'),
+  component('desktop'),
   component('digits'),
   component('drawer'),
   component('dropdown'),
@@ -62,6 +63,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
   component('toggle-group'),
   component('track-mouse'),
   component('tree'),
+  component('window'),
   component('zstack'),
 ]
 

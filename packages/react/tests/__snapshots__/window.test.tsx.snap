@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Desktop > lays out windows with the tiled layout 1`] = `
+"╭┤x│ Main ──┤-├─┤+├╮╔╡x│ Side ══╡-╞═╡+╞╗
+│main              │║side              ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+╰──────────────────╯╚══════════════════╝"
+`;
+
+exports[`Window > closes a window from React state 1`] = `
+"╔╡x│ one ═══╡-╞═╡+╞╗
+║                  ║
+║                  ║
+╚══════════════════╝"
+`;
+
+exports[`Window > renders a window with a title and content 1`] = `
+"╔╡x│ Editor ════╡-╞═╡+╞╗
+║hello                 ║
+║                      ║
+╚══════════════════════╝"
+`;
+
+exports[`Window > renders titleBar content in the title bar 1`] = `
+"╔╡x│ Notes ═════ save ╡-╞═╡+╞╗
+║content                     ║
+║                            ║
+╚════════════════════════════╝"
+`;

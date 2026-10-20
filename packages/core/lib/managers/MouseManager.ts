@@ -16,12 +16,25 @@ function mouseKey(x: number, y: number) {
   return `${~~x},${~~y}`
 }
 
+export interface MouseManagerOptions {
+  /**
+   * Called before a 'mouse.button.down' is delivered, with the view that will
+   * receive it (the topmost view at that location).
+   */
+  onPress?: (view: View, event: SystemMouseEvent) => void
+}
+
 export class MouseManager {
+  #onPress: MouseManagerOptions['onPress']
   #prevListener?: MouseEventListener
   #mouseListeners: Map<string, MouseEventListener> = new Map()
   #mouseMoveTargets: MouseEventTarget[] = []
   #mouseDownEvent: MouseDownEvent | undefined
   #mousePosition?: Point
+
+  constructor({onPress}: MouseManagerOptions = {}) {
+    this.#onPress = onPress
+  }
 
   reset() {
     if (this.#mouseDownEvent || !this.#mousePosition) {
@@ -381,6 +394,8 @@ export class MouseManager {
     if (targets.length === 0) {
       return
     }
+
+    this.#onPress?.(targets[0].view, systemEvent)
 
     for (const target of targets) {
       this.#sendMouse(

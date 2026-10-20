@@ -23,6 +23,11 @@ interface StyleProps {
   style?: Style
   alignment: TextAlignment
   wrap: boolean
+  /**
+   * When a line is wider than the content (and `wrap` is false), end it with
+   * an ellipsis instead of clipping it.
+   */
+  ellipsis: boolean
   font?: FontFamily
 }
 
@@ -31,6 +36,7 @@ type Props = Partial<StyleProps> & (TextProps | LinesProps) & ViewProps
 const DEFAULTS = {
   alignment: 'left',
   wrap: false,
+  ellipsis: false,
   font: 'default',
 } as const
 
@@ -53,6 +59,7 @@ export class Text extends View {
   #lines: [string, number][] = []
   #alignment: StyleProps['alignment'] = DEFAULTS.alignment
   #wrap: StyleProps['wrap'] = DEFAULTS.wrap
+  #ellipsis: StyleProps['ellipsis'] = DEFAULTS.ellipsis
   #font: FontFamily = DEFAULTS.font
   // One render layout per view, not a growing cache of past text or widths.
   #renderCache?: RenderCache
@@ -95,6 +102,18 @@ export class Text extends View {
     this.#updateLines(this.#text, undefined, value)
   }
 
+  get ellipsis() {
+    return this.#ellipsis
+  }
+  set ellipsis(value: boolean) {
+    if (this.#ellipsis === value) {
+      return
+    }
+
+    this.#ellipsis = value
+    this.invalidateRender()
+  }
+
   get style() {
     return this.#style
   }
@@ -113,10 +132,11 @@ export class Text extends View {
     super.update(props)
   }
 
-  #update({text, lines, style, alignment, wrap, font}: Props) {
+  #update({text, lines, style, alignment, wrap, ellipsis, font}: Props) {
     this.#style = style
     this.#alignment = alignment ?? DEFAULTS.alignment
     this.#wrap = wrap ?? DEFAULTS.wrap
+    this.#ellipsis = ellipsis ?? DEFAULTS.ellipsis
     this.#updateLines(text, lines, font)
   }
 
@@ -215,8 +235,14 @@ export class Text extends View {
         }
 
         let didWrap = false
+        let parsedIndex = lineIndex
         if (this.#wrap) {
           lineWidth = Math.min(lineWidth, viewport.contentSize.width)
+        } else if (this.#ellipsis && lineWidth > viewport.contentSize.width) {
+          line = truncate(line, viewport.contentSize.width)
+          lineWidth = viewport.contentSize.width
+          // the truncated line isn't cached with the full lines
+          parsedIndex = -1
         }
         const offsetX =
           this.#alignment === 'left'
@@ -231,7 +257,7 @@ export class Text extends View {
           continue
         }
 
-        let parsed = parsedLines[lineIndex]
+        let parsed = parsedIndex === -1 ? undefined : parsedLines[parsedIndex]
         if (!parsed) {
           parsed = []
           for (const char of unicode.printableChars(line)) {
@@ -243,7 +269,9 @@ export class Text extends View {
                 width === 0 ? Style.fromSGR(char, startingStyle) : undefined,
             })
           }
-          parsedLines[lineIndex] = parsed
+          if (parsedIndex !== -1) {
+            parsedLines[parsedIndex] = parsed
+          }
         }
         for (const {char, width: charWidth, style} of parsed) {
           if (charWidth === 0) {
@@ -281,3 +309,41 @@ export class Text extends View {
     })
   }
 }
+
+/**
+ * Shortens `line` to `width` columns, ending in an ellipsis. ANSI sequences are
+ * kept, so styles still apply (and are reset) correctly.
+ */
+function truncate(line: string, width: number): string {
+  if (width <= 0) {
+    return ''
+  }
+
+  let result = ''
+  let lineWidth = 0
+  let didTruncate = false
+  for (const char of unicode.printableChars(line)) {
+    const charWidth = unicode.charWidth(char)
+    if (charWidth === 0) {
+      result += char
+      continue
+    }
+
+    if (didTruncate) {
+      continue
+    }
+
+    if (lineWidth + charWidth > width - ELLIPSIS_WIDTH) {
+      result += ELLIPSIS
+      didTruncate = true
+      continue
+    }
+
+    result += char
+    lineWidth += charWidth
+  }
+  return result
+}
+
+const ELLIPSIS = '…'
+const ELLIPSIS_WIDTH = 1

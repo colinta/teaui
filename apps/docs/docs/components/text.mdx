@@ -40,11 +40,12 @@ recalculate tab stops. A component's screen position does not affect expansion.
 
 ## Props
 
-| Prop        | Type                            | Default     | Description                     |
-| ----------- | ------------------------------- | ----------- | ------------------------------- |
-| `text`      | `string`                        | —           | Text content                    |
-| `lines`     | `string[]`                      | —           | Pre-split lines (alt to `text`) |
-| `alignment` | `'left' \| 'center' \| 'right'` | `'left'`    | Text alignment                  |
-| `wrap`      | `boolean`                       | `false`     | Wrap long lines                 |
-| `font`      | `FontFamily`                    | `'default'` | Text font                       |
-| `style`     | `Style`                         | —           | Text style (color, bold, etc.)  |
+| Prop        | Type                            | Default     | Description                                                                    |
+| ----------- | ------------------------------- | ----------- | ------------------------------------------------------------------------------ |
+| `text`      | `string`                        | —           | Text content                                                                   |
+| `lines`     | `string[]`                      | —           | Pre-split lines (alt to `text`)                                                |
+| `alignment` | `'left' \| 'center' \| 'right'` | `'left'`    | Text alignment                                                                 |
+| `wrap`      | `boolean`                       | `false`     | Wrap long lines                                                                |
+| `ellipsis`  | `boolean`                       | `false`     | Core only: end long lines with `…` instead of clipping (ignored when wrapping) |
+| `font`      | `FontFamily`                    | `'default'` | Text font                                                                      |
+| `style`     | `Style`                         | —           | Text style (color, bold, etc.)                                                 |

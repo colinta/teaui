@@ -1,0 +1,258 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Desktop > floating layout > cascades windows without a position 1`] = `
+"╭┤x│ One ───┤-├─┤+├╮
+│ ╭┤x│ Two ───┤-├─┤+├╮
+│ │ ╔╡x│ Three ═╡-╞═╡+╞╗
+╰─│ ║                  ║
+  ╰─║                  ║
+    ╚══════════════════╝"
+`;
+
+exports[`Desktop > floating layout > draws children that are not windows behind the windows 1`] = `
+"..╔╡x│════════╡-╞═╡+╞╗........
+..║                  ║........
+  ╚══════════════════╝"
+`;
+
+exports[`Desktop > floating layout > draws windows at their positions, in z-order 1`] = `
+"
+ ╭┤x│ Editor ────┤-├─┤+├╮
+ │editor                │
+ │                      │
+ │        ╔╡x│ Tools ═════╡-╞═╡+╞╗
+ │        ║tools                 ║
+ ╰────────║                      ║
+          ║                      ║
+          ║                      ║
+          ╚══════════════════════╝"
+`;
+
+exports[`Desktop > floating layout > keeps windows inside the desktop 1`] = `
+"
+
+
+
+          ╔╡x│ Off ═══╡-╞═╡+╞╗
+          ║                  ║
+          ║                  ║
+          ╚══════════════════╝"
+`;
+
+exports[`Desktop > floating layout > maximizes a window to fill the desktop 1`] = `
+"╔╡x│ Tools ═════════════════════╡-╞═╣+╠╗
+║tools                                 ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+╚══════════════════════════════════════╝"
+`;
+
+exports[`Desktop > floating layout > moves a window by dragging the title bar 1`] = `
+"
+
+
+
+       ╔╡x│ Drag ══╡-╞═╡+╞╗
+       ║                  ║
+       ║                  ║
+       ╚══════════════════╝"
+`;
+
+exports[`Desktop > floating layout > moves minimized windows to the bottom, one row tall 1`] = `
+"
+ ╔╡x│ Editor ════╡-╞═╡+╞╗
+ ║editor                ║
+ ║                      ║
+ ║                      ║
+ ║                      ║
+ ╚══════════════════════╝
+
+
+
+
+╭ Tools ┤↔├╮"
+`;
+
+exports[`Desktop > floating layout > raises a window when it is pressed 1`] = `
+"
+ ╔╡x│ Editor ════╡-╞═╡+╞╗
+ ║editor                ║
+ ║                      ║
+ ║                      ║─┤-├─┤+├╮
+ ║                      ║        │
+ ╚══════════════════════╝        │
+          │                      │
+          │                      │
+          ╰──────────────────────╯"
+`;
+
+exports[`Desktop > floating layout > resizes from the left edge, keeping the right edge in place 1`] = `
+"
+
+      ╔╡x│ Resize ════╡-╞═╡+╞╗
+      ║                      ║
+      ║                      ║
+      ║                      ║
+      ╚══════════════════════╝"
+`;
+
+exports[`Desktop > floating layout > restores a minimized window to where it was 1`] = `
+"
+ ╭┤x│ Editor ────┤-├─┤+├╮
+ │editor                │
+ │                      │
+ │        ╔╡x│ Tools ═════╡-╞═╡+╞╗
+ │        ║tools                 ║
+ ╰────────║                      ║
+          ║                      ║
+          ║                      ║
+          ╚══════════════════════╝"
+`;
+
+exports[`Desktop > layout prop > supports custom layouts 1`] = `
+"╭┤x│ A ───────╮╔╡x│ B ═══════╗
+│             │║             ║
+│             │║             ║
+╰─────────────╯╚═════════════╝"
+`;
+
+exports[`Desktop > layout prop > supports custom layouts 2`] = `
+"╔╡x│ A ═══════╗╭┤x│ B ───────╮
+║             ║│             │
+║             ║│             │
+╚═════════════╝╰─────────────╯"
+`;
+
+exports[`Desktop > minimized windows > wrap onto more rows when they do not fit 1`] = `
+"
+
+
+
+
+
+
+
+
+
+╭ One ┤↔├╮╭ Two ┤↔├╮╭ Three ┤↔├╮
+╭ Four ┤↔├╮"
+`;
+
+exports[`Desktop > tiled layout > accepts layout options 1`] = `
+"╭┤x│┤-├┤+├╮╔╡x│═════════════════╡-╞═╡+╞╗
+│         │║                           ║
+│         │║                           ║
+╰─────────╯╚═══════════════════════════╝"
+`;
+
+exports[`Desktop > tiled layout > changes the ratio by dragging the border between the tiles 1`] = `
+"╔╡x│ Win 1 ═══╡-╞═╡+╞╗╭┤x│ Win 2 ┤-├┤+├╮
+║content 1           ║│content 2       │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+║                    ║│                │
+╚════════════════════╝╰────────────────╯"
+`;
+
+exports[`Desktop > tiled layout > covers the tiles with a maximized window 1`] = `
+"╔╡x│ Win 2 ═════════════════════╡-╞═╡+╞╗
+║content 2                             ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+╚══════════════════════════════════════╝"
+`;
+
+exports[`Desktop > tiled layout > fills the desktop with a single window 1`] = `
+"╔╡x│ Win 1 ═════════════════════╡-╞═╡+╞╗
+║content 1                             ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+╚══════════════════════════════════════╝"
+`;
+
+exports[`Desktop > tiled layout > keeps the minimum width of the windows when changing the ratio 1`] = `
+"╔╡x│ Win 1 ════╡-╞═╡+╞╗╭┤x│ Win… ┤-├┤+├╮
+║content 1            ║│content 2      │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+║                     ║│               │
+╚═════════════════════╝╰───────────────╯"
+`;
+
+exports[`Desktop > tiled layout > lines up minimized windows along the bottom 1`] = `
+"╔╡x│ Win 1 ═════════════════════╡-╞═╡+╞╗
+║content 1                             ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+║                                      ║
+╚══════════════════════════════════════╝
+╭ Win 2 ┤↔├╮╭ Win 3 ┤↔├╮"
+`;
+
+exports[`Desktop > tiled layout > places the first window on the left, the rest stacked on the right 1`] = `
+"╭┤x│ Win 1 ─┤-├─┤+├╮╭┤x│ Win 2 ─┤-├─┤+├╮
+│content 1         ││content 2         │
+│                  ││                  │
+│                  ││                  │
+│                  ││                  │
+│                  │╰──────────────────╯
+│                  │╔╡x│ Win 3 ═╡-╞═╡+╞╗
+│                  │║content 3         ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+╰──────────────────╯╚══════════════════╝"
+`;
+
+exports[`Desktop > tiled layout > tiles the windows that are not minimized 1`] = `
+"╭┤x│ Win 2 ─┤-├─┤+├╮╔╡x│ Win 3 ═╡-╞═╡+╞╗
+│content 2         │║content 3         ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+│                  │║                  ║
+╰──────────────────╯╚══════════════════╝
+╭ Win 1 ┤↔├╮"
+`;

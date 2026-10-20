@@ -44,6 +44,12 @@ type NaturalSizeRefreshState = 'idle' | 'refreshing' | 'refreshing-dirty'
 
 interface ScreenEventMap {
   focusChange: (view: View | undefined) => void
+  /**
+   * A mouse button was pressed on `view` (the topmost view that registered for
+   * the event). Emitted before the view receives the event. Containers can use
+   * this to react to presses on their descendants, e.g. `Window` raises itself.
+   */
+  mousePress: (view: View, event: SystemMouseEvent) => void
 }
 
 export class Screen {
@@ -63,12 +69,15 @@ export class Screen {
   #buffer: Buffer
   #focusManager = new FocusManager()
   #modalManager = new ModalManager()
-  #mouseManager = new MouseManager()
+  #mouseManager = new MouseManager({
+    onPress: (view, event) => this.#emit('mousePress', view, event),
+  })
   #tickManager = new TickManager(() => this.render())
   #eventListeners: {
     [K in keyof ScreenEventMap]: Set<ScreenEventMap[K]>
   } = {
     focusChange: new Set(),
+    mousePress: new Set(),
   }
 
   static async start(): Promise<[Screen, TerminalProgram, Root]>

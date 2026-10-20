@@ -33,6 +33,7 @@ describe('text CLI component example', () => {
         availability: 'both',
       },
       {name: 'wrap', type: 'boolean', availability: 'both'},
+      {name: 'ellipsis', type: 'boolean', availability: 'core'},
       {name: 'font', type: 'FontFamily', availability: 'both'},
       {name: 'style', type: 'Style', availability: 'core'},
       {name: 'style', type: 'Partial<Style>', availability: 'react'},
@@ -63,6 +64,7 @@ describe('text CLI component example', () => {
     expect(description('text')).toContain('Mutually exclusive with lines')
     expect(description('alignment')).toContain("defaults to 'left'")
     expect(description('wrap')).toContain('Defaults to false (clip)')
+    expect(description('ellipsis')).toContain('Ignored when wrap is true')
     expect(description('font')).toContain('not a terminal font selection')
     expect(description('font')).toContain("defaults to 'default'")
     expect(description('ref')).toContain('not an underlying Core Text')

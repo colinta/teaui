@@ -30,6 +30,7 @@ import type {
   LineChart as WrLineChart,
   LineChartProps as WrLineChartProps,
   ConsoleLog as WrConsoleLog,
+  Desktop as WrDesktop,
   Digits as WrDigits,
   Drawer as WrDrawer,
   Pane as WrPane,
@@ -62,6 +63,8 @@ import type {
   Toggle as WrToggle,
   ToggleGroup as WrToggleGroup,
   Logo as WrLogo,
+  Window as WrWindow,
+  WindowTitleBar as WrWindowTitleBar,
   ZStack as WrZStack,
   Column,
   SortDirection,
@@ -184,6 +187,13 @@ export type AccordionProps = Simplify<TUIContainer<typeof WrAccordion>>
 export type AccordionSectionProps = Simplify<
   TUIContainer<typeof WrAccordion.Section>
 >
+export type DesktopProps = Simplify<TUIContainer<typeof WrDesktop>>
+export type WindowProps = Simplify<
+  TUIContainer<typeof WrWindow, 'titleBar' | 'children'>
+>
+export type WindowTitleBarProps = Simplify<
+  TUIContainer<typeof WrWindowTitleBar>
+>
 export type DrawerProps = Simplify<
   TUIContainer<typeof WrDrawer, 'content' | 'drawer' | 'children'>
 >
@@ -272,6 +282,9 @@ declare module 'react' {
         InstanceType<typeof WrAccordion.Section>
       >
       'tui-drawer': WithRef<DrawerProps, WrDrawer>
+      'tui-desktop': WithRef<DesktopProps, WrDesktop>
+      'tui-window': WithRef<Omit<WindowProps, 'titleBar'>, WrWindow>
+      'tui-window-title-bar': WithRef<WindowTitleBarProps, WrWindowTitleBar>
 
       'tui-page': WithRef<PageProps, WrPage>
       'tui-page-section': WithRef<
@@ -1524,5 +1537,38 @@ Tabs.Section = forwardRef<
     <tui-tabs-section ref={ref} {...props}>
       {children}
     </tui-tabs-section>
+  )
+})
+
+/**
+ * Manages Window children: their placement (`layout="floating"`, `"tiled"`, or
+ * a custom `DesktopLayout`), z-order, and the active window.
+ */
+export const Desktop = forwardRef<WrDesktop, DesktopProps>(function Desktop(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-desktop ref={ref} {...props}>
+      {children}
+    </tui-desktop>
+  )
+})
+
+/**
+ * A movable, resizable window. `titleBar` content is drawn in the title bar,
+ * between the title and the minimize/maximize buttons.
+ */
+export const Window = forwardRef<WrWindow, WindowProps>(function Window(
+  {children, titleBar, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-window ref={ref} {...props}>
+      {titleBar === undefined ? null : (
+        <tui-window-title-bar>{titleBar}</tui-window-title-bar>
+      )}
+      {children}
+    </tui-window>
   )
 })

@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`window CLI component example > produces identical Core and JSX React output 1`] = `
+"╭┤x│ Inactive ┤-├─┤+├╮╔╡x│ Active ══╡-╞═╡+╞╗
+│rounded border      │║double border       ║
+│                    │║                    ║
+╰────────────────────╯╚════════════════════╝
+╭ A title that is much too l… [save]┤-├─┤+├╮
+│title bar views sit before the buttons    │
+╰──────────────────────────────────────────╯
+╔ No buttons ══════════════════════════════╗
+╚══════════════════════════════════════════╝
+╭ Minimized to one row ─────────────────┤↔├╮"
+`;

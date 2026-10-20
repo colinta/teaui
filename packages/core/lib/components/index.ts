@@ -67,4 +67,24 @@ export * from './Toggle.js'
 export * from './ToggleGroup.js'
 export * from './Tree.js'
 export * from './Root.js'
+export {
+  Window,
+  WindowTitleBar,
+  WINDOW_HOST,
+  windowHost,
+  type WindowHost,
+  type WindowButton,
+  type Props as WindowProps,
+} from './Window.js'
+export {
+  Desktop,
+  type DesktopLayoutName,
+  type Props as DesktopProps,
+} from './Desktop.js'
+export {
+  FloatingLayout,
+  TiledLayout,
+  type DesktopLayout,
+  type TiledLayoutOptions,
+} from './DesktopLayout.js'
 export * from './utility/index.js'

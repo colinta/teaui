@@ -45,7 +45,7 @@ Every UI element is a `View`. Views have:
 
 ### Containers
 
-[`Container`](/docs/components/container) extends `View` to hold children. `Box`, `Stack`, `Root`, `Accordion`, `Tabs`, and `Drawer` are containers. Use `container.add(child)`, `container.removeChild(child)`, and `view.removeFromParent()` to manage children imperatively.
+[`Container`](/docs/components/container) extends `View` to hold children. `Box`, `Stack`, `Root`, `Accordion`, `Tabs`, `Drawer`, `Window`, and `Desktop` are containers. Use `container.add(child)`, `container.removeChild(child)`, and `view.removeFromParent()` to manage children imperatively.
 
 Views that are built from child views but don't accept children (like `Slider`) extend [`ComposedView`](/docs/components/container#composedview) instead: the base class of `Container`, with `add` and `removeChild` kept `protected`.
 
