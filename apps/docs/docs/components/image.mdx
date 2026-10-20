@@ -47,11 +47,11 @@ Import from the `/react` subpath; importing it registers the component with the 
 <summary>Core API</summary>
 
 ```ts
-import {Box, Screen, Window} from '@teaui/core'
+import {Box, Screen, Root} from '@teaui/core'
 import {Image} from '@teaui/image'
 
 await Screen.start(
-  new Window({
+  new Root({
     child: new Box({
       border: 'rounded',
       child: new Image({source: './photo.png'}),

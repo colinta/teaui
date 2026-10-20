@@ -140,7 +140,7 @@ The `prepareUpdate` returns `[]` (empty array) as a "changed" signal, but `commi
 
 ```ts
 const fiber = reconciler.createContainer(
-  window,
+  root,
   0,
   null,
   false,
@@ -254,10 +254,10 @@ This is O(n × m) where n = children count and m = TextContainer children count.
 
 ```ts
 export async function run(component, options) {
-  const window = new Window()
-  const [screen, _] = await Screen.start(window, options)
-  render(screen, window, component)
-  return [screen, window, component]
+  const root = new Root()
+  const [screen, _] = await Screen.start(root, options)
+  render(screen, root, component)
+  return [screen, root, component]
 }
 ```
 

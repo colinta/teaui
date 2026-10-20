@@ -3,7 +3,7 @@ import {
   type Viewport,
   Screen,
   Table,
-  Window,
+  Root,
   isKeyPrintable,
 } from '@teaui/core'
 
@@ -142,7 +142,7 @@ process.stdout.write(
   ].join('\n') + '\n',
 )
 
-const [screen] = await Screen.start(new Window({child: new InlineList()}), {
+const [screen] = await Screen.start(new Root({child: new InlineList()}), {
   quitChar: 'C-c',
   display: {
     mode: 'inline',

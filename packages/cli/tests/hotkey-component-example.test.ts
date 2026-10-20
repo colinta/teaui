@@ -4,7 +4,7 @@ import {
   HotKey,
   Screen,
   Size,
-  Window,
+  Root,
   lineWidth,
   removeAnsi,
   type KeyEvent,
@@ -124,7 +124,7 @@ describe('hotkey CLI component example', () => {
     '%s sample handles string and object shortcuts with no focused control',
     async framework => {
       const runtime: {program?: HeadlessProgram; screen?: Screen} = {}
-      const start = async (view: View = new Window()) => {
+      const start = async (view: View = new Root()) => {
         const program = new HeadlessProgram({
           cols: SIZE.width,
           rows: SIZE.height,

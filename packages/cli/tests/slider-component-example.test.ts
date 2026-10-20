@@ -230,7 +230,7 @@ describe('slider CLI component example', () => {
 
   it('captures identical visible Core and JSX React output', async () => {
     // captureExample temporarily replaces Screen.start: capture sequentially.
-    // React's Window can style otherwise-empty gaps differently from a Core root.
+    // React's Root can style otherwise-empty gaps differently from a Core root.
     const core = await sliderExample.render.core()
     const react = await sliderExample.render.react()
     expect(removeAnsi(react)).toBe(removeAnsi(core))

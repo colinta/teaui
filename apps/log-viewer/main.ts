@@ -10,7 +10,7 @@ import {
   Screen,
   Stack,
   Tabs,
-  Window,
+  Root,
   interceptConsoleLog,
   type LogLine,
 } from '@teaui/core'
@@ -48,7 +48,7 @@ tabs.addTab('Local', consoleLog)
 
 const [screen] = await Screen.start(
   () =>
-    new Window({
+    new Root({
       child: tabs,
     }),
   {quitChar: 'C-c'},

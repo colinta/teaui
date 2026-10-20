@@ -1,6 +1,6 @@
 import {existsSync, readFileSync} from 'node:fs'
 
-import {HeadlessProgram, Screen, Window, type View} from '@teaui/core'
+import {HeadlessProgram, Screen, Root, type View} from '@teaui/core'
 
 import type {ComponentExample} from './types.js'
 
@@ -72,7 +72,7 @@ async function renderSample(filename: string): Promise<string> {
 
   // AutoLegend needs real focus to discover the active control's hints.
   // The shared capture helper deliberately starts an unfocused screen.
-  const start = async (view: View = new Window()) => {
+  const start = async (view: View = new Root()) => {
     program = new HeadlessProgram({cols: WIDTH, rows: HEIGHT})
     screen = new Screen(program, view)
     screen.start()

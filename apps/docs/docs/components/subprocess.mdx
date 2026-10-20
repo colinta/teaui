@@ -80,7 +80,7 @@ Other common View props, such as `flex` and `padding`, are not currently support
 <summary>Core API</summary>
 
 ```ts
-import {Screen, Stack, Text, Window} from '@teaui/core'
+import {Screen, Stack, Text, Root} from '@teaui/core'
 import {Subprocess} from '@teaui/subprocess'
 
 const shell = new Subprocess({
@@ -89,7 +89,7 @@ const shell = new Subprocess({
 })
 
 await Screen.start(
-  new Window({
+  new Root({
     child: Stack.down([
       new Text({text: 'Click the shell to focus it'}),
       ['flex1', shell],

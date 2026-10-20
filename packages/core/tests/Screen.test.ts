@@ -3,7 +3,7 @@ import {afterEach, describe, expect, test, vi} from 'vitest'
 import type {SystemEvent} from '../lib/events/index.js'
 import {Input} from '../lib/components/Input.js'
 import {Text} from '../lib/components/Text.js'
-import {Window} from '../lib/components/Window.js'
+import {Root} from '../lib/components/Root.js'
 import {Screen} from '../lib/Screen.js'
 import {TerminalProgram} from '../lib/TerminalProgram.js'
 import {TestProgram} from '../lib/TestProgram.js'
@@ -77,7 +77,7 @@ describe('Screen lifecycle', () => {
 
   test('does not deliver or render a key event after its binding stops the screen', () => {
     const program = new TestProgram({cols: 10, rows: 5})
-    const screen = new Screen(program, new Window())
+    const screen = new Screen(program, new Root())
     screen.key('x', () => screen.stop())
     screen.start()
     const trigger = vi.spyOn(screen, 'trigger')
@@ -99,7 +99,7 @@ describe('Screen lifecycle', () => {
   test('stops and tears down only once', () => {
     const program = new TestProgram({cols: 10, rows: 5})
     const teardown = vi.spyOn(program, 'teardown')
-    const screen = new Screen(program, new Window())
+    const screen = new Screen(program, new Root())
     screen.onExit(() => program.teardown())
     screen.start()
 
@@ -160,7 +160,7 @@ describe('Screen lifecycle', () => {
         .mockImplementation((() => undefined) as never)
       const screen = new Screen(
         new TestProgram({cols: 10, rows: 5}),
-        new Window(),
+        new Root(),
       )
 
       const cleanupFailure = new Error('cleanup failed')

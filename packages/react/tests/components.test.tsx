@@ -20,7 +20,7 @@ import {
   Tabs,
   Toggle,
   Palette,
-  Window,
+  Root,
   Container,
   testRender,
 } from '@teaui/core'
@@ -32,11 +32,11 @@ function createMockScreen() {
   return {render: vi.fn()} as any
 }
 
-function renderToWindow(element: React.ReactNode): {window: Window} {
-  const window = new Window()
+function renderToRoot(element: React.ReactNode): {root: Root} {
+  const root = new Root()
   const screen = createMockScreen()
-  render(screen, window, element)
-  return {window}
+  render(screen, root, element)
+  return {root}
 }
 
 function flush(): Promise<void> {
@@ -46,13 +46,13 @@ function flush(): Promise<void> {
 describe('component wrappers', () => {
   describe('views', () => {
     it('Br renders a text literal newline', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-stack direction="down">
           <Components.Br />
         </tui-stack>,
       )
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       expect(stack.children[0]).toBeInstanceOf(TextContainer)
       const tc = stack.children[0] as TextContainer
       // TextContainer stores text nodes in .nodes (not .children, which require screen mount)
@@ -61,25 +61,25 @@ describe('component wrappers', () => {
     })
 
     it('Checkbox renders a tui-checkbox', async () => {
-      const {window} = renderToWindow(<Components.Checkbox />)
+      const {root} = renderToRoot(<Components.Checkbox />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Checkbox)
+      expect(root.children[0]).toBeInstanceOf(Checkbox)
     })
 
     it('Radio renders a tui-radio', async () => {
-      const {window} = renderToWindow(<Components.Radio value="one" />)
+      const {root} = renderToRoot(<Components.Radio value="one" />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Radio)
+      expect(root.children[0]).toBeInstanceOf(Radio)
     })
 
     it('Toggle renders a tui-toggle', async () => {
-      const {window} = renderToWindow(<Components.Toggle />)
+      const {root} = renderToRoot(<Components.Toggle />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Toggle)
+      expect(root.children[0]).toBeInstanceOf(Toggle)
     })
 
     it('FontStyle renders a core FontStyle', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.FontStyle
           value={{
             bold: false,
@@ -90,58 +90,58 @@ describe('component wrappers', () => {
         />,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(FontStyle)
+      expect(root.children[0]).toBeInstanceOf(FontStyle)
     })
 
     it('Header renders a configurable core Header', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Header border="double" font="double-struck" dim>
           Custom font
         </Components.Header>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Header)
+      expect(root.children[0]).toBeInstanceOf(Header)
 
-      const t = testRender(window.children[0], {width: 20, height: 2})
+      const t = testRender(root.children[0], {width: 20, height: 2})
       expect(t.terminal.textContent()).toContain('ℂ𝕦𝕤𝕥𝕠𝕞 𝕗𝕠𝕟𝕥')
       expect(t.terminal.textContent()).toContain('═════════════')
       expect(t.terminal.styleOf('ℂ')).toMatchObject({dim: true})
     })
 
     it('Separator renders a tui-separator', async () => {
-      const {window} = renderToWindow(<Components.Separator />)
+      const {root} = renderToRoot(<Components.Separator />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Separator)
+      expect(root.children[0]).toBeInstanceOf(Separator)
     })
 
     it('Separator.horizontal sets direction', async () => {
-      const {window} = renderToWindow(<Components.Separator.horizontal />)
+      const {root} = renderToRoot(<Components.Separator.horizontal />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Separator)
+      expect(root.children[0]).toBeInstanceOf(Separator)
     })
 
     it('Separator.vertical sets direction', async () => {
-      const {window} = renderToWindow(<Components.Separator.vertical />)
+      const {root} = renderToRoot(<Components.Separator.vertical />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Separator)
+      expect(root.children[0]).toBeInstanceOf(Separator)
     })
 
     it('Space renders a tui-space', async () => {
-      const {window} = renderToWindow(<Components.Space />)
+      const {root} = renderToRoot(<Components.Space />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Space)
+      expect(root.children[0]).toBeInstanceOf(Space)
     })
 
     it('Skeleton renders a tui-skeleton', async () => {
-      const {window} = renderToWindow(<Components.Skeleton shape="circle" />)
+      const {root} = renderToRoot(<Components.Skeleton shape="circle" />)
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Skeleton)
+      expect(root.children[0]).toBeInstanceOf(Skeleton)
     })
   })
 
   describe('simple containers', () => {
     it('RadioGroup renders with nested Radio children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.RadioGroup value="one">
           <Components.Stack.down>
             <Components.Radio value="one" title="One" />
@@ -150,7 +150,7 @@ describe('component wrappers', () => {
         </Components.RadioGroup>,
       )
       await flush()
-      const group = window.children[0] as RadioGroup<string>
+      const group = root.children[0] as RadioGroup<string>
       expect(group).toBeInstanceOf(RadioGroup)
       expect(group.children[0]).toBeInstanceOf(Stack)
       expect((group.children[0] as Stack).children[0]).toBeInstanceOf(Radio)
@@ -169,9 +169,9 @@ describe('component wrappers', () => {
         )
       }
 
-      const {window} = renderToWindow(<App />)
+      const {root} = renderToRoot(<App />)
       await flush()
-      const t = testRender(window, {width: 12, height: 2})
+      const t = testRender(root, {width: 12, height: 2})
       expect(t.terminal.textContent()).toBe('⦿ One\n◯ Two')
 
       t.sendMouse('mouse.button.down', {x: 0, y: 1})
@@ -183,43 +183,43 @@ describe('component wrappers', () => {
     })
 
     it('Box renders with children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Box width={10} height={5}>
           <Components.Space />
         </Components.Box>,
       )
       await flush()
-      const box = window.children[0] as Container
+      const box = root.children[0] as Container
       expect(box).toBeInstanceOf(Box)
       expect(box.children[0]).toBeInstanceOf(Space)
     })
 
     it('Button renders with children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Button>
           <Components.Space />
         </Components.Button>,
       )
       await flush()
-      const btn = window.children[0] as Container
+      const btn = root.children[0] as Container
       expect(btn).toBeInstanceOf(Button)
     })
 
     it('Button accepts purpose', async () => {
-      const {window} = renderToWindow(<Components.Button purpose="primary" />)
+      const {root} = renderToRoot(<Components.Button purpose="primary" />)
       await flush()
-      const btn = window.children[0] as Button
+      const btn = root.children[0] as Button
       expect(btn.purpose).toBe(Palette.primary)
     })
 
     it('Pressable renders with children, and is not a Button', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Pressable>
           <Components.Space />
         </Components.Pressable>,
       )
       await flush()
-      const pressable = window.children[0] as Container
+      const pressable = root.children[0] as Container
       expect(pressable).toBeInstanceOf(Pressable)
       expect(pressable).not.toBeInstanceOf(Button)
       expect(pressable.children[0]).toBeInstanceOf(Space)
@@ -227,93 +227,93 @@ describe('component wrappers', () => {
 
     it('Pressable calls onClick and honors focusable', async () => {
       const onClick = vi.fn()
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Pressable onClick={onClick} focusable={false} />,
       )
       await flush()
-      const t = testRender(window.children[0], {width: 6, height: 1})
+      const t = testRender(root.children[0], {width: 6, height: 1})
       t.sendMouse('mouse.button.down', {x: 1, y: 0})
       t.sendMouse('mouse.button.up', {x: 1, y: 0})
       expect(onClick).toHaveBeenCalledOnce()
     })
 
     it('Stack renders with children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Stack direction="down">
           <Components.Space />
         </Components.Stack>,
       )
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       expect(stack).toBeInstanceOf(Stack)
       expect(stack.children[0]).toBeInstanceOf(Space)
     })
 
     it('Stack.down sets direction', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Stack.down>
           <Components.Space />
         </Components.Stack.down>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Stack)
+      expect(root.children[0]).toBeInstanceOf(Stack)
     })
 
     it('Stack.up sets direction', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Stack.up>
           <Components.Space />
         </Components.Stack.up>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Stack)
+      expect(root.children[0]).toBeInstanceOf(Stack)
     })
 
     it('Stack.left sets direction', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Stack.left>
           <Components.Space />
         </Components.Stack.left>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Stack)
+      expect(root.children[0]).toBeInstanceOf(Stack)
     })
 
     it('Stack.right sets direction', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Stack.right>
           <Components.Space />
         </Components.Stack.right>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Stack)
+      expect(root.children[0]).toBeInstanceOf(Stack)
     })
 
     it('Scrollable renders with children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Scrollable>
           <Components.Space />
         </Components.Scrollable>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Scrollable)
+      expect(root.children[0]).toBeInstanceOf(Scrollable)
     })
 
     it('Collapsible renders with collapsed and expanded', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Collapsible
           collapsed={<Components.Space />}
           expanded={<Components.Box />}
         />,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Collapsible)
+      expect(root.children[0]).toBeInstanceOf(Collapsible)
     })
   })
 
   describe('complex containers', () => {
     it('Accordion renders with children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Accordion>
           <Components.Accordion.Section>
             <Components.Space />
@@ -321,11 +321,11 @@ describe('component wrappers', () => {
         </Components.Accordion>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Accordion)
+      expect(root.children[0]).toBeInstanceOf(Accordion)
     })
 
     it('Tabs renders with children', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Tabs>
           <Components.Tabs.Section>
             <Components.Space />
@@ -333,11 +333,11 @@ describe('component wrappers', () => {
         </Components.Tabs>,
       )
       await flush()
-      expect(window.children[0]).toBeInstanceOf(Tabs)
+      expect(root.children[0]).toBeInstanceOf(Tabs)
     })
 
     it('Tree toggles child rows on click', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Tree
           title="Tree"
           data={[{name: 'Parent', children: [{name: 'Child'}]}]}
@@ -346,7 +346,7 @@ describe('component wrappers', () => {
         />,
       )
       await flush()
-      const t = testRender(window, {width: 20, height: 4})
+      const t = testRender(root, {width: 20, height: 4})
       expect(t.terminal.textContent()).toContain('Parent')
       expect(t.terminal.textContent()).not.toContain('Child')
 
@@ -360,7 +360,7 @@ describe('component wrappers', () => {
 
     it('Table renders renderItem rows', async () => {
       const rows = [{name: 'Alice'}, {name: 'Bob'}]
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <Components.Table
           data={rows}
           columns={[{key: 'name', title: 'Name', width: '100%'}]}
@@ -368,7 +368,7 @@ describe('component wrappers', () => {
         />,
       )
       await flush()
-      const t = testRender(window, {width: 20, height: 5})
+      const t = testRender(root, {width: 20, height: 5})
 
       expect(t.terminal.textContent()).toContain('Alice')
       expect(t.terminal.textContent()).toContain('Bob')
@@ -376,18 +376,18 @@ describe('component wrappers', () => {
 
     describe('Drawer', () => {
       it('renders base Drawer with content and drawer', async () => {
-        const {window} = renderToWindow(
+        const {root} = renderToRoot(
           <Components.Drawer
             content={<Components.Box />}
             drawer={<Components.Space />}
           />,
         )
         await flush()
-        expect(window.children[0]).toBeInstanceOf(Drawer)
+        expect(root.children[0]).toBeInstanceOf(Drawer)
       })
 
       it('supports hiding the drawer entirely when closed', async () => {
-        const {window} = renderToWindow(
+        const {root} = renderToRoot(
           <Components.Drawer
             isOpen={false}
             hidesWhenClosed
@@ -396,42 +396,42 @@ describe('component wrappers', () => {
           />,
         )
         await flush()
-        const t = testRender(window, {width: 20, height: 5})
+        const t = testRender(root, {width: 20, height: 5})
 
         expect(t.terminal.textContent()).toBe('XXXXXXXXXXXXXXXXXXXX')
       })
 
       it('Drawer.top passes content and drawer', async () => {
-        const {window} = renderToWindow(
+        const {root} = renderToRoot(
           <Components.Drawer.top
             content={<Components.Box />}
             drawer={<Components.Space />}
           />,
         )
         await flush()
-        expect(window.children[0]).toBeInstanceOf(Drawer)
+        expect(root.children[0]).toBeInstanceOf(Drawer)
       })
 
       it('Drawer.right passes content and drawer', async () => {
-        const {window} = renderToWindow(
+        const {root} = renderToRoot(
           <Components.Drawer.right
             content={<Components.Box />}
             drawer={<Components.Space />}
           />,
         )
         await flush()
-        expect(window.children[0]).toBeInstanceOf(Drawer)
+        expect(root.children[0]).toBeInstanceOf(Drawer)
       })
 
       it('Drawer.bottom passes content and drawer', async () => {
-        const {window} = renderToWindow(
+        const {root} = renderToRoot(
           <Components.Drawer.bottom
             content={<Components.Box />}
             drawer={<Components.Space />}
           />,
         )
         await flush()
-        const drawer = window.children[0] as Container
+        const drawer = root.children[0] as Container
         expect(drawer).toBeInstanceOf(Drawer)
         // Verify content and drawer are passed (not just children)
         // Drawer should have both Box and Space as children
@@ -439,14 +439,14 @@ describe('component wrappers', () => {
       })
 
       it('Drawer.left passes content and drawer', async () => {
-        const {window} = renderToWindow(
+        const {root} = renderToRoot(
           <Components.Drawer.left
             content={<Components.Box />}
             drawer={<Components.Space />}
           />,
         )
         await flush()
-        const drawer = window.children[0] as Container
+        const drawer = root.children[0] as Container
         expect(drawer).toBeInstanceOf(Drawer)
         expect(drawer.children.length).toBeGreaterThanOrEqual(2)
       })

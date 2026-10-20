@@ -24,7 +24,7 @@ import type {Modal} from './components/Modal.js'
 import {ModalManager} from './managers/ModalManager.js'
 import {MouseManager} from './managers/MouseManager.js'
 import {TickManager} from './managers/TickManager.js'
-import {Window} from './components/Window.js'
+import {Root} from './components/Root.js'
 import {UnboundSystem} from './System.js'
 
 type ViewConstructor<T extends View> = (
@@ -71,7 +71,7 @@ export class Screen {
     focusChange: new Set(),
   }
 
-  static async start(): Promise<[Screen, TerminalProgram, Window]>
+  static async start(): Promise<[Screen, TerminalProgram, Root]>
 
   static async start<T extends View>(
     viewConstructor: T | ViewConstructor<T>,
@@ -79,15 +79,15 @@ export class Screen {
   ): Promise<[Screen, TerminalProgram, T]>
 
   /**
-   * Start the TeaUI application. Expects a root node (I recommend Window, it
+   * Start the TeaUI application. Expects a root node (I recommend Root, it
    * consumes all the available screen space) *or* an async function that creates the
    * root node, and accepts a small amount of options.
    *
    * @return the Screen, the TerminalProgram that controls the terminal, and the root node
    * instance.
    */
-  static async start<T extends View = Window>(
-    viewConstructor: T | ViewConstructor<T> = new Window() as unknown as T,
+  static async start<T extends View = Root>(
+    viewConstructor: T | ViewConstructor<T> = new Root() as unknown as T,
     opts?: Partial<ScreenOptions>,
   ): Promise<[Screen, TerminalProgram, T]> {
     opts ??= {}

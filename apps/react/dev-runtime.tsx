@@ -1,15 +1,15 @@
-import {interceptConsoleLog, Screen, Window} from '@teaui/core'
+import {interceptConsoleLog, Screen, Root} from '@teaui/core'
 import type React from 'react'
 
 type RenderFn = (
   screen: Screen,
-  window: Window,
+  root: Root,
   element: React.ReactNode,
 ) => () => void
 
 export interface HotReloadRuntime {
   screen: Screen
-  window: Window
+  root: Root
   remount(render: RenderFn, element: React.ReactNode): void
   dispose(): void
 }
@@ -17,19 +17,19 @@ export interface HotReloadRuntime {
 export async function createHotReloadRuntime(): Promise<HotReloadRuntime> {
   interceptConsoleLog()
 
-  const window = new Window()
-  const [screen] = await Screen.start(window)
+  const root = new Root()
+  const [screen] = await Screen.start(root)
 
   let unmount = () => {}
 
   return {
     screen,
-    window,
+    root,
 
     remount(render: RenderFn, element: React.ReactNode) {
       unmount()
-      window.removeAllChildren()
-      unmount = render(screen, window, element)
+      root.removeAllChildren()
+      unmount = render(screen, root, element)
     },
 
     dispose() {

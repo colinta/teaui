@@ -1,8 +1,8 @@
 ---
-title: Window
+title: Root
 ---
 
-# Window
+# Root
 
 The root container. Fills the entire terminal. Typically the outermost element of your app, created by `run()` or `Screen.start()`. You don't really need to think about or use this one.
 
@@ -16,7 +16,7 @@ function App() {
   ...
 }
 
-// run() automatically wraps your component in a Window
+// run() automatically wraps your component in a Root
 run(<App />)
 ```
 
@@ -26,16 +26,16 @@ run(<App />)
 | ---------- | ----------- | ------------- |
 | `children` | `ReactNode` | Child content |
 
-Window always fills available space. It inherits from Container.
+Root always fills available space. It inherits from Container.
 
 <details>
 <summary>Core API</summary>
 
 ```js
-import {Screen, Window, Box, Text} from '@teaui/core'
+import {Screen, Root, Box, Text} from '@teaui/core'
 
 Screen.start(
-  new Window({
+  new Root({
     child: new Box({
       border: 'single',
       children: [new Text({text: 'Full screen app'})],

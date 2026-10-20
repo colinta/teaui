@@ -82,7 +82,7 @@ The `scripts/build-screenshots.ts` script runs before every build (`prebuild`)
 and `start`:
 
 1. **Import** the example's default export (`{width, height, title, App}`)
-2. **Render** the `App` component headlessly using the React reconciler into a `Window` view tree
+2. **Render** the `App` component headlessly using the React reconciler into a `Root` view tree
 3. **Convert** the view tree to ANSI via `renderToAnsi()` from `@teaui/core`
 4. **Convert** ANSI escape codes to styled HTML (supports 16/256/24-bit color,
    bold, italic, underline, dim, inverse)
@@ -101,15 +101,15 @@ The key to rendering React components without a terminal is in
 `screenshots/renderReact.tsx`:
 
 ```tsx
-import {Window, createHeadlessScreen} from '@teaui/core'
+import {Root, createHeadlessScreen} from '@teaui/core'
 import {render} from '@teaui/react'
 
-export function renderReact(element: ReactNode): Window {
-  const window = new Window()
+export function renderReact(element: ReactNode): Root {
+  const root = new Root()
   const screen = createHeadlessScreen()
-  render(screen, window, element)
-  window.moveToScreen(screen) // triggers didMount on all views
-  return window
+  render(screen, root, element)
+  root.moveToScreen(screen) // triggers didMount on all views
+  return root
 }
 ```
 
@@ -118,7 +118,7 @@ The `createHeadlessScreen()` (exported from `@teaui/core`) provides a minimal
 `registerHotKey()`, `registerFocus()`, `registerMouse()`, `registerTick()`, and
 `checkMouse()`.
 
-The critical step is `window.moveToScreen(screen)` — this triggers `didMount()`
+The critical step is `root.moveToScreen(screen)` — this triggers `didMount()`
 on all views in the tree, which is required for `TextContainer` nodes (used by
 the React reconciler for inline text) to convert their `TextLiteral` children
 into actual `Text` views for layout.
@@ -131,7 +131,7 @@ renders the source in a syntax-highlighted `CodeBlock` with the terminal
 screenshot below it.
 
 **`<TerminalScreenshot name="progress" />`** — Fetches just
-`/screenshots/progress.html` and renders it in a terminal window frame. Supports
+`/screenshots/progress.html` and renders it in a terminal root frame. Supports
 a `dir` prop to read from `/examples/` instead (used on the landing page).
 
 ## Legacy Screenshot Specs

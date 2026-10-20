@@ -7,7 +7,7 @@ import {
   Plot as CorePlot,
   TrackMouse as CoreTrackMouse,
   Style,
-  Window,
+  Root,
   testRender,
   type Screen,
   type LogLine,
@@ -29,11 +29,11 @@ import {
 } from '../lib/index.js'
 
 function mount(element: React.ReactNode, width = 24, height = 8) {
-  const window = new Window()
+  const root = new Root()
   const screen = {render: vi.fn()} as unknown as Screen
-  const unmount = render(screen, window, element)
-  const t = testRender(window, {width, height})
-  return {window, t, unmount}
+  const unmount = render(screen, root, element)
+  const t = testRender(root, {width, height})
+  return {root, t, unmount}
 }
 
 function flush() {

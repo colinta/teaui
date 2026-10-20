@@ -6,7 +6,7 @@ import {
   TrackMouse,
   ConsoleLog,
   Stack,
-  Window,
+  Root,
   type View,
   interceptConsoleLog,
 } from '@teaui/core'
@@ -48,7 +48,7 @@ export async function demo(
     async _program => {
       // await iTerm2.setBackground(program, [23, 23, 23])
 
-      return new Window({
+      return new Root({
         child: new TrackMouse({
           child: Stack.down({
             children: showConsoleLog

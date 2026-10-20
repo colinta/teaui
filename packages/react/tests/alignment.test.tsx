@@ -5,7 +5,7 @@ import {
   AlignmentScope as WrAlignmentScope,
   Screen,
   TestProgram,
-  Window,
+  Root,
   createAlignment,
 } from '@teaui/core'
 import {
@@ -30,11 +30,11 @@ afterEach(() => {
 })
 
 async function mount(element: React.ReactNode, cols = 30, rows = 6) {
-  const window = new Window()
+  const root = new Root()
   const program = new TestProgram({cols, rows})
-  const screen = new Screen(program, window)
+  const screen = new Screen(program, root)
   screen.start()
-  const unmount = render(screen, window, element)
+  const unmount = render(screen, root, element)
   cleanup = () => {
     unmount()
     screen.stop()
@@ -43,7 +43,7 @@ async function mount(element: React.ReactNode, cols = 30, rows = 6) {
   screen.render()
 
   return {
-    window,
+    root,
     text() {
       return program.terminal.textContent()
     },

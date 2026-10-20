@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url'
 import {
   HeadlessProgram,
   Screen,
-  Window,
+  Root,
   type ScreenOptions,
   type View,
 } from '@teaui/core'
@@ -23,7 +23,7 @@ export async function captureExample(
   const originalStart = Screen.start
   let capture: Capture | undefined
 
-  const start = async (view: View = new Window(), _options?: ScreenOptions) => {
+  const start = async (view: View = new Root(), _options?: ScreenOptions) => {
     const program = new HeadlessProgram({cols: size.width, rows: size.height})
     const screen = new Screen(program, view, {isFocused: false})
     screen.start()

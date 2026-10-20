@@ -114,7 +114,7 @@ describe('logo CLI component example', () => {
 
   it('renders identical Core and public React-wrapper text', async () => {
     // Capture patches Screen.start temporarily, so execute sequentially.
-    // React adds a Window whose default style also colors trailing blank cells.
+    // React adds a Root whose default style also colors trailing blank cells.
     const core = await logoExample.render.core()
     const react = await logoExample.render.react()
     expect(removeAnsi(react)).toBe(removeAnsi(core))

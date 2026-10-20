@@ -116,7 +116,7 @@ describe('console-log CLI component example', () => {
       } else {
         expect(executable).toContain('width: 36, height: 5')
         expect(executable).toContain('await Screen.start(')
-        expect(executable).toContain('new Window({child: new ConsoleLog(')
+        expect(executable).toContain('new Root({child: new ConsoleLog(')
       }
 
       const captureSpy = vi.spyOn(capture, 'captureExample')

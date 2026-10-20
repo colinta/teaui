@@ -87,7 +87,7 @@ describe('component examples', () => {
     const all = listExamples()
     expect(all).toContain('Component examples (All):')
     expect(all).toContain('br')
-    expect(all).not.toMatch(/^\s+(?:container|window)\s/m)
+    expect(all).not.toMatch(/^\s+(?:container|root)\s/m)
 
     const react = listExamples('react')
     expect(react).toContain('Component examples (React):')
@@ -100,11 +100,11 @@ describe('component examples', () => {
     expect(all.match(/\s+ready$/gm)).toHaveLength(62)
     expect(react.match(/\s+ready$/gm)).toHaveLength(62)
     expect(react).toContain('br')
-    expect(react).not.toMatch(/^\s+(?:container|window)\s/m)
+    expect(react).not.toMatch(/^\s+(?:container|root)\s/m)
 
     const core = listExamples('core')
     expect(core).toContain('Component examples (Core):')
-    expect(core).not.toMatch(/^\s+(?:container|window)\s/m)
+    expect(core).not.toMatch(/^\s+(?:container|root)\s/m)
     expect(core).toContain('bar-chart')
     expect(core).not.toMatch(/^\s+(br|style)\s/m)
     expect(core).not.toMatch(/\s+todo$/m)

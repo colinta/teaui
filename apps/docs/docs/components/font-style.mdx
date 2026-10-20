@@ -34,7 +34,7 @@ The value uses `strikethrough`, while TeaUI's low-level `Style` prop is named `s
 <summary>Core API</summary>
 
 ```ts
-import {FontStyle, Screen, Window, type FontStyleValue} from '@teaui/core'
+import {FontStyle, Screen, Root, type FontStyleValue} from '@teaui/core'
 
 let value: FontStyleValue = {
   bold: false,
@@ -50,7 +50,7 @@ const fontStyle = new FontStyle({
   },
 })
 
-await Screen.start(new Window({child: fontStyle}))
+await Screen.start(new Root({child: fontStyle}))
 ```
 
 The Core component exposes its managed `ToggleGroup` as `fontStyle.toggleGroup` for advanced customization. Prefer setting `fontStyle.value` for ordinary updates.

@@ -30,7 +30,7 @@ The React wrapper accepts React content through `children` or `child` and forwar
 ## Core Example
 
 ```ts
-import {Box, Screen, Text, TrackMouse, Window} from '@teaui/core'
+import {Box, Screen, Text, TrackMouse, Root} from '@teaui/core'
 
 const content = new Box({
   border: 'single',
@@ -38,7 +38,7 @@ const content = new Box({
 })
 
 await Screen.start(
-  new Window({
+  new Root({
     child: new TrackMouse({child: content}),
   }),
 )

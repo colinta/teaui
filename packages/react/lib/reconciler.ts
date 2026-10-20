@@ -72,7 +72,7 @@ import {
   Tree,
   TrackMouse,
   View,
-  Window,
+  Root,
 } from '@teaui/core'
 import {
   TextBatch,
@@ -88,7 +88,7 @@ import type {BarChartProps, LineChartProps, LogProps} from './components.js'
 type Props = {}
 interface HostContext {
   screen: Screen
-  window: Window
+  root: Root
 }
 
 type ViewFactory = (props: any) => any
@@ -334,7 +334,7 @@ function createInstance(type: string, props: Props): any {
   }
 }
 
-export function render(screen: Screen, window: Window, rootNode: ReactNode) {
+export function render(screen: Screen, root: Root, rootNode: ReactNode) {
   const textBatch = new TextBatch()
   let finishTextBatch: (() => void) | undefined
   function rerender() {
@@ -502,24 +502,24 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
     supportsHydration: false,
     isPrimaryRenderer: true,
 
-    getRootHostContext(rootWindow: Window): HostContext {
-      return {screen, window: rootWindow}
+    getRootHostContext(root: Root): HostContext {
+      return {screen, root}
     },
     getChildHostContext(
       _parentHostContext: HostContext,
       type: string,
-      _rootWindow: Window,
+      _root: Root,
     ) {
       return {type}
     },
-    clearContainer(rootWindow: Window) {
-      rootWindow.removeAllChildren()
+    clearContainer(root: Root) {
+      root.removeAllChildren()
     },
 
     createInstance(
       type: string,
       props: Props,
-      _rootWindow: Window,
+      _root: Root,
       _hostContext: HostContext,
       _internalInstanceHandle: object,
     ) {
@@ -549,21 +549,17 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
       appendChild(parentInstance, child, beforeChild)
     },
 
-    appendChildToContainer(rootWindow: Window, child: View) {
-      appendChild(rootWindow, child)
+    appendChildToContainer(root: Root, child: View) {
+      appendChild(root, child)
     },
-    insertInContainerBefore(
-      rootWindow: Window,
-      child: View,
-      beforeChild: View,
-    ) {
-      appendChild(rootWindow, child, beforeChild)
+    insertInContainerBefore(root: Root, child: View, beforeChild: View) {
+      appendChild(root, child, beforeChild)
     },
 
     removeChild(container: ChildHost, child: View) {
       removeChild(container, child)
     },
-    removeChildFromContainer(container: Window, child: View) {
+    removeChildFromContainer(container: Root, child: View) {
       removeChild(container, child)
     },
     detachDeletedInstance(_node: View) {},
@@ -694,7 +690,7 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
   })
 
   const fiber = reconciler.createContainer(
-    window,
+    root,
     0,
     null,
     false,
@@ -719,11 +715,11 @@ export function render(screen: Screen, window: Window, rootNode: ReactNode) {
 export async function run(
   component: ReactNode,
   options?: Partial<ScreenOptions>,
-): Promise<[Screen, Window, React.ReactNode, () => void]> {
-  const window = new Window()
-  const [screen, _] = await Screen.start(window, options)
+): Promise<[Screen, Root, React.ReactNode, () => void]> {
+  const root = new Root()
+  const [screen, _] = await Screen.start(root, options)
 
-  const unmount = render(screen, window, component)
+  const unmount = render(screen, root, component)
 
-  return [screen, window, component, unmount]
+  return [screen, root, component, unmount]
 }

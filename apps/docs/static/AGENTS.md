@@ -28,7 +28,7 @@ pnpm install
 pnpm start
 ```
 
-Create `View` instances from `@teaui/core`, compose them under a `Window`, and start the application with `Screen.start()`.
+Create `View` instances from `@teaui/core`, compose them under a `Root`, and start the application with `Screen.start()`.
 
 ### Add React TeaUI to an existing project
 
@@ -88,7 +88,7 @@ Core/OOP components are exported by `@teaui/core`. Most have React wrappers with
 - [Scrollable](https://colinta.github.io/teaui/docs/components/scrollable) — Use when content can exceed its visible region and should scroll.
 - [Space](https://colinta.github.io/teaui/docs/components/space) — Use for fixed or flexible empty space between components.
 - [Stack](https://colinta.github.io/teaui/docs/components/stack) — Use for the primary horizontal or vertical layout of children.
-- [Window](https://colinta.github.io/teaui/docs/components/window) — Use as the root container for a Core/OOP application.
+- [Root](https://colinta.github.io/teaui/docs/components/root) — Use as the root container for a Core/OOP application.
 - [ZStack](https://colinta.github.io/teaui/docs/components/zstack) — Use to overlay children in the same region.
 
 ### Text, status, and display

@@ -7,7 +7,7 @@ import {
   Separator,
   Space,
   Text,
-  Window,
+  Root,
   interceptConsoleLog,
 } from '@teaui/core'
 
@@ -23,7 +23,7 @@ import {
     height: 10,
   })
   const [screen] = await Screen.start(
-    new Window({
+    new Root({
       child: new TrackMouse({
         child: Stack.down([
           [

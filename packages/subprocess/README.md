@@ -19,7 +19,7 @@ The `node-pty` package requires a C++ toolchain for compilation on first install
 ## Quick Start
 
 ```typescript
-import {Screen, Window, Stack, Box, Text, Style} from '@teaui/core'
+import {Screen, Root, Stack, Box, Text, Style} from '@teaui/core'
 import {Subprocess} from '@teaui/subprocess'
 
 const [screen, program] = await Screen.start(async () => {
@@ -28,7 +28,7 @@ const [screen, program] = await Screen.start(async () => {
     onExit: code => console.info(`Shell exited: ${code}`),
   })
 
-  return new Window({
+  return new Root({
     child: Stack.down([
       new Box({
         border: 'single',
@@ -126,7 +126,7 @@ Handles 256-color palette, 24-bit RGB, and all text attributes.
 Parent TeaUI App
 ┌──────────────────────────────────────────────────┐
 │ Screen (owns stdin/stdout, raw mode)             │
-│  └─ Window                                       │
+│  └─ Root                                       │
 │      └─ Stack.down                               │
 │          ├─ Header("My App")                     │
 │          ├─ Subprocess ──┐                   │

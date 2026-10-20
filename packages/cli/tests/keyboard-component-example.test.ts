@@ -2,7 +2,7 @@ import {existsSync, readFileSync} from 'node:fs'
 import {
   HeadlessProgram,
   Screen,
-  Window,
+  Root,
   lineWidth,
   removeAnsi,
   type KeyEvent,
@@ -139,7 +139,7 @@ describe('keyboard CLI component example', () => {
     async framework => {
       const program = new HeadlessProgram({cols: SIZE.width, rows: SIZE.height})
       let screen: Screen | undefined
-      const start = async (view: View = new Window()) => {
+      const start = async (view: View = new Root()) => {
         screen = new Screen(program, view, {isFocused: false})
         screen.start()
         return [screen, program, view]

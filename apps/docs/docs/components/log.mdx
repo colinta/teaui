@@ -49,7 +49,7 @@ import {
   ConsoleLog,
   Screen,
   Stack,
-  Window,
+  Root,
   interceptConsoleLog,
 } from '@teaui/core'
 
@@ -58,7 +58,7 @@ interceptConsoleLog()
 const log = new ConsoleLog({height: 10})
 
 Screen.start(
-  new Window({
+  new Root({
     child: Stack.down([
       new Button({title: 'Log message', onClick: () => console.info('Hello!')}),
       log,
@@ -95,7 +95,7 @@ For imperative updates, omit `logs` and use a ref to call the Core methods below
 ### Core Example
 
 ```ts
-import {Log, Screen, Window, type LogLine} from '@teaui/core'
+import {Log, Screen, Root, type LogLine} from '@teaui/core'
 
 const log = new Log({height: 10})
 
@@ -105,7 +105,7 @@ const entries: LogLine[] = [
 ]
 
 log.setLogs(entries)
-await Screen.start(new Window({child: log}))
+await Screen.start(new Root({child: log}))
 ```
 
 ### LogLine

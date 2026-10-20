@@ -5,7 +5,7 @@ import {
   Box,
   Text,
   Stack,
-  Window,
+  Root,
   Style,
   interceptConsoleLog,
   ConsoleLog,
@@ -62,7 +62,7 @@ async function main() {
       leftBox.add(left)
       rightBox.add(right)
 
-      return new Window({
+      return new Root({
         child: Stack.down([
           new Box({
             border: 'single',

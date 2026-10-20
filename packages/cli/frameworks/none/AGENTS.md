@@ -20,7 +20,7 @@ Most components use `new Component(props)`. Common view props: `purpose`, `headi
 - `Text` — renders text. Props: `text?` or `lines`, `style?`, `alignment?`, `wrap?`, `font?`.
 - `Header` — boxed section heading. Props: `text`, `border`, `font?`, `bold?`, `dim?`.
 - `Box` — bordered container. Props: `child?`/`children?`, `border?`, `highlight?`, `title?`.
-- `Window` — fill-the-screen root container. Props: `child?`/`children?`.
+- `Root` — fill-the-screen root container. Props: `child?`/`children?`.
 - `Pane` — split-pane layout. Props: `child?`/`children?`, `border?`, `collapsible?`.
 - `Stack` — linear layout. Props: `child?`/`children?`, `direction?`, `fill?`, `gap?`. Helpers: `Stack.down/up/left/right(...)`.
 - `ZStack` — overlays children. Props: `child?`/`children?`, `location?`.

@@ -7,7 +7,7 @@ import {
   TestProgram,
   Text as CoreText,
   testRender,
-  Window,
+  Root,
 } from '@teaui/core'
 import {render} from '../lib/reconciler.js'
 import {
@@ -26,15 +26,15 @@ afterEach(() => {
 })
 function mount(element: React.ReactNode, width = 37, height = 9) {
   const program = new TestProgram({cols: width, rows: height})
-  const window = new Window()
-  const screen = new Screen(program, window)
+  const root = new Root()
+  const screen = new Screen(program, root)
   screen.start()
-  const unmount = render(screen, window, element)
+  const unmount = render(screen, root, element)
   cleanups.push(() => {
     unmount()
     screen.stop()
   })
-  return {program, window, screen, unmount}
+  return {program, root, screen, unmount}
 }
 function textGroup(values: string[], textBatch?: TextBatch) {
   const container = new TextContainer(textBatch)
@@ -256,7 +256,7 @@ describe('text commit batching', () => {
     }
     const target = mount(<App />)
     await settle()
-    const provider = target.window.children[0] as TextProvider
+    const provider = target.root.children[0] as TextProvider
     const container = provider.children[0] as TextContainer
     const generated = container.children[0] as CoreText
     setState({text: 'after', wrap: false})

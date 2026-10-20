@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import {
   Screen,
   TestProgram,
-  Window,
+  Root,
   type KeyEvent,
   type MouseEvent,
   type SystemMouseEvent,
@@ -20,11 +20,11 @@ afterEach(() => {
 })
 
 async function mount(element: React.ReactNode, cols = 20, rows = 4) {
-  const window = new Window()
+  const root = new Root()
   const program = new TestProgram({cols, rows})
-  const screen = new Screen(program, window)
+  const screen = new Screen(program, root)
   screen.start()
-  const unmount = render(screen, window, element)
+  const unmount = render(screen, root, element)
   cleanup = () => {
     unmount()
     screen.stop()

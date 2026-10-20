@@ -70,7 +70,7 @@ const sidebars: SidebarsConfig = {
             'components/space',
             'components/scrollable',
             'components/scrollable-list',
-            'components/window',
+            'components/root',
           ],
         },
         {

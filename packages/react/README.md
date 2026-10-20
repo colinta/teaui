@@ -45,25 +45,25 @@ pnpm tsc && node .dist/index.js
 
 ### `run(element, options?)`
 
-Creates a `Window` and `Screen`, renders the React element tree, and enters fullscreen mode.
+Creates a `Root` and `Screen`, renders the React element tree, and enters fullscreen mode.
 
 ```ts
-const [screen, window, component, unmount] = await run(<App />)
+const [screen, root, component, unmount] = await run(<App />)
 ```
 
-Returns `[Screen, Window, ReactNode, unmount]`. Call `unmount()` to tear down the React tree.
+Returns `[Screen, Root, ReactNode, unmount]`. Call `unmount()` to tear down the React tree.
 
-### `render(screen, window, element)`
+### `render(screen, root, element)`
 
-Lower-level alternative — mount a React element into an existing `Screen` and `Window`.
+Lower-level alternative — mount a React element into an existing `Screen` and `Root`.
 
 ```ts
-import {Screen, Window} from '@teaui/core'
+import {Screen, Root} from '@teaui/core'
 import {render} from '@teaui/react'
 
-const window = new Window()
-const [screen] = await Screen.start(window)
-const unmount = render(screen, window, <App />)
+const root = new Root()
+const [screen] = await Screen.start(root)
+const unmount = render(screen, root, <App />)
 ```
 
 Returns an `unmount()` function.

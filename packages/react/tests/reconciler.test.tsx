@@ -9,7 +9,7 @@ import {
   Scrollable,
   Separator,
   Space,
-  Window,
+  Root,
   Container,
   testRender,
 } from '@teaui/core'
@@ -23,15 +23,15 @@ function createMockScreen() {
   } as any
 }
 
-function renderToWindow(element: React.ReactNode): {
-  window: Window
+function renderToRoot(element: React.ReactNode): {
+  root: Root
   screen: ReturnType<typeof createMockScreen>
   unmount: () => void
 } {
-  const window = new Window()
+  const root = new Root()
   const screen = createMockScreen()
-  const unmount = render(screen, window, element)
-  return {window, screen, unmount}
+  const unmount = render(screen, root, element)
+  return {root, screen, unmount}
 }
 
 // Helper: wait for React async reconciliation to flush
@@ -41,23 +41,23 @@ function flush(): Promise<void> {
 
 describe('reconciler', () => {
   describe('render basics', () => {
-    it('renders a simple box into the window', async () => {
-      const {window} = renderToWindow(<tui-box width={10} height={5} />)
+    it('renders a simple box into the root', async () => {
+      const {root} = renderToRoot(<tui-box width={10} height={5} />)
       await flush()
-      expect(window.children.length).toBe(1)
-      expect(window.children[0]).toBeInstanceOf(Box)
+      expect(root.children.length).toBe(1)
+      expect(root.children[0]).toBeInstanceOf(Box)
     })
 
     it('renders nested containers', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-stack direction="down">
           <tui-box width={10} height={5} />
           <tui-box width={20} height={10} />
         </tui-stack>,
       )
       await flush()
-      expect(window.children.length).toBe(1)
-      const stack = window.children[0] as Container
+      expect(root.children.length).toBe(1)
+      const stack = root.children[0] as Container
       expect(stack).toBeInstanceOf(Stack)
       expect(stack.children.length).toBe(2)
       expect(stack.children[0]).toBeInstanceOf(Box)
@@ -65,11 +65,11 @@ describe('reconciler', () => {
     })
 
     it('renders text literals into TextContainers', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-stack direction="down">hello world</tui-stack>,
       )
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       // Text literals get wrapped in a TextContainer
       expect(stack.children.length).toBe(1)
       expect(stack.children[0]).toBeInstanceOf(TextContainer)
@@ -82,11 +82,11 @@ describe('reconciler', () => {
 
     it('groups adjacent text literals into the same TextContainer', async () => {
       const name = 'world'
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-stack direction="down">hello {name}!</tui-stack>,
       )
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       // All text nodes should share one TextContainer
       expect(stack.children.length).toBe(1)
       expect(stack.children[0]).toBeInstanceOf(TextContainer)
@@ -97,7 +97,7 @@ describe('reconciler', () => {
 
     it('preserves text insertion order when React inserts before an existing text node', async () => {
       const mainText = 'Hello'
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-text wrap>
           -{mainText}
           {'. '}
@@ -105,7 +105,7 @@ describe('reconciler', () => {
       )
       await flush()
 
-      const textProvider = window.children[0] as Container
+      const textProvider = root.children[0] as Container
       expect(textProvider.children.length).toBe(1)
       expect(textProvider.children[0]).toBeInstanceOf(TextContainer)
       const tc = textProvider.children[0] as TextContainer
@@ -119,7 +119,7 @@ describe('reconciler', () => {
     })
 
     it('creates separate TextContainers when non-text views intervene', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-stack direction="down">
           hello
           <tui-box width={5} height={5} />
@@ -127,7 +127,7 @@ describe('reconciler', () => {
         </tui-stack>,
       )
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       // TextContainer("hello"), Box, TextContainer("world")
       expect(stack.children.length).toBe(3)
       expect(stack.children[0]).toBeInstanceOf(TextContainer)
@@ -138,11 +138,11 @@ describe('reconciler', () => {
 
   describe('element types', () => {
     it('supports both short and tui-prefixed element names', async () => {
-      const {window: w1} = renderToWindow(<tui-checkbox />)
-      const {window: w2} = renderToWindow(<tui-radio value="one" />)
-      const {window: w3} = renderToWindow(<tui-radio-group />)
-      const {window: w4} = renderToWindow(<tui-separator />)
-      const {window: w5} = renderToWindow(<tui-space />)
+      const {root: w1} = renderToRoot(<tui-checkbox />)
+      const {root: w2} = renderToRoot(<tui-radio value="one" />)
+      const {root: w3} = renderToRoot(<tui-radio-group />)
+      const {root: w4} = renderToRoot(<tui-separator />)
+      const {root: w5} = renderToRoot(<tui-space />)
       await flush()
       expect(w1.children[0]).toBeInstanceOf(Checkbox)
       expect(w2.children[0]).toBeInstanceOf(Radio)
@@ -155,7 +155,7 @@ describe('reconciler', () => {
       const e = console.error
       console.error = () => {}
       expect(() => {
-        renderToWindow(React.createElement('unknown-element' as any))
+        renderToRoot(React.createElement('unknown-element' as any))
       }).toThrow('unknown component "unknown-element"')
       console.error = e
     })
@@ -164,7 +164,7 @@ describe('reconciler', () => {
       const e = console.error
       console.error = () => {}
       expect(() => {
-        renderToWindow(
+        renderToRoot(
           React.createElement('tui-slider', {range: [0, 10]} as any, [
             <tui-space key="space" />,
           ]),
@@ -176,25 +176,23 @@ describe('reconciler', () => {
 
   describe('unmount', () => {
     it('returns an unmount function', () => {
-      const {unmount} = renderToWindow(<tui-box />)
+      const {unmount} = renderToRoot(<tui-box />)
       expect(typeof unmount).toBe('function')
     })
 
     it('removes children when unmount is called', async () => {
-      const {window, unmount} = renderToWindow(
-        <tui-box width={10} height={5} />,
-      )
+      const {root, unmount} = renderToRoot(<tui-box width={10} height={5} />)
       await flush()
-      expect(window.children.length).toBe(1)
+      expect(root.children.length).toBe(1)
       unmount()
       await flush()
-      expect(window.children.length).toBe(0)
+      expect(root.children.length).toBe(0)
     })
   })
 
   describe('updates', () => {
     it('calls screen.render after commit', async () => {
-      const {screen} = renderToWindow(<tui-box />)
+      const {screen} = renderToRoot(<tui-box />)
       await flush()
       expect(screen.render).toHaveBeenCalled()
     })
@@ -208,10 +206,10 @@ describe('reconciler', () => {
         return <tui-box width={width} height={5} />
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
 
-      const box = window.children[0] as any
+      const box = root.children[0] as any
       // Initial render
       expect(box).toBeInstanceOf(Box)
 
@@ -239,9 +237,9 @@ describe('reconciler', () => {
         )
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       expect(stack.children.length).toBe(2)
 
       setShow!(false)
@@ -260,9 +258,9 @@ describe('reconciler', () => {
         )
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       expect(stack.children.length).toBe(1)
       expect(stack.children[0]).toBeInstanceOf(TextContainer)
       const tc = stack.children[0] as TextContainer
@@ -291,9 +289,9 @@ describe('reconciler', () => {
         )
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const scrollable = window.children[0] as Container
+      const scrollable = root.children[0] as Container
       expect(scrollable).toBeInstanceOf(Scrollable)
       expect(scrollable.children.length).toBe(1)
 
@@ -301,7 +299,7 @@ describe('reconciler', () => {
       await flush()
       expect(scrollable.children.length).toBe(1)
 
-      const rendered = testRender(window, {width: 80, height: 4})
+      const rendered = testRender(root, {width: 80, height: 4})
       expect(rendered.terminal.textContent()).toBe('entry')
     })
 
@@ -323,9 +321,9 @@ describe('reconciler', () => {
         )
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const rendered = testRender(window, {width: 40, height: 8})
+      const rendered = testRender(root, {width: 40, height: 8})
       expect(rendered.terminal.textContent()).toContain('first')
 
       setRow!(null)
@@ -349,9 +347,9 @@ describe('reconciler', () => {
         return <tui-callout>{text}</tui-callout>
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const rendered = testRender(window, {width: 40, height: 3})
+      const rendered = testRender(root, {width: 40, height: 3})
       expect(rendered.terminal.textContent()).toContain('first')
 
       setText!(null)
@@ -384,7 +382,7 @@ describe('reconciler', () => {
         )
       }
 
-      renderToWindow(<TestComp />)
+      renderToRoot(<TestComp />)
       await flush()
       expect(capturedRef).toBeInstanceOf(Box)
     })
@@ -400,9 +398,9 @@ describe('reconciler', () => {
         return <tui-stack direction="down">{text}</tui-stack>
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const stack = window.children[0] as Container
+      const stack = root.children[0] as Container
       const tc = stack.children[0] as TextContainer
       const literal = tc.nodes[0] as TextLiteral
       expect(literal.text).toBe('hello')
@@ -413,13 +411,13 @@ describe('reconciler', () => {
     })
 
     it('inherits parent text styles in nested text providers', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-text foreground="red">
           <tui-text bold>Hello</tui-text>
         </tui-text>,
       )
       await flush()
-      const t = testRender(window, {width: 10, height: 1})
+      const t = testRender(root, {width: 10, height: 1})
       const style = t.terminal.styleOf('Hello')
 
       expect(style?.bold).toBe(true)
@@ -436,9 +434,9 @@ describe('reconciler', () => {
         return <tui-text foreground={red ? 'red' : undefined}>Hello</tui-text>
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const t = testRender(window, {width: 10, height: 1})
+      const t = testRender(root, {width: 10, height: 1})
 
       expect(t.terminal.styleOf('Hello')?.foreground).not.toBe('red')
 
@@ -458,9 +456,9 @@ describe('reconciler', () => {
         return <tui-text wrap={wrap}>Hello World</tui-text>
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const t = testRender(window, {width: 6, height: 3})
+      const t = testRender(root, {width: 6, height: 3})
 
       expect(t.terminal.textContent()).toBe('Hello')
 
@@ -480,9 +478,9 @@ describe('reconciler', () => {
         return <tui-text alignment={alignment}>Hi</tui-text>
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const t = testRender(window, {width: 10, height: 1})
+      const t = testRender(root, {width: 10, height: 1})
 
       expect(t.terminal.charAt(0, 0)).toBe('H')
 
@@ -527,9 +525,9 @@ describe('reconciler', () => {
         )
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const t = testRender(window, {width: 40, height: 6})
+      const t = testRender(root, {width: 40, height: 6})
 
       expect(t.terminal.textContent()).toContain(
         '"tags": ["tui", "terminal", "ui"]',
@@ -610,9 +608,9 @@ describe('reconciler', () => {
         )
       }
 
-      const {window} = renderToWindow(<TestComp />)
+      const {root} = renderToRoot(<TestComp />)
       await flush()
-      const t = testRender(window, {width: 40, height: 10})
+      const t = testRender(root, {width: 40, height: 10})
 
       expect(t.terminal.textContent()).toContain('"purpose": "default",')
       expect(t.terminal.textContent()).toContain('"debug": false')
@@ -636,7 +634,7 @@ describe('reconciler', () => {
 
   describe('layout integration', () => {
     it('constrains ZStack location children to the screen size', async () => {
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-zstack location="top-right">
           <tui-box border="rounded" flex="flex1">
             <tui-stack direction="down" flex="flex1">
@@ -648,9 +646,9 @@ describe('reconciler', () => {
       )
       await flush()
 
-      const t = testRender(window, {width: 20, height: 6})
-      const root = window.children[0] as Container
-      const box = root.children[0] as Box
+      const t = testRender(root, {width: 20, height: 6})
+      const zstack = root.children[0] as Container
+      const box = zstack.children[0] as Box
 
       expect(t.terminal.textContent()).toContain('╰')
       expect(box.contentSize.height).toBeLessThanOrEqual(6)
@@ -661,13 +659,13 @@ describe('reconciler', () => {
     it('does not pass children prop to view constructors', async () => {
       // If children were passed through, it could cause issues with views
       // that don't expect a children prop. This just validates it doesn't crash.
-      const {window} = renderToWindow(
+      const {root} = renderToRoot(
         <tui-stack direction="down">
           <tui-box width={10} height={5} />
         </tui-stack>,
       )
       await flush()
-      expect(window.children.length).toBe(1)
+      expect(root.children.length).toBe(1)
     })
   })
 })

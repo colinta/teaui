@@ -205,7 +205,7 @@ of callbacks that React calls during reconciliation:
 The `appendChild`, `removeChild`, and `removeFromTextContainer` functions are
 defined inside the `render()` closure (they capture the `screen` reference).
 
-The container is created with `createContainer(window, 0)` — mode `0` is
+The container is created with `createContainer(root, 0)` — mode `0` is
 `LegacyRoot`, meaning `setState` calls are synchronous (not batched) when
 called outside React event handlers. This is important because TeaUI's mouse
 and keyboard events originate from the core `Screen`, not from React, so state
