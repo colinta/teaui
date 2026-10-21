@@ -8,7 +8,7 @@ import {
 } from '../../lib/components/DesktopLayout.js'
 import {Text} from '../../lib/components/Text.js'
 import {Input} from '../../lib/components/Input.js'
-import {Point, Rect, Size} from '../../lib/geometry.js'
+import {Point, Rect} from '../../lib/geometry.js'
 
 type T = ReturnType<typeof testRender>
 

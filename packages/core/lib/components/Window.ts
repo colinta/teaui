@@ -529,7 +529,7 @@ export class Window extends Container {
   }
 
   removeAllChildren() {
-    for (const child of [...this.children]) {
+    for (const child of this.children) {
       this.removeChild(child)
     }
   }
