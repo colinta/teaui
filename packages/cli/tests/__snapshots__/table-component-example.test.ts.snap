@@ -5,20 +5,20 @@ exports[`table CLI component example > core displays and captures its exact dete
  [1m#[22;2m │ [22;1mName         [22;2m │ [22;1m    Qty▲[22;2m │ [22;1m Status  [22m 
 [2m──────────────────────────────────────────
 [22m 1[2m │ [22mBananas      [2m │ [22m       2[2m │ [22m  Ready   
-[48;2;63;63;63;38;2;128;128;128m▷2 │ Apples        │       10 │  Packed  ◁
-[49;39m 3[2m │ [22mCherries     [2m │ [22m      30[2m │ [22m  Ready   
+▷2[2m │ [22mApples       [2m │ [22m      10[2m │ [22m Packed  ◁
+ 3[2m │ [22mCherries     [2m │ [22m      30[2m │ [22m  Ready   
 Text cells: name descending + selection   
- [1m[ ][22;2m │ [22;1mName [0m[1m▼      [22;2m │ [22;1m    Qty [22;2m │ [22;1m Status [22m 
+ [1m[ ][22;2m │ [22;1mName [1m▼      [22;2m │ [22;1m    Qty [22;2m │ [22;1m Status [22m 
 [2m──────────────────────────────────────────
-[22m [ ][2m │ [22mCherries    [2m │ [22m      30[2m │ [22m Ready   
-[48;2;63;63;63;38;2;128;128;128m▷[ ] │ Bananas      │        2 │  Ready  ◁
- [ ][2m │ [49;39mApples      [2m │ [22m      10[2m │ [22m Packed  
+[22m [ ][2m │ Cherries    [2m │ [22m      30[2m │ [22m Ready   
+▷[ ][2m │ [22mBananas     [2m │ [22m       2[2m │ [22m Ready  ◁
+ [ ][2m │ Apples      [2m │ [22m      10[2m │ [22m Packed  
 Custom rows: input order                  
  [1m▲[22;2m │ [22;1mStock summary                       [22m 
 [2m──────────────────────────────────────────
 [22m 1[2m │ [22m1: Cherries (30 units)               
  2[2m │ [22m2: Apples (10 units)                 
-[48;2;63;63;63;38;2;128;128;128m▷3 │ [49;39m3: Bananas (2 units)[48;2;63;63;63;38;2;128;128;128m                ◁[0m"
+▷3[2m │ [22m3: Bananas (2 units)                ◁[0m"
 `;
 
 exports[`table CLI component example > core displays and captures its exact deterministic public sample > sorted cells and public custom rows 1`] = `
@@ -47,20 +47,20 @@ exports[`table CLI component example > react displays and captures its exact det
  [1m#[22;2m │ [22;1mName         [22;2m │ [22;1m    Qty▲[22;2m │ [22;1m Status   
 [22;2m──────────────────────────────────────────
  [22m1[2m │ [22mBananas      [2m │        [22m2[2m │   [22mReady   
-[48;2;63;63;63;38;2;128;128;128m▷2 │ Apples        │       10 │  Packed  ◁
- [49;39m3[2m │ [22mCherries     [2m │       [22m30[2m │   [22mReady   
+▷2[2m │ [22mApples       [2m │       [22m10[2m │  [22mPacked  ◁
+ 3[2m │ [22mCherries     [2m │       [22m30[2m │   [22mReady   
 Text cells: name descending + selection   
  [1m[ ][22;2m │ [22;1mName ▼      [22;2m │ [22;1m    Qty [22;2m │ [22;1m Status  
 [22;2m──────────────────────────────────────────
  [22m[ ][2m │ [22mCherries    [2m │       [22m30[2m │  [22mReady   
-[48;2;63;63;63;38;2;128;128;128m▷[ ] │ Bananas      │        2 │  Ready  ◁
- [49;39m[ ][2m │ [22mApples      [2m │       [22m10[2m │  [22mPacked  
+▷[ ][2m │ [22mBananas     [2m │        [22m2[2m │  [22mReady  ◁
+ [ ][2m │ [22mApples      [2m │       [22m10[2m │  [22mPacked  
 Custom rows: input order                  
  [1m▲[22;2m │ [22;1mStock summary                        
 [22;2m──────────────────────────────────────────
  [22m1[2m │ [22m1: Cherries (30 units)               
  2[2m │ [22m2: Apples (10 units)                 
-[48;2;63;63;63;38;2;128;128;128m▷3 │ [49;39m3: Bananas (2 units)[48;2;63;63;63;38;2;128;128;128m                ◁[0m"
+▷3[2m │ [22m3: Bananas (2 units)                ◁[0m"
 `;
 
 exports[`table CLI component example > react displays and captures its exact deterministic public sample > sorted cells and public custom rows 1`] = `

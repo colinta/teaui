@@ -104,7 +104,7 @@ describe('Table', () => {
       expect(t.terminal.textContent()).toMatchSnapshot()
     })
 
-    it('dims the selected row and shows outlined markers when unfocused', () => {
+    it('draws the selected row like other rows, with outlined markers, when unfocused', () => {
       const t = testRender(makeTable(), {width: 30, height: 8})
       expect(t.terminal.textAtRow(2)).toBe('▶Alice    │    30 │ New York ◀')
       expect(t.terminal.styleAt(1, 2).background).toEqual([97, 97, 97])
@@ -112,7 +112,8 @@ describe('Table', () => {
 
       t.sendKey('tab')
       expect(t.terminal.textAtRow(2)).toBe('▷Alice    │    30 │ New York ◁')
-      expect(t.terminal.styleAt(1, 2).background).toEqual([63, 63, 63])
+      expect(t.terminal.styleAt(1, 2)).toEqual(t.terminal.styleAt(1, 3))
+      expect(t.terminal.styleAt(9, 2)).toEqual(t.terminal.styleAt(9, 3))
       expect(t.terminal.styleAt(1, 2).bold).toBeFalsy()
     })
 

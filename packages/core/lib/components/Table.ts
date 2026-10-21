@@ -581,15 +581,15 @@ export class Table<TData> extends ComposedView {
     }
   }
 
-  #cursorStyle(hasFocus: boolean): Style {
+  /**
+   * Unchecked cursor row. Only highlighted while focused; when unfocused the
+   * cursor row is drawn like any other row (plus the hollow markers).
+   */
+  #cursorStyle(): Style {
     return new Style({
-      foreground: hasFocus
-        ? this.purpose.selectionTextColor
-        : this.purpose.inactiveSelectionTextColor,
-      background: hasFocus
-        ? this.purpose.selectionBackgroundColor
-        : this.purpose.inactiveSelectionBackgroundColor,
-      bold: hasFocus,
+      foreground: this.purpose.selectionTextColor,
+      background: this.purpose.selectionBackgroundColor,
+      bold: true,
     })
   }
 
@@ -623,7 +623,7 @@ export class Table<TData> extends ComposedView {
     const dimStyle = new Style({dim: true})
     const headerStyle = new Style({dim: true, bold: true})
     // Cursor row (not checked)
-    const cursorStyle = this.#cursorStyle(hasFocus)
+    const cursorStyle = this.#cursorStyle()
     const checkedRowStyle = new Style({
       background: this.purpose.checkedBackgroundColor,
     })
@@ -719,11 +719,13 @@ export class Table<TData> extends ComposedView {
       const isSelected = rowIndex === this.#selectedIndex
       const row = this.#data[rowIndex]
       const isChecked = this.#selectedItems.has(row)
+      // unfocused + unchecked cursor row renders like a plain row
+      const isCursorHighlighted = isSelected && hasFocus
 
       const rowHighlight =
         isSelected && isChecked
           ? cursorCheckedStyle
-          : isSelected
+          : isCursorHighlighted
             ? cursorStyle
             : isChecked
               ? checkedRowStyle
@@ -731,17 +733,17 @@ export class Table<TData> extends ComposedView {
       const effectiveSepStyle =
         isSelected && isChecked
           ? cursorCheckedStyle
-          : isSelected
+          : isCursorHighlighted
             ? cursorStyle
             : isChecked
               ? checkedRowStyle
               : dimStyle
 
-      if (isSelected || isChecked) {
+      if (isCursorHighlighted || isChecked) {
         viewport.write(' '.repeat(width), new Point(0, y), rowHighlight)
       }
       if (isSelected) {
-        const selectionStyle = isChecked ? cursorCheckedStyle : cursorStyle
+        const selectionStyle = rowHighlight
         const selectionMarker = hasFocus
           ? SELECTION_MARKER_FOCUSED
           : SELECTION_MARKER_UNFOCUSED
