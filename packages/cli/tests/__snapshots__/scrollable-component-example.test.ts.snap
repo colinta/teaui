@@ -15,9 +15,9 @@ Two: abcdefghijklmno  Three: QRSTUVWXYZa
 [49;39mRow 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;48;48;48;38;2;48;48;48m 
 [48;2;48;48;48;38;2;48;48;48m   ██████████████████████[48;2;97;97;97;38;2;97;97;97m███           █
 [49;39mNo scrollbar: advancePage(1)            
-Quiet item [49;39m3                            
-Quiet item 4                            
-Quiet item 5                            [0m"
+Quiet item [49;39m4                            
+Quiet item 5                            
+Quiet item 6                            [0m"
 `;
 
 exports[`scrollable CLI component example > core captures the exact executable sample and deterministic public scrolling APIs > text and scrollbars 1`] = `
@@ -35,9 +35,9 @@ Row 4: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234█
 Row 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234 
    █████████████████████████           █
 No scrollbar: advancePage(1)            
-Quiet item 3                            
 Quiet item 4                            
-Quiet item 5                            "
+Quiet item 5                            
+Quiet item 6                            "
 `;
 
 exports[`scrollable CLI component example > react captures the exact executable sample and deterministic public scrolling APIs > exact styled capture 1`] = `
@@ -55,9 +55,9 @@ Two: abcdefghijklmno  Three: QRSTUVWXYZa
 [49;39mRow 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234[48;2;48;48;48;38;2;48;48;48m 
 [48;2;48;48;48;38;2;48;48;48m   ██████████████████████[48;2;97;97;97;38;2;97;97;97m███           █
 [49;39mNo scrollbar: advancePage(1)            
-Quiet item [49;39m3                            
-Quiet item 4                            
-Quiet item 5                            [0m"
+Quiet item [49;39m4                            
+Quiet item 5                            
+Quiet item 6                            [0m"
 `;
 
 exports[`scrollable CLI component example > react captures the exact executable sample and deterministic public scrolling APIs > text and scrollbars 1`] = `
@@ -75,7 +75,7 @@ Row 4: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234█
 Row 5: ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234 
    █████████████████████████           █
 No scrollbar: advancePage(1)            
-Quiet item 3                            
 Quiet item 4                            
-Quiet item 5                            "
+Quiet item 5                            
+Quiet item 6                            "
 `;

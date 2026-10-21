@@ -192,9 +192,9 @@ describe('scrollable CLI component example', () => {
       expect(lines[12]).toContain('█')
       expect(lines[12].at(-1)).toBe('█')
       expect(lines.slice(14).map(line => line.trimEnd())).toEqual([
-        'Quiet item 3',
         'Quiet item 4',
         'Quiet item 5',
+        'Quiet item 6',
       ])
       expect(lines.slice(14).join('\n')).not.toContain('█')
       expect(text).toMatchSnapshot('text and scrollbars')
