@@ -205,11 +205,6 @@ much newer package, and [sindresorhus](https://github.com/sindresorhus) is a
 prolific writer of terminal-related code, so switching to that seems like a good
 idea. YAGNI for now, but it's on the list.
 
-Blessed is a very powerful library, but I'm not using ~80-90% of it. All I
-really need is _goto XY, writeChar, flush_ along with the code that sets up
-raw-mode, mouse-events, resize events, etc.
-[termbox2](https://github.com/RauliL/termbox2-node) maybe?
-
 - https://github.com/vangie/east-asian-width
 - https://github.com/komagata/eastasianwidth
 - https://github.com/chalk/ansi-regex
