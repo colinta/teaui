@@ -5,13 +5,13 @@ import {captureExample} from './capture.js'
 import type {ComponentExample} from './types.js'
 
 const WIDTH = 44
-const HEIGHT = 12
+const HEIGHT = 16
 
 export const spinnerExample: ComponentExample = {
   name: 'spinner',
   availability: 'both',
   description:
-    'Animated loading indicators in four styles; standalone samples animate normally, while captured output shows the initial frame',
+    'Animated loading indicators in five styles; standalone samples animate normally, while captured output shows the initial frame',
   props: [
     {
       name: 'style',

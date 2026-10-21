@@ -3,7 +3,7 @@ import {run, Spinner, Stack, Text} from '@teaui/react'
 
 function App() {
   return (
-    <Stack.down width={44} height={12} background="default">
+    <Stack.down width={44} height={16} background="default">
       <Text>Spinner styles (initial frame)</Text>
       <Text>dots: default style and animation (1x1)</Text>
       <Spinner purpose="primary" />

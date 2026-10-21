@@ -15,14 +15,18 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import * as capture from '../lib/examples/samples/capture.js'
 import {spinnerExample} from '../lib/examples/samples/spinner.js'
 
-const SIZE = {width: 44, height: 12}
-const INITIAL_FRAMES = ['⣾', '', '▄ ▄ ▄', ' ▀▀▀', '━━', '⣾']
+const SIZE = {width: 44, height: 16}
+const INITIAL_FRAMES = ['⣾', '', '▄ ▄ ▄', ' ▀▀▀', '━━', '╶─╴', '', '  •', '⣾']
+const RED = [196, 98, 100]
+const GREEN = [88, 168, 119]
 const ACCENTS = [
   {row: 2, columns: [0], foreground: [90, 122, 194]},
   {row: 5, columns: [0, 2, 4], foreground: [88, 168, 119]},
   {row: 7, columns: [1, 2, 3], foreground: [208, 146, 75]},
-  {row: 9, columns: [0, 1], foreground: [196, 98, 100]},
-  {row: 11, columns: [0], foreground: [90, 122, 194]},
+  {row: 9, columns: [0, 1], foreground: RED},
+  {row: 11, columns: [0, 1, 2], foreground: GREEN},
+  {row: 13, columns: [2], foreground: GREEN},
+  {row: 15, columns: [0], foreground: [90, 122, 194]},
 ]
 
 beforeEach(() => {
@@ -61,17 +65,17 @@ describe('spinner CLI component example', () => {
         'style',
         'isAnimating',
         'purpose',
-        'width',
-        'height',
         ...(framework === 'react' ? ['ref'] : []),
       ])
     }
     const prop = (name: string) =>
       spinnerExample.props.find(prop => prop.name === name)
-    expect(prop('style')?.type).toBe("'dots' | 'bounce' | 'loop' | 'kitt'")
+    expect(prop('style')?.type).toBe(
+      "'dots' | 'bounce' | 'loop' | 'kitt' | 'snake'",
+    )
     expect(prop('style')?.description).toContain('Defaults to dots')
     expect(prop('style')?.description).toContain(
-      'dots 1x1, bounce 5x2, loop 5x1, and kitt 7x1',
+      'dots, bounce, loop, kitt, and snake',
     )
     expect(prop('style')?.description).toContain(
       'resets the frame and elapsed time',
@@ -84,15 +88,9 @@ describe('spinner CLI component example', () => {
     expect(prop('isAnimating')?.description).toContain(
       'without hiding or resetting',
     )
-    expect(prop('isAnimating')?.description).toContain('10 frames per second')
-    expect(prop('isAnimating')?.description).toContain(
-      'kitt uses approximately 20',
-    )
     expect(prop('purpose')?.type).toBe('Palette | Purpose')
     expect(prop('purpose')?.description).toContain('accent text color')
     expect(prop('purpose')?.description).toContain('even when paused')
-    expect(prop('width')?.type).toBe('Dimension')
-    expect(prop('height')?.type).toBe('Dimension')
     expect(prop('ref')).toEqual({
       name: 'ref',
       type: 'React.Ref<Spinner>',
@@ -115,12 +113,18 @@ describe('spinner CLI component example', () => {
       expect(source).not.toMatch(
         /captureExample|HeadlessProgram|tui-|setTimeout|setInterval|Math\.random|Date\.|registerTick|receiveTick/,
       )
-      for (const style of ['bounce', 'loop', 'kitt']) {
+      for (const style of ['bounce', 'loop', 'kitt', 'snake']) {
         expect(source).toContain(
           framework === 'core' ? `style: '${style}'` : `style="${style}"`,
         )
       }
-      for (const purpose of ['primary', 'proceed', 'secondary', 'cancel']) {
+      for (const purpose of [
+        'primary',
+        'proceed',
+        'secondary',
+        'red',
+        'green',
+      ]) {
         expect(source).toContain(
           framework === 'core'
             ? `purpose: '${purpose}'`
@@ -129,14 +133,14 @@ describe('spinner CLI component example', () => {
       }
       if (framework === 'core') {
         expect(source).toContain('width: 44')
-        expect(source).toContain('height: 12')
+        expect(source).toContain('height: 16')
         expect(source).toContain("new Spinner({purpose: 'primary'})")
         expect(source).toContain('isAnimating: true')
         expect(source).toContain('isAnimating: false')
         expect(source).toContain('await Screen.start(examples)')
       } else {
         expect(source).toContain(
-          '<Stack.down width={44} height={12} background="default">',
+          '<Stack.down width={44} height={16} background="default">',
         )
         expect(source).toContain('<Spinner purpose="primary" />')
         expect(source).toContain('isAnimating={true}')
@@ -168,6 +172,7 @@ describe('spinner CLI component example', () => {
         ['bounce', true],
         ['loop', true],
         ['kitt', true],
+        ['snake', true],
         ['dots', false],
       ])
       expect(spinners.map(view => view.naturalSize(new Size(80, 24)))).toEqual([
@@ -175,6 +180,7 @@ describe('spinner CLI component example', () => {
         new Size(5, 2),
         new Size(5, 1),
         new Size(7, 1),
+        new Size(3, 3),
         new Size(1, 1),
       ])
       // React's scheduler may queue an immediate callback after its commit.
@@ -187,9 +193,9 @@ describe('spinner CLI component example', () => {
       expect(lines.map(line => lineWidth(line))).toEqual(
         Array(SIZE.height).fill(SIZE.width),
       )
-      expect([2, 4, 5, 7, 9, 11].map(y => lines[y].trimEnd())).toEqual(
-        INITIAL_FRAMES,
-      )
+      expect(
+        [2, 4, 5, 7, 9, 11, 12, 13, 15].map(y => lines[y].trimEnd()),
+      ).toEqual(INITIAL_FRAMES)
       const terminal = replay(output)
       const accents = ACCENTS.map(({row, columns, foreground}) => {
         for (const x of columns) {

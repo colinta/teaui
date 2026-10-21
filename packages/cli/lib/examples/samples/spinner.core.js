@@ -2,7 +2,7 @@ import {Screen, Spinner, Stack, Text} from '@teaui/core'
 
 const examples = Stack.down({
   width: 44,
-  height: 12,
+  height: 16,
   background: 'default',
   children: [
     new Text('Spinner styles (initial frame)'),
