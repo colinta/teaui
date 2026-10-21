@@ -1,6 +1,11 @@
-### Code Formatting
+### Before Committing
 
-**Important: Always run `pnpm run format` before committing changes.**
+**Important: these must pass before committing changes:**
+
+```bash
+pnpm format && pnpm check   # format, then verify formatting + lint
+pnpm test                   # run all tests
+```
 
 ## Repository Structure
 
