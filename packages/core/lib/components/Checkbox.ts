@@ -5,10 +5,14 @@ import {Text} from './Text.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {
   type HotKey,
+  type HotKeyDef,
+  type KeyEvent,
   type MouseEvent,
   isMouseClicked,
+  match,
   styleTextForHotKey,
   hotKeyToString,
+  toHotKeyDef,
 } from '../events/index.js'
 import {type LegendItem} from '../types.js'
 import {childPalette} from '../UI.js'
@@ -95,17 +99,31 @@ export class Checkbox extends ComposedView {
 
   receiveMouse(event: MouseEvent) {
     if (isMouseClicked(event)) {
-      this.#value = !this.#value
-      this.#onChange?.(this.#value)
+      this.#toggle()
     }
   }
 
-  receiveKey(_: import('../events/index.js').KeyEvent) {
+  /**
+   * Toggles on Enter/Space (while focused) or on the hotKey (from anywhere).
+   */
+  receiveKey(event: KeyEvent) {
+    if (
+      (this.#hotKey && match(toHotKeyDef(this.#hotKey), event)) ||
+      TOGGLE_KEYS.some(key => match(key, event))
+    ) {
+      this.#toggle()
+    }
+  }
+
+  #toggle() {
     this.#value = !this.#value
     this.#onChange?.(this.#value)
   }
 
   render(viewport: Viewport) {
+    if (this.#hotKey) {
+      viewport.registerHotKey(toHotKeyDef(this.#hotKey))
+    }
     const hasFocus = viewport.registerFocus({isDefault: false})
     this.#hasFocus = hasFocus
     if (viewport.isEmpty) {
@@ -160,3 +178,5 @@ const BOX: Record<'unchecked' | 'checked', string> = {
 }
 
 const CHECKBOX_WIDTH = 2
+// unmodified Enter/Space only (HotKeyDef chars are matched against event.name)
+const TOGGLE_KEYS: HotKeyDef[] = [{char: 'return'}, {char: 'space'}]

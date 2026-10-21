@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Checkbox} from '../../lib/components/Checkbox.js'
+import type {HotKey} from '../../lib/events/index.js'
 
 describe('Checkbox', () => {
   describe('rendering', () => {
@@ -78,6 +79,47 @@ describe('Checkbox', () => {
       t.sendKey('tab')
       t.sendKey('return')
       expect(checked).toBe(true)
+    })
+
+    function track(props: {hotKey?: HotKey} = {}) {
+      const changes: boolean[] = []
+      const cb = new Checkbox({
+        title: 'Option',
+        value: false,
+        ...props,
+        onChange(value) {
+          changes.push(value)
+        },
+      })
+      return {changes, t: testRender(cb, {width: 20, height: 1})}
+    }
+
+    it('toggles on return and space when focused', () => {
+      const {changes, t} = track()
+      t.sendKey('tab')
+      t.sendKey('return')
+      t.sendKey('space')
+      expect(changes).toEqual([true, false])
+    })
+
+    it('ignores other keys when focused', () => {
+      const {changes, t} = track()
+      t.sendKey('tab')
+      t.sendKey('a')
+      t.sendKey('x')
+      t.sendKey('down')
+      t.sendKey('escape')
+      t.sendKey('return', {ctrl: true})
+      expect(changes).toEqual([])
+    })
+
+    it('toggles on its hotKey without focus', () => {
+      const {changes, t} = track({hotKey: 'C-o'})
+      t.sendKey('o', {ctrl: true})
+      expect(changes).toEqual([true])
+      // focus wasn't required, and return/space still need focus
+      t.sendKey('space')
+      expect(changes).toEqual([true])
     })
   })
 })

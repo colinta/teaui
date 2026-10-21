@@ -9,7 +9,8 @@ const HEIGHT = 1
 export const checkboxExample: ComponentExample = {
   name: 'checkbox',
   availability: 'both',
-  description: 'Toggle a boolean with a click or a key while focused',
+  description:
+    'Toggle a boolean with a click, Enter/Space while focused, or its hotKey',
   props: [
     {
       name: 'title',
@@ -27,14 +28,14 @@ export const checkboxExample: ComponentExample = {
       name: 'onChange',
       type: '(value: boolean) => void',
       description:
-        'Called with the new value after a mouse or focused-key toggle',
+        'Called with the new value after a click, Enter/Space, or hotKey toggle',
       availability: 'both',
     },
     {
       name: 'hotKey',
       type: 'HotKey',
       description:
-        'Underline matching label text and add a keyboard legend entry',
+        'Toggles from anywhere; underlines matching label text and adds a legend entry',
       availability: 'both',
     },
     {
