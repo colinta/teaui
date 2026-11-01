@@ -1,6 +1,12 @@
 # React template components
 
-Most components accept common view props: `purpose`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`. Container components also accept `children`.
+Most components accept common view props: `purpose`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`, `animations`. Container components also accept `children`.
+
+## Animation
+
+- `useAnimation({apply, duration, start, end, loops, easing, paused})` returns a stable animation without `useMemo`; `apply` is refreshed every render.
+- Pass one animation or an array with `animations={animation}` or `animations={[animation]}`. Arrays are compared by length and animation identity.
+- Durations and elapsed callback time are seconds. Changing `paused` stops or restarts the animation.
 
 ## Styling
 

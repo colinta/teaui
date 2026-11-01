@@ -1,0 +1,125 @@
+---
+title: Animations
+---
+
+import Example from '@site/src/components/Example'
+
+# Animations
+
+`Animation` interpolates a numeric value over time and applies it to any number
+of views. Animations use the screen's existing tick loop, so they do not cause
+React renders or require component-specific animation code.
+
+<Example name="animation" title="Animation" />
+
+## React API
+
+`useAnimation()` returns a stable animation instance without requiring
+`useMemo()`. Its `apply` callback is replaced on every render, so it can safely
+close over current props and state. Write `apply` as an idempotent operation:
+it should assign view properties from its arguments rather than accumulate
+changes.
+
+```tsx
+const animateX = useAnimation({
+  apply(view, progress, time) {
+    view.x = Math.round(progress * 20)
+  },
+  duration: 2,
+  loops: true,
+  reverse: true,
+  easing: 'none',
+  paused: false,
+})
+
+return <Text animations={[animateX]}>●</Text>
+```
+
+Pass `animations` a single animation or an array. The reconciler compares
+arrays by length and element identity, attaches new animations, and detaches
+removed animations. Inline arrays such as `[animateX]` therefore do not restart
+or reattach a stable animation on each render.
+
+`apply` is updated every render. `duration`, `start`, `end`, `loops`, `reverse`,
+and `easing` are only assigned when their prop values change. Changing `paused`
+calls `stop()` or `start()`.
+
+## Core API
+
+Create an `Animation`, then attach it with `addAnimation()`:
+
+```ts
+import {Animation, Text} from '@teaui/core'
+
+const text = new Text({text: '●'})
+const animateX = new Animation<Text>({
+  apply(view, progress) {
+    view.x = Math.round(progress * 20)
+  },
+  duration: 2,
+  loops: true,
+})
+
+text.addAnimation(animateX)
+
+// Later:
+animateX.stop()
+animateX.start() // Resume from the current value
+animateX.start(false) // Restart from the start value
+text.removeAnimation(animateX)
+```
+
+The constructor also accepts views directly:
+
+```ts
+const animation = new Animation([firstView, secondView], {
+  apply(view, value) {
+    view.x = value
+  },
+  start: 0,
+  end: 10,
+})
+```
+
+A shared animation advances once per tick and applies the same frame to every
+attached view. Running animations register their views for ticks automatically;
+component `receiveTick()` implementations continue to work.
+
+## Options
+
+| Option     | Type                          | Default  | Description                                            |
+| ---------- | ----------------------------- | -------- | ------------------------------------------------------ |
+| `apply`    | `(view, value, time) => void` | required | Applies the interpolated value; `time` is in seconds   |
+| `duration` | `number`                      | `1`      | Duration of one loop, in seconds                       |
+| `start`    | `number`                      | `0`      | Initial value                                          |
+| `end`      | `number`                      | `1`      | Destination value                                      |
+| `loops`    | `boolean`                     | `false`  | Restart after each loop instead of stopping at the end |
+| `reverse`  | `boolean`                     | `false`  | Alternate direction between loops                      |
+| `easing`   | `Easing`                      | `'none'` | Named easing or a custom interpolation function        |
+| `paused`   | `boolean`                     | `false`  | Create the animation stopped; controls pause in React  |
+
+Named easings use `ease-in`, `ease-out`, or `ease-in-out`, with an optional
+`-cubic`, `-expo`, `-spring`, `-elastic`, or `-bounce` suffix. For example,
+`ease-in-expo`, `ease-out-spring`, and `ease-in-out-bounce`. The short names
+without a suffix use cubic curves. `'none'` is linear, and a custom
+`(progress: number) => number` function can be used instead.
+
+## Values and controls
+
+- `current` is the current interpolated value.
+- `time` is elapsed time in the current loop, in seconds.
+- `isRunning` reports whether the animation is advancing.
+- `direction` is `1` while moving towards `end` and `-1` while returning towards
+  `start`. Stopping and resuming preserves the direction.
+- `start()` resumes from the current value; `start(false)` restarts from the
+  start value. `stop()` pauses at the current value.
+- `toggle()` switches between stopping and resuming.
+- `startValue` reads the numeric start value.
+- Assigning `animation.start = value` resets elapsed time and immediately
+  applies the new start value.
+- Assigning `animation.end = value` while running retargets from `current` and
+  resets elapsed time.
+
+The generic parameter controls which views an animation can target. A default
+`Animation<View>` can be attached to any view, while an `Animation<Box>` can
+only be attached to `Box` instances or their subclasses.

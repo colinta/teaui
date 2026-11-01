@@ -76,6 +76,7 @@ import {
   Desktop,
   Window,
   WindowTitleBar,
+  type Animation,
 } from '@teaui/core'
 import {
   TextBatch,
@@ -89,6 +90,28 @@ import {isSame} from './isSame.js'
 import type {BarChartProps, LineChartProps, LogProps} from './components.js'
 
 type Props = {}
+type AnimationsProp =
+  | Animation<any>
+  | readonly Animation<any>[]
+  | null
+  | undefined
+
+function animationValues(value: AnimationsProp): readonly Animation<any>[] {
+  if (value == null) {
+    return []
+  }
+  return Array.isArray(value) ? value : [value as Animation<any>]
+}
+
+function sameAnimations(lhs: AnimationsProp, rhs: AnimationsProp): boolean {
+  const left = animationValues(lhs)
+  const right = animationValues(rhs)
+  return (
+    left.length === right.length &&
+    left.every((animation, index) => animation === right[index])
+  )
+}
+
 interface HostContext {
   screen: Screen
   root: Root
@@ -348,9 +371,38 @@ function createInstance(type: string, props: Props): any {
 
 export function render(screen: Screen, root: Root, rootNode: ReactNode) {
   const textBatch = new TextBatch()
+  const managedAnimations = new WeakMap<View, readonly Animation<any>[]>()
   let finishTextBatch: (() => void) | undefined
   function rerender() {
     screen.render()
+  }
+
+  function syncAnimations(instance: View, value: AnimationsProp) {
+    const previous = managedAnimations.get(instance) ?? []
+    const next = [...new Set(animationValues(value))]
+    if (
+      previous.length === next.length &&
+      previous.every((animation, index) => animation === next[index])
+    ) {
+      return
+    }
+
+    for (const animation of previous) {
+      if (!next.includes(animation)) {
+        instance.removeAnimation(animation)
+      }
+    }
+    for (const animation of next) {
+      if (!previous.includes(animation)) {
+        instance.addAnimation(animation)
+      }
+    }
+
+    if (next.length) {
+      managedAnimations.set(instance, next)
+    } else {
+      managedAnimations.delete(instance)
+    }
   }
 
   function removeFromTextContainer(child: View): boolean {
@@ -535,17 +587,15 @@ export function render(screen: Screen, root: Root, rootNode: ReactNode) {
       _hostContext: HostContext,
       _internalInstanceHandle: object,
     ) {
-      if ('children' in props) {
-        const {children: _children, ...remainder} = props
-        props = remainder
-      }
-
-      if ('child' in props) {
-        const {child: _child, ...remainder} = props
-        props = remainder
-      }
-
-      return createInstance(type, props)
+      const {
+        children: _children,
+        child: _child,
+        animations,
+        ...hostProps
+      } = props as any
+      const instance = createInstance(type, hostProps)
+      syncAnimations(instance, animations)
+      return instance
     },
     createTextInstance(text: string) {
       return new TextLiteral(text)
@@ -574,7 +624,9 @@ export function render(screen: Screen, root: Root, rootNode: ReactNode) {
     removeChildFromContainer(container: Root, child: View) {
       removeChild(container, child)
     },
-    detachDeletedInstance(_node: View) {},
+    detachDeletedInstance(node: View) {
+      syncAnimations(node, undefined)
+    },
 
     finalizeInitialChildren(_instance: View) {
       return false
@@ -629,7 +681,11 @@ export function render(screen: Screen, root: Root, rootNode: ReactNode) {
           continue
         }
 
-        if (!isSame(oldProps[prop], newProps[prop])) {
+        const same =
+          prop === 'animations'
+            ? sameAnimations(oldProps[prop], newProps[prop])
+            : isSame(oldProps[prop], newProps[prop])
+        if (!same) {
           // difference found - we just return a non-null here to indicate "difference"
           return []
         }
@@ -641,7 +697,11 @@ export function render(screen: Screen, root: Root, rootNode: ReactNode) {
           continue
         }
 
-        if (!isSame(oldProps[prop], newProps[prop])) {
+        const same =
+          prop === 'animations'
+            ? sameAnimations(oldProps[prop], newProps[prop])
+            : isSame(oldProps[prop], newProps[prop])
+        if (!same) {
           // difference found - we just return a non-null here to indicate "difference"
           return []
         }
@@ -657,7 +717,12 @@ export function render(screen: Screen, root: Root, rootNode: ReactNode) {
       newProps: Props,
       _internalInstanceHandle: object,
     ) {
-      const {children: _children, ...updates} = newProps as any
+      const {
+        children: _children,
+        child: _child,
+        animations,
+        ...updates
+      } = newProps as any
       // if (children !== undefined && node instanceof TextLiteral) {
       //   updates.text = childrenToText(children)
       // }
@@ -671,6 +736,7 @@ export function render(screen: Screen, root: Root, rootNode: ReactNode) {
       } else {
         node.update(updates)
       }
+      syncAnimations(node, animations)
     },
 
     supportsMutation: true,

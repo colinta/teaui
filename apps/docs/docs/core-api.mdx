@@ -128,6 +128,24 @@ const text = new Text({text: 'Hello'})
 text.update({text: 'Updated!'})
 ```
 
+### Animations
+
+Use `Animation` to interpolate values and apply them to one or more views.
+Attached views register for screen ticks automatically. See
+[Animations](/docs/animations) for the Core and React APIs.
+
+```ts
+const animation = new Animation({
+  apply(view, value) {
+    view.x = value
+  },
+  start: 0,
+  end: 10,
+})
+
+view.addAnimation(animation)
+```
+
 ### Events
 
 Interactive views support:

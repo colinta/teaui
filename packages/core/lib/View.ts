@@ -1,9 +1,11 @@
 import type {Mutable} from './geometry.js'
+import type {Animation, AnimationFor} from './Animation.js'
 import type {Viewport} from './Viewport.js'
 import type {Screen} from './Screen.js'
 import type {Purpose} from './Palette.js'
 import {Palette} from './Palette.js'
 import type {ComposedView} from './ComposedView.js'
+import type {HorizontalCoordinate, VerticalCoordinate} from './alignment.js'
 import {System} from './System.js'
 import {
   isMouseEnter,
@@ -280,6 +282,7 @@ export abstract class View {
   #mouseListeners: MouseListenerRecord[] = []
   #keyboardListeners: KeyboardListenerRecord[] = []
   #focusListeners: FocusListenerRecord[] = []
+  #animations = new Set<Animation<any>>()
   // absolute location of the content, as of the last render
   #contentOrigin: Point = Point.zero
   // listeners from the mouseListener / keyboardListener / focusListener props
@@ -555,6 +558,24 @@ export abstract class View {
     return false
   }
 
+  get x(): number | HorizontalCoordinate | undefined {
+    return this.#x
+  }
+
+  set x(value: number | undefined) {
+    this.#x = value
+    this.invalidateSize()
+  }
+
+  get y(): number | VerticalCoordinate | undefined {
+    return this.#y
+  }
+
+  set y(value: number | undefined) {
+    this.#y = value
+    this.invalidateSize()
+  }
+
   get width() {
     return this.#width
   }
@@ -799,6 +820,12 @@ export abstract class View {
     const renderWithListeners = (viewport: Viewport) => {
       this.#contentOrigin = viewport.absoluteOrigin
       this.#registerListeners(viewport)
+      for (const animation of this.#animations) {
+        if (animation.isRunning) {
+          viewport.registerTick()
+          break
+        }
+      }
       render(viewport)
     }
     if (this.#background) {
@@ -1037,6 +1064,29 @@ export abstract class View {
     }
   }
 
+  /** Attaches an animation, applying its current value immediately. */
+  addAnimation<TView extends View>(
+    this: TView,
+    animation: AnimationFor<TView>,
+  ): void {
+    if (!this.#animations.has(animation)) {
+      this.#animations.add(animation)
+      animation._addView(this)
+      this.invalidateRender()
+    }
+  }
+
+  /** Detaches an animation without changing the view's current properties. */
+  removeAnimation<TView extends View>(
+    this: TView,
+    animation: AnimationFor<TView>,
+  ): void {
+    if (this.#animations.delete(animation)) {
+      animation._removeView(this)
+      this.invalidateRender()
+    }
+  }
+
   /**
    * The destination for the events this view registers for itself with
    * `viewport.registerMouse()`.
@@ -1175,6 +1225,17 @@ export abstract class View {
    */
   receiveTick(_dt: number): boolean {
     return false
+  }
+
+  /** @internal Called by TickManager so subclass receiveTick overrides are preserved. */
+  _receiveTick(dt: number, tick: object): boolean {
+    let needsRender = this.receiveTick(dt)
+    for (const animation of this.#animations) {
+      if (animation.isRunning) {
+        needsRender = animation._tick(dt, tick) || needsRender
+      }
+    }
+    return needsRender
   }
 }
 

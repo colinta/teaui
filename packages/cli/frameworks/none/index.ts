@@ -1,5 +1,6 @@
 import {
   Screen,
+  Animation,
   TrackMouse,
   ConsoleLog,
   Button,
@@ -22,6 +23,18 @@ import {
   const consoleLog = new ConsoleLog({
     height: 10,
   })
+  const hello = new Text({alignment: 'center', text: 'Hello to "{{name}}"'})
+  const animateHello = new Animation<Text>({
+    apply(view, value) {
+      view.x = Math.round(value)
+    },
+    start: 0,
+    end: 4,
+    duration: 2,
+    loops: true,
+  })
+  hello.addAnimation(animateHello)
+
   const [screen] = await Screen.start(
     new Root({
       child: new TrackMouse({
@@ -29,7 +42,7 @@ import {
           [
             'flex1',
             Stack.down([
-              new Text({alignment: 'center', text: 'Hello to "{{name}}"'}),
+              hello,
               new Separator({
                 direction: 'horizontal',
                 border: 'trailing',

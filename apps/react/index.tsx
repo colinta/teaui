@@ -16,6 +16,7 @@ import {WidgetsTab} from './widgets.js'
 import {AtTab} from './at.js'
 import {AlignmentTab} from './alignment.js'
 import {CodeTab} from './code.js'
+import {AnimationTab} from './animation.js'
 
 // ── Main App ────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,9 @@ function Demo() {
             </Tabs.Section>
             <Tabs.Section title="Widgets">
               <WidgetsTab />
+            </Tabs.Section>
+            <Tabs.Section title="Animation">
+              <AnimationTab />
             </Tabs.Section>
             <Tabs.Section title="Drawer">
               <DrawerTab />

@@ -64,8 +64,9 @@ export class TickManager {
 
   triggerTick(dt: number) {
     let needsRender = this.#needsRender
+    const tick = {}
     for (const view of this.#tickViews) {
-      needsRender = view.receiveTick(dt) || needsRender
+      needsRender = view._receiveTick(dt, tick) || needsRender
     }
 
     if (needsRender) {

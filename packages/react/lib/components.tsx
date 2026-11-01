@@ -1,6 +1,8 @@
 import React, {forwardRef, useCallback, useMemo, useState} from 'react'
 import {createAlignment, isMouseClicked} from '@teaui/core'
 import type {
+  AnimationFor,
+  View,
   Accordion as WrAccordion,
   Align as WrAlign,
   AlignRow as WrAlignRow,
@@ -44,6 +46,8 @@ import type {
   Keyboard as WrKeyboard,
   Mouse as WrMouse,
   Stack as WrStack,
+  ScrollableList as WrScrollableList,
+  Table as WrTable,
   Input as WrInput,
   Legend as WrLegend,
   AutoLegend as WrAutoLegend,
@@ -73,10 +77,20 @@ import type {
 import {TextProvider, TextStyle} from './components/TextReact.js'
 
 type Children = 'children' | 'child'
+
+export type AnimationValues<TView extends View> =
+  | AnimationFor<TView>
+  | readonly AnimationFor<TView>[]
+
+export interface AnimatedProps<TView extends View> {
+  animations?: AnimationValues<TView>
+}
+
 type TUIView<
   T extends abstract new (arg: any, ...args: any) => any,
   OmitProps extends keyof ConstructorParameters<T>[0] = Children,
-> = Omit<NonNullable<ConstructorParameters<T>[0]>, OmitProps>
+> = Omit<NonNullable<ConstructorParameters<T>[0]>, OmitProps> &
+  AnimatedProps<Extract<InstanceType<T>, View>>
 
 type TUIContainer<
   T extends abstract new (arg: any, ...args: any) => any,
@@ -118,8 +132,12 @@ type HeaderViewProps = TUIView<typeof WrHeader>
 export type HeaderProps = Simplify<
   Omit<HeaderViewProps, 'text'> & {text?: string; children?: string}
 >
-export type HeadingProps = {text?: string; children?: string}
-export interface SharedDropdownProps<T> extends ViewProps {
+export type HeadingProps = AnimatedProps<WrHeader> & {
+  text?: string
+  children?: string
+}
+export interface SharedDropdownProps<T>
+  extends ViewProps, AnimatedProps<WrDropdown<any, any>> {
   choices: [string, T][]
   title?: string
 }
@@ -257,7 +275,7 @@ declare module 'react' {
       'tui-toggle': WithRef<ToggleProps, WrToggle>
       'tui-toggle-group': WithRef<ToggleGroupProps, WrToggleGroup>
 
-      'tui-tree': WithRef<ViewProps, WrTree<any>>
+      'tui-tree': WithRef<ViewProps & AnimatedProps<WrTree<any>>, WrTree<any>>
 
       'tui-modal': WithRef<ModalProps, WrModal>
       'tui-pane': WithRef<PaneProps, WrPane>
@@ -841,7 +859,7 @@ export const ToggleGroup = forwardRef<WrToggleGroup, ToggleGroupProps>(
   },
 )
 
-export interface TreeProps<T> extends ViewProps {
+export interface TreeProps<T> extends ViewProps, AnimatedProps<WrStack> {
   data: T[]
   render: (datum: T) => React.ReactNode
   getChildren?: (datum: T) => T[] | undefined
@@ -1201,7 +1219,8 @@ export const Text = forwardRef<TextProvider, TextProps>(
 /// Virtualized components
 //
 
-export interface ReactListProps<TData> extends ViewProps {
+export interface ReactListProps<TData>
+  extends ViewProps, AnimatedProps<WrScrollableList<any>> {
   data: TData[]
   renderItem: (item: TData, index: number) => React.ReactNode
   /**
@@ -1274,7 +1293,8 @@ export function ScrollableList<TData>(
   )
 }
 
-export interface ReactTableProps<TData> extends ViewProps {
+export interface ReactTableProps<TData>
+  extends ViewProps, AnimatedProps<WrTable<any>> {
   data: TData[]
   columns: Column<TData>[]
   renderItem?: (item: TData, index: number) => React.ReactNode

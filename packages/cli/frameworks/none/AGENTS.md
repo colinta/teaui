@@ -2,6 +2,12 @@
 
 Most components use `new Component(props)`. Common view props: `purpose`, `heading`, `x/y`, `width/height`, `min/max*`, `padding`, `isVisible`, `flex`, `pin`, `debug`. Container components also accept `child?` / `children?`.
 
+## Animation
+
+- `Animation<TView>` — reusable numeric interpolation with `apply`, `duration`, `start`, `end`, `loops`, `easing`, and `paused` options. Durations and elapsed callback time are seconds.
+- Attach with `view.addAnimation(animation)` and detach with `view.removeAnimation(animation)`. A shared animation can target multiple views.
+- Control with `start()`, `stop()`, and `toggle()`; inspect `current`, `time`, and `isRunning`.
+
 ## Styling
 
 - `purpose` — sets default background colours for an intent: `primary`, `secondary`, `proceed`, `cancel`, `selected`, `plain`.

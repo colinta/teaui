@@ -196,9 +196,15 @@ of callbacks that React calls during reconciliation:
 - **`appendInitialChild`** / **`appendChild`** / **`insertBefore`** — Called to
   build or mutate the tree. All delegate to the shared `appendChild()` function.
 - **`removeChild`** / **`removeChildFromContainer`** — Delegate to `removeChild()`.
-- **`prepareUpdate`** — Deep-compares old/new props via `isSame()`. Returns
-  non-null if any prop changed.
-- **`commitUpdate`** — Calls `node.update(newProps)` on the core view.
+- **`prepareUpdate`** — Deep-compares old/new props via `isSame()`. The
+  `animations` prop is instead compared by array length and animation identity.
+  Returns non-null if any prop changed.
+- **`commitUpdate`** — Calls `node.update(newProps)` on the core view and syncs
+  managed `animations` attachments.
+
+`useAnimation()` creates a stable `Animation` instance whose `apply` callback
+can be refreshed each render. See [Animations](/docs/animations) for usage.
+
 - **`commitTextUpdate`** — Sets `textInstance.text = newText` on `TextLiteral`.
 - **`resetAfterCommit`** — Calls `screen.render()` to flush to terminal.
 

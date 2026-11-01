@@ -7,6 +7,7 @@ export {TestProgram} from './TestProgram.js'
 export {HeadlessProgram} from './HeadlessProgram.js'
 export {testRender} from './TestScreen.js'
 export * from './Color.js'
+export * from './Animation.js'
 export * from './components/index.js'
 export * from './geometry.js'
 export {

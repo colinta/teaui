@@ -4,6 +4,7 @@ const sidebars: SidebarsConfig = {
   docsSidebar: [
     'intro',
     'concepts',
+    'animations',
     {
       type: 'category',
       label: '│ Components │',
