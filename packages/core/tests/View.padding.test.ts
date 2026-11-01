@@ -45,6 +45,21 @@ describe('View padding', () => {
     expect(t.terminal.textContent()).toBe('\n    x')
   })
 
+  it('updates the parent natural size when padding changes', () => {
+    const child = Stack.down({
+      padding: 1,
+      children: [new Text({text: 'x'})],
+    })
+    const parent = Stack.down([child])
+    testRender(parent, {width: 20, height: 10})
+
+    const available = new Size(20, 10)
+    expect(parent.naturalSize(available)).toEqual(new Size(3, 3))
+
+    child.padding = {top: 2, right: 2, bottom: 2, left: 2}
+    expect(parent.naturalSize(available)).toEqual(new Size(5, 5))
+  })
+
   it('a fixed width includes the padding', () => {
     const stack = Stack.down({
       padding: 1,

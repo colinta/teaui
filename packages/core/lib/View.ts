@@ -24,7 +24,7 @@ import {Point, Size, Rect} from './geometry.js'
 import {Color} from './Color.js'
 import {Style} from './Style.js'
 import {type Edges, type LegendItem} from './types.js'
-import {toPaddingEdges} from './util.js'
+import {define, toPaddingEdges} from './util.js'
 
 export type Dimension = number | 'fill' | 'shrink' | 'natural'
 export type FlexSize = 'natural' | number
@@ -265,7 +265,7 @@ export abstract class View {
   #maxHeight: Props['maxHeight']
   #isVisible: NonNullable<Props['isVisible']> = true
   #background: Props['background']
-  padding: Edges | undefined
+  #padding: Edges | undefined
   flex: FlexSize = 'natural'
   pin: Pin | undefined = undefined
 
@@ -385,7 +385,7 @@ export abstract class View {
     this.#isVisible = isVisible ?? true
     this.#background = background
 
-    this.padding = toPaddingEdges(
+    this.#padding = toPaddingEdges(
       padding,
       paddingTop,
       paddingRight,
@@ -412,11 +412,9 @@ export abstract class View {
       (callback, options) => this.addFocusListener(callback, options),
     )
 
+    define(this, 'padding', {enumerable: padding !== undefined})
     Object.defineProperties(this, {
       // only include these if they were defined
-      padding: {
-        enumerable: padding !== undefined,
-      },
       flex: {
         enumerable: flex !== undefined,
       },
@@ -500,6 +498,18 @@ export abstract class View {
 
   set background(value: Color | undefined) {
     this.#background = value
+    this.invalidateSize()
+  }
+
+  get padding(): Edges | undefined {
+    return this.#padding
+  }
+
+  set padding(value: Edges | undefined) {
+    if (isSamePadding(this.#padding, value)) {
+      return
+    }
+    this.#padding = value
     this.invalidateSize()
   }
 
@@ -1170,4 +1180,22 @@ export abstract class View {
 
 function cacheKey(size: Size) {
   return `${size.width}x${size.height}`
+}
+
+function isSamePadding(
+  previous: Edges | undefined,
+  next: Edges | undefined,
+): boolean {
+  if (previous === next) {
+    return true
+  }
+  if (!previous || !next) {
+    return false
+  }
+  return (
+    previous.top === next.top &&
+    previous.right === next.right &&
+    previous.bottom === next.bottom &&
+    previous.left === next.left
+  )
 }
