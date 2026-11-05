@@ -19,6 +19,8 @@ ANSI format (value unchanged)
 Styled text                         
 Secret (password)                   
 •••••••                             
+Disabled                            
+Not editable                        
                                     "
 `;
 
@@ -41,5 +43,7 @@ ANSI format (value unchanged)
 Styled text                         
 Secret (password)                   
 •••••••                             
+Disabled                            
+Not editable                        
                                     "
 `;

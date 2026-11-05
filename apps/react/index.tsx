@@ -9,6 +9,7 @@ import {YamlTab} from './yaml.js'
 import {MoreTab} from './more.js'
 import {DigitsTab} from './digits.js'
 import {DrawerTab} from './drawer.js'
+import {FormTab} from './form.js'
 import {WindowsTab} from './windows.js'
 import {StylesTab} from './styles.js'
 import {ListTab} from './scrollable-list.js'
@@ -58,6 +59,9 @@ function Demo() {
             </Tabs.Section>
             <Tabs.Section title="Calendar">
               <CalendarTab />
+            </Tabs.Section>
+            <Tabs.Section title="Form">
+              <FormTab />
             </Tabs.Section>
             <Tabs.Section title="Charts">
               <ChartsTab />

@@ -33,6 +33,8 @@ describe('toggle CLI component example', () => {
       expect(names).toEqual([
         'value',
         'onChange',
+        'isEnabled',
+        'formName',
         'width',
         'height',
         ...(framework === 'react' ? ['ref'] : []),

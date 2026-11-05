@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`form CLI component example > core displays and captures the exact deterministic public sample 1`] = `
+"Email (Enter submits)           
+ada                             
+☐ Accept terms                  
+           [ Sign up ]          
+Not signed up                   
+                                
+                                
+                                
+                                
+                                "
+`;
+
+exports[`form CLI component example > react displays and captures the exact deterministic public sample 1`] = `
+"Email (Enter submits)           
+ada                             
+☐ Accept terms                  
+           [ Sign up ]          
+Not signed up                   
+                                
+                                
+                                
+                                
+                                "
+`;

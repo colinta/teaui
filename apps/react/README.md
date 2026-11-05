@@ -27,6 +27,7 @@ The demo renders a `Drawer.bottom` layout with a component showcase on top and a
 - **Layout** — `Stack.down`, `Stack.right`, `Drawer.bottom`, `Box` with borders
 - **Text** — `H1`–`H6` headers, `Text` with alignment/wrap, `Style` (bold, italic, underline, strikeout), `Br` line breaks
 - **Inputs** — `Input` fields, `Checkbox` toggles, `Slider` (horizontal/vertical), `ToggleGroup`, `Button` with click handlers
+- **Forms** — `Form` with `Label`s and every form input, validation errors, disabled inputs, and a pending submission (`pnpm demo form`)
 - **Containers** — `Scrollable` content, `Collapsible` / `CollapsibleText`, `Accordion` with multiple sections, `Tabs`
 - **Data display** — combined `BarChart` and `LineChart` plots, `Digits` large-font numbers, `Separator` lines, `Space` spacers
 - **Debug** — `ConsoleLog` component (toggled at runtime) showing intercepted `console.info` output

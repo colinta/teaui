@@ -7,6 +7,12 @@ import {
   type MouseEvent,
   isMouseClicked,
 } from '../events/index.js'
+import {
+  type FormField,
+  type FormInput,
+  formErrorSize,
+  renderFormError,
+} from './Form.js'
 
 interface Props extends ViewProps {
   /**
@@ -15,12 +21,25 @@ interface Props extends ViewProps {
    */
   value?: boolean
   onChange?: (value: boolean) => void
+  /**
+   * The name of this input's value in its `Form`.
+   */
+  formName?: string
+  /**
+   * When false, the toggle is drawn dimmed and can't be changed.
+   * @default true
+   */
+  isEnabled?: boolean
 }
 
-export class Toggle extends View {
+export class Toggle extends View implements FormInput {
   #value = false
   #sliderLocation: number | undefined
   #onChange: Props['onChange']
+  #formName = ''
+  #isEnabled = true
+  #isFormValid = true
+  #isFormSubmitting = false
 
   constructor(props: Props = {}) {
     super(props)
@@ -45,15 +64,62 @@ export class Toggle extends View {
     super.update(props)
   }
 
-  #update({value, onChange}: Props) {
+  #update({value, onChange, formName, isEnabled}: Props) {
     if (value !== undefined) {
       this.#value = value
     }
     this.#onChange = onChange
+    this.#formName = formName ?? ''
+    this.isEnabled = isEnabled ?? true
   }
 
-  naturalSize(_available: Size): Size {
-    return TOGGLE_SIZE
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.invalidateRender()
+  }
+
+  formData(): FormField[] {
+    return [{name: this.#formName, type: 'boolean', value: this.#value}]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.invalidateRender()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
+  }
+
+  naturalSize(available: Size): Size {
+    return formErrorSize(available, this.#isFormValid, () => TOGGLE_SIZE)
   }
 
   receiveKey(event: KeyEvent) {
@@ -98,6 +164,12 @@ export class Toggle extends View {
       return
     }
 
+    renderFormError(viewport, this.#isFormValid, inside =>
+      this.#renderToggle(inside),
+    )
+  }
+
+  #renderToggle(viewport: Viewport) {
     const sliderX = this.#sliderX(viewport.contentSize.height)
     const trackStyle = this.#trackStyle()
     const sliderStyle = this.#sliderStyle()
@@ -107,9 +179,17 @@ export class Toggle extends View {
     } else {
       this.#renderNormal(viewport, sliderX, trackStyle, sliderStyle)
     }
+
+    if (!this.#isInteractive) {
+      viewport.restyle(this.#disabledStyle(), undefined, {merge: true})
+    }
   }
 
   #toggle() {
+    if (!this.#isInteractive) {
+      return
+    }
+
     this.value = !this.#value
     this.#onChange?.(this.#value)
   }
@@ -172,6 +252,10 @@ export class Toggle extends View {
     return new Style({
       foreground: this.#value ? ON_TRACK_COLOR : OFF_TRACK_COLOR,
     })
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 
   #sliderStyle(): Style {

@@ -30,6 +30,7 @@ describe('button example', () => {
           'border',
           'hotKey',
           'focusable',
+          'isEnabled',
           'foreground',
           'purpose',
           'width',

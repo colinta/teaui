@@ -55,6 +55,20 @@ export const toggleGroupExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        'Defaults to true; when false the toggle group is drawn dimmed and ignores clicks. In a Form, it is also disabled while the form is submitting',
+      availability: 'both',
+    },
+    {
+      name: 'formName',
+      type: 'string',
+      description:
+        "The name of this input's value in its Form; defaults to '' (not part of the form). Reported as a number[] FormField of the selected indices",
+      availability: 'both',
+    },
+    {
       name: 'purpose',
       type: 'Palette | Purpose',
       description:

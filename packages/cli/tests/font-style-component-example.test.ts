@@ -24,6 +24,8 @@ describe('font-style CLI component example', () => {
       expect(props.map(prop => prop.name)).toEqual([
         'value',
         'onChange',
+        'isEnabled',
+        'formName',
         'purpose',
         'width',
         'height',

@@ -26,6 +26,7 @@ export const COMPONENTS: readonly ComponentDefinition[] = [
   component('drawer'),
   component('dropdown'),
   component('font-style'),
+  component('form'),
   component('geometry'),
   component('header'),
   component('hotkey'),

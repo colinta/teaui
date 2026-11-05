@@ -12,13 +12,15 @@ A dropdown selector that opens a modal picker. Supports single and multiple sele
 
 ## Props
 
-| Prop       | Type                 | Default | Description                   |
-| ---------- | -------------------- | ------- | ----------------------------- |
-| `title`    | `string`             | —       | Dropdown label                |
-| `choices`  | `[string, T][]`      | —       | Array of [label, value] pairs |
-| `selected` | `T \| T[]`           | —       | Currently selected value(s)   |
-| `onSelect` | `(value: T) => void` | —       | Selection callback            |
-| `multiple` | `boolean`            | `false` | Allow multiple selection      |
+| Prop        | Type                 | Default | Description                                  |
+| ----------- | -------------------- | ------- | -------------------------------------------- |
+| `title`     | `string`             | —       | Dropdown label                               |
+| `choices`   | `[string, T][]`      | —       | Array of [label, value] pairs                |
+| `selected`  | `T \| T[]`           | —       | Currently selected value(s)                  |
+| `onSelect`  | `(value: T) => void` | —       | Selection callback                           |
+| `multiple`  | `boolean`            | `false` | Allow multiple selection                     |
+| `isEnabled` | `boolean`            | `true`  | Dimmed and not interactive when `false`      |
+| `formName`  | `string`             | `''`    | The name of this value in its [Form](./form) |
 
 <details>
 <summary>Core API</summary>

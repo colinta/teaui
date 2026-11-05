@@ -10,6 +10,12 @@ import {type LegendItem} from '../types.js'
 import {Style} from '../Style.js'
 import {System} from '../System.js'
 import {lineWidth} from '@teaui/term'
+import {
+  type FormField,
+  type FormInput,
+  formErrorSize,
+  renderFormError,
+} from './Form.js'
 
 type DisplayMode = 'days' | 'months' | 'years'
 type Selection = 'single' | 'range'
@@ -28,6 +34,16 @@ interface Props extends ViewProps {
   /** 0=Sunday (default), 1=Monday */
   firstDayOfWeek?: 0 | 1
   now?: Date
+  /**
+   * The name of this input's value in its `Form`: a 'date' for single
+   * selection, or a 'dateRange' once both ends of a range are selected.
+   */
+  formName?: string
+  /**
+   * When false, the calendar is drawn dimmed and can't be changed.
+   * Default: true
+   */
+  isEnabled?: boolean
 }
 
 const MONTH_NAMES = [
@@ -74,7 +90,7 @@ const MONTH_LABEL_X = 3
 // Height: header + weekday row + 6 week rows = 8
 const CALENDAR_HEIGHT = 8
 
-export class Calendar extends View {
+export class Calendar extends View implements FormInput {
   // configurable so that tests can test 'today' rendering
   #today: Date
   #date: Date
@@ -86,6 +102,12 @@ export class Calendar extends View {
   #firstDayOfWeek: 0 | 1
   #displayMode: DisplayMode = 'days'
   #hasFocus = false
+
+  // form state
+  #formName = ''
+  #isEnabled = true
+  #isFormValid = true
+  #isFormSubmitting = false
 
   // Range selection state
   #rangeStart?: Date
@@ -138,6 +160,8 @@ export class Calendar extends View {
     this.#onChange = props.onChange
     this.#selection = props.selection ?? 'single'
     this.#firstDayOfWeek = props.firstDayOfWeek ?? 0
+    this.#formName = props.formName ?? ''
+    this.#isEnabled = props.isEnabled ?? true
   }
 
   update(props: Props) {
@@ -167,7 +191,77 @@ export class Calendar extends View {
     if (props.firstDayOfWeek !== undefined) {
       this.#firstDayOfWeek = props.firstDayOfWeek
     }
+    this.#formName = props.formName ?? ''
+    this.isEnabled = props.isEnabled ?? true
     super.update(props)
+  }
+
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.#isInteractiveDidChange()
+  }
+
+  formData(): FormField[] {
+    if (this.#selection === 'single') {
+      return [{name: this.#formName, type: 'date', value: this.#date}]
+    }
+
+    if (!this.#rangeStart || !this.#rangeEnd) {
+      return []
+    }
+
+    const [start, end] =
+      this.#rangeStart.getTime() <= this.#rangeEnd.getTime()
+        ? [this.#rangeStart, this.#rangeEnd]
+        : [this.#rangeEnd, this.#rangeStart]
+    return [{name: this.#formName, type: 'dateRange', value: [start, end]}]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.#isInteractiveDidChange()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
+  }
+
+  #isInteractiveDidChange() {
+    this.#hoverClose = false
+    this.#hoverPrevButton = false
+    this.#hoverNextButton = false
+    this.#hoverMonthLabel = undefined
+    this.#hoverYearLabel = undefined
+    this.#hoverDate = undefined
+    this.#dragStartDate = undefined
+    this.invalidateRender()
   }
 
   get date() {
@@ -198,8 +292,12 @@ export class Calendar extends View {
     return this.#displayMode
   }
 
-  naturalSize(_available: Size): Size {
-    return new Size(CALENDAR_WIDTH, CALENDAR_HEIGHT)
+  naturalSize(available: Size): Size {
+    return formErrorSize(
+      available,
+      this.#isFormValid,
+      () => new Size(CALENDAR_WIDTH, CALENDAR_HEIGHT),
+    )
   }
 
   get #hoverStyle(): Style {
@@ -483,6 +581,10 @@ export class Calendar extends View {
   }
 
   receiveMouse(event: MouseEvent, system: System) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     if (event.name === 'mouse.button.down') {
       system.requestFocus()
     }
@@ -718,6 +820,10 @@ export class Calendar extends View {
   }
 
   receiveKey(event: KeyEvent) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     if (this.#displayMode === 'days') {
       this.#receiveKeyDays(event)
     } else if (this.#displayMode === 'months') {
@@ -894,11 +1000,19 @@ export class Calendar extends View {
 
   render(viewport: Viewport) {
     const hasFocus = viewport.registerFocus()
-    this.#hasFocus = hasFocus
+    // a disabled calendar keeps its focus, but doesn't draw the focus style
+    this.#hasFocus = hasFocus && this.#isInteractive
     if (viewport.isEmpty) {
       return
     }
 
+    renderFormError(viewport, this.#isFormValid, inside =>
+      this.#renderCalendar(inside),
+    )
+  }
+
+  #renderCalendar(viewport: Viewport) {
+    // mouse positions are relative to the calendar (not the error arrow)
     viewport.registerMouse(
       ['mouse.button.left', 'mouse.move', 'mouse.wheel'],
       this.#widgetRect(viewport),
@@ -915,6 +1029,16 @@ export class Calendar extends View {
         this.#renderYears(viewport)
         break
     }
+
+    if (!this.#isInteractive) {
+      viewport.restyle(this.#disabledStyle(), this.#widgetRect(viewport), {
+        merge: true,
+      })
+    }
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 
   #renderDays(viewport: Viewport) {

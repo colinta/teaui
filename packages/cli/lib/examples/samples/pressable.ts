@@ -26,6 +26,13 @@ export const pressableExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        'Defaults to true; when false the pressable is drawn dimmed and ignores clicks and Enter. It keeps focus, but does not draw the focus style',
+      availability: 'both',
+    },
+    {
       name: 'foreground',
       type: 'Color',
       description:

@@ -19,6 +19,14 @@ import {
 } from '../events/index.js'
 import {Space} from './Space.js'
 import {Style} from '../Style.js'
+import {
+  type FormField,
+  type FormInput,
+  formErrorSize,
+  renderFormError,
+  toFormArrayField,
+  toFormField,
+} from './Form.js'
 
 interface BorderChars {
   control: BoxBorderChars
@@ -31,6 +39,19 @@ type Choices<T> = [string, T][]
 interface SharedProps<T> extends ViewProps {
   choices: Choices<T>
   title?: string
+}
+
+interface DropdownProps {
+  /**
+   * The name of this input's value in its `Form`. Multiple selections are
+   * one array field.
+   */
+  formName?: string
+  /**
+   * When false, the dropdown is drawn dimmed and can't be opened. Defaults to
+   * true.
+   */
+  isEnabled?: boolean
 }
 
 type SelectMultipleFn<T> = (value: T[]) => void
@@ -47,19 +68,24 @@ interface SelectOne<T> {
 }
 
 type Props<T, M extends boolean | undefined> = SharedProps<T> &
+  DropdownProps &
   (M extends true ? SelectMultiple<T> : SelectOne<T>)
 
 type ConstructorProps<T, M extends boolean | undefined> = Props<T, M> & {
   multiple?: M
 }
 
-export class Dropdown<T, M extends boolean> extends View {
+export class Dropdown<T, M extends boolean> extends View implements FormInput {
   dropdownSelector: DropdownSelector<T>
   #title?: string[]
   #showModal = false
   #modal: Modal
   readonly #multiple: boolean
   #onSelectCallback?: SelectMultipleFn<T> | SelectOneFn<T>
+  #formName = ''
+  #isEnabled = true
+  #isFormValid = true
+  #isFormSubmitting = false
 
   constructor({multiple, ...props}: ConstructorProps<T, M>) {
     super(props)
@@ -91,7 +117,16 @@ export class Dropdown<T, M extends boolean> extends View {
     super.update(props)
   }
 
-  #update({title, choices, selected, onSelect}: Props<T, M>) {
+  #update({
+    title,
+    choices,
+    selected,
+    onSelect,
+    formName,
+    isEnabled,
+  }: Props<T, M>) {
+    this.#formName = formName ?? ''
+    this.isEnabled = isEnabled ?? true
     this.#onSelectCallback = onSelect
     this.#title = title ? title.split('\n') : undefined
 
@@ -120,6 +155,74 @@ export class Dropdown<T, M extends boolean> extends View {
 
   dismissModal() {
     this.#showModal = false
+  }
+
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.#isInteractiveDidChange()
+  }
+
+  formData(): FormField[] {
+    if (this.#multiple) {
+      return [
+        toFormArrayField(
+          this.#formName,
+          this.dropdownSelector.selectedValues,
+          // so that an empty selection has the type of the choices
+          this.dropdownSelector.choices.map(([, value]) => value),
+        ),
+      ]
+    }
+
+    const value = this.dropdownSelector.selectedValue
+    if (value === undefined) {
+      return []
+    }
+
+    return [toFormField(this.#formName, value)]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.#isInteractiveDidChange()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
+  }
+
+  #isInteractiveDidChange() {
+    if (!this.#isInteractive) {
+      this.dismissModal()
+    }
+    this.invalidateRender()
   }
 
   get selected(): M extends true ? () => T[] : T | undefined {
@@ -152,18 +255,24 @@ export class Dropdown<T, M extends boolean> extends View {
     this.invalidateSize()
   }
 
-  naturalSize(_available: Size): Size {
-    const size = new Size(unicode.stringSize(this.#titleLines()))
-    return size.grow(8, 0)
+  naturalSize(available: Size): Size {
+    return formErrorSize(available, this.#isFormValid, () => {
+      const size = new Size(unicode.stringSize(this.#titleLines()))
+      return size.grow(8, 0)
+    })
   }
 
   receiveMouse(event: MouseEvent) {
-    if (isMouseClicked(event)) {
+    if (this.#isInteractive && isMouseClicked(event)) {
       this.#showModal = true
     }
   }
 
   receiveKey(event: KeyEvent) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     if (
       event.name === 'return' ||
       event.name === 'enter' ||
@@ -185,12 +294,33 @@ export class Dropdown<T, M extends boolean> extends View {
     }
 
     viewport.registerMouse(['mouse.move', 'mouse.button.left'])
+
     const lines = this.#titleLines()
+    renderFormError(
+      viewport,
+      this.#isFormValid,
+      // a disabled dropdown keeps its focus, but doesn't draw the focus style
+      inside =>
+        this.#renderDropdown(inside, lines, hasFocus && this.#isInteractive),
+      contentSize => Math.max(0, this.#lineIndexOffset(contentSize, lines)),
+    )
+  }
+
+  /**
+   * The row of the first title line - the title is vertically centered.
+   */
+  #lineIndexOffset(contentSize: Size, lines: string[]) {
+    return ~~((contentSize.height - lines.length) / 2)
+  }
+
+  #renderDropdown(viewport: Viewport, lines: string[], hasFocus: boolean) {
+    const isInteractive = this.#isInteractive
+    const isHover = isInteractive && this.isHover
     const textStyle = this.purpose
       .ui({
         variant: 'raised',
-        isPressed: this.isPressed || this.#showModal,
-        isHover: this.isHover && !this.#showModal,
+        isPressed: (isInteractive && this.isPressed) || this.#showModal,
+        isHover: isHover && !this.#showModal,
         hasFocus,
       })
       .merge({bold: hasFocus && !this.#showModal})
@@ -198,7 +328,7 @@ export class Dropdown<T, M extends boolean> extends View {
     viewport.paint(textStyle)
 
     const pt = new Point(0, 0).mutableCopy()
-    const lineIndexOffset = ~~((viewport.contentSize.height - lines.length) / 2)
+    const lineIndexOffset = this.#lineIndexOffset(viewport.contentSize, lines)
     for (; pt.y < viewport.contentSize.height; pt.y++) {
       const lineIndex = pt.y - lineIndexOffset
       if (lineIndex >= 0 && lineIndex < lines.length) {
@@ -213,17 +343,21 @@ export class Dropdown<T, M extends boolean> extends View {
     }
 
     viewport.write(
-      this.#showModal
-        ? ARROWS.open
-        : this.isHover
-          ? ARROWS.hover
-          : ARROWS.default,
+      this.#showModal ? ARROWS.open : isHover ? ARROWS.hover : ARROWS.default,
       new Point(
         viewport.contentSize.width - 2,
         viewport.contentSize.height / 2,
       ),
       textStyle,
     )
+
+    if (!isInteractive) {
+      viewport.restyle(this.#disabledStyle(), undefined, {merge: true})
+    }
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 }
 

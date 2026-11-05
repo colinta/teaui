@@ -26,6 +26,7 @@ describe('radio CLI component example', () => {
         'title',
         'value',
         'hotKey',
+        'isEnabled',
         'purpose',
         'width',
         'height',

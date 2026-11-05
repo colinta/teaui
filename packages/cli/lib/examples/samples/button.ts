@@ -48,6 +48,13 @@ export const buttonExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        'Defaults to true; when false the button is drawn dimmed and ignores clicks, Enter, and its hotKey. It keeps focus, but does not draw the focus style',
+      availability: 'both',
+    },
+    {
       name: 'foreground',
       type: 'Color',
       description:

@@ -22,6 +22,11 @@ export interface Props extends ContainerProps {
    * larger focusable view.
    */
   focusable?: boolean
+  /**
+   * When false, the Pressable is drawn dimmed and doesn't respond to clicks or
+   * Return. It keeps focus, but doesn't draw the focus style. Default: true.
+   */
+  isEnabled?: boolean
 }
 
 /**
@@ -45,12 +50,14 @@ export interface PressableStyles {
  * hover, pressed, and keyboard-focus feedback.
  *
  * Calls `onClick` on a mouse click or Return while focused. Set `focusable: false`
- * when it belongs to a larger control that handles keyboard focus.
+ * when it belongs to a larger control that handles keyboard focus. Set
+ * `isEnabled: false` to disable it.
  */
 export class Pressable extends Container {
   #foreground?: Color
   #onClick?: Props['onClick']
   #focusable: boolean = true
+  #isEnabled: boolean = true
   #hasFocus: boolean = false
 
   constructor(props: Props = {}) {
@@ -64,25 +71,52 @@ export class Pressable extends Container {
     super.update(props)
   }
 
-  #update({foreground, onClick, focusable}: Props) {
+  #update({foreground, onClick, focusable, isEnabled}: Props) {
     this.#foreground = foreground
     this.#onClick = onClick
     this.#focusable = focusable ?? true
+    this.isEnabled = isEnabled ?? true
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.invalidateRender()
+  }
+
+  /**
+   * Whether the Pressable responds to clicks, and draws its hover, pressed, and
+   * focus styles. Subclasses can add their own conditions.
+   */
+  protected get isInteractive(): boolean {
+    return this.#isEnabled
   }
 
   childPalette(view: View) {
+    const isInteractive = this.isInteractive
     return childPalette(
       super.childPalette(view),
-      this.isPressed,
-      this.isHover || this.#hasFocus,
+      isInteractive && this.isPressed,
+      isInteractive && (this.isHover || this.#hasFocus),
     )
   }
 
   /**
    * Called for a mouse click or Return. Subclasses can call this for their own
-   * triggers (a hotkey, for example).
+   * triggers (a hotkey, for example). Does nothing when the Pressable isn't
+   * interactive.
    */
   protected click() {
+    if (!this.isInteractive) {
+      return
+    }
+
     this.#onClick?.()
   }
 
@@ -108,9 +142,15 @@ export class Pressable extends Container {
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
-    const styles = this.#styles(hasFocus)
+    const isInteractive = this.isInteractive
+    // a disabled Pressable keeps its focus, but doesn't draw the focus style
+    const styles = this.#styles(isInteractive, hasFocus && isInteractive)
     this.#paint(viewport, styles)
     this.renderContent(viewport, styles)
+
+    if (!isInteractive) {
+      viewport.restyle(this.#disabledStyle(), undefined, {merge: true})
+    }
   }
 
   /**
@@ -123,17 +163,19 @@ export class Pressable extends Container {
     })
   }
 
-  #styles(hasFocus: boolean): PressableStyles {
+  #styles(isInteractive: boolean, hasFocus: boolean): PressableStyles {
+    const isPressed = isInteractive && this.isPressed
+    const isHover = isInteractive && this.isHover
     let text = this.purpose.ui({
       variant: 'raised',
-      isPressed: this.isPressed,
-      isHover: this.isHover,
+      isPressed,
+      isHover,
       hasFocus,
     })
     let ornament = this.purpose.ui({
       variant: 'raised',
-      isPressed: this.isPressed,
-      isHover: this.isHover,
+      isPressed,
+      isHover,
       hasFocus,
       isOrnament: true,
     })
@@ -141,12 +183,16 @@ export class Pressable extends Container {
       text = text.merge({foreground: this.#foreground})
       ornament = ornament.merge({foreground: this.#foreground})
     }
-    if (this.background && !(this.isHover || hasFocus)) {
+    if (this.background && !(isHover || hasFocus)) {
       text = text.merge({background: this.background})
       ornament = ornament.merge({background: this.background})
     }
 
     return {text, ornament, hasFocus}
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 
   #paint(viewport: Viewport, {text}: PressableStyles) {

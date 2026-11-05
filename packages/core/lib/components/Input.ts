@@ -11,11 +11,27 @@ import {System} from '../System.js'
 import {type FontFamily, type LegendItem} from '../types.js'
 import {FONTS} from './fonts.js'
 import {Scrollable} from './Scrollable.js'
+import {
+  type FormField,
+  type FormInput,
+  formAncestor,
+  formErrorSize,
+  renderFormError,
+} from './Form.js'
 
 interface TextProps {
   placeholder?: string
   onChange?: (text: string) => void
   onSubmit?: (text: string) => void
+  /**
+   * Enter submits the input's `Form` (after calling `onSubmit`). Ignored when
+   * `multiline` is true.
+   */
+  submitsForm?: boolean
+  /**
+   * The name of this input's value in its `Form`.
+   */
+  formName?: string
 }
 
 interface StyleProps {
@@ -30,6 +46,11 @@ interface StyleProps {
    * whole value as one word so it doesn't reveal the text's structure.
    */
   secret?: boolean
+  /**
+   * When false, the input is drawn dimmed and ignores keyboard, paste, and
+   * mouse input. It stays in the focus ring. Defaults to true.
+   */
+  isEnabled?: boolean
 }
 
 interface Cursor {
@@ -80,7 +101,7 @@ export type Props = StyleProps & TextProps & ViewProps
  * Text input. Supports selection, word movement via alt+←→, single and multiline
  * input, and wrapped lines.
  */
-export class Input extends View {
+export class Input extends View implements FormInput {
   /**
    * Array of graphemes, with pre-calculated length
    */
@@ -104,8 +125,15 @@ export class Input extends View {
   #format?: (text: string) => string
   #formatStyles: Style[] = []
   #showInvisibles: boolean = true
+  #isEnabled: boolean = true
   #onChange?: (value: string) => void
   #onSubmit?: (value: string) => void
+  #submitsForm: boolean = false
+
+  // form state
+  #formName = ''
+  #isFormValid = true
+  #isFormSubmitting = false
 
   // Printable width
   #maxLineWidth: number = 0
@@ -146,8 +174,14 @@ export class Input extends View {
     placeholder,
     onChange,
     onSubmit,
+    submitsForm,
+    formName,
     secret,
+    isEnabled,
   }: Props) {
+    this.isEnabled = isEnabled ?? true
+    this.#submitsForm = submitsForm ?? false
+    this.#formName = formName ?? ''
     this.#secret = secret ?? false
     if (
       this.#wrap !== this.#wrapAllowed(wrap ?? false) ||
@@ -312,6 +346,64 @@ export class Input extends View {
     }
   }
 
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(isEnabled: boolean) {
+    if (isEnabled === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = isEnabled
+    this.#isInteractiveDidChange()
+  }
+
+  get submitsForm() {
+    return this.#submitsForm
+  }
+  set submitsForm(value: boolean) {
+    this.#submitsForm = value
+  }
+
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  formData(): FormField[] {
+    return [{name: this.#formName, type: 'string', value: this.#value}]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.#isInteractiveDidChange()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
+  }
+
+  #isInteractiveDidChange() {
+    // cancel any in-progress mouse selection
+    this.#resetMouseSelection()
+    this.invalidateRender()
+  }
+
   get placeholder() {
     return this.#placeholder.map(([chars]) => chars.join('')).join('\n')
   }
@@ -409,6 +501,12 @@ export class Input extends View {
   }
 
   naturalSize(available: Size): Size {
+    return formErrorSize(available, this.#isFormValid, available =>
+      this.#naturalSize(available),
+    )
+  }
+
+  #naturalSize(available: Size): Size {
     let lines: [string[], number][] = this.#printableLines
 
     if (!lines.length || !available.width) {
@@ -440,6 +538,10 @@ export class Input extends View {
   }
 
   receiveKey(event: KeyEvent) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     this.#scrollIntoView()
 
     // Typing immediately after a click should use its destination, not the old cursor.
@@ -464,6 +566,9 @@ export class Input extends View {
         }
       } else {
         this.#onSubmit?.(this.#value)
+        if (this.#submitsForm) {
+          void formAncestor(this)?.submit()
+        }
         return
       }
     } else if (event.full === 'C-]') {
@@ -559,6 +664,10 @@ export class Input extends View {
   }
 
   receivePaste(text: string) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     const pasteChars = unicode.printableChars(
       this.#multiline ? text : text.replaceAll('\n', ''),
     )
@@ -593,7 +702,7 @@ export class Input extends View {
   }
 
   receiveMouse(event: MouseEvent, system: System) {
-    if (event.button !== 'left') {
+    if (!this.#isInteractive || event.button !== 'left') {
       return
     }
 
@@ -793,14 +902,20 @@ export class Input extends View {
     isSelected?: boolean
     hasFocus?: boolean
   } = {}): Style {
-    return this.purpose.ui({
+    const isInteractive = this.#isInteractive
+    const style = this.purpose.ui({
       variant: 'flat',
-      isPressed: this.isPressed && !hasFocus,
-      isHover: this.isHover,
+      isPressed: isInteractive && this.isPressed && !hasFocus,
+      isHover: isInteractive && this.isHover,
       hasFocus,
       isPlaceholder,
       isSelected,
     })
+    return isInteractive ? style : style.merge(this.#disabledStyle())
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 
   render(viewport: Viewport) {
@@ -815,16 +930,20 @@ export class Input extends View {
       return
     }
 
-    const renderHeight = this.#multiline
-      ? viewport.contentSize.height
-      : Math.min(
-          viewport.contentSize.height,
-          this.naturalSize(viewport.contentSize).height,
-        )
-    viewport.clipped(
-      new Rect(Point.zero, new Size(viewport.contentSize.width, renderHeight)),
-      inside => this.#renderInside(inside, hasFocus),
-    )
+    renderFormError(viewport, this.#isFormValid, inside => {
+      const renderHeight = this.#multiline
+        ? inside.contentSize.height
+        : Math.min(
+            inside.contentSize.height,
+            this.#naturalSize(inside.contentSize).height,
+          )
+      // A disabled input keeps its focus, but doesn't draw the cursor or the
+      // focus style.
+      inside.clipped(
+        new Rect(Point.zero, new Size(inside.contentSize.width, renderHeight)),
+        clipped => this.#renderInside(clipped, hasFocus && this.#isInteractive),
+      )
+    })
   }
 
   #renderInside(viewport: Viewport, hasFocus: boolean) {
@@ -902,14 +1021,7 @@ export class Input extends View {
     if (viewport.visibleRect.isEmpty && !hasFocus && !this.#mouseSelection) {
       return
     }
-    viewport.paint(
-      this.purpose.ui({
-        variant: 'flat',
-        isPressed: this.isPressed && !hasFocus,
-        isHover: this.isHover,
-        hasFocus,
-      }),
-    )
+    viewport.paint(this.#inputStyle({hasFocus}))
 
     let isPlaceholder = !this.#chars.length
     let currentStyle = Style.NONE

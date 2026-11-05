@@ -1,6 +1,7 @@
 import {Viewport} from '../Viewport.js'
 import {type Props as ViewProps} from '../View.js'
 import {ComposedView} from '../ComposedView.js'
+import {Style} from '../Style.js'
 import {Rect, Size} from '../geometry.js'
 import {type KeyEvent} from '../events/index.js'
 import {type Orientation, type LegendItem} from '../types.js'
@@ -9,6 +10,12 @@ import {Pressable} from './Pressable.js'
 import {Text} from './Text.js'
 import {ZStack} from './ZStack.js'
 import {type Frame, SliderControl} from './SliderControl.js'
+import {
+  type FormField,
+  type FormInput,
+  formErrorSize,
+  renderFormError,
+} from './Form.js'
 
 const MIN = 5
 
@@ -59,6 +66,15 @@ type Props = ViewProps &
      */
     value?: number
     onChange?: (value: number) => void
+    /**
+     * The name of this input's value in its `Form`.
+     */
+    formName?: string
+    /**
+     * When false, the slider is drawn dimmed and can't be changed.
+     * Default: true
+     */
+    isEnabled?: boolean
   }
 
 /**
@@ -69,7 +85,7 @@ type Props = ViewProps &
  * buttons provide stepwise adjustment. Supports horizontal and vertical layouts;
  * `onChange` reports user changes.
  */
-export class Slider extends ComposedView {
+export class Slider extends ComposedView implements FormInput {
   // styles
   #direction: Orientation = 'horizontal'
   #border: boolean = false
@@ -80,6 +96,12 @@ export class Slider extends ComposedView {
   #value: number = 0
   #step: number = 1
   #onChange?: (value: number) => void
+
+  // form state
+  #formName = ''
+  #isEnabled = true
+  #isFormValid = true
+  #isFormSubmitting = false
 
   // subviews
   #control: SliderControl
@@ -113,7 +135,19 @@ export class Slider extends ComposedView {
     this.invalidateSize()
   }
 
-  #update({direction, border, buttons, range, value, step, onChange}: Props) {
+  #update({
+    direction,
+    border,
+    buttons,
+    range,
+    value,
+    step,
+    onChange,
+    formName,
+    isEnabled,
+  }: Props) {
+    this.#formName = formName ?? ''
+    this.isEnabled = isEnabled ?? true
     this.#direction = direction ?? 'horizontal'
     this.#border = border ?? false
     this.#buttons = buttons ?? false
@@ -143,10 +177,59 @@ export class Slider extends ComposedView {
     }
   }
 
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.invalidateRender()
+  }
+
+  formData(): FormField[] {
+    return [{name: this.#formName, type: 'number', value: this.#value}]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.invalidateRender()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
+  }
+
   /**
    * The value changed because of the keyboard, a button, or dragging
    */
   #changeValue(value: number) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     value = Math.min(this.#range[1], Math.max(this.#range[0], value))
     if (value !== this.#value) {
       this.#value = value
@@ -165,7 +248,13 @@ export class Slider extends ComposedView {
     )
   }
 
-  naturalSize(_available: Size) {
+  naturalSize(available: Size): Size {
+    return formErrorSize(available, this.#isFormValid, () =>
+      this.#naturalSize(),
+    )
+  }
+
+  #naturalSize(): Size {
     // try to have enough room for every value
     const min = Math.max(
       MIN,
@@ -230,6 +319,13 @@ export class Slider extends ComposedView {
       return super.render(viewport)
     }
 
+    renderFormError(viewport, this.#isFormValid, inside =>
+      // a disabled slider keeps its focus, but doesn't draw the focus style
+      this.#renderSlider(inside, hasFocus && this.#isInteractive),
+    )
+  }
+
+  #renderSlider(viewport: Viewport, hasFocus: boolean) {
     const isHorizontal = this.#direction === 'horizontal'
     const {width, height} = viewport.contentSize
     // The border needs 3 rows (or columns) to be drawn
@@ -272,6 +368,14 @@ export class Slider extends ComposedView {
         this.#control.render(inside)
       },
     )
+
+    if (!this.#isInteractive) {
+      viewport.restyle(this.#disabledStyle(), undefined, {merge: true})
+    }
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 }
 

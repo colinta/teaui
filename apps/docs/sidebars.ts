@@ -40,6 +40,7 @@ const sidebars: SidebarsConfig = {
             'components/dropdown',
             'components/toggle-group',
             'components/font-style',
+            'components/form',
             'components/hotkey',
             'components/keyboard',
             'components/mouse',

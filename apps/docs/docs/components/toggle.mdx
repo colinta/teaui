@@ -12,10 +12,12 @@ An iOS-style boolean switch. The slider animates between the left and right posi
 
 ## Props
 
-| Prop       | Type                       | Default | Description         |
-| ---------- | -------------------------- | ------- | ------------------- |
-| `value`    | `boolean`                  | `false` | Toggle state        |
-| `onChange` | `(value: boolean) => void` | —       | Called when toggled |
+| Prop        | Type                       | Default | Description                                  |
+| ----------- | -------------------------- | ------- | -------------------------------------------- |
+| `value`     | `boolean`                  | `false` | Toggle state                                 |
+| `onChange`  | `(value: boolean) => void` | —       | Called when toggled                          |
+| `isEnabled` | `boolean`                  | `true`  | Dimmed and not interactive when `false`      |
+| `formName`  | `string`                   | `''`    | The name of this value in its [Form](./form) |
 
 ## Sizing
 

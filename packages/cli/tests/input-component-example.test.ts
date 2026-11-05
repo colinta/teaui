@@ -5,7 +5,7 @@ import {lineWidth, removeAnsi, TestTerminal} from '@teaui/core'
 import {inputExample} from '../lib/examples/samples/input.js'
 import * as capture from '../lib/examples/samples/capture.js'
 
-const SIZE = {width: 36, height: 19}
+const SIZE = {width: 36, height: 21}
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -29,8 +29,11 @@ describe('input CLI component example', () => {
         'font',
         'format',
         'secret',
+        'isEnabled',
+        'formName',
         'onChange',
         'onSubmit',
+        'submitsForm',
         'purpose',
         'width',
         'height',
@@ -60,6 +63,8 @@ describe('input CLI component example', () => {
       )
       expect(prop('secret')?.type).toBe('boolean')
       expect(prop('secret')?.description).toContain('value stays the real text')
+      expect(prop('isEnabled')?.type).toBe('boolean')
+      expect(prop('isEnabled')?.description).toContain('Defaults to true')
       expect(prop('onChange')?.type).toBe('(text: string) => void')
       expect(prop('onChange')?.description).toContain('paste and undo/redo')
       expect(prop('onSubmit')?.type).toBe('(text: string) => void')
@@ -95,7 +100,8 @@ describe('input CLI component example', () => {
       if (framework === 'core') {
         for (const snippet of [
           'width: 36',
-          'height: 19',
+          'height: 21',
+          'isEnabled: false',
           'secret: true',
           'width: 24',
           'height: 2',
@@ -114,7 +120,8 @@ describe('input CLI component example', () => {
       } else {
         for (const snippet of [
           "import React, {useState} from 'react'",
-          '<Stack.down width={36} height={19}>',
+          '<Stack.down width={36} height={21}>',
+          'isEnabled={false}',
           'secret',
           '<Input',
           '<Text>{status}</Text>',
@@ -170,6 +177,7 @@ describe('input CLI component example', () => {
       expect(rendered).toContain('Secret (password)')
       expect(rendered).toContain('•••••••')
       expect(rendered).not.toContain('hunter2')
+      expect(rendered).toContain('Not editable')
       const lines = rendered.split('\n')
       expect(lines).toHaveLength(SIZE.height)
       expect(lines.map(line => lineWidth(line))).toEqual(
@@ -185,6 +193,7 @@ describe('input CLI component example', () => {
       expect(terminal.styleOf('Styled text')?.bold).toBe(true)
       expect(terminal.styleOf('Styled text')?.foreground).toBe('cyan')
       expect(terminal.styleOf('Type a note...')?.bold).not.toBe(true)
+      expect(terminal.styleOf('Not editable')?.dim).toBe(true)
 
       expect(await inputExample.render[framework]()).toBe(output)
       expect(captureSpy).toHaveBeenNthCalledWith(2, moduleUrl, SIZE)

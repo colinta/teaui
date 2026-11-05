@@ -31,6 +31,8 @@ import {
   Drawer,
   Dropdown,
   FontStyle,
+  Form,
+  FormSubmitButton,
   Geometry,
   Header,
   H1,
@@ -45,6 +47,7 @@ import {
   H5,
   H6,
   Input,
+  Label,
   Legend,
   LineChart,
   Log,
@@ -252,6 +255,9 @@ function createInstance(type: string, props: Props): any {
     case 'input':
     case 'tui-input':
       return new Input(props as any)
+    case 'label':
+    case 'tui-label':
+      return new Label(props as any)
     case 'legend':
     case 'tui-legend':
       return new Legend(props as any)
@@ -303,6 +309,12 @@ function createInstance(type: string, props: Props): any {
     case 'button':
     case 'tui-button':
       return new Button(props as any)
+    case 'form':
+    case 'tui-form':
+      return new Form(props as any)
+    case 'form-submit-button':
+    case 'tui-form-submit-button':
+      return new FormSubmitButton(props as any)
     case 'pressable':
     case 'tui-pressable':
       return new Pressable(props as any)

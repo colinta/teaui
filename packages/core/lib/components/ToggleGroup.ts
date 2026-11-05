@@ -14,6 +14,12 @@ import {
 } from '../events/index.js'
 import {System} from '../System.js'
 import {type Orientation} from '../types.js'
+import {
+  type FormField,
+  type FormInput,
+  formErrorSize,
+  renderFormError,
+} from './Form.js'
 
 interface Props extends ViewProps {
   multiple?: boolean
@@ -22,12 +28,21 @@ interface Props extends ViewProps {
   titles: string[]
   selected: number[]
   onChange?: (changed: number, selected: number[]) => void
+  /**
+   * The name of this input's value (the selected indices) in its `Form`.
+   */
+  formName?: string
+  /**
+   * When false, the group is drawn dimmed and can't be changed. Defaults to
+   * true.
+   */
+  isEnabled?: boolean
 }
 
 // [lines, width]
 type TitleCache = [string, {width: number; height: number}]
 
-export class ToggleGroup extends ComposedView {
+export class ToggleGroup extends ComposedView implements FormInput {
   #multiple = false
   #padding = 1
   #offAxisPadding = 0
@@ -38,6 +53,10 @@ export class ToggleGroup extends ComposedView {
   #selected: Set<number> = new Set()
   #hover?: number
   #onChange?: (changed: number, selected: number[]) => void
+  #formName = ''
+  #isEnabled = true
+  #isFormValid = true
+  #isFormSubmitting = false
 
   constructor(props: Props) {
     super(props)
@@ -59,7 +78,18 @@ export class ToggleGroup extends ComposedView {
     this.invalidateSize()
   }
 
-  #update({multiple, padding, direction, titles, selected, onChange}: Props) {
+  #update({
+    multiple,
+    padding,
+    direction,
+    titles,
+    selected,
+    onChange,
+    formName,
+    isEnabled,
+  }: Props) {
+    this.#formName = formName ?? ''
+    this.isEnabled = isEnabled ?? true
     this.#multiple = multiple ?? false
     this.#padding = Math.max(0, padding ?? 1)
     this.#offAxisPadding = Math.max(0, this.#padding - 1)
@@ -103,11 +133,66 @@ export class ToggleGroup extends ComposedView {
     this.#sizeCache = sizeCache
   }
 
-  naturalSize(_available: Size) {
-    return this.#sizeCache
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.#isInteractiveDidChange()
+  }
+
+  formData(): FormField[] {
+    const selected = [...this.#selected].sort((a, b) => a - b)
+    return [{name: this.#formName, type: 'number[]', value: selected}]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.#isInteractiveDidChange()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
+  }
+
+  #isInteractiveDidChange() {
+    this.#hover = undefined
+    this.invalidateRender()
+  }
+
+  naturalSize(available: Size): Size {
+    return formErrorSize(available, this.#isFormValid, () => this.#sizeCache)
   }
 
   receiveMouse(event: MouseEvent, _system: System) {
+    if (!this.#isInteractive) {
+      return
+    }
+
     let x = 0
     if (this.#direction === 'horizontal') {
       if (event.position.y >= this.#sizeCache.height) {
@@ -148,6 +233,13 @@ export class ToggleGroup extends ComposedView {
       return super.render(viewport)
     }
 
+    renderFormError(viewport, this.#isFormValid, inside =>
+      this.#renderGroup(inside),
+    )
+  }
+
+  #renderGroup(viewport: Viewport) {
+    // mouse positions are relative to the group (not the error arrow)
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
     if (this.#direction === 'horizontal') {
@@ -179,6 +271,14 @@ export class ToggleGroup extends ComposedView {
         })
       }
     }
+
+    if (!this.#isInteractive) {
+      viewport.restyle(this.#disabledStyle(), undefined, {merge: true})
+    }
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 
   #renderGroupHorizontal(

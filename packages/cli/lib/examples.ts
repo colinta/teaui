@@ -24,6 +24,7 @@ import {digitsExample} from './examples/samples/digits.js'
 import {drawerExample} from './examples/samples/drawer.js'
 import {dropdownExample} from './examples/samples/dropdown.js'
 import {fontStyleExample} from './examples/samples/font-style.js'
+import {formExample} from './examples/samples/form.js'
 import {geometryExample} from './examples/samples/geometry.js'
 import {headerExample} from './examples/samples/header.js'
 import {hotkeyExample} from './examples/samples/hotkey.js'
@@ -100,6 +101,7 @@ export const EXAMPLES: readonly ComponentExample<Availability>[] = [
   drawerExample,
   dropdownExample,
   fontStyleExample,
+  formExample,
   geometryExample,
   headerExample,
   hotkeyExample,

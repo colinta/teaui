@@ -33,9 +33,20 @@ export * from './Digits.js'
 export * from './Drawer.js'
 export {Dropdown} from './Dropdown.js'
 export * from './FontStyle.js'
+export {
+  Form,
+  FormSubmitButton,
+  type FormError,
+  type FormErrors,
+  type FormField,
+  type FormInput,
+  type FormSubmitButtonProps,
+  type Props as FormProps,
+} from './Form.js'
 export * from './Stack.js'
 export * from './Header.js'
 export {Input, type Props as InputProps} from './Input.js'
+export {Label, type Props as LabelProps} from './Label.js'
 export * from './Geometry.js'
 export * from './Legend.js'
 export * from './AutoLegend.js'

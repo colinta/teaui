@@ -62,6 +62,20 @@ export const dropdownExample: ComponentExample = {
       availability: 'react',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        'Defaults to true; when false the dropdown is drawn dimmed and ignores input. It keeps focus, but does not draw the focus style. In a Form, it is also disabled while the form is submitting',
+      availability: 'both',
+    },
+    {
+      name: 'formName',
+      type: 'string',
+      description:
+        "The name of this input's value in its Form; defaults to '' (not part of the form). A single selection is reported like RadioGroup (not reported when nothing is selected); multiple selections are one array FormField whose type comes from the choices' values",
+      availability: 'both',
+    },
+    {
       name: 'purpose',
       type: 'Palette | Purpose',
       description: 'Semantic palette for the control and its selection modal',

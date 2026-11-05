@@ -40,6 +40,8 @@ describe('toggle-group CLI component example', () => {
         'multiple',
         'direction',
         'padding',
+        'isEnabled',
+        'formName',
         'purpose',
         'width',
         'height',

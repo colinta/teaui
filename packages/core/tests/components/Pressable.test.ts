@@ -268,4 +268,49 @@ describe('Pressable', () => {
       expect(new Button({title: 'OK'})).toBeInstanceOf(Pressable)
     })
   })
+
+  describe('isEnabled', () => {
+    it('defaults to true', () => {
+      expect(new Pressable().isEnabled).toBe(true)
+      expect(new Button({title: 'OK'}).isEnabled).toBe(true)
+    })
+
+    it('ignores clicks and Return, and is dimmed, when disabled', () => {
+      const onClick = vi.fn()
+      const button = new Button({title: 'OK', onClick, isEnabled: false})
+      const t = testRender(button, {width: 10, height: 1})
+      expect(t.terminal.styleOf('OK')?.dim).toBe(true)
+      // keeps focus, but doesn't draw the focus style
+      expect(t.terminal.textContent()).toBe('  [ OK ]')
+
+      t.sendMouse('mouse.button.down', {x: 3, y: 0})
+      t.sendMouse('mouse.button.up', {x: 3, y: 0})
+      t.sendKey('tab')
+      t.sendKey('return')
+      expect(onClick).not.toHaveBeenCalled()
+
+      button.isEnabled = true
+      t.render()
+      expect(t.terminal.styleOf('OK')?.dim).not.toBe(true)
+      t.sendMouse('mouse.button.down', {x: 3, y: 0})
+      t.sendMouse('mouse.button.up', {x: 3, y: 0})
+      expect(onClick).toHaveBeenCalledOnce()
+    })
+
+    it('ignores the hotKey when disabled', () => {
+      const onClick = vi.fn()
+      const t = testRender(
+        new Button({title: 'OK', hotKey: 'C-o', onClick, isEnabled: false}),
+        {width: 10, height: 1},
+      )
+      t.sendKey('o', {ctrl: true})
+      expect(onClick).not.toHaveBeenCalled()
+    })
+
+    it('update() resets isEnabled to true when omitted', () => {
+      const pressable = new Pressable({isEnabled: false})
+      pressable.update({})
+      expect(pressable.isEnabled).toBe(true)
+    })
+  })
 })

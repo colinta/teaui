@@ -32,6 +32,8 @@ describe('radio-group CLI component example', () => {
       expect(names).toEqual([
         'value',
         'onChange',
+        'isEnabled',
+        'formName',
         'purpose',
         'width',
         'height',

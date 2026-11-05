@@ -2,6 +2,7 @@ import type {Viewport} from '../Viewport.js'
 import {type Props as ViewProps, type View} from '../View.js'
 import {ComposedView} from '../ComposedView.js'
 import {Text} from './Text.js'
+import {Style} from '../Style.js'
 import {Rect, Point, Size} from '../geometry.js'
 import {
   type HotKey,
@@ -16,22 +17,41 @@ import {
 } from '../events/index.js'
 import {type LegendItem} from '../types.js'
 import {childPalette} from '../UI.js'
+import {
+  type FormField,
+  type FormInput,
+  formErrorSize,
+  renderFormError,
+} from './Form.js'
 
 interface StyleProps {
   title?: string
   value: boolean
   onChange?: (value: boolean) => void
   hotKey?: HotKey
+  /**
+   * The name of this input's value in its `Form`.
+   */
+  formName?: string
+  /**
+   * When false, the checkbox is drawn dimmed and can't be toggled.
+   * Defaults to true.
+   */
+  isEnabled?: boolean
 }
 
 type Props = StyleProps & ViewProps
 
-export class Checkbox extends ComposedView {
+export class Checkbox extends ComposedView implements FormInput {
   #value: boolean = false
   #hotKey?: HotKey
   #onChange: StyleProps['onChange']
   #textView: Text
   #hasFocus: boolean = false
+  #formName = ''
+  #isEnabled = true
+  #isFormValid = true
+  #isFormSubmitting = false
 
   constructor(props: Props) {
     super(props)
@@ -66,12 +86,59 @@ export class Checkbox extends ComposedView {
     super.update(props)
   }
 
-  #update({title, hotKey, value, onChange}: Props) {
+  #update({title, hotKey, value, onChange, formName, isEnabled}: Props) {
     const styledText = hotKey ? styleTextForHotKey(title ?? '', hotKey) : title
     this.#textView.text = styledText ?? ''
     this.#value = value
     this.#hotKey = hotKey
     this.#onChange = onChange
+    this.#formName = formName ?? ''
+    this.isEnabled = isEnabled ?? true
+  }
+
+  get formName() {
+    return this.#formName
+  }
+  set formName(value: string) {
+    this.#formName = value
+  }
+
+  get isEnabled() {
+    return this.#isEnabled
+  }
+  set isEnabled(value: boolean) {
+    if (value === this.#isEnabled) {
+      return
+    }
+
+    this.#isEnabled = value
+    this.invalidateRender()
+  }
+
+  formData(): FormField[] {
+    return [{name: this.#formName, type: 'boolean', value: this.#value}]
+  }
+
+  setIsFormValid(isValid: boolean) {
+    if (isValid === this.#isFormValid) {
+      return
+    }
+
+    this.#isFormValid = isValid
+    this.invalidateSize()
+  }
+
+  setIsFormSubmitting(isSubmitting: boolean) {
+    if (isSubmitting === this.#isFormSubmitting) {
+      return
+    }
+
+    this.#isFormSubmitting = isSubmitting
+    this.invalidateRender()
+  }
+
+  get #isInteractive() {
+    return this.#isEnabled && !this.#isFormSubmitting
   }
 
   get title() {
@@ -94,7 +161,9 @@ export class Checkbox extends ComposedView {
   }
 
   naturalSize(available: Size): Size {
-    return super.naturalSize(available).grow(CHECKBOX_WIDTH, 0).minHeight(1)
+    return formErrorSize(available, this.#isFormValid, available =>
+      super.naturalSize(available).grow(CHECKBOX_WIDTH, 0).minHeight(1),
+    )
   }
 
   receiveMouse(event: MouseEvent) {
@@ -116,6 +185,10 @@ export class Checkbox extends ComposedView {
   }
 
   #toggle() {
+    if (!this.#isInteractive) {
+      return
+    }
+
     this.#value = !this.#value
     this.#onChange?.(this.#value)
   }
@@ -132,14 +205,31 @@ export class Checkbox extends ComposedView {
 
     viewport.registerMouse(['mouse.button.left', 'mouse.move'])
 
-    const boxWidth = CHECKBOX_WIDTH
+    renderFormError(
+      viewport,
+      this.#isFormValid,
+      // a disabled checkbox keeps its focus, but doesn't draw the focus style
+      inside => this.#renderCheckbox(inside, hasFocus && this.#isInteractive),
+      contentSize => this.#layout(contentSize).offset.y,
+    )
+  }
+
+  /**
+   * The size and location of the title, next to the box.
+   */
+  #layout(contentSize: Size): {offset: Point; naturalSize: Size} {
     const naturalSize = super
-      .naturalSize(viewport.contentSize.shrink(boxWidth, 0))
+      .naturalSize(contentSize.shrink(CHECKBOX_WIDTH, 0))
       .minHeight(1)
     const offset = new Point(
-      boxWidth,
-      Math.round((viewport.contentSize.height - naturalSize.height) / 2),
+      CHECKBOX_WIDTH,
+      Math.round((contentSize.height - naturalSize.height) / 2),
     )
+    return {offset, naturalSize}
+  }
+
+  #renderCheckbox(viewport: Viewport, hasFocus: boolean) {
+    const {offset, naturalSize} = this.#layout(viewport.contentSize)
 
     if (
       viewport.visibleRect.isEmpty &&
@@ -155,10 +245,11 @@ export class Checkbox extends ComposedView {
       return
     }
 
+    const isInteractive = this.#isInteractive
     const uiStyle = this.purpose.ui({
       variant: 'raised',
-      isPressed: this.isPressed,
-      isHover: this.isHover,
+      isPressed: isInteractive && this.isPressed,
+      isHover: isInteractive && this.isHover,
       hasFocus,
     })
     viewport.paint(uiStyle)
@@ -169,6 +260,14 @@ export class Checkbox extends ComposedView {
     viewport.clipped(new Rect(offset, naturalSize), textStyle, inside => {
       super.render(inside)
     })
+
+    if (!isInteractive) {
+      viewport.restyle(this.#disabledStyle(), undefined, {merge: true})
+    }
+  }
+
+  #disabledStyle(): Style {
+    return new Style({dim: true})
   }
 }
 

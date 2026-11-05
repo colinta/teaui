@@ -14,7 +14,7 @@ function App() {
   const [password, setPassword] = useState('hunter2')
 
   return (
-    <Stack.down width={36} height={19}>
+    <Stack.down width={36} height={21}>
       <Text>Name (Enter submits)</Text>
       <Input
         value={name}
@@ -56,6 +56,8 @@ function App() {
       />
       <Text>Secret (password)</Text>
       <Input value={password} onChange={setPassword} secret height={1} />
+      <Text>Disabled</Text>
+      <Input value="Not editable" isEnabled={false} height={1} />
     </Stack.down>
   )
 }

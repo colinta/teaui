@@ -33,6 +33,13 @@ export const radioExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        "Defaults to true; when false this radio is drawn dimmed and can't be selected. It is also disabled when its RadioGroup is disabled or its form is submitting",
+      availability: 'both',
+    },
+    {
       name: 'purpose',
       type: 'Palette | Purpose',
       description: 'Color palette; inherits from its parent, otherwise plain',

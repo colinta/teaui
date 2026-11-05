@@ -493,6 +493,62 @@ describe('Input', () => {
     })
   })
 
+  describe('isEnabled', () => {
+    it('defaults to true', () => {
+      expect(new Input({value: ''}).isEnabled).toBe(true)
+    })
+
+    it('ignores keys, paste, and submit when disabled', () => {
+      let changed = false
+      let submitted = false
+      const input = new Input({
+        value: 'test',
+        isEnabled: false,
+        onChange() {
+          changed = true
+        },
+        onSubmit() {
+          submitted = true
+        },
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      t.sendKey('a')
+      t.sendKey('backspace')
+      t.sendPaste('pasted')
+      t.sendKey('return')
+      expect(input.value).toBe('test')
+      expect(changed).toBe(false)
+      expect(submitted).toBe(false)
+    })
+
+    it('draws dimmed, without the cursor, when disabled', () => {
+      const input = new Input({value: 'test', isEnabled: false})
+      const t = testRender(input, {width: 20, height: 1})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+      expect(t.terminal.styleOf('test')?.dim).toBe(true)
+      expect(t.terminal.styleAt(4, 0).underline).not.toBe(true)
+    })
+
+    it('accepts input again after being enabled', () => {
+      const input = new Input({value: 'test', isEnabled: false})
+      const t = testRender(input, {width: 20, height: 1})
+      t.sendKey('a')
+      expect(input.value).toBe('test')
+
+      input.isEnabled = true
+      t.render()
+      t.sendKey('a')
+      expect(input.value).toBe('testa')
+      expect(t.terminal.styleOf('testa')?.dim).not.toBe(true)
+    })
+
+    it('update() resets isEnabled to true when omitted', () => {
+      const input = new Input({value: 'test', isEnabled: false})
+      input.update({value: 'test'})
+      expect(input.isEnabled).toBe(true)
+    })
+  })
+
   describe('paste', () => {
     it('inserts pasted text at cursor', () => {
       const input = new Input({value: ''})

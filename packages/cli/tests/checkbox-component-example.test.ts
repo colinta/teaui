@@ -26,6 +26,8 @@ describe('checkbox CLI component example', () => {
         'value',
         'onChange',
         'hotKey',
+        'isEnabled',
+        'formName',
         'purpose',
         'width',
         'height',

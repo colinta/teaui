@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Form > validates and submits controlled inputs 1`] = `
+"
+ Name is required
+
+Name
+→
+☐ Agree
+     [ Submit ]"
+`;

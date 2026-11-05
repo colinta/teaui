@@ -27,6 +27,8 @@ describe('dropdown CLI component example', () => {
         'multiple',
         'selected',
         'onSelect',
+        'isEnabled',
+        'formName',
         'purpose',
         'width',
         'height',

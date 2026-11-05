@@ -39,6 +39,8 @@ import type {
   Pressable as WrPressable,
   Dropdown as WrDropdown,
   FontStyle as WrFontStyle,
+  Form as WrForm,
+  FormSubmitButton as WrFormSubmitButton,
   Modal as WrModal,
   Geometry as WrGeometry,
   Header as WrHeader,
@@ -49,6 +51,7 @@ import type {
   ScrollableList as WrScrollableList,
   Table as WrTable,
   Input as WrInput,
+  Label as WrLabel,
   Legend as WrLegend,
   AutoLegend as WrAutoLegend,
   Progress as WrProgress,
@@ -140,6 +143,8 @@ export interface SharedDropdownProps<T>
   extends ViewProps, AnimatedProps<WrDropdown<any, any>> {
   choices: [string, T][]
   title?: string
+  formName?: string
+  isEnabled?: boolean
 }
 
 export interface DropdownSelectOne<T> extends SharedDropdownProps<T> {
@@ -159,6 +164,12 @@ export type HotKeyProps = Simplify<TUIView<typeof WrHotKey>>
 export type KeyboardProps = Simplify<TUIContainer<typeof WrKeyboard>>
 export type MouseProps = Simplify<TUIContainer<typeof WrMouse>>
 export type InputProps = Simplify<TUIView<typeof WrInput>>
+export type LabelProps = Simplify<
+  Omit<TUIView<typeof WrLabel>, 'text' | 'lines'> & {
+    text?: string
+    children?: string
+  }
+>
 export type LegendProps = Simplify<TUIView<typeof WrLegend>>
 export type AutoLegendProps = Simplify<TUIView<typeof WrAutoLegend>>
 export type ProgressProps = Simplify<TUIView<typeof WrProgress>>
@@ -189,6 +200,10 @@ export type ModalProps = Simplify<TUIContainer<typeof WrModal>>
 // "simple" containers
 export type BoxProps = Simplify<TUIContainer<typeof WrBox>>
 export type ButtonProps = Simplify<TUIContainer<typeof WrButton>>
+export type FormProps = Simplify<TUIContainer<typeof WrForm>>
+export type FormSubmitButtonProps = Simplify<
+  TUIContainer<typeof WrFormSubmitButton>
+>
 export type CollapsibleProps = Simplify<
   TUIContainer<typeof WrCollapsible, 'collapsed' | 'expanded' | 'children'>
 >
@@ -259,6 +274,7 @@ declare module 'react' {
       'tui-h5': WithRef<HeadingProps, WrHeader>
       'tui-h6': WithRef<HeadingProps, WrHeader>
       'tui-input': WithRef<InputProps, WrInput>
+      'tui-label': WithRef<Omit<LabelProps, 'children'>, WrLabel>
       'tui-legend': WithRef<LegendProps, WrLegend>
       'tui-auto-legend': WithRef<AutoLegendProps, WrAutoLegend>
       'tui-progress': WithRef<ProgressProps, WrProgress>
@@ -286,6 +302,11 @@ declare module 'react' {
       'tui-box': WithRef<BoxProps, WrBox>
       'tui-callout': WithRef<CalloutProps, WrCallout>
       'tui-button': WithRef<ButtonProps, WrButton>
+      'tui-form': WithRef<FormProps, WrForm>
+      'tui-form-submit-button': WithRef<
+        FormSubmitButtonProps,
+        WrFormSubmitButton
+      >
       'tui-collapsible': WithRef<CollapsibleProps, WrCollapsible>
 
       'tui-scrollable': WithRef<ScrollableProps, WrScrollable>
@@ -582,6 +603,16 @@ export const Input = forwardRef<WrInput, InputProps>(
     return <tui-input ref={ref} {...reactProps} />
   },
 )
+/**
+ * Text for a form input: `<Label for="email">Email</Label>`. It is drawn in red
+ * italics when the input named by `for` has errors.
+ */
+export const Label = forwardRef<WrLabel, LabelProps>(function Label(
+  {children, text, ...props},
+  ref,
+): JSX.Element {
+  return <tui-label ref={ref} {...props} text={children ?? text ?? ''} />
+})
 export const Legend = forwardRef<WrLegend, LegendProps>(
   function Legend(reactProps, ref): JSX.Element {
     return <tui-legend ref={ref} {...reactProps} />
@@ -1045,6 +1076,26 @@ export const Button = forwardRef<WrButton, ButtonProps>(function Button(
     <tui-button ref={ref} {...props}>
       {children}
     </tui-button>
+  )
+})
+export const Form = forwardRef<WrForm, FormProps>(function Form(
+  {children, ...props},
+  ref,
+): JSX.Element {
+  return (
+    <tui-form ref={ref} {...props}>
+      {children}
+    </tui-form>
+  )
+})
+export const FormSubmitButton = forwardRef<
+  WrFormSubmitButton,
+  FormSubmitButtonProps
+>(function FormSubmitButton({children, ...props}, ref): JSX.Element {
+  return (
+    <tui-form-submit-button ref={ref} {...props}>
+      {children}
+    </tui-form-submit-button>
   )
 })
 export const Pressable = forwardRef<WrPressable, PressableProps>(

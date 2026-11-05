@@ -62,6 +62,7 @@ describe('pressable CLI component example', () => {
       expect(names).toEqual([
         'onClick',
         'focusable',
+        'isEnabled',
         'foreground',
         'purpose',
         'background',

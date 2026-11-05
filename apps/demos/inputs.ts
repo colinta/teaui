@@ -1,6 +1,7 @@
 import {
   AutoLegend,
   Box,
+  Checkbox,
   Stack,
   Input,
   Space,
@@ -65,6 +66,8 @@ elit...`,
   multiline: true,
 })
 
+const themedInputs: Input[] = []
+
 function box(input: Input) {
   return Stack.right({
     children: [new Box({border: 'single', child: input}), new Space()],
@@ -77,14 +80,40 @@ function themedBox(purpose: Purpose) {
     purpose,
     title: purpose,
     child: Stack.down([
-      new Input({value: `${purpose} input`}),
-      new Input({placeholder: `${purpose} placeholder`}),
+      themedInput({value: `${purpose} input`}),
+      themedInput({placeholder: `${purpose} placeholder`}),
     ]),
   })
 }
 
+function themedInput(props: ConstructorParameters<typeof Input>[0]) {
+  const input = new Input(props)
+  themedInputs.push(input)
+  return input
+}
+
+const allInputs = [
+  singleLine,
+  emptySingleLine,
+  wrapLine,
+  codeInput,
+  restrictedLine,
+  restrictedMultiLine,
+]
+
+const enabledCheckbox = new Checkbox({
+  title: 'Enabled',
+  value: true,
+  onChange(isEnabled) {
+    for (const input of [...allInputs, ...themedInputs]) {
+      input.isEnabled = isEnabled
+    }
+  },
+})
+
 demo(
   Stack.down([
+    enabledCheckbox,
     [
       'flex1',
       Stack.right({

@@ -12,9 +12,11 @@ A togglable checkbox with label text.
 
 ## Props
 
-| Prop       | Type                       | Default | Description         |
-| ---------- | -------------------------- | ------- | ------------------- |
-| `title`    | `string`                   | —       | Label text          |
-| `value`    | `boolean`                  | `false` | Checked state       |
-| `onChange` | `(value: boolean) => void` | —       | Called when toggled |
-| `hotKey`   | `HotKey`                   | —       | Keyboard shortcut   |
+| Prop        | Type                       | Default | Description                                  |
+| ----------- | -------------------------- | ------- | -------------------------------------------- |
+| `title`     | `string`                   | —       | Label text                                   |
+| `value`     | `boolean`                  | `false` | Checked state                                |
+| `onChange`  | `(value: boolean) => void` | —       | Called when toggled                          |
+| `hotKey`    | `HotKey`                   | —       | Keyboard shortcut                            |
+| `isEnabled` | `boolean`                  | `true`  | Dimmed and not interactive when `false`      |
+| `formName`  | `string`                   | `''`    | The name of this value in its [Form](./form) |

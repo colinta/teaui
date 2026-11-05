@@ -4,7 +4,7 @@ import {captureExample} from './capture.js'
 import type {ComponentExample} from './types.js'
 
 const WIDTH = 36
-const HEIGHT = 19
+const HEIGHT = 21
 
 export const inputExample: ComponentExample = {
   name: 'input',
@@ -61,6 +61,20 @@ export const inputExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        'Defaults to true; when false the input is drawn dimmed and ignores typing, paste, mouse selection, and Enter. It keeps focus, but does not draw the cursor. In a Form, it is also disabled while the form is submitting',
+      availability: 'both',
+    },
+    {
+      name: 'formName',
+      type: 'string',
+      description:
+        "The name of this input's value in its Form; defaults to '' (not part of the form). Reported as a string FormField",
+      availability: 'both',
+    },
+    {
       name: 'onChange',
       type: '(text: string) => void',
       description:
@@ -72,6 +86,13 @@ export const inputExample: ComponentExample = {
       type: '(text: string) => void',
       description:
         'Called with the current value on Enter only when multiline is false; wrapping does not disable submission',
+      availability: 'both',
+    },
+    {
+      name: 'submitsForm',
+      type: 'boolean',
+      description:
+        "Defaults to false; Enter also submits the input's Form, after calling onSubmit. Ignored when multiline is true",
       availability: 'both',
     },
     {

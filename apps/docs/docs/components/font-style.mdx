@@ -14,10 +14,12 @@ A compact multiple-selection control for choosing bold, italic, underline, and s
 
 ## Props
 
-| Prop       | Type                              | Default | Description                    |
-| ---------- | --------------------------------- | ------- | ------------------------------ |
-| `value`    | `FontStyleValue`                  | —       | Currently enabled text styles  |
-| `onChange` | `(value: FontStyleValue) => void` | —       | Called when a style is toggled |
+| Prop        | Type                              | Default | Description                                  |
+| ----------- | --------------------------------- | ------- | -------------------------------------------- |
+| `value`     | `FontStyleValue`                  | —       | Currently enabled text styles                |
+| `onChange`  | `(value: FontStyleValue) => void` | —       | Called when a style is toggled               |
+| `isEnabled` | `boolean`                         | `true`  | Dimmed and not interactive when `false`      |
+| `formName`  | `string`                          | `''`    | The name of this value in its [Form](./form) |
 
 ```ts
 type FontStyleValue = {

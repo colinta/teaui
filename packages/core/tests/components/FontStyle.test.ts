@@ -84,4 +84,28 @@ describe('FontStyle', () => {
 
     expect(t.terminal.styleOf('I')?.background).toEqual(SELECTED_BACKGROUND)
   })
+
+  describe('composition', () => {
+    it('is built from its ToggleGroup, which inherits its purpose', () => {
+      const fontStyle = new FontStyle({value: NONE, purpose: 'primary'})
+      expect(fontStyle.children).toEqual([fontStyle.toggleGroup])
+      expect(fontStyle.toggleGroup.purpose).toBe(fontStyle.purpose)
+    })
+
+    it('passes isEnabled and the form state to its ToggleGroup', () => {
+      const fontStyle = new FontStyle({value: NONE, isEnabled: false})
+      expect(fontStyle.toggleGroup.isEnabled).toBe(false)
+      fontStyle.isEnabled = true
+      expect(fontStyle.toggleGroup.isEnabled).toBe(true)
+
+      const t = testRender(fontStyle, {width: 30, height: 3})
+      fontStyle.setIsFormValid(false)
+      t.render()
+      expect(t.terminal.charAt(0, 0)).toBe('→')
+
+      fontStyle.setIsFormSubmitting(true)
+      t.render()
+      expect(t.terminal.styleOf('B')?.dim).toBe(true)
+    })
+  })
 })

@@ -524,6 +524,23 @@ export abstract class View {
     return []
   }
 
+  /**
+   * All descendants (children, their children, and so on) that match `filter`,
+   * in depth-first order.
+   */
+  findDescendants<T extends View>(filter: (view: View) => view is T): T[]
+  findDescendants(filter: (view: View) => boolean): View[]
+  findDescendants(filter: (view: View) => boolean): View[] {
+    const found: View[] = []
+    for (const child of this.children) {
+      if (filter(child)) {
+        found.push(child)
+      }
+      found.push(...child.findDescendants(filter))
+    }
+    return found
+  }
+
   get contentSize(): Size {
     return this.#renderedContentSize
   }

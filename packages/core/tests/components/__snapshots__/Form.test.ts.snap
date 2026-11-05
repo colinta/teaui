@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Form > rendering > renders error messages at the top, and marks invalid inputs and labels 1`] = `
+"
+ Too short
+ Something else is wrong
+
+Name
+→ Ada
+☐ Agree
+          [ Submit ]"
+`;
+
+exports[`Form > rendering > renders its children, without an errors box 1`] = `
+"Name
+Ada
+☐ Agree
+          [ Submit ]"
+`;
+
+exports[`Form > submit > disables the inputs and shows a spinner while a promise is pending 1`] = `
+"
+ Taken
+
+Name
+→ Ada
+☐ Agree
+          [ Submit ]"
+`;
+
+exports[`Form > submit > shows the errors returned by onSubmit 1`] = `
+"
+ Agree, please
+
+Name
+Ada
+→ ☐ Agree
+          [ Submit ]"
+`;

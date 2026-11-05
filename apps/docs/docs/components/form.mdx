@@ -1,0 +1,122 @@
+---
+title: Form
+---
+
+import Example from '@site/src/components/Example'
+
+# Form
+
+`Form` collects the values of the inputs inside it, validates them, and submits them. Inputs take part in the form when they have a `formName`, at any depth inside the form.
+
+<Example name="form" title="Form" />
+
+When the form is submitted (by a [`FormSubmitButton`](#formsubmitbutton), an [`Input`](./input) with `submitsForm`, or `form.submit()`):
+
+1. `onValidate` is called with the form data. The errors it returns replace the current errors; `[]` clears them.
+2. If there are no errors, `onSubmit` is called with the form data. The errors it returns also replace the current errors; `undefined` is success.
+
+Error messages are listed at the top of the form. Invalid inputs are marked with a red `→`, and the `Label` for an invalid input is drawn in red bold italics:
+
+```
+ Accept the terms
+
+Email
+ada@example.com
+→ ☐ Accept terms [ Sign up ]
+```
+
+While a Promise returned by `onSubmit` is pending, the form is _submitting_: its inputs and submit buttons are dimmed and ignore input, and a spinner is drawn in the top-left corner. If `onSubmit` returns synchronously, the form never enters the submitting state, so the spinner is never visible.
+
+Errors thrown by `onValidate` or `onSubmit` (or a rejected Promise) are not caught - catch them in your `onSubmit` handler.
+
+## Form data
+
+Each input reports its value as a `FormField`:
+
+```ts
+type FormField =
+  | {name: string; type: 'string'; value: string}
+  | {name: string; type: 'number'; value: number}
+  | {name: string; type: 'boolean'; value: boolean}
+  | {name: string; type: 'date'; value: Date}
+  | {name: string; type: 'string[]'; value: string[]}
+  | {name: string; type: 'number[]'; value: number[]}
+  | {name: string; type: 'boolean[]'; value: boolean[]}
+  | {name: string; type: 'date[]'; value: Date[]}
+  | {name: string; type: 'dateRange'; value: [Date, Date]}
+  | {name: string; type: 'unknown'; value: unknown}
+
+interface FormError {
+  name: string
+  message: string
+}
+type FormErrors = FormError[]
+```
+
+| Input                                          | `type`                                                                                |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [`Checkbox`](./checkbox), [`Toggle`](./toggle) | `boolean`                                                                             |
+| [`Input`](./input)                             | `string`                                                                              |
+| [`Slider`](./slider)                           | `number`                                                                              |
+| [`ToggleGroup`](./toggle-group)                | `number[]` (the selected indices)                                                     |
+| [`FontStyle`](./font-style)                    | `unknown` (a `FontStyleValue`)                                                        |
+| [`RadioGroup`](./radio)                        | depends on the value; not reported when nothing is selected                           |
+| [`Dropdown`](./dropdown)                       | depends on the value; multiple selections are one array, typed by the choices' values |
+| [`Calendar`](./calendar)                       | `date`, or `dateRange` once both ends of a range are selected                         |
+
+Inputs with an empty `formName` (the default) are not part of the form. Disabled inputs are included.
+
+Every one of these inputs has an `isEnabled` prop (default `true`). A disabled input is drawn dimmed and ignores input, but keeps keyboard focus. Inputs are also disabled while their form is submitting, independently of `isEnabled`.
+
+## Form props
+
+| Prop         | Type                                                                                     | Default | Description                                      |
+| ------------ | ---------------------------------------------------------------------------------------- | ------- | ------------------------------------------------ |
+| `onValidate` | `(formData: FormField[]) => FormErrors`                                                  | —       | Returns the errors, or `[]` if the data is valid |
+| `onSubmit`   | `(formData: FormField[]) => Promise<FormErrors \| undefined> \| FormErrors \| undefined` | —       | Submits valid data, and returns any errors       |
+| `children`   | `ReactNode` / `View[]`                                                                   | —       | Stacked downward, after the error messages       |
+
+## Label props
+
+`Label` is a bold [`Text`](./text) that describes an input.
+
+| Prop       | Type     | Default | Description                                      |
+| ---------- | -------- | ------- | ------------------------------------------------ |
+| `for`      | `string` | —       | The `formName` of the input this label describes |
+| `children` | `string` | —       | The label text (`text` in the Core API)          |
+
+## FormSubmitButton
+
+A [`Button`](./button) that submits its form when it is clicked, or by Return or its `hotKey`. It doesn't have an `onClick` prop. It is dimmed and disabled while the form is submitting.
+
+| Prop        | Type      | Default | Description                            |
+| ----------- | --------- | ------- | -------------------------------------- |
+| `title`     | `string`  | —       | Button title                           |
+| `isEnabled` | `boolean` | `true`  | Dimmed and doesn't submit when `false` |
+
+## Core API
+
+```ts
+import {Form, FormSubmitButton, Input, Label} from '@teaui/core'
+
+const form = new Form({
+  onValidate: formData =>
+    formData.flatMap(field =>
+      field.type === 'string' && field.value === ''
+        ? [{name: field.name, message: `${field.name} is required`}]
+        : [],
+    ),
+  onSubmit: async formData => {
+    await save(formData)
+    return undefined
+  },
+  children: [
+    new Label({for: 'name', text: 'Name'}),
+    new Input({formName: 'name', value: ''}),
+    new FormSubmitButton({title: 'Save'}),
+  ],
+})
+
+await form.submit()
+form.errors // [{name: 'name', message: 'name is required'}]
+```

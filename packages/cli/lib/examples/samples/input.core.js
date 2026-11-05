@@ -14,7 +14,7 @@ const name = new Input({
 
 const examples = Stack.down({
   width: 36,
-  height: 19,
+  height: 21,
   children: [
     new Text({text: 'Name (Enter submits)'}),
     name,
@@ -45,6 +45,8 @@ const examples = Stack.down({
     }),
     new Text({text: 'Secret (password)'}),
     new Input({value: 'hunter2', secret: true, height: 1}),
+    new Text({text: 'Disabled'}),
+    new Input({value: 'Not editable', isEnabled: false, height: 1}),
   ],
 })
 

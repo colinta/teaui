@@ -37,6 +37,8 @@ describe('slider CLI component example', () => {
         'buttons',
         'border',
         'onChange',
+        'isEnabled',
+        'formName',
         'purpose',
         'width',
         'height',

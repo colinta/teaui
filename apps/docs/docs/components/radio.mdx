@@ -16,19 +16,22 @@ Activating an unselected radio updates the group's value and calls `RadioGroup.o
 
 ## RadioGroup props
 
-| Prop       | Type                   | Default     | Description                          |
-| ---------- | ---------------------- | ----------- | ------------------------------------ |
-| `value`    | `T \| undefined`       | `undefined` | Currently selected option value      |
-| `onChange` | `(value: T) => void`   | —           | Called when a new option is selected |
-| `children` | `ReactNode` / `View[]` | —           | Content containing the radio options |
+| Prop        | Type                   | Default     | Description                                  |
+| ----------- | ---------------------- | ----------- | -------------------------------------------- |
+| `value`     | `T \| undefined`       | `undefined` | Currently selected option value              |
+| `onChange`  | `(value: T) => void`   | —           | Called when a new option is selected         |
+| `children`  | `ReactNode` / `View[]` | —           | Content containing the radio options         |
+| `isEnabled` | `boolean`              | `true`      | Dimmed and not interactive when `false`      |
+| `formName`  | `string`               | `''`        | The name of this value in its [Form](./form) |
 
 ## Radio props
 
-| Prop     | Type     | Default | Description                              |
-| -------- | -------- | ------- | ---------------------------------------- |
-| `value`  | `T`      | —       | Option value compared with the group     |
-| `title`  | `string` | —       | Label text                               |
-| `hotKey` | `HotKey` | —       | Keyboard shortcut that selects the radio |
+| Prop        | Type      | Default | Description                              |
+| ----------- | --------- | ------- | ---------------------------------------- |
+| `value`     | `T`       | —       | Option value compared with the group     |
+| `title`     | `string`  | —       | Label text                               |
+| `hotKey`    | `HotKey`  | —       | Keyboard shortcut that selects the radio |
+| `isEnabled` | `boolean` | `true`  | Dimmed and not selectable when `false`   |
 
 `onChange` belongs to `RadioGroup`, not `Radio`. A radio outside a group does not throw an error, but it has no group value to update and cannot report selection changes. Using a standalone radio is unsupported and its behavior should not be relied upon.
 

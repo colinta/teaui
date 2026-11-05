@@ -54,6 +54,20 @@ export const calendarExample: ComponentExample = {
       availability: 'both',
     },
     {
+      name: 'isEnabled',
+      type: 'boolean',
+      description:
+        'Defaults to true; when false the calendar is drawn dimmed and ignores input. It keeps focus, but does not draw the focus style. In a Form, it is also disabled while the form is submitting',
+      availability: 'both',
+    },
+    {
+      name: 'formName',
+      type: 'string',
+      description:
+        "The name of this input's value in its Form; defaults to '' (not part of the form). Reported as a date FormField, or a dateRange once both ends of a range are selected",
+      availability: 'both',
+    },
+    {
       name: 'ref',
       type: 'React.Ref<Calendar>',
       description: 'Reference to the underlying Core Calendar',
