@@ -114,21 +114,25 @@
   color: #f0dfaf;
 }
 
-.playground__main {
+.playground__app,
+.playground__code {
   flex: 1;
-  display: flex;
-  flex-direction: column;
   min-width: 0;
 }
 
-.playground__main .terminal-frame {
+.playground__app {
+  display: flex;
+  flex-direction: column;
+}
+
+.playground__app .terminal-frame {
   flex: 1;
   margin: 0;
   display: flex;
   flex-direction: column;
 }
 
-.playground__main .terminal-body {
+.playground__app .terminal-body {
   flex: 1;
   overflow: hidden;
 }
@@ -137,4 +141,12 @@
   margin-top: 0.5rem;
   color: #808080;
   font-size: 13px;
+}
+
+.playground__code {
+  overflow: auto;
+}
+
+.playground__code > div {
+  margin: 0;
 }
