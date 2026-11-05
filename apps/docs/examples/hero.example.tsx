@@ -1,10 +1,17 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
   Box,
   Button,
+  Calendar,
+  CollapsibleText,
   Drawer,
   Dropdown,
+  Form,
+  FormSubmitButton,
   Input,
+  Label,
+  Radio,
+  RadioGroup,
   Separator,
   Slider,
   Stack,
@@ -13,7 +20,12 @@ import {
   Text,
 } from '@teaui/react'
 
+const DOCS_URL = 'https://colinta.github.io/teaui/docs/intro'
+const API_URL = 'https://colinta.github.io/teaui/docs/core-api'
+
 function App() {
+  const [rating, setRating] = useState(9)
+
   return (
     <Tabs border flex={1}>
       <Tabs.Section title="Home">
@@ -27,10 +39,9 @@ function App() {
                 <Style bold>Navigation</Style>
               </Text>
               <Separator.horizontal />
-              <Text>
-                {'▸ '}
-                <Style foreground="cyan">Dashboard</Style>
-              </Text>
+              <CollapsibleText
+                text={'Dashboard\nOverview\nAnalytics\nReports'}
+              />
               <Text>{'  Components'}</Text>
               <Text>{'  Themes'}</Text>
               <Text>{'  Settings'}</Text>
@@ -65,10 +76,12 @@ function App() {
                     flex={1}
                     direction="horizontal"
                     range={[0, 10]}
-                    value={9}
+                    step={1}
+                    value={rating}
+                    onChange={setRating}
                   />
                   <Text>
-                    <Style bold>9</Style>/10★
+                    <Style bold>{rating}</Style>/10★
                   </Text>
                 </Stack.right>
                 <Button title="Get Started" height={3} purpose="primary" />
@@ -77,14 +90,111 @@ function App() {
           }
         />
       </Tabs.Section>
+      <Tabs.Section title="Form">
+        <TastingForm />
+      </Tabs.Section>
       <Tabs.Section title="Docs">
-        <Text>Documentation</Text>
+        <LinkPage
+          description="Guides for layout, styling, focus, and every component, with live examples."
+          title="Read the docs"
+          url={DOCS_URL}
+        />
       </Tabs.Section>
       <Tabs.Section title="API">
-        <Text>API Reference</Text>
+        <LinkPage
+          description="Reference for Screen, View, Container, Style, and the React reconciler."
+          title="Core API reference"
+          url={API_URL}
+        />
       </Tabs.Section>
     </Tabs>
   )
+}
+
+function TastingForm() {
+  const [name, setName] = useState('')
+  const [date, setDate] = useState(new Date(2026, 5, 29))
+  const [visibleDate, setVisibleDate] = useState(new Date(2026, 5, 1))
+  const [tea, setTea] = useState('oolong')
+  const [booked, setBooked] = useState('')
+
+  return (
+    <Form
+      onValidate={formData =>
+        formData.flatMap(field =>
+          field.name === 'name' && !field.value
+            ? [{name: 'name', message: 'Who is coming to tea?'}]
+            : [],
+        )
+      }
+      onSubmit={async () => {
+        setBooked('')
+        await sleep(1000)
+        setBooked(`${name}, ${date.toDateString()}`)
+        return undefined
+      }}
+    >
+      <Stack.right gap={2}>
+        <Stack.down>
+          <Label for="date">Tasting date</Label>
+          <Calendar
+            formName="date"
+            date={date}
+            visibleDate={visibleDate}
+            onChangeVisible={setVisibleDate}
+            onChange={setDate}
+          />
+        </Stack.down>
+        <Stack.down flex={1}>
+          <Label for="name">Name</Label>
+          <Input formName="name" value={name} onChange={setName} submitsForm />
+          <Label for="tea">Tea</Label>
+          <RadioGroup formName="tea" value={tea} onChange={setTea}>
+            <Stack.down>
+              <Radio value="green" title="Green" />
+              <Radio value="oolong" title="Oolong" />
+              <Radio value="black" title="Black" />
+            </Stack.down>
+          </RadioGroup>
+          <FormSubmitButton title="Book a tasting" />
+          {booked ? (
+            <Text wrap>
+              <Style foreground="green">✓ {booked}</Style>
+            </Text>
+          ) : null}
+        </Stack.down>
+      </Stack.right>
+    </Form>
+  )
+}
+
+function LinkPage({
+  description,
+  title,
+  url,
+}: {
+  description: string
+  title: string
+  url: string
+}) {
+  return (
+    <Stack.down gap={1} padding={1}>
+      <Text wrap>{description}</Text>
+      <Text>
+        {'→ '}
+        <Style link={url} underline foreground="cyan">
+          {title}
+        </Style>
+      </Text>
+      <Text>
+        <Style dim>⌘/Ctrl-click the link to open it</Style>
+      </Text>
+    </Stack.down>
+  )
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export default {width: 55, height: 16, title: 'Output', App}
