@@ -2,7 +2,7 @@
   "name": "@teaui/subprocess",
   "description": "Embed child terminal processes in a TeaUI view via PTY + xterm-headless",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
-  "version": "1.28.26",
+  "version": "1.29.26",
   "license": "MIT",
   "type": "module",
   "repository": {
