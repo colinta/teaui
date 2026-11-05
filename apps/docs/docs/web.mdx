@@ -1,0 +1,86 @@
+---
+title: Running in the browser
+---
+
+# Running in the browser
+
+TeaUI apps can run in a web page inside the
+[wterm](https://github.com/vercel-labs/wterm) terminal emulator, no server
+required. See it in the [Playground](/playground).
+
+## 1. Create a project
+
+```bash
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm install react@^18.3 react-dom@^18.3 react-reconciler@^0.29 \
+  @teaui/web @teaui/react @teaui/core @wterm/dom
+npm install --save-dev @types/react@^18.3 @types/react-dom@^18.3
+```
+
+## 2. `index.html`
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TeaUI</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #terminal .wterm {
+        height: 100vh;
+        box-sizing: border-box;
+        border-radius: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="terminal"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+## 3. `src/main.tsx`
+
+Replace the files in `src/` with:
+
+```tsx
+import '@wterm/dom/src/terminal.css'
+import {useState} from 'react'
+import {Box, Button, Stack, Text} from '@teaui/react'
+import {runInWterm} from '@teaui/web/react'
+
+function App() {
+  const [count, setCount] = useState(0)
+  return (
+    <Box border="rounded">
+      <Stack.down>
+        <Text>Hello from the browser!</Text>
+        <Button onClick={() => setCount(count + 1)}>
+          Clicked {count} times
+        </Button>
+      </Stack.down>
+    </Box>
+  )
+}
+
+await document.fonts.ready
+const session = await runInWterm(
+  document.getElementById('terminal')!,
+  <App />,
+  {
+    quitChar: false,
+  },
+)
+session.wterm.focus()
+```
+
+## 4. Run it
+
+```bash
+npm run dev
+```

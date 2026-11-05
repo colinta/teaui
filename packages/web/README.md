@@ -5,7 +5,7 @@ Run TeaUI apps in the browser, inside the
 PTY is needed: TeaUI's `Screen` runs in the page and talks to wterm directly.
 
 ```ts
-import '@wterm/dom/css'
+import '@wterm/dom/src/terminal.css'
 import {Box, Text} from '@teaui/core'
 import {startInWterm} from '@teaui/web'
 
@@ -21,7 +21,7 @@ session.destroy()
 React:
 
 ```tsx
-import '@wterm/dom/css'
+import '@wterm/dom/src/terminal.css'
 import {runInWterm} from '@teaui/web/react'
 
 const session = await runInWterm(element, <App />, {
@@ -29,6 +29,9 @@ const session = await runInWterm(element, <App />, {
   quitChar: false,
 })
 ```
+
+See [Running in the browser](https://colinta.github.io/teaui/docs/web) for a
+step-by-step project setup.
 
 ## API
 
