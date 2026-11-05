@@ -22,4 +22,4 @@ function App() {
   )
 }
 
-export default {width: 30, height: 4, title: 'Dropdown', App}
+export default {width: 30, height: 10, title: 'Dropdown', App}

@@ -41,7 +41,7 @@ describe('TerminalResponseRouter', () => {
     const responses: Array<{value: string; raw: string}> = []
     const router = new TerminalResponseRouter(data => forwarded.push(data))
     router.onResponse(exactResponse('\x1b[12;34R'), (value, raw) => {
-      responses.push({value, raw: raw.toString()})
+      responses.push({value, raw: new TextDecoder().decode(raw)})
     })
 
     router.push(Buffer.from('\x1b[12;'))

@@ -6,7 +6,9 @@ import type {
   MouseAction,
   PasteEvent,
   FocusEvent,
+  TerminalInput,
 } from './types.js'
+import {decodeUtf8, toBytes} from './platform.js'
 import {
   TerminalResponseRouter,
   type TerminalResponseMatcher,
@@ -162,9 +164,9 @@ function parseSGRMouse(params: string, final: string): MouseEvent {
 const PASTE_START = '\x1b[200~'
 const PASTE_END = '\x1b[201~'
 
-export function parseInput(data: Buffer): InputEvent[] {
+export function parseInput(data: string | Uint8Array): InputEvent[] {
   const events: InputEvent[] = []
-  const str = data.toString('utf-8')
+  const str = typeof data === 'string' ? data : decodeUtf8(data)
   let i = 0
 
   while (i < str.length) {
@@ -381,8 +383,8 @@ export function parseInput(data: Buffer): InputEvent[] {
 
 export class InputReader {
   private listeners: Array<(event: InputEvent) => void> = []
-  private dataHandler: ((data: Buffer) => void) | null = null
-  private stream: NodeJS.ReadableStream | null = null
+  private dataHandler: ((data: string | Uint8Array) => void) | null = null
+  private stream: TerminalInput | null = null
   private responseRouter = new TerminalResponseRouter(data => {
     const events = parseInput(data)
     for (const event of events) {
@@ -392,10 +394,10 @@ export class InputReader {
     }
   })
 
-  attach(stream: NodeJS.ReadableStream): void {
+  attach(stream: TerminalInput): void {
     this.stream = stream
-    this.dataHandler = (data: Buffer) => {
-      this.responseRouter.push(data)
+    this.dataHandler = (data: string | Uint8Array) => {
+      this.responseRouter.push(toBytes(data))
     }
     stream.on('data', this.dataHandler)
   }
@@ -421,7 +423,7 @@ export class InputReader {
 
   onResponse<T>(
     matcher: TerminalResponseMatcher<T>,
-    listener: (value: T, raw: Buffer) => void,
+    listener: (value: T, raw: Uint8Array) => void,
     options?: TerminalResponseRouteOptions,
   ): () => void {
     return this.responseRouter.onResponse(matcher, listener, options)

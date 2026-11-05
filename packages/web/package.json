@@ -1,0 +1,72 @@
+{
+  "name": "@teaui/web",
+  "description": "Run TeaUI apps in the browser inside a wterm terminal emulator",
+  "author": "Colin T.A. Gray <colinta@colinta.com>",
+  "version": "1.28.26",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colinta/teaui"
+  },
+  "homepage": "https://github.com/colinta/teaui",
+  "exports": {
+    ".": {
+      "types": "./.dist/index.d.ts",
+      "import": "./.dist/index.js",
+      "default": "./.dist/index.js"
+    },
+    "./react": {
+      "types": "./.dist/react.d.ts",
+      "import": "./.dist/react.js",
+      "default": "./.dist/react.js"
+    }
+  },
+  "main": ".dist/index.js",
+  "types": ".dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "react": [
+        ".dist/react.d.ts"
+      ]
+    }
+  },
+  "files": [
+    ".dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "clean": "rm -rf .dist/",
+    "_build": "pnpm clean && pnpm tsc && pnpm tsc -p tsconfig.react.json",
+    "build": "node ../../shared/check.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@teaui/core": "workspace:*",
+    "@teaui/term": "workspace:*",
+    "@wterm/dom": "^0.5.7"
+  },
+  "peerDependencies": {
+    "@teaui/react": "workspace:*",
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@teaui/react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@teaui/react": "workspace:*",
+    "@teaui/shared": "workspace:*",
+    "@types/react": "^18.3.1",
+    "react": "^18.3.1",
+    "vitest": "4.1.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

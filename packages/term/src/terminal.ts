@@ -9,6 +9,9 @@ import type {
   ImageOptions,
   UnderlineStyle,
   TextAttribute,
+  TerminalEnv,
+  TerminalInput,
+  TerminalOutput,
 } from './types.js'
 import * as ansi from './ansi.js'
 import {CursorController} from './cursor.js'
@@ -22,10 +25,19 @@ import {StyleBuilder} from './style.js'
 import {ScreenBuffer} from './buffer.js'
 import {itermImage, kittyImage, detectImageProtocol} from './image.js'
 import * as modern from './modern.js'
+import {
+  decodeUtf8,
+  defaultEnv,
+  defaultStdin,
+  defaultStdout,
+  encodeUtf8,
+  toBytes,
+} from './platform.js'
 
 export class Terminal {
-  private output: {write(s: string): boolean; columns?: number; rows?: number}
-  private input: NodeJS.ReadableStream | undefined
+  private output: TerminalOutput
+  private input: TerminalInput | undefined
+  private env: TerminalEnv
   private cursorCtrl: CursorController
   private screenCtrl: ScreenController
   private inputReader: InputReader
@@ -41,9 +53,13 @@ export class Terminal {
   private cursorPositionWaiters: Array<(position: CursorPosition) => void> = []
 
   constructor(options: TerminalOptions = {}) {
-    const stdout = options.stdout ?? process.stdout
-    this.output = stdout as any
-    this.input = (options.stdin ?? process.stdin) as any
+    const stdout = options.stdout ?? defaultStdout()
+    if (!stdout) {
+      throw new Error('Terminal requires an output stream (options.stdout)')
+    }
+    this.output = stdout
+    this.input = options.stdin ?? defaultStdin()
+    this.env = options.env ?? defaultEnv()
     this.useBuffer = options.buffer ?? false
 
     const write = (s: string) => {
@@ -230,14 +246,14 @@ export class Terminal {
   }
 
   get colorSupport(): ColorSupport {
-    return detectColorSupport()
+    return detectColorSupport(this.env)
   }
 
   onResize(cb: (size: ScreenSize) => void): () => void {
     const handler = () => cb(this.size)
-    process.stdout.on('resize', handler)
+    this.output.on?.('resize', handler)
     return () => {
-      process.stdout.removeListener('resize', handler)
+      this.output.removeListener?.('resize', handler)
     }
   }
 
@@ -280,8 +296,8 @@ export class Terminal {
     this.inputReader.attach(this.input)
     this.inputStarted = true
 
-    const stream = this.input as any
-    if (typeof stream.isTTY !== 'undefined' && stream.isTTY) {
+    const stream = this.input
+    if (stream.isTTY) {
       if (typeof stream.setRawMode === 'function') {
         this.wasRawMode = stream.isRaw ?? false
         stream.setRawMode(true)
@@ -303,8 +319,7 @@ export class Terminal {
 
     this.inputReader.detach()
     if (this.rawModeManaged && this.input) {
-      const stream = this.input as any
-      stream.setRawMode(this.wasRawMode)
+      this.input.setRawMode?.(this.wasRawMode)
       this.rawModeManaged = false
     }
     this.inputStarted = false
@@ -367,7 +382,7 @@ export class Terminal {
    */
   onResponse<T>(
     matcher: TerminalResponseMatcher<T>,
-    listener: (value: T, raw: Buffer) => void,
+    listener: (value: T, raw: Uint8Array) => void,
     options?: TerminalResponseRouteOptions,
   ): () => void {
     return this.inputReader.onResponse(matcher, listener, options)
@@ -463,25 +478,31 @@ export class Terminal {
    * Listen for raw data on stdin. Useful for reading proprietary escape
    * sequence responses (e.g. iTerm2 background color query).
    */
-  onRawData(cb: (data: Buffer) => void): () => void {
-    if (!this.input) {
+  onRawData(cb: (data: Uint8Array) => void): () => void {
+    const input = this.input
+    if (!input) {
       throw new Error('No input stream')
     }
-    const handler = (data: Buffer) => cb(data)
-    this.input.on('data', handler)
+    const handler = (data: string | Uint8Array) => cb(toBytes(data))
+    input.on('data', handler)
     return () => {
-      this.input!.removeListener('data', handler)
+      input.removeListener('data', handler)
     }
   }
 
   /**
    * Listen for raw data once, then remove the listener.
    */
-  onceRawData(cb: (data: Buffer) => void): void {
-    if (!this.input) {
+  onceRawData(cb: (data: Uint8Array) => void): void {
+    const input = this.input
+    if (!input) {
       throw new Error('No input stream')
     }
-    this.input.once('data', cb as any)
+    const handler = (data: string | Uint8Array) => {
+      input.removeListener('data', handler)
+      cb(toBytes(data))
+    }
+    input.on('data', handler)
   }
 
   // --- Modern features ---
@@ -491,8 +512,8 @@ export class Terminal {
     return this
   }
 
-  image(data: Buffer, options?: ImageOptions): this {
-    const protocol = detectImageProtocol()
+  image(data: Uint8Array, options?: ImageOptions): this {
+    const protocol = detectImageProtocol(this.env)
     if (protocol === 'kitty') {
       this._write(kittyImage(data, options))
     } else if (protocol === 'iterm') {
@@ -558,7 +579,7 @@ export class Terminal {
 }
 
 const CURSOR_POSITION_QUERY = `${ansi.CSI}6n`
-const CURSOR_POSITION_RESPONSE_PREFIX = Buffer.from(ansi.CSI)
+const CURSOR_POSITION_RESPONSE_PREFIX = encodeUtf8(ansi.CSI)
 const DEFAULT_CURSOR_POSITION_TIMEOUT_MS = 100
 const ZERO = '0'.charCodeAt(0)
 const NINE = '9'.charCodeAt(0)
@@ -566,7 +587,7 @@ const SEMICOLON = ';'.charCodeAt(0)
 const RESPONSE_END = 'R'.charCodeAt(0)
 
 function matchCursorPositionResponse(
-  candidate: Buffer,
+  candidate: Uint8Array,
 ): ReturnType<TerminalResponseMatcher<CursorPosition>> {
   const prefixLength = Math.min(
     candidate.length,
@@ -612,8 +633,8 @@ function matchCursorPositionResponse(
     return {status: 'none'}
   }
 
-  const row = Number(candidate.toString('ascii', rowStart, rowEnd))
-  const column = Number(candidate.toString('ascii', columnStart, index))
+  const row = Number(decodeUtf8(candidate, rowStart, rowEnd))
+  const column = Number(decodeUtf8(candidate, columnStart, index))
   if (
     !Number.isSafeInteger(row) ||
     row <= 0 ||

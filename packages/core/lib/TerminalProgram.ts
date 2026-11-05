@@ -9,6 +9,7 @@ import {
   isFocusEvent,
   type InlineRegion,
   type InputEvent as TermInputEvent,
+  type TerminalOptions,
 } from '@teaui/term'
 
 import {Size} from './geometry.js'
@@ -34,11 +35,15 @@ export class TerminalProgram implements Program {
   #usesNaturalHeight = false
   readonly display: ResolvedScreenDisplay
 
-  constructor(display: ScreenDisplay = {mode: 'fullscreen'}) {
+  constructor(
+    display: ScreenDisplay = {mode: 'fullscreen'},
+    terminalOptions: Pick<TerminalOptions, 'stdout' | 'stdin' | 'env'> = {},
+  ) {
     if (display.mode === 'inline') {
       const height = display.height
       this.#usesNaturalHeight = height === 'natural'
       const terminal = new InlineTerminal({
+        ...terminalOptions,
         height:
           height === 'natural'
             ? ({columns, rows}) => this.#naturalHeight(columns, rows)
@@ -52,7 +57,7 @@ export class TerminalProgram implements Program {
         clearOnExit: terminal.clearOnExit,
       }
     } else {
-      this.#terminal = new FullscreenTerminal()
+      this.#terminal = new FullscreenTerminal(terminalOptions)
       this.display = {mode: 'fullscreen'}
     }
     this.#terminal.enableWriteBuffer()

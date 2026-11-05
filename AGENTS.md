@@ -15,6 +15,7 @@ packages/
   core/          Core view system (View, Container, Screen, components)
   react/         React reconciler + JSX component wrappers
   subprocess/    Embed terminal subprocesses as views
+  web/           Run TeaUI in the browser inside wterm
   cli/           CLI entry point
 
 apps/

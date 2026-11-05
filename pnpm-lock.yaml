@@ -270,6 +270,12 @@ importers:
       '@teaui/react':
         specifier: workspace:*
         version: link:../../packages/react
+      '@teaui/web':
+        specifier: workspace:*
+        version: link:../../packages/web
+      '@wterm/dom':
+        specifier: ^0.5.7
+        version: 0.5.7
       ansi-to-html:
         specifier: ^0.7.2
         version: 0.7.2
@@ -547,6 +553,34 @@ importers:
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
+
+  packages/web:
+    dependencies:
+      '@teaui/core':
+        specifier: workspace:*
+        version: link:../core
+      '@teaui/term':
+        specifier: workspace:*
+        version: link:../term
+      '@wterm/dom':
+        specifier: ^0.5.7
+        version: 0.5.7
+    devDependencies:
+      '@teaui/react':
+        specifier: workspace:*
+        version: link:../react
+      '@teaui/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      '@types/react':
+        specifier: ^18.3.1
+        version: 18.3.12
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@20.17.6)(vite@7.3.1(@types/node@20.17.6)(jiti@1.21.7)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
 
   shared: {}
 
@@ -2972,6 +3006,12 @@ packages:
 
   '@webassemblyjs/wast-printer@1.14.1':
     resolution: {integrity: sha512-kPSSXE6De1XOR820C90RIo2ogvZG+c3KiHzqUoO/F34Y2shGzesfqv7o57xrxovZJH/MetF5UjroJ/R/3isoiw==}
+
+  '@wterm/core@0.5.7':
+    resolution: {integrity: sha512-Dc12KwlWaCrTLABYNqm2OIxlC8vFsTejcJb8uql9oNucn5hj/YVldNOuBDddtSXJCasLBTPJQxdCnhnGZRYHKg==, tarball: https://registry.npmjs.org/@wterm/core/-/core-0.5.7.tgz}
+
+  '@wterm/dom@0.5.7':
+    resolution: {integrity: sha512-yqnn43PnPdexno0ZHEC94iYIOBhximQBTVDr3qhRuhO3IQ69TjbFHNf7d5+ooRaXcEmPYz38bDNV7OXG+qzV/A==, tarball: https://registry.npmjs.org/@wterm/dom/-/dom-0.5.7.tgz}
 
   '@xterm/headless@5.5.0':
     resolution: {integrity: sha512-5xXB7kdQlFBP82ViMJTwwEc3gKCLGKR/eoxQm4zge7GPBl86tCdI0IdPJjoKd8mUSFXz5V7i/25sfsEkP4j46g==}
@@ -9681,6 +9721,12 @@ snapshots:
     dependencies:
       '@webassemblyjs/ast': 1.14.1
       '@xtuc/long': 4.2.2
+
+  '@wterm/core@0.5.7': {}
+
+  '@wterm/dom@0.5.7':
+    dependencies:
+      '@wterm/core': 0.5.7
 
   '@xterm/headless@5.5.0': {}
 

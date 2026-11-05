@@ -312,6 +312,25 @@ describe('component wrappers', () => {
   })
 
   describe('complex containers', () => {
+    it('ScrollableList scrolls past the initially visible rows', async () => {
+      const data = Array.from({length: 20}, (_, index) => `Item ${index + 1}`)
+      const {root} = renderToRoot(
+        <Components.ScrollableList
+          data={data}
+          renderItem={item => <Components.Text>{item}</Components.Text>}
+        />,
+      )
+      await flush()
+
+      const t = testRender(root.children[0], {width: 12, height: 4})
+      expect(t.terminal.textContent()).toMatchSnapshot()
+
+      for (let index = 0; index < 50; index++) {
+        t.sendMouse('mouse.wheel.down', {x: 2, y: 2})
+      }
+      expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
     it('Accordion renders with children', async () => {
       const {root} = renderToRoot(
         <Components.Accordion>

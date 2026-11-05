@@ -134,6 +134,35 @@ screenshot below it.
 `/screenshots/progress.html` and renders it in a terminal root frame. Supports
 a `dir` prop to read from `/examples/` instead (used on the landing page).
 
+## Live Examples (in-browser TeaUI)
+
+Every `<Example>` whose example is browser-safe gets a **▶ Run live** button,
+`/playground` runs any example full-size, and the landing page's hero output
+(`<TerminalScreenshot name="hero" live />`) is always live. The static
+screenshot is shown until wterm is ready, and kept if it fails to start. Both use `LiveTerminal`, which
+mounts a [wterm](https://github.com/vercel-labs/wterm) terminal emulator and
+runs the example's `App` in a real TeaUI `Screen` via `runInWterm()` from
+`@teaui/web/react`. No server is involved; it works on GitHub Pages.
+
+```
+src/
+├── live/registry.ts            # require.context of browser-safe examples
+├── components/LiveTerminal.tsx # client-only wterm + TeaUI runner
+├── pages/playground.tsx        # example picker + full-size live terminal
+└── css/live-terminal.css
+```
+
+- **Registry** — `src/live/registry.ts` bundles `examples/*.example.tsx` as
+  lazy chunks, excluding examples that depend on Node-only packages
+  (`code` → cli-highlight, `image` → sharp). Update both `NODE_ONLY_EXAMPLES`
+  and the `require.context` regex when adding another.
+- **Client-only** — wterm needs the DOM, so `LiveTerminal` is rendered inside
+  `<BrowserOnly>` and imports `@teaui/web/react` lazily on mount.
+- **Browser targets** — `package.json` `browserslist` targets modern browsers.
+  Docusaurus' default (older) targets make Babel downlevel TeaUI's private
+  class fields and iterator spread in _loose_ mode, which breaks at runtime
+  (loose mode assumes every iterable is an array).
+
 ## Legacy Screenshot Specs
 
 Components without React wrappers (currently `Progress` and `Tree`) use the

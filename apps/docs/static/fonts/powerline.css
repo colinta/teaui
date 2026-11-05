@@ -1,0 +1,7 @@
+/* Powerline glyphs (e.g. Breadcrumb arrows) aren't in Fira Code. Only
+   downloaded when one of these code points is on screen. */
+@font-face {
+  font-family: 'PowerlineSymbols';
+  src: url('PowerlineSymbols.otf') format('opentype');
+  unicode-range: U+E0A0-E0D4;
+}

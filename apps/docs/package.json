@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "screenshots": "tsx scripts/build-screenshots.ts",
-    "prebuild": "pnpm --filter '@teaui/react...' --filter '@teaui/code...' --filter '@teaui/image...' build && pnpm screenshots",
+    "prebuild": "pnpm --filter '@teaui/react...' --filter '@teaui/code...' --filter '@teaui/image...' --filter '@teaui/web...' build && pnpm screenshots",
     "build": "docusaurus build",
     "start": "pnpm screenshots && docusaurus start",
     "serve": "docusaurus serve",
@@ -19,6 +19,8 @@
     "@teaui/core": "workspace:*",
     "@teaui/image": "workspace:*",
     "@teaui/react": "workspace:*",
+    "@teaui/web": "workspace:*",
+    "@wterm/dom": "^0.5.7",
     "ansi-to-html": "^0.7.2",
     "clsx": "^2.1.1",
     "react": "^18.3.1",
@@ -29,5 +31,18 @@
     "@docusaurus/types": "^3.7.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.3"
+  },
+  "browserslist": {
+    "production": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 safari versions",
+      "last 2 edge versions"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

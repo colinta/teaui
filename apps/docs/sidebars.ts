@@ -19,6 +19,7 @@ const sidebars: SidebarsConfig = {
             'components/text',
             'components/header',
             'components/digits',
+            'components/logo',
             'components/progress',
             'components/spinner',
             'components/skeleton',
@@ -111,6 +112,7 @@ const sidebars: SidebarsConfig = {
     },
     'core-api',
     'remote-control',
+    'web',
     'themes',
   ],
 }

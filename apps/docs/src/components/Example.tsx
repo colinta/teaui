@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import useBaseUrl from '@docusaurus/useBaseUrl'
 import CodeBlock from '@theme/CodeBlock'
+import BrowserOnly from '@docusaurus/BrowserOnly'
+import LiveTerminal from './LiveTerminal'
+import {canRunLive} from '../live/registry'
 import '../css/terminal.css'
 
 interface Props {
@@ -19,6 +22,8 @@ export default function Example({name, title}: Props) {
   const codeUrl = useBaseUrl(`/examples/${name}.tsx`)
   const [html, setHtml] = useState<string | null>(null)
   const [code, setCode] = useState<string | null>(null)
+  const [isLive, setLive] = useState(false)
+  const liveAvailable = canRunLive(name)
 
   useEffect(() => {
     fetch(htmlUrl)
@@ -39,20 +44,45 @@ export default function Example({name, title}: Props) {
   }, [codeUrl])
 
   const titleBar = title ? `│ ${title} │` : null
+  const screenshot = (
+    <div
+      dangerouslySetInnerHTML={{
+        __html:
+          html ?? '<pre style="padding:8px;color:#808080">Loading...</pre>',
+      }}
+    />
+  )
 
   return (
     <div className="example-container">
       <div className="example-output">
         <div className="terminal-frame">
           {titleBar && <div className="terminal-titlebar">{titleBar}</div>}
-          <div
-            className="terminal-body"
-            dangerouslySetInnerHTML={{
-              __html:
-                html ??
-                '<pre style="padding:8px;color:#808080">Loading...</pre>',
-            }}
-          />
+          <div className="terminal-body">
+            {isLive ? (
+              <BrowserOnly fallback={screenshot}>
+                {() => (
+                  <LiveTerminal
+                    name={name}
+                    placeholder={screenshot}
+                    autoFocus
+                  />
+                )}
+              </BrowserOnly>
+            ) : (
+              screenshot
+            )}
+          </div>
+          {liveAvailable && (
+            <button
+              type="button"
+              className="example-live-toggle"
+              aria-pressed={isLive}
+              onClick={() => setLive(live => !live)}
+            >
+              {isLive ? STOP_LABEL : RUN_LABEL}
+            </button>
+          )}
         </div>
       </div>
       <div className="example-code">
@@ -63,3 +93,6 @@ export default function Example({name, title}: Props) {
     </div>
   )
 }
+
+const RUN_LABEL = '▶ Run live'
+const STOP_LABEL = '■ Stop (show screenshot)'

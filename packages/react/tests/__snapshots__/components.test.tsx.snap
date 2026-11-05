@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`component wrappers > complex containers > ScrollableList scrolls past the initially visible rows 1`] = `
+"Item 1     █
+Item 2
+Item 3
+Item 4"
+`;
+
+exports[`component wrappers > complex containers > ScrollableList scrolls past the initially visible rows 2`] = `
+"Item 17
+Item 18
+Item 19
+Item 20    █"
+`;

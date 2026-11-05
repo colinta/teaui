@@ -1,10 +1,14 @@
 import type {ImageOptions, ImageProtocol} from './types.js'
 import {OSC, ST, ESC} from './ansi.js'
+import {bytesToBase64, defaultEnv} from './platform.js'
 
 const KITTY_CHUNK_SIZE = 4096
 
-export function itermImage(data: Buffer, options: ImageOptions = {}): string {
-  const b64 = data.toString('base64')
+export function itermImage(
+  data: Uint8Array,
+  options: ImageOptions = {},
+): string {
+  const b64 = bytesToBase64(data)
   const params: string[] = ['inline=1']
 
   if (options.width !== undefined) {
@@ -20,8 +24,11 @@ export function itermImage(data: Buffer, options: ImageOptions = {}): string {
   return `${OSC}1337;File=${params.join(';')}:${b64}${ST}`
 }
 
-export function kittyImage(data: Buffer, options: ImageOptions = {}): string {
-  const b64 = data.toString('base64')
+export function kittyImage(
+  data: Uint8Array,
+  options: ImageOptions = {},
+): string {
+  const b64 = bytesToBase64(data)
   const chunks: string[] = []
 
   // Build base params
@@ -54,7 +61,7 @@ export function kittyImage(data: Buffer, options: ImageOptions = {}): string {
 }
 
 export function detectImageProtocol(
-  env: Record<string, string | undefined> = process.env,
+  env: Record<string, string | undefined> = defaultEnv(),
 ): ImageProtocol {
   const termProgram = env.TERM_PROGRAM?.toLowerCase() ?? ''
   const term = env.TERM?.toLowerCase() ?? ''

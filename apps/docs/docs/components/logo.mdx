@@ -14,7 +14,7 @@ The TeaUI logo — a mug of tea with animated steam. Renders in 16×7 characters
 
 | Prop          | Type      | Default | Description                         |
 | ------------- | --------- | ------- | ----------------------------------- |
-| `isAnimating` | `boolean` | `true`  | Animate the rising steam particles  |
+| `isAnimating` | `boolean` | `false` | Animate the rising steam particles  |
 | `seed`        | `number`  | —       | Random seed for deterministic steam |
 
-When `isAnimating` is `true` (default), steam particles rise from the mug using braille-dot rendering, updated every ~80ms.
+When `isAnimating` is `true`, steam particles rise from the mug using braille-dot rendering, updated every ~80ms. Otherwise a static steam pattern is drawn.

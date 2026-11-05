@@ -37,15 +37,15 @@ exports[`scrollable-list CLI component example > react displays and captures its
 1. Draft                           [48;2;97;97;97;38;2;97;97;97m█
 [49;39m2. Review                          [48;2;97;97;97;38;2;97;97;97m█
 [49;39m3. Build                           [48;2;97;97;97;38;2;97;97;97m█
-[49;39m4. Test                            [48;2;97;97;97;38;2;97;97;97m█
+[49;39m4. Test                            [48;2;48;48;48;38;2;48;48;48m 
 [49;39mDetails: two lines per JSX row      
 Draft                              [48;2;97;97;97;38;2;97;97;97m█
   [49;39mWrite the proposal               [48;2;97;97;97;38;2;97;97;97m█
-[49;39mReview                             [48;2;97;97;97;38;2;97;97;97m█
-  [49;39mCollect feedback                 [48;2;97;97;97;38;2;97;97;97m█
+[49;39mReview                             [48;2;48;48;48;38;2;48;48;48m 
+  [49;39mCollect feedback                 [48;2;48;48;48;38;2;48;48;48m 
 [49;39mEvents: JSX string items            
 Queued                             [48;2;97;97;97;38;2;97;97;97m█
-[49;39mStarted                            [48;2;97;97;97;38;2;97;97;97m█[0m"
+[49;39mStarted                            [48;2;48;48;48;38;2;48;48;48m [0m"
 `;
 
 exports[`scrollable-list CLI component example > react displays and captures its exact deterministic public sample > rows and scrollbars 1`] = `
@@ -53,13 +53,13 @@ exports[`scrollable-list CLI component example > react displays and captures its
 1. Draft                           █
 2. Review                          █
 3. Build                           █
-4. Test                            █
+4. Test                             
 Details: two lines per JSX row      
 Draft                              █
   Write the proposal               █
-Review                             █
-  Collect feedback                 █
+Review                              
+  Collect feedback                  
 Events: JSX string items            
 Queued                             █
-Started                            █"
+Started                             "
 `;

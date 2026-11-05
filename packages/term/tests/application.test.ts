@@ -5,15 +5,16 @@ import {FullscreenTerminal, InlineTerminal} from '../src/application.js'
 
 function makeOutput() {
   let output = ''
-  return {
-    stream: {
-      columns: 80,
-      rows: 24,
-      write(value: string) {
-        output += value
-        return true
-      },
+  const stream = Object.assign(new EventEmitter(), {
+    columns: 80,
+    rows: 24,
+    write(value: string) {
+      output += value
+      return true
     },
+  })
+  return {
+    stream,
     getOutput: () => output,
     clearOutput: () => {
       output = ''
@@ -112,7 +113,7 @@ describe('application terminals', () => {
     const unsubscribe = terminal.onResize(onResize)
 
     output.stream.rows = 5
-    process.stdout.emit('resize')
+    output.stream.emit('resize')
     await vi.waitFor(() => expect(onResize).toHaveBeenCalledTimes(1))
 
     expect(terminal.rows).toBe(5)
@@ -124,7 +125,7 @@ describe('application terminals', () => {
     )
 
     output.stream.rows = 20
-    process.stdout.emit('resize')
+    output.stream.emit('resize')
     await vi.waitFor(() => expect(onResize).toHaveBeenCalledTimes(2))
 
     expect(terminal.rows).toBe(9)
@@ -164,7 +165,7 @@ describe('application terminals', () => {
     const onResize = vi.fn()
     const unsubscribe = terminal.onResize(onResize)
     output.stream.columns = 40
-    process.stdout.emit('resize')
+    output.stream.emit('resize')
     await vi.waitFor(() => expect(onResize).toHaveBeenCalledOnce())
 
     expect(height).toHaveBeenLastCalledWith({columns: 40, rows: 24})
@@ -177,7 +178,7 @@ describe('application terminals', () => {
     expect(clearRows).not.toHaveBeenCalled()
 
     output.stream.columns = 80
-    process.stdout.emit('resize')
+    output.stream.emit('resize')
     await vi.waitFor(() => expect(onResize).toHaveBeenCalledTimes(2))
 
     expect(terminal.rows).toBe(3)
@@ -245,7 +246,7 @@ describe('application terminals', () => {
     const unsubscribe = terminal.onResize(onResize)
 
     output.stream.columns = 100
-    process.stdout.emit('resize')
+    output.stream.emit('resize')
     await vi.waitFor(() => expect(onResize).toHaveBeenCalledOnce())
 
     expect(reserveRows).toHaveBeenCalledOnce()
@@ -283,7 +284,7 @@ describe('application terminals', () => {
 
     const setup = terminal.setup()
     output.stream.rows = 10
-    process.stdout.emit('resize')
+    output.stream.emit('resize')
     await Promise.resolve()
 
     expect(reserveRows).toHaveBeenCalledOnce()
