@@ -4,7 +4,6 @@ const sidebars: SidebarsConfig = {
   docsSidebar: [
     'intro',
     'concepts',
-    'animations',
     {
       type: 'category',
       label: '│ Components │',
@@ -110,6 +109,7 @@ const sidebars: SidebarsConfig = {
         },
       ],
     },
+    'animations',
     'core-api',
     'remote-control',
     'web',
