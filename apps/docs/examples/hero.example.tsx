@@ -20,7 +20,7 @@ import {
   Text,
 } from '@teaui/react'
 
-const DOCS_URL = 'https://colinta.github.io/teaui/docs/intro'
+const DOCS_URL = 'https://colinta.github.io/teaui/docs/'
 const API_URL = 'https://colinta.github.io/teaui/docs/core-api'
 
 function App() {
