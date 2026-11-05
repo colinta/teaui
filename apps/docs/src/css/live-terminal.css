@@ -24,6 +24,13 @@
   box-shadow: none;
 }
 
+/* wterm paints a row whose cells all share one background across the whole
+   row element. Size fixed-grid terminals to their grid so that fill stops at
+   the last column, like the static screenshots. */
+.live-terminal:not(.live-terminal--fill) .wterm {
+  width: max-content;
+}
+
 .live-terminal--placeholder .live-terminal__screen {
   position: absolute;
   inset: 0;
