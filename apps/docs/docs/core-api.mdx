@@ -104,6 +104,31 @@ TeaUI restores terminal state. Applications that install handlers for external
 process signals such as `SIGTERM` remain responsible for calling `screen.stop()`
 from those handlers.
 
+#### Custom terminal streams (running outside Node)
+
+By default the screen reads `process.stdin`, writes `process.stdout`, and
+detects capabilities from `process.env`. Pass `terminal` to supply your own,
+and `exit` to replace the default `process.exit(0)` that `screen.exit()` (and
+`quitChar`) performs:
+
+```js
+const [screen] = await Screen.start(new Text({text: 'Hello!'}), {
+  terminal: {
+    // {write(data), columns, rows, on('resize', fn), removeListener(...)}
+    stdout,
+    // {on('data', fn), removeListener('data', fn)}; data may be strings
+    stdin,
+    env: {COLORTERM: 'truecolor'},
+  },
+  exit: () => showGoodbye(),
+})
+```
+
+`@teaui/core` and `@teaui/term` have no Node-only dependencies, so with these
+options TeaUI runs in a browser. `@teaui/web` wires this up to the
+[wterm](https://github.com/vercel-labs/wterm) terminal emulator; the docs
+[Playground](/playground) and the "Run live" buttons use it.
+
 #### Additional event sources
 
 `screen.addEventSource(source)` accepts any `EventSource` implementing

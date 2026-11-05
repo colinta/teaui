@@ -57,6 +57,11 @@ const config: Config = {
           label: '[ Docs ]',
         },
         {
+          to: '/playground',
+          label: '[ Playground ]',
+          position: 'left',
+        },
+        {
           // Raw markdown for coding agents, served from static/AGENTS.md.
           // `pathname://` makes this a plain link to the file rather than a
           // client-side route; `html` (instead of `label`) and `target` avoid
