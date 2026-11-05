@@ -1,5 +1,6 @@
 import {inspect} from '@teaui/inspect'
 import {removeAnsi} from '@teaui/term'
+import {onProcessExit} from './platform.js'
 
 const levels = ['debug', 'error', 'info', 'log', 'warn'] as const
 export type Level = (typeof levels)[number]
@@ -22,9 +23,7 @@ export function interceptConsoleLog(logListener: Listener = appendLog) {
     }
   })
 
-  process.on('exit', _code => {
-    flushLogs()
-  })
+  onProcessExit(flushLogs)
 }
 
 export function decorateConsoleLog() {

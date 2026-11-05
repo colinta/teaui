@@ -1,5 +1,6 @@
 import type {Color} from './Color.js'
 import {colorToHex} from './Color.js'
+import {onProcessExit} from './platform.js'
 
 interface WritableProgram {
   write(str: string): void
@@ -23,7 +24,7 @@ export class iTerm2 {
    * })
    */
   static setBackground(program: WritableProgram, bg: Color): Promise<void> {
-    process.on('exit', () => {
+    onProcessExit(() => {
       iTerm2.restoreBg(program)
     })
 

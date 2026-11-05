@@ -5,6 +5,8 @@
  * Ported from blessed/teaui's unicode.js — battle-tested character width tables.
  */
 
+import {defaultEnv} from './platform.js'
+
 /** Special character used by viewport.paint for background drawing. */
 export const BG_DRAW = '\x14'
 
@@ -153,7 +155,8 @@ export function charWidth(str: string): 0 | 1 | 2 {
   }
 
   // CJK Ambiguous
-  if (process.env.NCURSES_CJK_WIDTH) {
+  const cjkWidth = defaultEnv().NCURSES_CJK_WIDTH
+  if (cjkWidth) {
     if (
       0x00a1 === point ||
       0x00a4 === point ||
@@ -329,7 +332,7 @@ export function charWidth(str: string): 0 | 1 | 2 {
       (0xf0000 <= point && point <= 0xffffd) ||
       (0x100000 <= point && point <= 0x10fffd)
     ) {
-      return (+process.env.NCURSES_CJK_WIDTH || 1) as 1 | 2
+      return (+cjkWidth || 1) as 1 | 2
     }
   }
 
@@ -438,7 +441,7 @@ export function formatTabs(
 // --- Locale / Segmenters ---
 
 let locale = (() => {
-  const lang = process.env.LANG?.split('.')[0]?.slice(0, 2)
+  const lang = defaultEnv().LANG?.split('.')[0]?.slice(0, 2)
   if (!lang || lang.length < 2) {
     return 'en'
   }

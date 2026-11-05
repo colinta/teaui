@@ -65,6 +65,7 @@ export class Screen {
   #keyListeners: {pattern: string; fn: ScreenKeyListener}[] = []
   #cleanupEvents = new Set<Unsubscribe>()
   #isFocused: boolean
+  #exit: () => void
   #isRunning = false
   #didStop = false
   #naturalSizeRefreshState: NaturalSizeRefreshState = 'idle'
@@ -115,7 +116,7 @@ export class Screen {
       ...opts,
     }
 
-    const program = new TerminalProgram(opts.display)
+    const program = new TerminalProgram(opts.display, opts.terminal)
     let screen: Screen | undefined
 
     try {
@@ -132,7 +133,7 @@ export class Screen {
 
       await program.setupRootView(rootView)
 
-      const startedScreen = new Screen(program, rootView)
+      const startedScreen = new Screen(program, rootView, {exit: opts.exit})
       screen = startedScreen
       startedScreen.onExit(() => {
         program.teardown()
@@ -164,9 +165,13 @@ export class Screen {
   constructor(
     program: Program,
     rootView: View,
-    {isFocused = true}: {isFocused?: boolean} = {},
+    {
+      isFocused = true,
+      exit = exitNodeProcess,
+    }: {isFocused?: boolean; exit?: () => void} = {},
   ) {
     this.#program = program
+    this.#exit = exit
     this.#buffer = new Buffer()
     this.rootView = rootView
     this.#isFocused = isFocused
@@ -250,20 +255,12 @@ export class Screen {
   }
 
   /**
-   * Stops (putting the screen back in normal mode and buffer) and exits by emitting
-   * process.exit(0)
+   * Stops (putting the screen back in normal mode and buffer) and then calls
+   * the `exit` option, which defaults to `process.exit(0)`.
    */
   exit(): Error[] {
     const errors = this.stop()
-
-    const exitProcess = () => process.exit(0)
-    if (process.stdout.writable && !process.stdout.writableEnded) {
-      // Teardown may have queued cursor movement and erase sequences. Wait for
-      // stdout to process them before forcing the process to exit.
-      process.stdout.write('', exitProcess)
-    } else {
-      setTimeout(exitProcess, 0)
-    }
+    this.#exit()
     return errors
   }
 
@@ -673,4 +670,30 @@ function translateKeyEvent(event: KeyEvent): KeyEvent {
     }
   }
   return event
+}
+
+interface NodeExitProcess {
+  exit(code: number): void
+  stdout?: {
+    writable?: boolean
+    writableEnded?: boolean
+    write(data: string, callback: () => void): unknown
+  }
+}
+
+function exitNodeProcess() {
+  const nodeProcess = (globalThis as {process?: NodeExitProcess}).process
+  if (!nodeProcess) {
+    return
+  }
+
+  const exitProcess = () => nodeProcess.exit(0)
+  const stdout = nodeProcess.stdout
+  if (stdout?.writable && !stdout.writableEnded) {
+    // Teardown may have queued cursor movement and erase sequences. Wait for
+    // stdout to process them before forcing the process to exit.
+    stdout.write('', exitProcess)
+  } else {
+    setTimeout(exitProcess, 0)
+  }
 }

@@ -1,5 +1,6 @@
 import type {ColorSupport, FullscreenOptions} from './types.js'
 import * as ansi from './ansi.js'
+import {defaultEnv} from './platform.js'
 import {
   keyboardEnhanceEnable,
   keyboardEnhanceDisable,
@@ -8,7 +9,7 @@ import {
 } from './modern.js'
 
 export function detectColorSupport(
-  env: Record<string, string | undefined> = process.env,
+  env: Record<string, string | undefined> = defaultEnv(),
 ): ColorSupport {
   const colorterm = env.COLORTERM?.toLowerCase()
   if (colorterm === 'truecolor' || colorterm === '24bit') {

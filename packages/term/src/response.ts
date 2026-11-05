@@ -1,3 +1,5 @@
+import {EMPTY_BYTES, concatBytes} from './platform.js'
+
 export type TerminalResponseMatch<T> =
   | {status: 'none'}
   | {status: 'partial'}
@@ -8,7 +10,7 @@ export type TerminalResponseMatch<T> =
  * return `partial` only when every byte could still belong to the response.
  */
 export type TerminalResponseMatcher<T> = (
-  candidate: Buffer,
+  candidate: Uint8Array,
 ) => TerminalResponseMatch<T>
 
 export interface TerminalResponseRouteOptions {
@@ -18,7 +20,7 @@ export interface TerminalResponseRouteOptions {
 
 interface ResponseRoute {
   matcher: TerminalResponseMatcher<unknown>
-  listener: (value: unknown, raw: Buffer) => void
+  listener: (value: unknown, raw: Uint8Array) => void
   once: boolean
 }
 
@@ -29,12 +31,12 @@ interface ResponseRoute {
  */
 export class TerminalResponseRouter {
   private routes: ResponseRoute[] = []
-  private pending = Buffer.alloc(0)
+  private pending: Uint8Array = EMPTY_BYTES
   private draining = false
   private readonly maxPendingBytes: number
 
   constructor(
-    private readonly forward: (data: Buffer) => void,
+    private readonly forward: (data: Uint8Array) => void,
     {maxPendingBytes = 4096}: {maxPendingBytes?: number} = {},
   ) {
     if (!Number.isInteger(maxPendingBytes) || maxPendingBytes <= 0) {
@@ -43,7 +45,7 @@ export class TerminalResponseRouter {
     this.maxPendingBytes = maxPendingBytes
   }
 
-  push(data: Buffer): void {
+  push(data: Uint8Array): void {
     if (data.length === 0) {
       return
     }
@@ -54,15 +56,13 @@ export class TerminalResponseRouter {
     }
 
     this.pending =
-      this.pending.length === 0
-        ? data
-        : Buffer.concat([this.pending, data], this.pending.length + data.length)
+      this.pending.length === 0 ? data : concatBytes([this.pending, data])
     this.drain()
   }
 
   onResponse<T>(
     matcher: TerminalResponseMatcher<T>,
-    listener: (value: T, raw: Buffer) => void,
+    listener: (value: T, raw: Uint8Array) => void,
     {once = false}: TerminalResponseRouteOptions = {},
   ): () => void {
     const route: ResponseRoute = {
@@ -88,7 +88,7 @@ export class TerminalResponseRouter {
       return
     }
     const pending = this.pending
-    this.pending = Buffer.alloc(0)
+    this.pending = EMPTY_BYTES
     this.forward(pending)
   }
 
@@ -98,14 +98,12 @@ export class TerminalResponseRouter {
     }
     this.draining = true
 
-    const unmatched: Buffer[] = []
+    const unmatched: Uint8Array[] = []
     const forwardUnmatched = () => {
       if (unmatched.length === 0) {
         return
       }
-      this.forward(
-        unmatched.length === 1 ? unmatched[0] : Buffer.concat(unmatched),
-      )
+      this.forward(concatBytes(unmatched))
       unmatched.length = 0
     }
 
@@ -158,7 +156,7 @@ export class TerminalResponseRouter {
             break
           }
           unmatched.push(this.pending)
-          this.pending = Buffer.alloc(0)
+          this.pending = EMPTY_BYTES
           break
         }
 

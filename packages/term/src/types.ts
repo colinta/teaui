@@ -72,9 +72,47 @@ export interface ScreenSize {
 
 export type ColorSupport = 'none' | 'basic' | '256' | 'truecolor'
 
+/**
+ * The subset of a writable stream that Terminal uses. `process.stdout`
+ * satisfies it; non-Node hosts (e.g. a browser terminal emulator) can provide
+ * their own. Emit `'resize'` after `columns`/`rows` change.
+ */
+export interface TerminalOutput {
+  write(data: string): unknown
+  readonly columns?: number
+  readonly rows?: number
+  on?(event: 'resize', listener: () => void): unknown
+  removeListener?(event: 'resize', listener: () => void): unknown
+}
+
+/**
+ * The subset of a readable stream that Terminal uses. `process.stdin`
+ * satisfies it. `'data'` may deliver strings or bytes.
+ */
+export interface TerminalInput {
+  on(event: 'data', listener: (data: string | Uint8Array) => void): unknown
+  removeListener(
+    event: 'data',
+    listener: (data: string | Uint8Array) => void,
+  ): unknown
+  readonly isTTY?: boolean
+  readonly isRaw?: boolean
+  setRawMode?(mode: boolean): unknown
+  resume?(): unknown
+}
+
+export type TerminalEnv = Record<string, string | undefined>
+
 export interface TerminalOptions {
-  stdout?: NodeJS.WritableStream
-  stdin?: NodeJS.ReadableStream
+  /** Defaults to `process.stdout` when available. */
+  stdout?: TerminalOutput
+  /** Defaults to `process.stdin` when available. */
+  stdin?: TerminalInput
+  /**
+   * Environment used for capability detection (color, images). Defaults to
+   * `process.env` when available.
+   */
+  env?: TerminalEnv
   /** Enable screen buffer with diff-based rendering. Default: false. */
   buffer?: boolean
 }

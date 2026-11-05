@@ -1,3 +1,4 @@
+import type {TerminalOptions} from '@teaui/term'
 import type {SGRTerminal} from './terminal.js'
 import type {SystemEvent} from './events/index.js'
 
@@ -50,6 +51,17 @@ export interface ScreenOptions {
   emoji?: boolean
   /** Defaults to fullscreen. Inline displays clear their reserved rows on exit by default. */
   display?: ScreenDisplay
+  /**
+   * Streams and environment for the terminal. Defaults to `process.stdout`,
+   * `process.stdin`, and `process.env`. Provide these to run outside a Node
+   * TTY, e.g. inside a browser terminal emulator.
+   */
+  terminal?: Pick<TerminalOptions, 'stdout' | 'stdin' | 'env'>
+  /**
+   * Called by `screen.exit()` after the screen stops. Defaults to exiting the
+   * Node process once stdout drains.
+   */
+  exit?: () => void
 }
 
 export type Unsubscribe = () => void
