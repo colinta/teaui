@@ -429,9 +429,14 @@ export class ScrollableList<T> extends Container {
       }
     }
 
-    for (const prevRow of prevRows) {
-      if (!visibleRows.has(prevRow)) {
-        this.removeChild(prevRow)
+    // Only detach rows this list created (renderItem). Without renderItem the
+    // rows *are* the children, owned by the caller (e.g. React) and indexed by
+    // row, so removing off-screen ones would drop them from the list.
+    if (this.#renderItem) {
+      for (const prevRow of prevRows) {
+        if (!visibleRows.has(prevRow)) {
+          this.removeChild(prevRow)
+        }
       }
     }
 

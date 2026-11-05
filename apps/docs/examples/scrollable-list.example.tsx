@@ -14,6 +14,20 @@ const data: Project[] = [
   {name: 'Svelte', language: 'JavaScript', stars: 78000},
   {name: 'Next.js', language: 'TypeScript', stars: 120000},
   {name: 'Nuxt', language: 'TypeScript', stars: 53000},
+  {name: 'Solid', language: 'TypeScript', stars: 32000},
+  {name: 'Preact', language: 'JavaScript', stars: 37000},
+  {name: 'Astro', language: 'TypeScript', stars: 47000},
+  {name: 'Remix', language: 'TypeScript', stars: 30000},
+  {name: 'Ember', language: 'JavaScript', stars: 22000},
+  {name: 'Lit', language: 'TypeScript', stars: 19000},
+  {name: 'Qwik', language: 'TypeScript', stars: 21000},
+  {name: 'Alpine', language: 'JavaScript', stars: 28000},
+  {name: 'Htmx', language: 'JavaScript', stars: 39000},
+  {name: 'Backbone', language: 'JavaScript', stars: 28000},
+  {name: 'Mithril', language: 'JavaScript', stars: 14000},
+  {name: 'Inferno', language: 'JavaScript', stars: 16000},
+  {name: 'Stencil', language: 'TypeScript', stars: 12000},
+  {name: 'Gatsby', language: 'JavaScript', stars: 55000},
 ]
 
 function App() {

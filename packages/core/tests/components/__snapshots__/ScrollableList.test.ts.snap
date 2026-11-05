@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ScrollableList > keeps and scrolls off-screen rows provided as children 1`] = `
+"Item 1     █
+Item 2
+Item 3
+Item 4"
+`;
+
+exports[`ScrollableList > keeps and scrolls off-screen rows provided as children 2`] = `
+"Item 4
+Item 5     █
+Item 6
+Item 7"
+`;
+
+exports[`ScrollableList > keeps and scrolls off-screen rows provided as children 3`] = `
+"Item 17
+Item 18
+Item 19
+Item 20    █"
+`;
+
+exports[`ScrollableList > scrolls rows created by renderItem 1`] = `
+"Item 1     █
+Item 2
+Item 3
+Item 4"
+`;
+
+exports[`ScrollableList > scrolls rows created by renderItem 2`] = `
+"Item 4
+Item 5     █
+Item 6
+Item 7"
+`;
