@@ -28,8 +28,8 @@
   --ifm-heading-color: #f0dfaf;
 
   /* Fira Code everywhere */
-  --ifm-font-family-base: 'Fira Code', monospace;
-  --ifm-font-family-monospace: 'Fira Code', monospace;
+  --ifm-font-family-base: 'Fira Code', 'PowerlineSymbols', monospace;
+  --ifm-font-family-monospace: 'Fira Code', 'PowerlineSymbols', monospace;
   --ifm-font-size-base: 15px;
 }
 
@@ -46,7 +46,7 @@ li,
 a,
 span,
 div {
-  font-family: 'Fira Code', monospace !important;
+  font-family: 'Fira Code', 'PowerlineSymbols', monospace !important;
 }
 
 /* Navbar - DOS menu bar feel */

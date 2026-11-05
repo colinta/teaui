@@ -8,7 +8,7 @@
 .terminal-titlebar {
   background: #303030;
   color: #9f9f9f;
-  font-family: 'Fira Code', monospace;
+  font-family: 'Fira Code', 'PowerlineSymbols', monospace;
   font-size: 13px;
   padding: 2px 0;
   border-bottom: 1px solid #808080;
@@ -28,7 +28,7 @@
   border: none !important;
   border-radius: 0 !important;
   background: #393939 !important;
-  font-family: 'Fira Code', monospace !important;
+  font-family: 'Fira Code', 'PowerlineSymbols', monospace !important;
   font-size: 14px;
   line-height: 1.2;
 }

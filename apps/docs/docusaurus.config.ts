@@ -21,6 +21,9 @@ const config: Config = {
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
+  // Outside webpack: serves the Powerline fallback font (see static/fonts).
+  stylesheets: ['/teaui/fonts/powerline.css'],
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],

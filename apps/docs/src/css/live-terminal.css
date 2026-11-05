@@ -12,7 +12,7 @@
 }
 
 .live-terminal .wterm {
-  --term-font-family: 'Fira Code', monospace;
+  --term-font-family: 'Fira Code', 'PowerlineSymbols', monospace;
   --term-font-size: 14px;
   --term-line-height: 1.2;
   --term-fg: #dcdccc;
@@ -46,7 +46,7 @@
   padding: 8px;
   color: #808080;
   background: #393939;
-  font-family: 'Fira Code', monospace;
+  font-family: 'Fira Code', 'PowerlineSymbols', monospace;
   font-size: 14px;
   pointer-events: none;
 }
@@ -64,7 +64,7 @@
   border-top: 1px solid #808080;
   background: #303030;
   color: #8cd0d3;
-  font-family: 'Fira Code', monospace;
+  font-family: 'Fira Code', 'PowerlineSymbols', monospace;
   font-size: 13px;
   text-align: left;
   cursor: pointer;
@@ -99,7 +99,7 @@
   border: none;
   background: none;
   color: #dcdccc;
-  font-family: 'Fira Code', monospace;
+  font-family: 'Fira Code', 'PowerlineSymbols', monospace;
   font-size: 14px;
   text-align: left;
   cursor: pointer;
