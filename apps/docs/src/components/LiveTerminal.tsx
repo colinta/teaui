@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState, type ReactNode} from 'react'
 import '@wterm/dom/css'
 import '../css/live-terminal.css'
 import {loadLiveExample} from '../live/registry'
@@ -12,6 +12,11 @@ interface Props {
   /** Size the terminal to fill its container (and follow resizes). */
   fill?: boolean
   autoFocus?: boolean
+  /**
+   * Shown until the live terminal is ready, and kept if it fails to start
+   * (e.g. the static screenshot).
+   */
+  placeholder?: ReactNode
 }
 
 type Status =
@@ -35,6 +40,7 @@ export default function LiveTerminal({
   rows,
   fill = false,
   autoFocus = false,
+  placeholder,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<Status>({type: 'loading'})
@@ -68,6 +74,7 @@ export default function LiveTerminal({
       })
       .catch((error: unknown) => {
         if (!cancelled) {
+          console.error(`[LiveTerminal] ${name} failed to start`, error)
           setStatus({type: 'error', message: errorMessage(error)})
         }
       })
@@ -100,19 +107,36 @@ export default function LiveTerminal({
     }
   }, [name, cols, rows, fill, autoFocus])
 
+  const showPlaceholder = placeholder !== undefined && status.type !== 'running'
+  const className = [
+    'live-terminal',
+    fill && 'live-terminal--fill',
+    showPlaceholder && 'live-terminal--placeholder',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <div
-      className={`live-terminal${fill ? ' live-terminal--fill' : ''}`}
+      className={className}
       onClick={() => focusTerminal(containerRef.current)}
     >
+      {/* Stays laid out (but hidden) under a placeholder so wterm can measure
+          glyphs during init. */}
       <div className="live-terminal__screen" ref={containerRef} />
-      {status.type === 'loading' && (
-        <div className="live-terminal__status">Loading…</div>
-      )}
-      {status.type === 'error' && (
-        <div className="live-terminal__status live-terminal__status--error">
-          {status.message}
-        </div>
+      {showPlaceholder ? (
+        placeholder
+      ) : (
+        <>
+          {status.type === 'loading' && (
+            <div className="live-terminal__status">Loading…</div>
+          )}
+          {status.type === 'error' && (
+            <div className="live-terminal__status live-terminal__status--error">
+              {status.message}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

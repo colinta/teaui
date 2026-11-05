@@ -137,7 +137,9 @@ a `dir` prop to read from `/examples/` instead (used on the landing page).
 ## Live Examples (in-browser TeaUI)
 
 Every `<Example>` whose example is browser-safe gets a **▶ Run live** button,
-and `/playground` runs any example full-size. Both use `LiveTerminal`, which
+`/playground` runs any example full-size, and the landing page's hero output
+(`<TerminalScreenshot name="hero" live />`) is always live. The static
+screenshot is shown until wterm is ready, and kept if it fails to start. Both use `LiveTerminal`, which
 mounts a [wterm](https://github.com/vercel-labs/wterm) terminal emulator and
 runs the example's `App` in a real TeaUI `Screen` via `runInWterm()` from
 `@teaui/web/react`. No server is involved; it works on GitHub Pages.

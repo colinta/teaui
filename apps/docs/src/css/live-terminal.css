@@ -24,6 +24,12 @@
   box-shadow: none;
 }
 
+.live-terminal--placeholder .live-terminal__screen {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+
 .live-terminal__status {
   position: absolute;
   inset: 0;

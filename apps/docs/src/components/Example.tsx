@@ -44,28 +44,35 @@ export default function Example({name, title}: Props) {
   }, [codeUrl])
 
   const titleBar = title ? `│ ${title} │` : null
+  const screenshot = (
+    <div
+      dangerouslySetInnerHTML={{
+        __html:
+          html ?? '<pre style="padding:8px;color:#808080">Loading...</pre>',
+      }}
+    />
+  )
 
   return (
     <div className="example-container">
       <div className="example-output">
         <div className="terminal-frame">
           {titleBar && <div className="terminal-titlebar">{titleBar}</div>}
-          {isLive ? (
-            <div className="terminal-body">
-              <BrowserOnly>
-                {() => <LiveTerminal name={name} autoFocus />}
+          <div className="terminal-body">
+            {isLive ? (
+              <BrowserOnly fallback={screenshot}>
+                {() => (
+                  <LiveTerminal
+                    name={name}
+                    placeholder={screenshot}
+                    autoFocus
+                  />
+                )}
               </BrowserOnly>
-            </div>
-          ) : (
-            <div
-              className="terminal-body"
-              dangerouslySetInnerHTML={{
-                __html:
-                  html ??
-                  '<pre style="padding:8px;color:#808080">Loading...</pre>',
-              }}
-            />
-          )}
+            ) : (
+              screenshot
+            )}
+          </div>
           {liveAvailable && (
             <button
               type="button"
