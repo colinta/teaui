@@ -1,8 +1,18 @@
-import React from 'react'
-import {Logo} from '@teaui/react'
+import React, {useState} from 'react'
+import {Logo, Stack, Text, Toggle} from '@teaui/react'
 
 function App() {
-  return <Logo />
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  return (
+    <Stack.down gap={1}>
+      <Logo isAnimating={isAnimating} />
+      <Stack.right gap={1}>
+        <Text>Animate</Text>
+        <Toggle height={1} value={isAnimating} onChange={setIsAnimating} />
+      </Stack.right>
+    </Stack.down>
+  )
 }
 
-export default {width: 18, height: 7, title: 'Logo', App}
+export default {width: 18, height: 9, title: 'Logo', App}
