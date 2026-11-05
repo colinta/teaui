@@ -1,0 +1,9 @@
+{
+  "extends": "@teaui/shared/tsconfig.json",
+  "include": ["lib/react.tsx"],
+  "compilerOptions": {
+    "outDir": ".dist",
+    "jsx": "react",
+    "lib": ["esnext", "dom"]
+  }
+}
