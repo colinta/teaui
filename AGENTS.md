@@ -37,7 +37,6 @@ characters into constants at the bottom.
   #backgroundStyle(option?: ...): Style {
     return new Style(...)
   }
-}
 
 const LEFT_ARROW = '←';
 ```
@@ -147,3 +146,19 @@ needs.
 - `testRender()` + `t.terminal.textContent()` to inspect rendered text
 - `t.terminal.styleOf('text')` to check if bold/italic/etc are applied
 - Core views have `debug` prop — set it to inspect layout
+
+### New packages
+
+When creating a new subpackage, it needs to be published manually before it can
+be published using Github actions. This is something the user will need to do.
+
+Make sure the new package follows the conventions of the other packages.
+
+Run `pnpm build` so that the typescript files are compiled to .dist/
+
+```bash
+npm login
+pnpm --filter @teaui/<new-package> publish --access public
+```
+
+Give these commands to the user to run manually.
