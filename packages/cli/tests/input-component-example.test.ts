@@ -12,7 +12,7 @@ afterEach(() => {
 })
 
 describe('input CLI component example', () => {
-  it('documents editing and display props without implying multiline submission', () => {
+  it('documents editing, display, and multiline submission props', () => {
     expect(inputExample.name).toBe('input')
     expect(inputExample.availability).toBe('both')
 
@@ -33,7 +33,6 @@ describe('input CLI component example', () => {
         'formName',
         'onChange',
         'onSubmit',
-        'submitsForm',
         'purpose',
         'width',
         'height',
@@ -45,14 +44,20 @@ describe('input CLI component example', () => {
       }
       const prop = (name: string) => props.find(prop => prop.name === name)
       expect(prop('value')?.type).toBe('string')
-      expect(prop('value')?.description).toContain('Newlines become spaces')
+      expect(prop('value')?.description).toContain(
+        'Newlines become spaces in disabled and submit modes',
+      )
       expect(prop('placeholder')?.description).toContain(
         'only when value is empty',
       )
       expect(prop('wrap')?.type).toBe('boolean')
       expect(prop('wrap')?.description).toContain('Independent of multiline')
-      expect(prop('multiline')?.type).toBe('boolean')
-      expect(prop('multiline')?.description).toContain('instead of submitting')
+      expect(prop('multiline')?.type).toBe(
+        "boolean | 'disabled' | 'submit' | 'multiline' | 'mixed'",
+      )
+      expect(prop('multiline')?.description).toContain(
+        'mixed: Shift+Enter inserts a newline and Enter submits',
+      )
       expect(prop('font')?.type).toBe('FontFamily')
       expect(prop('format')?.type).toBe('(text: string) => string')
       expect(prop('format')?.description).toContain(
@@ -68,9 +73,7 @@ describe('input CLI component example', () => {
       expect(prop('onChange')?.type).toBe('(text: string) => void')
       expect(prop('onChange')?.description).toContain('paste and undo/redo')
       expect(prop('onSubmit')?.type).toBe('(text: string) => void')
-      expect(prop('onSubmit')?.description).toContain(
-        'only when multiline is false',
-      )
+      expect(prop('onSubmit')?.description).toContain('in submit or mixed mode')
       expect(prop('purpose')?.type).toBe('Palette | Purpose')
       for (const name of ['width', 'height']) {
         expect(prop(name)?.type).toBe('Dimension')
@@ -106,7 +109,8 @@ describe('input CLI component example', () => {
           'width: 24',
           'height: 2',
           'wrap: true',
-          'multiline: true',
+          "multiline: 'submit'",
+          "multiline: 'mixed'",
           "placeholder: 'Type a note...'",
           "font: 'double-struck'",
           'format: text =>',
@@ -128,7 +132,8 @@ describe('input CLI component example', () => {
           'width={24}',
           'height={2}',
           'wrap',
-          'multiline',
+          'multiline="submit"',
+          'multiline="mixed"',
           'placeholder="Type a note..."',
           'font="double-struck"',
           'format={text =>',

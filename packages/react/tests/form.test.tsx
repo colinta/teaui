@@ -48,6 +48,33 @@ describe('Form', () => {
     expect(t.terminal.textContent()).toBe('Name\nAda\n     [ Submit ]')
   })
 
+  it('supports mixed Input newline and submission behavior', async () => {
+    const onInputSubmit = vi.fn()
+    const onFormSubmit = vi.fn()
+    const {root} = renderToRoot(
+      <Components.Form onSubmit={onFormSubmit}>
+        <Components.Input
+          formName="notes"
+          value="Ada"
+          multiline="mixed"
+          onSubmit={onInputSubmit}
+        />
+      </Components.Form>,
+    )
+    await flush()
+    const t = testRender(root, {width: 20, height: 3})
+
+    t.sendKey('return', {shift: true})
+    expect(onInputSubmit).not.toHaveBeenCalled()
+    expect(onFormSubmit).not.toHaveBeenCalled()
+
+    t.sendKey('return')
+    expect(onInputSubmit).toHaveBeenCalledExactlyOnceWith('Ada\n')
+    expect(onFormSubmit).toHaveBeenCalledExactlyOnceWith([
+      {name: 'notes', type: 'string', value: 'Ada\n'},
+    ])
+  })
+
   it('validates and submits controlled inputs', async () => {
     const onSubmit = vi.fn()
     function App() {

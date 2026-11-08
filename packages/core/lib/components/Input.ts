@@ -24,20 +24,26 @@ interface TextProps {
   onChange?: (text: string) => void
   onSubmit?: (text: string) => void
   /**
-   * Enter submits the input's `Form` (after calling `onSubmit`). Ignored when
-   * `multiline` is true.
-   */
-  submitsForm?: boolean
-  /**
    * The name of this input's value in its `Form`.
    */
   formName?: string
 }
 
+export type MultilineMode = 'disabled' | 'submit' | 'multiline' | 'mixed'
+
 interface StyleProps {
   value?: string
   wrap?: boolean
-  multiline?: boolean
+  /**
+   * Controls newlines and Enter submission. `false` maps to `disabled` and
+   * `true` maps to `multiline`.
+   *
+   * - `disabled`: single-line; Enter does nothing.
+   * - `submit`: single-line; Enter calls `onSubmit` and submits an ancestor Form.
+   * - `multiline`: Enter and Shift+Enter insert newlines.
+   * - `mixed`: Shift+Enter inserts a newline; Enter submits.
+   */
+  multiline?: boolean | MultilineMode
   font?: FontFamily
   format?: (text: string) => string
   /**
@@ -119,7 +125,7 @@ export class Input extends View implements FormInput {
 
   // formatting options
   #wrap: boolean = false
-  #multiline: boolean = false
+  #multiline: MultilineMode = 'disabled'
   #font: FontFamily = 'default'
   #secret: boolean = false
   #format?: (text: string) => string
@@ -128,7 +134,6 @@ export class Input extends View implements FormInput {
   #isEnabled: boolean = true
   #onChange?: (value: string) => void
   #onSubmit?: (value: string) => void
-  #submitsForm: boolean = false
 
   // form state
   #formName = ''
@@ -174,13 +179,11 @@ export class Input extends View implements FormInput {
     placeholder,
     onChange,
     onSubmit,
-    submitsForm,
     formName,
     secret,
     isEnabled,
   }: Props) {
     this.isEnabled = isEnabled ?? true
-    this.#submitsForm = submitsForm ?? false
     this.#formName = formName ?? ''
     this.#secret = secret ?? false
     if (
@@ -228,7 +231,7 @@ export class Input extends View implements FormInput {
     const startIsAtEnd = this.#cursor.start === this.#chars.length
     const endIsAtEnd = this.#cursor.end === this.#chars.length
     if (chars.length > 0) {
-      if (!this.#multiline) {
+      if (!this.#allowsNewlines) {
         chars = chars.map(char => (char === '\n' ? ' ' : char))
       }
 
@@ -358,13 +361,6 @@ export class Input extends View implements FormInput {
     this.#isInteractiveDidChange()
   }
 
-  get submitsForm() {
-    return this.#submitsForm
-  }
-  set submitsForm(value: boolean) {
-    this.#submitsForm = value
-  }
-
   get formName() {
     return this.#formName
   }
@@ -438,7 +434,7 @@ export class Input extends View implements FormInput {
     return this.#multiline
   }
 
-  set multiline(multiline: boolean) {
+  set multiline(multiline: boolean | MultilineMode) {
     multiline = this.#multilineAllowed(multiline)
     if (multiline !== this.#multiline) {
       this.#resetMouseSelection()
@@ -462,8 +458,25 @@ export class Input extends View implements FormInput {
   }
 
   /** Secret inputs are always single-line. */
-  #multilineAllowed(multiline: boolean) {
-    return multiline && !this.#secret
+  #multilineAllowed(multiline: boolean | MultilineMode): MultilineMode {
+    const mode =
+      multiline === true
+        ? 'multiline'
+        : multiline === false
+          ? 'disabled'
+          : multiline
+    if (!this.#secret) {
+      return mode
+    }
+    return mode === 'multiline'
+      ? 'disabled'
+      : mode === 'mixed'
+        ? 'submit'
+        : mode
+  }
+
+  get #allowsNewlines() {
+    return this.#multiline === 'multiline' || this.#multiline === 'mixed'
   }
 
   #wrapAllowed(wrap: boolean) {
@@ -489,7 +502,7 @@ export class Input extends View implements FormInput {
       {key: 'A-,', label: 'Start'},
       {key: 'A-.', label: 'End'},
     )
-    if (this.#multiline) {
+    if (this.#allowsNewlines) {
       items.push(
         {key: 'C-]', label: 'Indent'},
         {key: 'C-[', label: 'Dedent'},
@@ -555,7 +568,10 @@ export class Input extends View implements FormInput {
     } else if (event.full === 'C-S-z' || event.full === 'C-S--') {
       this.#redo()
     } else if (event.name === 'enter' || event.name === 'return') {
-      if (this.#multiline) {
+      if (
+        this.#multiline === 'multiline' ||
+        (this.#multiline === 'mixed' && (event.shift || event.alt))
+      ) {
         this.#beginEdit('replace')
         if (event.shift || event.alt) {
           // Shift+Enter or Alt+Enter: plain newline without indentation
@@ -565,8 +581,8 @@ export class Input extends View implements FormInput {
           this.#receiveEnterWithIndent()
         }
       } else {
-        this.#onSubmit?.(this.#value)
-        if (this.#submitsForm) {
+        if (this.#multiline === 'submit' || this.#multiline === 'mixed') {
+          this.#onSubmit?.(this.#value)
           void formAncestor(this)?.submit()
         }
         return
@@ -669,7 +685,7 @@ export class Input extends View implements FormInput {
     }
 
     const pasteChars = unicode.printableChars(
-      this.#multiline ? text : text.replaceAll('\n', ''),
+      this.#allowsNewlines ? text : text.replaceAll('\n', ''),
     )
     if (pasteChars.length === 0) {
       return
@@ -931,7 +947,7 @@ export class Input extends View implements FormInput {
     }
 
     renderFormError(viewport, this.#isFormValid, inside => {
-      const renderHeight = this.#multiline
+      const renderHeight = this.#allowsNewlines
         ? inside.contentSize.height
         : Math.min(
             inside.contentSize.height,

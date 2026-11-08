@@ -10,7 +10,7 @@ import Example from '@site/src/components/Example'
 
 <Example name="form" title="Form" />
 
-When the form is submitted (by a [`FormSubmitButton`](#formsubmitbutton), an [`Input`](./input) with `submitsForm`, or `form.submit()`):
+When the form is submitted (by a [`FormSubmitButton`](#formsubmitbutton), an [`Input`](./input) in `submit` or `mixed` mode, or `form.submit()`):
 
 1. `onValidate` is called with the form data. The errors it returns replace the current errors; `[]` clears them.
 2. If there are no errors, `onSubmit` is called with the form data. The errors it returns also replace the current errors; `undefined` is success.

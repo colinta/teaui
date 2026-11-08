@@ -37,7 +37,11 @@ const TOPPINGS: [string, number][] = [
 ]
 const NAME_REGEX = /^\w+$/
 
-const name = new Input({formName: 'name', value: 'Ada', submitsForm: true})
+const name = new Input({
+  formName: 'name',
+  value: 'Ada',
+  multiline: 'submit',
+})
 const bio = new Input({
   formName: 'bio',
   value: 'Mathematician\nWriter',

@@ -37,7 +37,12 @@ function App() {
       }}
     >
       <Label for="email">Email (Enter submits)</Label>
-      <Input formName="email" value={email} onChange={setEmail} submitsForm />
+      <Input
+        formName="email"
+        value={email}
+        onChange={setEmail}
+        multiline="submit"
+      />
       <Checkbox
         formName="terms"
         title="Accept terms"

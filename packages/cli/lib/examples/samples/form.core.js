@@ -31,7 +31,7 @@ const form = new Form({
   },
   children: [
     new Label({for: 'email', text: 'Email (Enter submits)'}),
-    new Input({formName: 'email', value: 'ada', submitsForm: true}),
+    new Input({formName: 'email', value: 'ada', multiline: 'submit'}),
     new Checkbox({formName: 'terms', title: 'Accept terms', value: false}),
     new FormSubmitButton({title: 'Sign up'}),
     status,

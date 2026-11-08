@@ -4,6 +4,7 @@ const status = new Text({text: 'Ready'})
 const name = new Input({
   value: 'TeaUI',
   height: 1,
+  multiline: 'submit',
   onChange: value => {
     status.text = `Editing: ${value}`
   },
@@ -28,10 +29,10 @@ const examples = Stack.down({
       width: 24,
       height: 2,
     }),
-    new Text({text: 'Multiline (Enter adds a line)'}),
+    new Text({text: 'Mixed (Shift+Enter adds a line)'}),
     new Input({
       value: 'first line\nsecond line',
-      multiline: true,
+      multiline: 'mixed',
       wrap: true,
       height: 3,
     }),

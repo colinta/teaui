@@ -45,12 +45,12 @@ describe('Input secret', () => {
 
   it('is always single-line', () => {
     const input = new Input({value: 'a\nb', secret: true, multiline: true})
-    expect(input.multiline).toBe(false)
+    expect(input.multiline).toBe('disabled')
     expect(input.value).toBe('a b')
     const t = testRender(input, {width: 20, height: 3})
     expect(t.terminal.textContent()).toBe('•••')
     input.multiline = true
-    expect(input.multiline).toBe(false)
+    expect(input.multiline).toBe('disabled')
   })
 
   it('does not wrap', () => {

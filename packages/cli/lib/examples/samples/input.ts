@@ -16,7 +16,7 @@ export const inputExample: ComponentExample = {
       name: 'value',
       type: 'string',
       description:
-        'Initial/current text, defaulting to empty; Core stores edits internally, while React should update its value prop in onChange. Newlines become spaces unless multiline is true',
+        'Initial/current text, defaulting to empty; Core stores edits internally, while React should update its value prop in onChange. Newlines become spaces in disabled and submit modes',
       availability: 'both',
     },
     {
@@ -34,9 +34,9 @@ export const inputExample: ComponentExample = {
     },
     {
       name: 'multiline',
-      type: 'boolean',
+      type: "boolean | 'disabled' | 'submit' | 'multiline' | 'mixed'",
       description:
-        'Defaults to false; preserves newlines and makes Enter insert a newline with the current indentation instead of submitting',
+        'Defaults to disabled (false): single-line and Enter does nothing. submit: single-line and Enter submits. multiline (true): Enter or Shift+Enter inserts a newline. mixed: Shift+Enter inserts a newline and Enter submits. Submission calls onSubmit, then an ancestor Form',
       availability: 'both',
     },
     {
@@ -85,14 +85,7 @@ export const inputExample: ComponentExample = {
       name: 'onSubmit',
       type: '(text: string) => void',
       description:
-        'Called with the current value on Enter only when multiline is false; wrapping does not disable submission',
-      availability: 'both',
-    },
-    {
-      name: 'submitsForm',
-      type: 'boolean',
-      description:
-        "Defaults to false; Enter also submits the input's Form, after calling onSubmit. Ignored when multiline is true",
+        'Called with the current value on Enter in submit or mixed mode, before an ancestor Form is submitted; wrapping does not disable submission',
       availability: 'both',
     },
     {

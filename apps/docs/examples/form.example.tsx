@@ -27,7 +27,12 @@ function App() {
       }}
     >
       <Label for="email">Email</Label>
-      <Input formName="email" value={email} onChange={setEmail} submitsForm />
+      <Input
+        formName="email"
+        value={email}
+        onChange={setEmail}
+        multiline="submit"
+      />
       <Stack.right gap={1}>
         <Checkbox
           formName="terms"

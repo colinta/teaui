@@ -160,7 +160,7 @@ export function FormTab() {
                     formName="name"
                     value={name}
                     onChange={setName}
-                    submitsForm
+                    multiline="submit"
                     isEnabled={isEnabled}
                   />
                 </Field>

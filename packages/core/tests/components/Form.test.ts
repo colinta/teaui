@@ -269,48 +269,63 @@ describe('Form', () => {
     })
   })
 
-  describe('Input.submitsForm', () => {
-    it('submits the form on Enter, after calling onSubmit', () => {
-      const calls: string[] = []
-      const form = new Form({
-        onSubmit: () => {
-          calls.push('form')
-          return undefined
-        },
-        child: new Input({
-          formName: 'name',
-          value: 'Ada',
-          submitsForm: true,
-          onSubmit: () => calls.push('input'),
-        }),
-      })
-      const t = testRender(form, SIZE)
-      t.sendKey('return')
-      expect(calls).toEqual(['input', 'form'])
-    })
+  describe('Input multiline submission modes', () => {
+    it.each(['submit', 'mixed'] as const)(
+      '%s submits the form on Enter, after calling onSubmit',
+      multiline => {
+        const calls: string[] = []
+        const form = new Form({
+          onSubmit: () => {
+            calls.push('form')
+            return undefined
+          },
+          child: new Input({
+            formName: 'name',
+            value: 'Ada',
+            multiline,
+            onSubmit: () => calls.push('input'),
+          }),
+        })
+        const t = testRender(form, SIZE)
+        t.sendKey('return')
+        expect(calls).toEqual(['input', 'form'])
+      },
+    )
 
-    it('does not submit the form without submitsForm', () => {
+    it('disabled ignores Enter', () => {
       const onSubmit = vi.fn()
-      const form = new Form({
-        onSubmit,
-        child: new Input({formName: 'name', value: 'Ada'}),
-      })
+      const input = new Input({formName: 'name', value: 'Ada', onSubmit})
+      const form = new Form({onSubmit, child: input})
       const t = testRender(form, SIZE)
       t.sendKey('return')
       expect(onSubmit).not.toHaveBeenCalled()
+      expect(input.value).toBe('Ada')
     })
 
-    it('is ignored when multiline', () => {
+    it('multiline inserts a newline without submitting', () => {
       const onSubmit = vi.fn()
       const input = new Input({
         formName: 'notes',
         value: 'Ada',
         multiline: true,
-        submitsForm: true,
       })
       const form = new Form({onSubmit, child: input})
       const t = testRender(form, SIZE)
       t.sendKey('return')
+      expect(onSubmit).not.toHaveBeenCalled()
+      expect(input.value).toBe('Ada\n')
+    })
+
+    it('mixed inserts a newline on Shift+Enter without submitting', () => {
+      const onSubmit = vi.fn()
+      const input = new Input({
+        formName: 'notes',
+        value: 'Ada',
+        multiline: 'mixed',
+      })
+      const form = new Form({onSubmit, child: input})
+      const t = testRender(form, SIZE)
+      t.sendKey('return', {shift: true})
       expect(onSubmit).not.toHaveBeenCalled()
       expect(input.value).toBe('Ada\n')
     })

@@ -19,6 +19,7 @@ function App() {
       <Input
         value={name}
         height={1}
+        multiline="submit"
         onChange={value => {
           setName(value)
           setStatus(`Editing: ${value}`)
@@ -37,11 +38,11 @@ function App() {
       />
       <Text>Wrapped single line</Text>
       <Input value={wrapped} onChange={setWrapped} wrap width={24} height={2} />
-      <Text>Multiline (Enter adds a line)</Text>
+      <Text>Mixed (Shift+Enter adds a line)</Text>
       <Input
         value={multiline}
         onChange={setMultiline}
-        multiline
+        multiline="mixed"
         wrap
         height={3}
       />

@@ -27,19 +27,27 @@ Clicks past a rendered row clamp to its last position, including the end-of-line
 
 ## Props
 
-| Prop          | Type                     | Default     | Description                                               |
-| ------------- | ------------------------ | ----------- | --------------------------------------------------------- |
-| `value`       | `string`                 | `''`        | Current text                                              |
-| `placeholder` | `string`                 | —           | Placeholder when empty                                    |
-| `onChange`    | `(text: string) => void` | —           | Text change callback                                      |
-| `onSubmit`    | `(text: string) => void` | —           | Enter key callback                                        |
-| `wrap`        | `boolean`                | `false`     | Wrap long lines                                           |
-| `multiline`   | `boolean`                | `false`     | Allow multiple lines                                      |
-| `font`        | `FontFamily`             | `'default'` | Text font                                                 |
-| `secret`      | `boolean`                | `false`     | Mask characters (for passwords); see below                |
-| `isEnabled`   | `boolean`                | `true`      | Dimmed and not interactive when `false`                   |
-| `formName`    | `string`                 | `''`        | The name of this value in its [Form](./form)              |
-| `submitsForm` | `boolean`                | `false`     | Enter also submits the [Form](./form), unless `multiline` |
+| Prop          | Type                                                          | Default      | Description                                  |
+| ------------- | ------------------------------------------------------------- | ------------ | -------------------------------------------- |
+| `value`       | `string`                                                      | `''`         | Current text                                 |
+| `placeholder` | `string`                                                      | —            | Placeholder when empty                       |
+| `onChange`    | `(text: string) => void`                                      | —            | Text change callback                         |
+| `onSubmit`    | `(text: string) => void`                                      | —            | Enter callback in `submit` and `mixed` modes |
+| `wrap`        | `boolean`                                                     | `false`      | Wrap long lines                              |
+| `multiline`   | `boolean \| 'disabled' \| 'submit' \| 'multiline' \| 'mixed'` | `'disabled'` | Newline and Enter behavior; see below        |
+| `font`        | `FontFamily`                                                  | `'default'`  | Text font                                    |
+| `secret`      | `boolean`                                                     | `false`      | Mask characters (for passwords); see below   |
+| `isEnabled`   | `boolean`                                                     | `true`       | Dimmed and not interactive when `false`      |
+| `formName`    | `string`                                                      | `''`         | The name of this value in its [Form](./form) |
+
+## Multiline and submission modes
+
+- `false` and `'disabled'`: the value is single-line and Enter does nothing.
+- `'submit'`: the value is single-line and Enter calls `onSubmit`, then submits an ancestor [Form](./form).
+- `true` and `'multiline'`: Enter inserts a newline with the current indentation. Shift+Enter inserts a plain newline.
+- `'mixed'`: Shift+Enter inserts a plain newline. Enter calls `onSubmit`, then submits an ancestor Form.
+
+Single-line modes replace initial newlines with spaces and remove pasted newlines. Multiline modes preserve pasted newlines. `wrap` is independent of these modes and only changes visual layout.
 
 ## Secret input
 

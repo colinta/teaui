@@ -464,24 +464,84 @@ describe('Input', () => {
     })
   })
 
-  describe('submit', () => {
-    it('return fires onSubmit', () => {
-      let submitted = ''
+  describe('multiline modes', () => {
+    it('normalizes boolean aliases', () => {
+      expect(new Input().multiline).toBe('disabled')
+      expect(new Input({multiline: false}).multiline).toBe('disabled')
+      expect(new Input({multiline: true}).multiline).toBe('multiline')
+    })
+
+    it('disabled preserves a single line and ignores Enter', () => {
+      let submitted = false
       const input = new Input({
-        value: 'test',
-        onSubmit(v) {
-          submitted = v
+        value: 'first\nsecond',
+        multiline: 'disabled',
+        onSubmit() {
+          submitted = true
         },
       })
       const t = testRender(input, {width: 20, height: 1})
       t.sendKey('return')
-      expect(submitted).toBe('test')
+      t.sendKey('return', {shift: true})
+      expect(input.value).toBe('first second')
+      expect(submitted).toBe(false)
     })
 
-    it('return does not fire onChange', () => {
+    it('submit preserves a single line and submits on Enter', () => {
+      let submitted = ''
+      const input = new Input({
+        value: 'first\nsecond',
+        multiline: 'submit',
+        onSubmit(value) {
+          submitted = value
+        },
+      })
+      const t = testRender(input, {width: 20, height: 1})
+      t.sendKey('return')
+      expect(input.value).toBe('first second')
+      expect(submitted).toBe('first second')
+    })
+
+    it('multiline inserts newlines instead of submitting', () => {
+      let submitted = false
+      const input = new Input({
+        value: 'test',
+        multiline: 'multiline',
+        onSubmit() {
+          submitted = true
+        },
+      })
+      const t = testRender(input, {width: 20, height: 3})
+      t.sendKey('return')
+      t.sendKey('return', {shift: true})
+      expect(input.value).toBe('test\n\n')
+      expect(submitted).toBe(false)
+    })
+
+    it('mixed submits on Enter and inserts a newline on Shift+Enter', () => {
+      const submissions: string[] = []
+      const input = new Input({
+        value: 'test',
+        multiline: 'mixed',
+        onSubmit(value) {
+          submissions.push(value)
+        },
+      })
+      const t = testRender(input, {width: 20, height: 3})
+      t.sendKey('return', {shift: true})
+      expect(input.value).toBe('test\n')
+      expect(submissions).toEqual([])
+
+      t.sendKey('return')
+      expect(input.value).toBe('test\n')
+      expect(submissions).toEqual(['test\n'])
+    })
+
+    it('return does not fire onChange when submitting', () => {
       let changed = false
       const input = new Input({
         value: 'test',
+        multiline: 'submit',
         onChange() {
           changed = true
         },
@@ -503,6 +563,7 @@ describe('Input', () => {
       let submitted = false
       const input = new Input({
         value: 'test',
+        multiline: 'submit',
         isEnabled: false,
         onChange() {
           changed = true

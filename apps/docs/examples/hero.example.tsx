@@ -147,7 +147,12 @@ function TastingForm() {
         </Stack.down>
         <Stack.down flex={1}>
           <Label for="name">Name</Label>
-          <Input formName="name" value={name} onChange={setName} submitsForm />
+          <Input
+            formName="name"
+            value={name}
+            onChange={setName}
+            multiline="submit"
+          />
           <Label for="tea">Tea</Label>
           <RadioGroup formName="tea" value={tea} onChange={setTea}>
             <Stack.down>

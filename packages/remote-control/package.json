@@ -2,7 +2,7 @@
   "name": "@teaui/remote-control",
   "description": "Opt-in local WebSocket input and snapshots for TeaUI applications",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
-  "version": "1.29.27",
+  "version": "1.30.27",
   "license": "MIT",
   "type": "module",
   "repository": {

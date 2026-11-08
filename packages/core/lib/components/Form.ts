@@ -64,7 +64,7 @@ export interface Props extends ContainerProps {
  * marked with an arrow, and `Label`s for invalid inputs are drawn in red.
  *
  * Submit the form with a `FormSubmitButton`, `form.submit()`, or an `Input`
- * with `submitsForm`.
+ * whose `multiline` mode is `submit` or `mixed`.
  */
 export class Form extends Container {
   #onValidate: Props['onValidate']
