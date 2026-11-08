@@ -51,7 +51,10 @@ export function charWidth(str: string): 0 | 1 | 2 {
     return 2
   }
 
-  if (str.length > 1 && /^\p{Extended_Pictographic}/u.test(str)) {
+  if (
+    /^\p{Emoji_Presentation}/u.test(str) ||
+    (str.length > 1 && /^\p{Extended_Pictographic}/u.test(str))
+  ) {
     if (str === WIDE_BLACK_SQUARE || str === WIDE_WHITE_SQUARE) {
       return 2
     }

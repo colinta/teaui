@@ -2,7 +2,7 @@
   "name": "@teaui/web",
   "description": "Run TeaUI apps in the browser inside a wterm terminal emulator",
   "author": "Colin T.A. Gray <colinta@colinta.com>",
-  "version": "1.30.27",
+  "version": "1.30.28",
   "license": "MIT",
   "type": "module",
   "repository": {

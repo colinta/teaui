@@ -23,6 +23,7 @@ describe('unicode', () => {
       expect(charWidth('界')).toBe(2)
       expect(charWidth('🧑‍🧑‍🧒‍🧒')).toBe(2)
       expect(charWidth('🙂')).toBe(2)
+      expect(charWidth('✅')).toBe(2)
       expect(charWidth(RED)).toBe(0)
     })
 
