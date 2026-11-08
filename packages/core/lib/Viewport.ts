@@ -813,6 +813,10 @@ class Pen {
     this.#stack = []
   }
 
+  get style(): Style {
+    return this.#stack[0] ?? this.#initial
+  }
+
   /**
    * Used in Text drawing components - the component usually defines a starting
    * style (`viewport.usingPen(style, pen => {})`), and as it prints characters

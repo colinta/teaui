@@ -218,14 +218,16 @@ export class Text extends View {
     }
     const lines = cache.lines
 
-    const startingStyle: Style = this.#style ?? Style.NONE
-    if (!cache.style?.isEqual(startingStyle)) {
-      // Copy primitive attributes to detect in-place Style mutations too.
-      cache.style = new Style(startingStyle)
-      cache.parsedLines = []
-    }
-    const parsedLines = cache.parsedLines!
-    viewport.usingPen(startingStyle, pen => {
+    viewport.usingPen(this.#style, pen => {
+      // Inline SGR resets restore the complete inherited style, not just the
+      // style explicitly set on this Text view.
+      const startingStyle = pen.style
+      if (!cache.style?.isEqual(startingStyle)) {
+        // Copy primitive attributes to detect in-place Style mutations too.
+        cache.style = new Style(startingStyle)
+        cache.parsedLines = []
+      }
+      const parsedLines = cache.parsedLines!
       const point = new Point(0, 0).mutableCopy()
       for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         let [line, lineWidth] = lines[lineIndex]

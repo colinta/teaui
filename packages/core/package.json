@@ -5,7 +5,7 @@
   "contributors": [
     "Shawn Chen <meishangchen@gmail.com>"
   ],
-  "version": "1.29.26",
+  "version": "1.29.27",
   "license": "MIT",
   "type": "module",
   "preferGlobal": false,

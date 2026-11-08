@@ -23,6 +23,7 @@ import {
   Root,
   Container,
   testRender,
+  underline,
 } from '@teaui/core'
 import {TextContainer, TextLiteral} from '../lib/components/TextReact'
 import {render} from '../lib/reconciler'
@@ -210,6 +211,34 @@ describe('component wrappers', () => {
       await flush()
       const btn = root.children[0] as Button
       expect(btn.purpose).toBe(Palette.primary)
+    })
+
+    it('Button title inherits its foreground after an inline style reset', async () => {
+      const {root} = renderToRoot(
+        <Components.Button
+          title={underline('R') + 'UN'}
+          width={5}
+          height={1}
+          foreground="brightGreen"
+          hotKey="s"
+          onClick={() => {}}
+        />,
+      )
+      await flush()
+      const t = testRender(root.children[0], {width: 5, height: 1})
+
+      const rStyle = t.terminal.styleOf('R')
+      expect(rStyle).toMatchObject({
+        foreground: 'brightGreen',
+        underline: true,
+      })
+      for (const char of ['U', 'N']) {
+        expect(t.terminal.styleOf(char)).toMatchObject({
+          foreground: 'brightGreen',
+          background: rStyle?.background,
+        })
+        expect(t.terminal.styleOf(char)?.underline).toBeFalsy()
+      }
     })
 
     it('Pressable renders with children, and is not a Button', async () => {

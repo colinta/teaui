@@ -2,6 +2,7 @@ import {describe, it, expect} from 'vitest'
 import {testRender} from '../../lib/TestScreen.js'
 import {Button} from '../../lib/components/Button.js'
 import {Stack} from '../../lib/components/Stack.js'
+import {underline} from '../../lib/ansi.js'
 
 describe('Button', () => {
   describe('rendering', () => {
@@ -18,6 +19,33 @@ describe('Button', () => {
     it('renders at height 5', () => {
       const t = testRender(new Button({title: 'Test'}), {width: 12, height: 5})
       expect(t.terminal.textContent()).toMatchSnapshot()
+    })
+
+    it('inherits the button foreground after an inline style reset', () => {
+      const t = testRender(
+        new Button({
+          title: underline('R') + 'UN',
+          width: 5,
+          height: 1,
+          foreground: 'brightGreen',
+          hotKey: 's',
+          onClick: () => {},
+        }),
+        {width: 5, height: 1},
+      )
+
+      const rStyle = t.terminal.styleOf('R')
+      expect(rStyle).toMatchObject({
+        foreground: 'brightGreen',
+        underline: true,
+      })
+      for (const char of ['U', 'N']) {
+        expect(t.terminal.styleOf(char)).toMatchObject({
+          foreground: 'brightGreen',
+          background: rStyle?.background,
+        })
+        expect(t.terminal.styleOf(char)?.underline).toBeFalsy()
+      }
     })
   })
 
